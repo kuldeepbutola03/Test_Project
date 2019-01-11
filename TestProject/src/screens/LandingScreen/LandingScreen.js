@@ -4,7 +4,7 @@ import DefaultInput from '../../components/UI/DefaultInput/DefaultInput';
 import { Navigation } from 'react-native-navigation';
 import { PropTypes } from 'prop-types';
 import ButtonMod from '../../components/UI/ButtonMod/ButtonMod';
-import { normalize, saveUserID } from '../../../Constant';
+import { normalize, saveUserID, authHeaders } from '../../../Constant';
 import {
   LoginButton,
   AccessToken,
@@ -15,7 +15,7 @@ import {
 } from 'react-native-fbsdk';
 import CustomTextButton from '../../components/UI/ButtonMod/CustomTextButton';
 import CustomButton from '../../components/UI/ButtonMod/CustomButtom';
-import { EMAIL_REGISTRATION, DEBUG, GET_USER_DETAILS_EMAIL } from '../../../Apis';
+import {  DEBUG, GET_USER_DETAILS_EMAIL } from '../../../Apis';
 
 export default class LandingScreen extends Component {
 
@@ -33,7 +33,8 @@ export default class LandingScreen extends Component {
   }
   state = {
     email: null,
-    password: null
+    password: null,
+    lat_lon : null
   }
 
 
@@ -86,10 +87,7 @@ export default class LandingScreen extends Component {
     //   });
     fetch(GET_USER_DETAILS_EMAIL, {
       method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
+      headers: authHeaders(),
       body: JSON.stringify({
         userEmail: email
 
@@ -166,12 +164,10 @@ export default class LandingScreen extends Component {
       // "userCountryCode": "44",
       // "userImageName": "user_image.jpg",
       // "userImageData": “DATA IN FORM OF BASE64 STRING”
+      
       fetch(FACEBOOK_REGISTRATION, {
         method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
+        headers: authHeaders(),
         body: JSON.stringify({
           userFirstName: "",
           userLastName: "",
@@ -180,7 +176,8 @@ export default class LandingScreen extends Component {
           userMobile: "",
           userCountryCode: "",
           userImageName: "user_image.jpg",
-          userImageData: json.picture.data
+          userImageData: json.picture.data,
+          userInitCoord:this.state.lat_lon
         }),
       }).then((response) => response)
         .then((responseJson) => {
@@ -299,6 +296,35 @@ export default class LandingScreen extends Component {
     );
   };
 
+  locationHandle = () => {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const initialPosition = JSON.stringify(position);
+
+        // let latlong = position.coords.latitude.toString() +  "," + position.coords.longitude.toString()
+        let latlong = position.coords.latitude.toString() + "," + position.coords.longitude.toString()
+        if (position.mocked) {
+          if (position.mocked == true) {
+            alert("you are using fake location");
+            return;
+          }
+        }
+        this.setState({ lat_lon: latlong });
+        this.fbHandler()
+        // alert(latlong);
+        // this.requestToServer()
+      },
+      (error) => {
+        alert(error.message)
+        // this.locationErrorMessage = error.message;
+        // alert(locationErrorMessage)
+        // this.showDialog();
+      },
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+    );
+  }
+
+
   render() {
     var { height, width } = Dimensions.get('window');
     return (
@@ -309,6 +335,26 @@ export default class LandingScreen extends Component {
         backgroundColor='white'//'rgba(210,210,208,1)'
 
       >
+
+      {/* <LoginButton
+        readPermissions={["public_profile"]}
+        onLoginFinished={(error, result) => {
+          alert(JSON.stringify({error}));
+          if (error) {
+
+          } else if (result.isCancelled) {
+
+          } else {
+            // AccessToken.getCurrentAccessToken()
+            //   .then((data) => {
+            //     callback(data.accessToken)
+            //   })
+            //   .catch(error => {
+            //     console.log(error)
+            //   })
+          }
+        }} 
+        /> */}
         <KeyboardAvoidingView
           style={{
             flex: 1,
@@ -387,7 +433,7 @@ export default class LandingScreen extends Component {
             {/* third */}
             <View style={{ flex: 4 }} backgroundColor='transparent' flexDirection='row' >
               <View style={{ flex: 0.37, justifyContent: 'center', alignItems: 'center' }} backgroundColor='transparent'>
-                <CustomButton onPress={this.fbHandler} style={{ height: normalize(60), width: normalize(60) }} backgroundColor='white' source={require('../../assets/facebook.png')} />
+                <CustomButton onPress={this.locationHandle} style={{ height: normalize(60), width: normalize(60) }} backgroundColor='white' source={require('../../assets/facebook.png')} />
                 <Text style={{ color: 'silver', fontSize: normalize(12) }}>Facebook</Text>
 
               </View>

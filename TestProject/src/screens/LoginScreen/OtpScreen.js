@@ -15,7 +15,7 @@ import { PropTypes } from 'prop-types';
 import ButtonMod from '../../components/UI/ButtonMod/ButtonMod';
 import HeaderText from '../../components/UI/HeaderText/HeaderText';
 import { VALIDATE_OTP, DEBUG } from '../../../Apis';
-import { saveUserID } from '../../../Constant';
+import { saveUserID, authHeaders } from '../../../Constant';
 
 export default class OtpScreen extends Component {
   static propTypes = {
@@ -54,10 +54,7 @@ export default class OtpScreen extends Component {
 
     fetch(VALIDATE_OTP, {
       method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
+      headers: authHeaders(),
       body: JSON.stringify({
         userMobile: this.props.code,
         userCountryCode: this.props.mobileNumber,

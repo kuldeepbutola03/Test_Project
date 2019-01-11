@@ -8,6 +8,7 @@ import com.facebook.appevents.AppEventsLogger;
 
 import com.facebook.react.ReactApplication;
 import com.facebook.reactnative.androidsdk.FBSDKPackage;
+import com.facebook.reactnative.androidsdk.FBSDKPackage;
 import com.horcrux.svg.SvgPackage;
 import com.imagepicker.ImagePickerPackage;
 import com.facebook.react.ReactNativeHost;

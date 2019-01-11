@@ -14,7 +14,7 @@ import { PropTypes } from 'prop-types';
 import ButtonMod from '../../components/UI/ButtonMod/ButtonMod';
 import HeaderText from '../../components/UI/HeaderText/HeaderText'
 import { EMAIL_REGISTRATION, DEBUG } from '../../../Apis';
-import { validateEmail, saveUserID } from '../../../Constant';
+import { validateEmail, saveUserID, authHeaders } from '../../../Constant';
 
 export default class RegistrationScreen extends Component {
     static propTypes = {
@@ -28,7 +28,8 @@ export default class RegistrationScreen extends Component {
     }
 
     mobileNumberSubmit = () => {
-
+        // alert('hhhhh');
+        // return;
         if (DEBUG == 0) {
             Navigation.push(this.props.componentId, {
                 component: {
@@ -55,53 +56,81 @@ export default class RegistrationScreen extends Component {
             // }// else if (validateEmail()) {
             // alert('Please enter valid email');
             // return;
-        } else if (!(password === confirmPassword)) {
-            alert('Password does not match');
-            return;
-        } else if (!password) {
-            alert('Password can not be blank');
-            return;
-        }
+        } 
+        // else if (!(password === confirmPassword)) {
+        //     alert('Password does not match');
+        //     return;
+        // } else if (!password) {
+        //     alert('Password can not be blank');
+        //     return;
+        // }
 
-        fetch(EMAIL_REGISTRATION, {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                userEmail: email,
-                password: password,
-            }),
-        }).then((response) => response)
-            .then((responseJson) => {
 
-                if (responseJson && responseJson.userId){
-                    
-                    saveUserID(responseJson.userId);
-                    Navigation.push(this.props.componentId, {
-                        component: {
-                            name: 'Profile',
-                            options: {
-                                topBar: {
-                                    visible: false,
-                                    animate: false,
-                                    drawBehind: true
-                                }
-                            }
-                        },
-                    });
-    
-                }else{
-                    alert ("something went wrong");
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const initialPosition = JSON.stringify(position);
+
+                // let latlong = position.coords.latitude.toString() +  "," + position.coords.longitude.toString()
+                let latlong = position.coords.latitude.toString() + "," + position.coords.longitude.toString()
+                if (position.mocked) {
+                    if (position.mocked == true) {
+                        alert("you are using fake location");
+                        return;
+                    }
                 }
-               
+                //   this.setState({ lat_lon: latlong });
 
-                // return responseJson;
-            })
-            .catch((error) => {
-                console.error(error);
-            });
+                fetch(EMAIL_REGISTRATION, {
+                    method: 'POST',
+                    headers: authHeaders(),
+                    body: JSON.stringify({
+                        userEmail: email,
+                        
+                        userInitCoord: lat_lon
+                    }),
+                }).then((response) => response)
+                    .then((responseJson) => {
+
+                        if (responseJson && responseJson.userId) {
+
+                            saveUserID(responseJson.userId);
+                            Navigation.push(this.props.componentId, {
+                                component: {
+                                    name: 'Profile',
+                                    options: {
+                                        topBar: {
+                                            visible: false,
+                                            animate: false,
+                                            drawBehind: true
+                                        }
+                                    }
+                                },
+                            });
+
+                        } else {
+                            alert("something went wrong");
+                        }
+
+
+                        // return responseJson;
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                    });
+
+            },
+            (error) => {
+                alert(error.message)
+                // this.locationErrorMessage = error.message;
+                // alert(locationErrorMessage)
+                // this.showDialog();
+            },
+            { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+        );
+
+
+
+
 
 
 
@@ -145,7 +174,7 @@ export default class RegistrationScreen extends Component {
                         style={styles.input}
                         onChangeText={(text) => this.emailChanged(text)}
                     />
-                    <DefaultInput
+                    {/* <DefaultInput
                         placeholder="Password"
                         password={true}
                         style={styles.input}
@@ -156,7 +185,7 @@ export default class RegistrationScreen extends Component {
                         password={true}
                         style={styles.input}
                         onChangeText={(text) => this.confirmedPasswordChanged(text)}
-                    />
+                    /> */}
                     <ButtonMod
                         onPress={this.mobileNumberSubmit}
                         color="rgba(86,49,135,1)"

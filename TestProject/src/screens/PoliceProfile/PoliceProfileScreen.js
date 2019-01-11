@@ -17,7 +17,7 @@ import ProfileCard from '../../components/UI/ProfileCard/ProfileCard';
 // import Apis from '../../../Apis';
 import { Navigation } from 'react-native-navigation';
 import { PropTypes } from 'prop-types';
-import { normalize } from '../../../Constant';
+import { normalize, authHeaders } from '../../../Constant';
 import { AREA_PDM, DEBUG, GPR_FLAG, AREA_CDM } from '../../../Apis';
 
 export default class PoliceProfileScreen extends Component {
@@ -97,10 +97,7 @@ export default class PoliceProfileScreen extends Component {
     }
     fetch(GPR_FLAG, {
       method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
+      headers: authHeaders(),
       body: JSON.stringify({
 
         userLocationCoord: this.props.lat_long,
@@ -139,10 +136,7 @@ export default class PoliceProfileScreen extends Component {
 
     fetch( this.props.isPolice ? AREA_PDM : AREA_CDM , {
       method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
+      headers: authHeaders(),
       body: JSON.stringify({
         userId: this.props.user_id,
         latLngSeparatedByComma: this.props.lat_long,

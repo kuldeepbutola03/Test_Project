@@ -18,10 +18,10 @@ import MenuButtons from '../../components/UI/ProfileView/MenuButtons';
 import { Navigation } from 'react-native-navigation/';
 import { PropTypes } from 'prop-types';
 import profileView from '../../components/UI/ProfileView/ProfileView';
-import { normalize, getUserID, DEFAULT_USER_ID } from '../../../Constant';
+import { normalize, getUserID, DEFAULT_USER_ID, authHeaders } from '../../../Constant';
 import ScoreView from '../../components/UI/ProfileCard/ScoreView';
 import HeatMap from '../../components/UI/HeatMap/HeatMap';
-import { LANDING_RESOURCES, LANDING_CDM, DEBUG } from '../../../Apis';
+import { LANDING_RESOURCES, LANDING_CDM, DEBUG, LANDING_PDM } from '../../../Apis';
 
 // import Dialog from 'react-native-dialog';
 
@@ -48,7 +48,8 @@ export default class HomeScreen extends Component {
       secondAPIresponse: null,
       thirdAPIresponse: null,
 
-      lat_lon: null
+      lat_lon: null,
+      coordinates : null
     };
   }
 
@@ -204,7 +205,14 @@ export default class HomeScreen extends Component {
 
         // let latlong = position.coords.latitude.toString() +  "," + position.coords.longitude.toString()
         let latlong = position.coords.latitude.toString() + "," + position.coords.longitude.toString()
+        if (position.mocked) {
+          if (position.mocked == true) {
+            alert("you are using fake location");
+            return;
+          }
+        }
         this.setState({ lat_lon: latlong });
+        this.setState({ coordinates:  position.coords });
         // alert(latlong);
         this.requestToServer()
       },
@@ -265,10 +273,7 @@ export default class HomeScreen extends Component {
 
     fetch(LANDING_RESOURCES, {
       method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
+      headers: authHeaders(),
       body: JSON.stringify({
         userId: this.state.user_id,
         latLngSeparatedByComma: this.state.lat_lon,
@@ -288,12 +293,9 @@ export default class HomeScreen extends Component {
 
   }
   serverHitForSecondResponse() {
-    fetch(LANDING_CDM, {
+    fetch(LANDING_PDM, {
       method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
+      headers: authHeaders(),
       body: JSON.stringify({
         userId: this.state.user_id,
         latLngSeparatedByComma: this.state.lat_lon,
@@ -315,10 +317,7 @@ export default class HomeScreen extends Component {
   serverHitForThirdResponse() {
     fetch(LANDING_CDM, {
       method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
+      headers: authHeaders(),
       body: JSON.stringify({
         userId: this.state.user_id,
         latLngSeparatedByComma: this.state.lat_lon,
@@ -600,7 +599,7 @@ export default class HomeScreen extends Component {
         // onScroll={this.swipe}
         >
           <View style={{ width: wd, height: '100%' }}>
-            <HeatMap />
+            <HeatMap currentCoordinate = {this.state.coordinates} data = {this.state.firstAPIresponse ? this.state.firstAPIresponse.heatMapDataList : null} />
           </View>
 
           <View style={{ width: wd, height: '100%', flexDirection: 'row' }}>

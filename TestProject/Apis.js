@@ -1,11 +1,12 @@
 export const DEBUG = 0; //put 1 -- api will work
 export const BASE_URL = "http://"; //Base url
-export const SEND_OTP = BASE_URL + "sendMobileOtp";
-export const VALIDATE_OTP = BASE_URL + "validateMobileOtp";
-export const EMAIL_REGISTRATION = BASE_URL + "sendEmailRegistrationLink";
-export const FACEBOOK_REGISTRATION = BASE_URL + "userRegistrationByFB";
-export const UPDATE_USER = BASE_URL + "updateUserDetails";
-export const FORGET_PASSWORD = BASE_URL + "forgetPassword";
+export const SEND_OTP = BASE_URL + "user/sendMobileOtp";
+export const VALIDATE_OTP = BASE_URL + "user/validateMobileOtp";
+export const EMAIL_REGISTRATION = BASE_URL + "user/sendEmailRegistrationLink";
+export const FACEBOOK_REGISTRATION = BASE_URL + "user/userRegistratoionByFB";
+
+export const UPDATE_USER = BASE_URL + "user/updateUserDetails";
+export const FORGET_PASSWORD = BASE_URL + "user/forgetPassword";
 
 
 export const GET_USER_DETAILS_EMAIL = BASE_URL + 'user/getUserDetails';

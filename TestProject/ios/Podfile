@@ -36,9 +36,9 @@ target 'TestProject' do
 
   pod 'react-native-fbsdk', :path => '../node_modules/react-native-fbsdk'
 
-  pod 'FacebookSDK'
-  pod 'FBSDKShareKit'
-  pod 'FBSDKLoginKit'
+  pod 'FacebookSDK','~> 4.38.0'
+  pod 'FBSDKShareKit','~> 4.38.0'
+  pod 'FBSDKLoginKit','~> 4.38.0'
 
 end
 
