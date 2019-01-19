@@ -27,10 +27,11 @@ export function authHeaders(){
 
   const base64 = require('base-64');
   var headers = new Headers();
-  //headers.append("Accept", "application/json");
-  headers.append("Content-Type", "application/x-www-form-urlencoded"); 
+  // headers.append("Accept", "application/json");
+  headers.append("Content-Type", "application/json");
+  // headers.append("Content-Type", "application/x-www-form-urlencoded"); 
   // Authorization: 'Basic '+btoa('username:password'),
-  headers.append("Authorization", "Basic " + base64.encode("admin:admin@1234"));
+  // headers.append("Authorization", "Basic " + base64.encode("admin:admin@1234"));
   return headers;
 
 }

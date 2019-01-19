@@ -211,6 +211,8 @@ export default class HomeScreen extends Component {
             return;
           }
         }
+        // alert(latlong);
+        // this.setState({ lat_lon: "28.722,77.125" });
         this.setState({ lat_lon: latlong });
         this.setState({ coordinates:  position.coords });
         // alert(latlong);
@@ -239,7 +241,7 @@ export default class HomeScreen extends Component {
     // getUserID();
     AsyncStorage.getItem('DEFAULT_USER_ID').then((value) => {
       // alert(value);
-      let userID = value ? value : '1';
+      let userID = value ? value : 1;
       // alert(userID);
       this.setState({ user_id: userID })
     })
@@ -277,11 +279,12 @@ export default class HomeScreen extends Component {
       body: JSON.stringify({
         userId: this.state.user_id,
         latLngSeparatedByComma: this.state.lat_lon,
-
+        // latLngSeparatedByComma:"28.722,77.125"
       }),
     }).then((response) => response.json())
       .then((responseJson) => {
-
+        // alert(responseJson);
+        // alert(JSON.stringify(responseJson));
         this.setState({ isLoading: false, firstAPIresponse: responseJson });
         this.serverHitForSecondResponse();
 
@@ -298,12 +301,15 @@ export default class HomeScreen extends Component {
       headers: authHeaders(),
       body: JSON.stringify({
         userId: this.state.user_id,
+        // userId: 1,
         latLngSeparatedByComma: this.state.lat_lon,
+        // latLngSeparatedByComma:"28.722,77.125"
 
       }),
     }).then((response) => response.json())
       .then((responseJson) => {
 
+        // alert(JSON.stringify(responseJson));
         this.setState({ secondAPIresponse: responseJson });
         this.serverHitForThirdResponse();
 
@@ -321,11 +327,14 @@ export default class HomeScreen extends Component {
       body: JSON.stringify({
         userId: this.state.user_id,
         latLngSeparatedByComma: this.state.lat_lon,
+        // userId: 1,
+        // latLngSeparatedByComma:"28.722,77.125"
 
       }),
     }).then((response) => response.json())
       .then((responseJson) => {
 
+        // alert(JSON.stringify(responseJson));
         this.setState({ thirdAPIresponse: responseJson });
 
         this.startTimer()
@@ -525,13 +534,13 @@ export default class HomeScreen extends Component {
     };
 
 
-    const cdmImage1 = this.state.secondAPIresponse ? { uri: 'data:image/png;base64,' + this.state.secondAPIresponse.cdmResourceImageData } : require('../../assets/Extra/people1.png');
-    const cdmImage2 = this.state.secondAPIresponse ? { uri: 'data:image/png;base64,' + this.state.secondAPIresponse.cdmo1OrCnd1ResourceImageData } : require('../../assets/Extra/people2.png');
-    const cdmImage3 = this.state.secondAPIresponse ? { uri: 'data:image/png;base64,' + this.state.secondAPIresponse.cdmo2OrCnd2ResourceImageData } : require('../../assets/Extra/people3.png');
+    const cdmImage1 = this.state.thirdAPIresponse ? { uri: 'data:image/png;base64,' + this.state.thirdAPIresponse.cdmResourceImageData } : require('../../assets/Extra/people1.png');
+    const cdmImage2 = this.state.thirdAPIresponse ? { uri: 'data:image/png;base64,' + this.state.thirdAPIresponse.cdmo1OrCnd1ResourceImageData } : require('../../assets/Extra/people2.png');
+    const cdmImage3 = this.state.thirdAPIresponse ? { uri: 'data:image/png;base64,' + this.state.thirdAPIresponse.cdmo2OrCnd2ResourceImageData } : require('../../assets/Extra/people3.png');
 
-    const cdmGPR1 = this.state.secondAPIresponse ? this.state.secondAPIresponse.cdmResourceGPR : "25";
-    const cdmGPR2 = this.state.secondAPIresponse ? this.state.secondAPIresponse.cdmo1OrCnd1ResourceGPR : "10";
-    const cdmGPR3 = this.state.secondAPIresponse ? this.state.secondAPIresponse.cdmo2OrCnd2ResourceGPR : "9";
+    const cdmGPR1 = this.state.thirdAPIresponse ? this.state.thirdAPIresponse.cdmResourceGPR : "25";
+    const cdmGPR2 = this.state.thirdAPIresponse ? this.state.thirdAPIresponse.cdmo1OrCnd1ResourceGPR : "10";
+    const cdmGPR3 = this.state.thirdAPIresponse ? this.state.thirdAPIresponse.cdmo2OrCnd2ResourceGPR : "9";
 
 
     const pdmImage1 = this.state.secondAPIresponse ? { uri: 'data:image/png;base64,' + this.state.secondAPIresponse.pdmResourceImageData } : require('../../assets/Extra/people1.png');

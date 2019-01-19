@@ -41,7 +41,7 @@ export default class LandingScreen extends Component {
 
   mobileNumberSubmit = () => {
 
-    if (DEBUG == 0) {
+    // if (DEBUG == 0) {
       Navigation.push(this.props.componentId, {
         component: {
           name: 'Profile',
@@ -55,7 +55,7 @@ export default class LandingScreen extends Component {
         },
       });
       return
-    }
+    // }
 
     let email = this.state.email;
     let password = this.state.password;
@@ -92,7 +92,11 @@ export default class LandingScreen extends Component {
         userEmail: email
 
       }),
-    }).then((response) => response.json())
+    }).then((response) => 
+      
+      response.json()
+    
+    )
       .then((responseJson) => {
 
 

@@ -41,7 +41,7 @@ export default class MobileNumber extends Component {
         component: {
           name: 'OtpScreen',
           passProps: {
-            
+
             code: this.phone.getCountryCode(),
             mobileNumber: this.phone.getValue(),
           },
@@ -66,28 +66,31 @@ export default class MobileNumber extends Component {
         const initialPosition = JSON.stringify(position);
 
         // let latlong = position.coords.latitude.toString() +  "," + position.coords.longitude.toString()
-        let latlong = position.coords.latitude.toString() + "," + position.coords.longitude.toString()
+        let lat_lon = position.coords.latitude.toString() + "," + position.coords.longitude.toString();
+        // alert(lat_lon);
         if (position.mocked) {
           if (position.mocked == true) {
             alert("you are using fake location");
             return;
           }
         }
+        let code = this.phone.getCountryCode();
+        let phoneN = this.phone.getValue();
         // this.setState({ lat_lon: latlong });
-        
+
         fetch(SEND_OTP, {
           method: 'POST',
           headers: authHeaders(),
           body: JSON.stringify({
-            userMobile: this.phone.getCountryCode(),
-            userCountryCode: this.phone.getValue(),
+            userMobile: phoneN ,
+            userCountryCode: code,
             userInitCoord: lat_lon
           }),
         }).then((response) => response)
           .then((responseJson) => {
-    
-            
-    
+
+
+            // alert(responseJson.response);
             // code: this.phone.getCountryCode(),
             // mobileNumber: this.phone.getValue(),
             // user_id : responseJson.userId
@@ -96,18 +99,18 @@ export default class MobileNumber extends Component {
           .catch((error) => {
             console.error(error);
           });
-          Navigation.push(this.props.componentId, {
-            component: {
-              name: 'OtpScreen',
-              passProps: {
-                
-                code: this.phone.getCountryCode(),
-                mobileNumber: this.phone.getValue(),
-              },
-            },
-          });
+        Navigation.push(this.props.componentId, {
+          component: {
+            name: 'OtpScreen',
+            passProps: {
 
-        
+              code: this.phone.getCountryCode(),
+              mobileNumber: this.phone.getValue(),
+            },
+          },
+        });
+
+
       },
       (error) => {
         alert(error.message)
@@ -120,18 +123,18 @@ export default class MobileNumber extends Component {
 
 
 
-    
+
   };
 
   // mobileNumberChanged = (changedNumber) => {
-    // console.log(changedNumber);
-    // console.log(this.phone.getCountryCode());
-    // console.log(this.phone.getValue());
+  // console.log(changedNumber);
+  // console.log(this.phone.getCountryCode());
+  // console.log(this.phone.getValue());
 
-    // this.setState ({
-    //   number : changedNumber,
-    //   countryCode : '+1'
-    // })
+  // this.setState ({
+  //   number : changedNumber,
+  //   countryCode : '+1'
+  // })
   // }
 
   render() {
@@ -168,7 +171,7 @@ export default class MobileNumber extends Component {
             style={styles.phoneInput}
             textProps={{ placeholder: 'Mobile Number', height: 25 }}
             textStyle={{ borderBottomWidth: 1, borderColor: '#BFBFBF' }}
-            // onChangePhoneNumber={(e) => this.mobileNumberChanged(e)}
+          // onChangePhoneNumber={(e) => this.mobileNumberChanged(e)}
 
           />
 

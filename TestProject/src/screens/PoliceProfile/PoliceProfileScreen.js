@@ -141,6 +141,9 @@ export default class PoliceProfileScreen extends Component {
         userId: this.props.user_id,
         latLngSeparatedByComma: this.props.lat_long,
 
+        // userId: 1,
+        // latLngSeparatedByComma:"28.722,77.125"
+
       }),
     }).then((response) => response.json())
       .then((responseJson) => {
@@ -236,7 +239,7 @@ export default class PoliceProfileScreen extends Component {
 
 
       name: this.state.APIresponse ? this.state.APIresponse.resourceName1 : 'JOHNSON ADOLPH BLAINE CHARLES',
-      area: this.state.APIresponse ? (this.state.APIresponse.resourceType1 + ' | ' + this.state.APIresponse.customAreaName) : 'DNTN | Alaska ',
+      area: this.state.APIresponse ? (this.state.APIresponse.resourceTypeRes1 + ' | ' + this.state.APIresponse.customAreaName) : 'DNTN | Alaska ',
       totalCount: this.state.APIresponse ? this.state.APIresponse.resourceTotalFlagCount1 : 1000,
       uniqueCount: this.state.APIresponse ? this.state.APIresponse.resourceTotalFlagUniqueCount1 : 123,
       score: {
@@ -265,7 +268,7 @@ export default class PoliceProfileScreen extends Component {
 
 
       name: this.state.APIresponse ? this.state.APIresponse.resourceName2 : 'JOHNSON ADOLPH BLAINE CHARLES',
-      area: this.state.APIresponse ? (this.state.APIresponse.resourceType2 + ' | ' + this.state.APIresponse.customAreaName) : 'DNTN | Alaska',
+      area: this.state.APIresponse ? (this.state.APIresponse.resourceTypeRes2 + ' | ' + this.state.APIresponse.customAreaName) : 'DNTN | Alaska',
       totalCount: this.state.APIresponse ? this.state.APIresponse.resourceTotalFlagCount2 : 1000,
       uniqueCount: this.state.APIresponse ? this.state.APIresponse.resourceTotalFlagUniqueCount2 : 123,
       score: {

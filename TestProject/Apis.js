@@ -1,5 +1,5 @@
-export const DEBUG = 0; //put 1 -- api will work
-export const BASE_URL = "http://"; //Base url
+export const DEBUG = 1; //put 1 -- api will work
+export const BASE_URL = "http://www.eccfl.co.uk/customMapAPIs/"; //Base url
 export const SEND_OTP = BASE_URL + "user/sendMobileOtp";
 export const VALIDATE_OTP = BASE_URL + "user/validateMobileOtp";
 export const EMAIL_REGISTRATION = BASE_URL + "user/sendEmailRegistrationLink";

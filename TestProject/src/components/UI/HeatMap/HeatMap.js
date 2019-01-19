@@ -40,7 +40,6 @@ const heatMap = props => {
         const max1 = latitude + 2;
         const rand1 = min1 + Math.random() * (max1 - min1);
 
-
         const min2 = longitude - 2;
         const max2 = longitude + 2;
         const rand2 = min2 + Math.random() * (max2 - min2);
