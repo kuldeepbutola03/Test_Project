@@ -55,7 +55,8 @@ public class MainApplication extends NavigationApplication {
             // eg. new VectorIconsPackage()
             new MapsPackage(),
             new ImagePickerPackage(),
-            new FBSDKPackage(mCallbackManager)
+            new FBSDKPackage(mCallbackManager),
+            new SvgPackage()
         );
     }
 

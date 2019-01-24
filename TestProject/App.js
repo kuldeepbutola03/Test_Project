@@ -37,29 +37,93 @@ Navigation.registerComponent ('TrendDetailScreen', () => TrendDetailScreen);
 Navigation.registerComponent ('QuestionnaireScreen', () => QuestionnaireScreen);
 
 // Start App
+import { AsyncStorage } from "react-native"
+import { DEFAULT_USER_ID, getUserData } from './Constant';
 
-Navigation.events ().registerAppLaunchedListener (() => {
-  Navigation.setRoot ({
-    root: {
-      stack: {
-        children: [
-          {
-            component: {
-              id: 'LandingScreen', // Optional, Auto generated if empty
-              name: 'LandingScreen',
-              options: {
-                topBar: {
-                  visible:false,
-                    drawBehind:true,
-                    animate:false
+getUserData().then((data) => {
+
+// })
+
+// AsyncStorage.getItem(DEFAULT_USER_ID).then((value) => {
+    // let idName = value ? "HomeScreen" : "LandingScreen";
+
+
+
+    if (data) {
+
+      // let data = {
+      //   image: null,
+      //   name: null,
+      //   email:  null,
+      // };
+
+      Navigation.events ().registerAppLaunchedListener (() => {
+        Navigation.setRoot ({
+          root: {
+            stack: {
+              children: [
+                {
+                  component: {
+                    id: "HomeScreen", // Optional, Auto generated if empty
+                    name: "HomeScreen",
+                    options: {
+                      topBar: {
+                        visible:false,
+                          drawBehind:true,
+                          animate:false
+                      },
+                      popGesture:false
+                    },
+                    passProps:{
+                      data : data
+                    },
+                    
+                    sideMenu:{
+                      enabled : false,
+                      visible: false
+                    }
+                    
+                  },
                 },
-              },
+              ],
             },
           },
-        ],
-      },
-    },
-  });
-});
+        });
+      });
+    }else{
+      
+      Navigation.events ().registerAppLaunchedListener (() => {
+        Navigation.setRoot ({
+          root: {
+            stack: {
+              children: [
+                {
+                  component: {
+                    id: "LandingScreen", // Optional, Auto generated if empty
+                    name: "LandingScreen",
+                    options: {
+                      topBar: {
+                        visible:false,
+                          drawBehind:true,
+                          animate:false
+                      },
+                    },
+                    
+                  },
+                },
+              ],
+            },
+          },
+        });
+      });
+    }
+
+    
+    
+
+
+  })
+
+
 
 

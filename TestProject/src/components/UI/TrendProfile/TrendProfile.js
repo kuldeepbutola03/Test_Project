@@ -55,6 +55,7 @@ export default (trendProfile = props => {
             gpr={-10}
             gprColor="yellow"
             image = {props.image}
+            catImage = {props.catImage}
           />
           <View style={secondInnerViewStyle.firstView_P2}>
             <View
@@ -94,8 +95,8 @@ export default (trendProfile = props => {
             footer
             timeAxis={props.timeFrame['6 Months']}
             percentage={props.percentage['6 Months']}
-            totalCount="2342"
-            uniqueCount="923"
+            totalCount={props.data.totalCount}
+            uniqueCount={props.data.uniqueCount}
           />
         </View>
 

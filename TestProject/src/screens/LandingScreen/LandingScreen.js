@@ -4,44 +4,48 @@ import DefaultInput from '../../components/UI/DefaultInput/DefaultInput';
 import { Navigation } from 'react-native-navigation';
 import { PropTypes } from 'prop-types';
 import ButtonMod from '../../components/UI/ButtonMod/ButtonMod';
-import { normalize, saveUserID, authHeaders } from '../../../Constant';
+import { normalize, saveUserID, authHeaders, getUserData } from '../../../Constant';
 import {
-  LoginButton,
   AccessToken,
   LoginManager,
   GraphRequest,
   GraphRequestManager,
-
 } from 'react-native-fbsdk';
 import CustomTextButton from '../../components/UI/ButtonMod/CustomTextButton';
 import CustomButton from '../../components/UI/ButtonMod/CustomButtom';
-import {  DEBUG, GET_USER_DETAILS_EMAIL } from '../../../Apis';
-
+import { DEBUG, GET_USER_DETAILS_EMAIL, FACEBOOK_REGISTRATION } from '../../../Apis';
+import Loading from 'react-native-whc-loading';
+import { AsyncStorage } from "react-native"
 export default class LandingScreen extends Component {
+
 
   static propTypes = {
     componentId: PropTypes.string,
   };
 
   constructor(props) {
-
     super(props)
 
+    this.state = {
+      email: null,
+      password: null,
+      lat_lon: null
+    }
+
+    
+    // var data2 = {};
+    // data2["aa"] = "sada";
+
+    // alert(JSON.stringify(data2));
     // saveUserID("abcdef");
     // this.pushScreen = this.pushScreen.bind(this);
-
-  }
-  state = {
-    email: null,
-    password: null,
-    lat_lon : null
   }
 
-
+  
 
   mobileNumberSubmit = () => {
 
-    // if (DEBUG == 0) {
+    if (DEBUG == 0) {
       Navigation.push(this.props.componentId, {
         component: {
           name: 'Profile',
@@ -55,7 +59,7 @@ export default class LandingScreen extends Component {
         },
       });
       return
-    // }
+    }
 
     let email = this.state.email;
     let password = this.state.password;
@@ -75,16 +79,8 @@ export default class LandingScreen extends Component {
       return;
     }
 
-    // fetch()
-    //   .then(response => response.json())
-    //   .then(json => {
-    //     console.log(json);
-    //     this.toProfile(json);
-    //   })
-    //   .catch(error => {
-    //     reject('ERROR GETTING DATA FROM FACEBOOK');
-    //     throw error;
-    //   });
+    this.refs.loading.show();
+
     fetch(GET_USER_DETAILS_EMAIL, {
       method: 'POST',
       headers: authHeaders(),
@@ -92,16 +88,19 @@ export default class LandingScreen extends Component {
         userEmail: email
 
       }),
-    }).then((response) => 
-      
+    }).then((response) =>
+
       response.json()
-    
+
     )
       .then((responseJson) => {
 
-
+        this.refs.loading.close();
         if (responseJson) {
-          if (responseJson.userPassword === this.state.password) {
+          if (responseJson.userPassword === this.state.password && responseJson.userId) {
+            // alert(responseJson.response);
+            saveUserID(responseJson.userId);
+            // setTimeout(function () {
             Navigation.push(this.props.componentId, {
               component: {
                 name: 'Profile',
@@ -114,11 +113,18 @@ export default class LandingScreen extends Component {
                 }
               },
             });
+            // }, 1000);
           } else {
-            alert(responseJson.response);
+            setTimeout(function () {
+              alert(responseJson.response);
+            }, 100)
+
           }
         } else {
-          alert("please check your network");
+          setTimeout(function () {
+            alert("please check your network");
+          }, 100)
+
         }
         // return responseJson;
       })
@@ -138,7 +144,7 @@ export default class LandingScreen extends Component {
     this.setState({ password: sender });
   }
 
-  toProfile(json) {
+  toProfile(json, property) {
 
     if (DEBUG == 0) {
       Navigation.push(this.props.componentId, {
@@ -158,6 +164,7 @@ export default class LandingScreen extends Component {
           }
         },
       });
+      this.refs.loading.close();
       return;
     } else {
       //   "userFirstName": "Jackson",
@@ -168,63 +175,150 @@ export default class LandingScreen extends Component {
       // "userCountryCode": "44",
       // "userImageName": "user_image.jpg",
       // "userImageData": “DATA IN FORM OF BASE64 STRING”
-      
-      fetch(FACEBOOK_REGISTRATION, {
-        method: 'POST',
-        headers: authHeaders(),
-        body: JSON.stringify({
-          userFirstName: "",
-          userLastName: "",
-          userEmail: json.email,
-          userFb: json.id,
-          userMobile: "",
-          userCountryCode: "",
-          userImageName: "user_image.jpg",
-          userImageData: json.picture.data,
-          userInitCoord:this.state.lat_lon
-        }),
-      }).then((response) => response)
+      // json.picture.data
+
+      let dataFB = JSON.stringify({
+        userFirstName: "",
+        userLastName: "",
+        userEmail: json.email,
+        userFb: json.id,
+        userMobile: "",
+        userCountryCode: "",
+        userImageName: "user_image.jpg",
+        userImageData: "",
+        userInitCoord: this.state.lat_lon
+      });
+      // alert(dataFB);
+      // alert("11");
+
+
+      setTimeout(function () {
+        // alert("12");
+
+
+        fetch(FACEBOOK_REGISTRATION, {
+          method: 'POST',
+          headers: authHeaders(),
+          body: dataFB,
+        }).then((response) =>
+          response.json())
+          .then((responseJson) => {
+            console.log("111111111`");
+            console.log(responseJson);
+            // alert(responseJson);
+            // alert("asdas" + JSON.stringify(responseJson));
+
+
+            if (responseJson.response === "true") {
+              setTimeout(function () {
+                // property.getUser(json, property);
+                property.toProfile(json, property);
+              }, 100);
+            } else if (responseJson && responseJson.userId) {
+              // alert(responseJson.response);
+              property.refs.loading.close();
+              saveUserID(responseJson.userId);
+              // setTimeout(function () {
+              //   property.getUser(json, property);
+              // }, 100);
+              // return;
+              setTimeout(function () {
+                Navigation.push(property.props.componentId, {
+                  component: {
+                    id: 'Profile',
+                    name: 'Profile',
+                    passProps: {
+                      email: json.email,
+                      image: json.picture.data,
+                      name: json.name,
+                    },
+                    options: {
+                      topBar: {
+                        visible: false,
+                        animate: false,
+                        drawBehind: true
+                      }
+                    }
+                  },
+                });
+              }, 100)
+            } else {
+              property.refs.loading.close();
+              setTimeout(function () {
+                alert("something went wrong");
+              }, 100)
+
+
+            }
+
+
+            // return responseJson;
+          })
+          .catch((error) => {
+            alert(error);
+            console.error(error);
+          });
+
+
+      }, 1000);
+    }
+
+
+  }
+  getUser(json, property) {
+    // alert("asdasd");
+    setTimeout(function () {
+      fetch(GET_USER_DETAILS_EMAIL
+        , {
+          method: 'POST',
+          headers: authHeaders(),
+          body: JSON.stringify({
+            userFb: json.id
+          }),
+        }).then((response) =>
+          response.json()
+        )
         .then((responseJson) => {
+          console.log(responseJson);
 
+          // alert("In651256256P");
+          if (responseJson) {
+            if (responseJson.userId) {
+              saveUserID(responseJson.userId);
 
-
-          if (responseJson && esponseJson.userId) {
-            // alert(responseJson.response);
-            saveUserID(responseJson.userId);
-
-            Navigation.push(this.props.componentId, {
-              component: {
-                name: 'Profile',
-                passProps: {
-                  email: json.email,
-                  image: json.picture.data,
-                  name: json.name,
-                },
-                options: {
-                  topBar: {
-                    visible: false,
-                    animate: false,
-                    drawBehind: true
+              Navigation.push(property.props.componentId, {
+                component: {
+                  name: 'Profile',
+                  passProps: {
+                    email: json.email,
+                    image: json.picture.data,
+                    name: json.name,
+                  },
+                  options: {
+                    topBar: {
+                      visible: false,
+                      animate: false,
+                      drawBehind: true
+                    }
                   }
-                }
-              },
-            });
+                },
+              });
+            } else {
+              alert(responseJson.response);
+            }
           } else {
-            alert("something went wrong");
+            alert("please check your network");
           }
-
-
           // return responseJson;
         })
         .catch((error) => {
           console.error(error);
         });
-    }
-
-
+    }, 1000);
   }
 
-  // toProfile(json) 
+
+  // toProfile(json)
   // {
   //   Navigation.push(this.props.componentId, {
   //     component: {
@@ -276,19 +370,23 @@ export default class LandingScreen extends Component {
       .then(response => response.json())
       .then(json => {
         console.log(json);
-        this.toProfile(json);
+        this.toProfile(json, this);
       })
       .catch(error => {
         reject('ERROR GETTING DATA FROM FACEBOOK');
+        this.refs.loading.close();
         throw error;
       });
   };
 
   fbHandler = () => {
+    this.refs.loading.show();
+
     LoginManager.logInWithReadPermissions(['public_profile', 'email']).then(
       (LoginManager.onLoginFinished = result => {
         if (result.isCancelled) {
           console.log('login is cancelled.');
+          this.refs.loading.close();
         } else {
           AccessToken.getCurrentAccessToken().then(data => {
             console.log(data.accessToken.toString());
@@ -296,7 +394,10 @@ export default class LandingScreen extends Component {
           });
         }
       }),
-      (LoginManager.onLogoutFinished = () => console.log('logout.'))
+      (LoginManager.onLogoutFinished = () => {
+        console.log('logout.');
+        this.refs.loading.close();
+      })
     );
   };
 
@@ -340,7 +441,7 @@ export default class LandingScreen extends Component {
 
       >
 
-      {/* <LoginButton
+        {/* <LoginButton
         readPermissions={["public_profile"]}
         onLoginFinished={(error, result) => {
           alert(JSON.stringify({error}));
@@ -357,7 +458,7 @@ export default class LandingScreen extends Component {
             //     console.log(error)
             //   })
           }
-        }} 
+        }}
         /> */}
         <KeyboardAvoidingView
           style={{
@@ -378,18 +479,7 @@ export default class LandingScreen extends Component {
             alignItems: 'center'
           }} backgroundColor='transparent'>
 
-            {/* <KeyboardAvoidingView
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: 'clear',
-            margin: 80,
-            width: width - 30,
-          }}
-          {...options}
-          enabled
-        > */}
+
 
             <DefaultInput
               keyboardType="email-address"
@@ -453,6 +543,8 @@ export default class LandingScreen extends Component {
 
           </View>
 
+          <Loading
+            ref="loading" />
         </KeyboardAvoidingView>
 
       </SafeAreaView>

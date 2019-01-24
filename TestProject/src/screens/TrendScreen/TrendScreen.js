@@ -16,10 +16,15 @@ import { Navigation } from 'react-native-navigation';
 // import {normalize} from '../../../Constant'
 import { PropTypes } from 'prop-types';
 import TrendProfile from '../../components/UI/TrendProfile/TrendProfile';
+import { TREND_ } from '../../../Apis';
+import { authHeaders } from '../../../Constant';
 export default class TrendScreen extends Component {
   state = {
     timer: null,
     counter: 0,
+
+    pdmResponse: null,
+    cdmResponse: null,
 
     timeFrame: {
 
@@ -42,28 +47,14 @@ export default class TrendScreen extends Component {
       '6 Year': [40, 30, 50, 60, 80, 60],
     },
     modalVisible: false,
-    timePeriod: '6 Months',
+    timePeriod: '3 Months',
   };
 
-  //   componentDidMount () {
-  //     let timer = setInterval (this.tick, 1000);
-  //     this.setState ({timer});
-  //   }
+  componentDidMount() {
+    this.getDataFromServer(true)
+   
 
-  //   componentWillUnmount () {
-  //     clearInterval (this.state.timer);
-  //   }
-
-  //   tick = () => {
-  //     this.setState ({
-  //       counter: this.state.counter == 0 ? 1 : 0,
-  //     });
-  //     this._scrollView.scrollTo ({
-  //       x: this.state.counter == 0 ? Dimensions.get ('window').width : 0,
-  //       y: 0,
-  //       animate: true,
-  //     });
-  //   };
+  }
 
   static propTypes = {
     componentId: PropTypes.string,
@@ -91,7 +82,62 @@ export default class TrendScreen extends Component {
     });
   };
 
-  render() {
+
+  getDataFromServer(isPDM) {
+
+
+    let data = JSON.stringify({
+      resourceId: isPDM ? this.props.resourceIdPDM : this.props.resourceIdCDM,
+      resourceType2: isPDM ? "PDM" : "CDM",
+    });
+
+    // "resourceId" : "1",
+    //   "resourceType2" : "PDM"
+
+    // setTimeout(function () {
+    // alert(data);
+
+
+    fetch(TREND_, {
+      method: 'POST',
+      headers: authHeaders(),
+      body: data,
+    }).then((response) =>
+      response.json())
+      .then((responseJson) => {
+
+        alert(responseJson.resourceName);
+        console.log("111111111`");
+        console.log(responseJson);
+
+
+
+        if (responseJson) {
+          let data = isPDM ? { pdmResponse: responseJson } : { cdmResponse: responseJson };
+          this.setState(data);
+          if (isPDM) {
+            this.getDataFromServer(false);
+          }
+        } else {
+
+          // setTimeout(function () {
+          alert("something went wrong");
+          // }, 100)
+
+
+        }
+
+
+        // return responseJson;
+      })
+      .catch((error) => {
+        alert(error);
+        console.error(error);
+      });
+  }
+
+  getDataFromObject(dataObject) {
+
     let list = [
       { key: 'ATTRIBUTE NAME', value: 'ATTRIBUTE VALUE' },
       { key: 'Devin', value: 'Devin' },
@@ -104,33 +150,41 @@ export default class TrendScreen extends Component {
       { key: 'Julie', value: 'Devin' },
     ];
 
+    return {
+      name: dataObject ? dataObject.resourceName : '',
+      area: dataObject ? (dataObject.resourceType + " | " + dataObject.resourceType2) : '',
+      totalCount: dataObject ? dataObject.resourceTotalFlagCount : 0,
+      uniqueCount: dataObject ? dataObject.resourceTotalFlagUniqueCount : 0,
+      score: {
+        gpr: {
+          score: dataObject ? (dataObject.resourceGPR + '%') : '0%',
+          name: 'GPR',
+        },
+        agpr: {
+          score: '0',
+          name: 'AGPR',
+        },
+        extraCount: {
+          score: '0',
+          name: 'XYZ',
+        },
+      },
+
+      data: dataObject ? dataObject.basicResourceDetailsPojoList : list,
+    }
+  }
+
+  render() {
+    
+
     // var lss = [{key : 'ATTRIBUTE NAME'}];
     // lss.append (list);
 
     // list.push({key : 'ATTRIBUTE NAME'} index : 0);
 
-    let data = {
-      name: 'JOHNSON ADOLPH BLAINE CHARLES',
-      area: 'DNTN | WASHINGTON',
-      totalCount: 1000,
-      uniqueCount: 123,
-      score: {
-        gpr: {
-          score: '63%',
-          name: 'GPR',
-        },
-        agpr: {
-          score: '43',
-          name: 'AGPR',
-        },
-        extraCount: {
-          score: '3.5',
-          name: 'XYZ',
-        },
-      },
+    let dataPDM = this.getDataFromObject(this.state.pdmResponse);
+    let dataCDM = this.getDataFromObject(this.state.cdmResponse);
 
-      data: list,
-    };
     return (
       <SafeAreaView
         forceInset={{ bottom: 'always' }}
@@ -151,9 +205,10 @@ export default class TrendScreen extends Component {
               width: Dimensions.get('window').width,
             }}
             backgroundColor="transparent"
-            data={data}
+            data={dataCDM}
             onPress={this.homeButtonTapped}
-            image={require("../../assets/1.png")}
+            image = {this.state.pdmResponse ? { uri: 'data:image/png;base64,' + this.state.pdmResponse.resourceImageData } : require("../../assets/1.png") }
+            catImage = {this.state.pdmResponse ? { uri: 'data:image/png;base64,' + this.state.pdmResponse.resourceCategoryLogoData } : null }
           />
           <TrendProfile
             timeFrame={this.state.timeFrame}
@@ -165,10 +220,10 @@ export default class TrendScreen extends Component {
               width: Dimensions.get('window').width,
             }}
             backgroundColor="transparent"
-            data={data}
+            data={dataPDM}
             onPress={this.homeButtonTapped}
-            image={require("../../assets/2.png")}
-
+            image={this.state.cdmResponse ? { uri: 'data:image/png;base64,' + this.state.cdmResponse.resourceImageData } : require("../../assets/2.png")}
+            catImage = {this.state.pdmResponse ? { uri: 'data:image/png;base64,' + this.state.pdmResponse.resourceCategoryLogoData } : null }
           />
 
         </ScrollView>

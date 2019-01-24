@@ -44,7 +44,6 @@ export default class PoliceProfileScreen extends Component {
     const dateTime = Date.now();
     const currentTime = Math.floor(dateTime / 1000) + (60 * 60 * 1);
 
-
     this.setState({ isLiked1: 1 });
     this.saveDataInStorage(true, 1)
   };
@@ -83,12 +82,8 @@ export default class PoliceProfileScreen extends Component {
     }
   }
 
-
   componentDidMount() {
     this.serverHitForDetail();
-
-
-
   }
 
   hitServerForLikeDislike(resourceId, isLiked) {
@@ -322,12 +317,10 @@ export default class PoliceProfileScreen extends Component {
           showHome={false}
           backgroundColor='white'
           data={data2}
-
           onPressLike={this.like2ButtonTapped}
           onPressDislike={this.dislike2ButtonTapped}
           isLiked={this.state.isLiked2}
 
-          
         />
       </SafeAreaView>
     );

@@ -56,7 +56,7 @@ export default class RegistrationScreen extends Component {
             // }// else if (validateEmail()) {
             // alert('Please enter valid email');
             // return;
-        } 
+        }
         // else if (!(password === confirmPassword)) {
         //     alert('Password does not match');
         //     return;
@@ -85,17 +85,20 @@ export default class RegistrationScreen extends Component {
                     headers: authHeaders(),
                     body: JSON.stringify({
                         userEmail: email,
-                        
-                        userInitCoord: lat_lon
+
+                        userInitCoord: latlong
                     }),
                 }).then((response) => response)
                     .then((responseJson) => {
 
-                        if (responseJson && responseJson.userId) {
-
+                        if (responseJson ) {
+                          if( responseJson.userId){
                             saveUserID(responseJson.userId);
+
+                            
                             Navigation.push(this.props.componentId, {
                                 component: {
+                                    
                                     name: 'Profile',
                                     options: {
                                         topBar: {
@@ -106,19 +109,16 @@ export default class RegistrationScreen extends Component {
                                     }
                                 },
                             });
-
-                        } else {
-                            alert("something went wrong");
+                          }else{
+                              alert(responseJson.response);
+                          }
                         }
-
-
                         // return responseJson;
                     })
                     .catch((error) => {
                         console.error(error);
                     });
-
-            },
+              },
             (error) => {
                 alert(error.message)
                 // this.locationErrorMessage = error.message;
@@ -127,12 +127,6 @@ export default class RegistrationScreen extends Component {
             },
             { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
         );
-
-
-
-
-
-
 
     }
 
@@ -204,4 +198,3 @@ const styles = StyleSheet.create({
         backgroundColor: 'white'
     }
 });
-

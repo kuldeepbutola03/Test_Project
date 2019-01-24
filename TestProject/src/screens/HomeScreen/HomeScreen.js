@@ -10,15 +10,13 @@ import {
   BackHandler,
   ScrollView,
   AsyncStorage
-
-
 } from 'react-native';
 import ProfileView from '../../components/UI/ProfileView/ProfileView';
 import MenuButtons from '../../components/UI/ProfileView/MenuButtons';
 import { Navigation } from 'react-native-navigation/';
 import { PropTypes } from 'prop-types';
 import profileView from '../../components/UI/ProfileView/ProfileView';
-import { normalize, getUserID, DEFAULT_USER_ID, authHeaders } from '../../../Constant';
+import { normalize, getUserID, DEFAULT_USER_ID, authHeaders, getUserData } from '../../../Constant';
 import ScoreView from '../../components/UI/ProfileCard/ScoreView';
 import HeatMap from '../../components/UI/HeatMap/HeatMap';
 import { LANDING_RESOURCES, LANDING_CDM, DEBUG, LANDING_PDM } from '../../../Apis';
@@ -49,7 +47,7 @@ export default class HomeScreen extends Component {
       thirdAPIresponse: null,
 
       lat_lon: null,
-      coordinates : null
+      coordinates: null
     };
   }
 
@@ -171,6 +169,7 @@ export default class HomeScreen extends Component {
             animate: false,
           },
         },
+
       },
     });
   };
@@ -186,6 +185,10 @@ export default class HomeScreen extends Component {
             animate: false,
           },
         },
+        passProps: {
+          resourceIdPDM: this.state.firstAPIresponse ? this.state.firstAPIresponse.firResourceId : 1,
+          resourceIdCDM: this.state.firstAPIresponse ? this.state.firstAPIresponse.polResourceId : 1
+        }
       },
     });
   };
@@ -214,7 +217,7 @@ export default class HomeScreen extends Component {
         // alert(latlong);
         // this.setState({ lat_lon: "28.722,77.125" });
         this.setState({ lat_lon: latlong });
-        this.setState({ coordinates:  position.coords });
+        this.setState({ coordinates: position.coords });
         // alert(latlong);
         this.requestToServer()
       },
@@ -235,43 +238,39 @@ export default class HomeScreen extends Component {
   }
   componentWillUnmount() {
     clearInterval(this.state.timer);
+
+
+
   }
 
   componentDidMount() {
     // getUserID();
-    AsyncStorage.getItem('DEFAULT_USER_ID').then((value) => {
+    AsyncStorage.getItem(DEFAULT_USER_ID).then((value) => {
       // alert(value);
       let userID = value ? value : 1;
       // alert(userID);
       this.setState({ user_id: userID })
     })
 
+    
+
     this.fetchCurrentLocation();
     // alert(getUserID());
-
-
 
     BackHandler.addEventListener('hardwareBackPress', () => {
       return true;
     });
 
-
   }
 
   requestToServer() {
     if (DEBUG == 0) {
-
       return;
     }
-
     this.serverHitForFirstApi()
-
   }
 
-
   serverHitForFirstApi() {
-
-
 
     fetch(LANDING_RESOURCES, {
       method: 'POST',
@@ -608,14 +607,14 @@ export default class HomeScreen extends Component {
         // onScroll={this.swipe}
         >
           <View style={{ width: wd, height: '100%' }}>
-            <HeatMap currentCoordinate = {this.state.coordinates} data = {this.state.firstAPIresponse ? this.state.firstAPIresponse.heatMapDataList : null} />
+            <HeatMap currentCoordinate={this.state.coordinates} data={this.state.firstAPIresponse ? this.state.firstAPIresponse.heatMapDataList : null} />
           </View>
 
           <View style={{ width: wd, height: '100%', flexDirection: 'row' }}>
             <View style={{ flex: 1 }}>
               <Image
                 source={cdmImage1}
-                style={{ flex: 1, height: null, width: null}}
+                style={{ flex: 1, height: null, width: null }}
               />
               <ScoreView
                 style={{ position: 'absolute', bottom: -10, right: 10 }}
@@ -638,7 +637,7 @@ export default class HomeScreen extends Component {
               <View style={{ flex: 1 }}>
                 <Image
                   source={cdmImage3}
-                  style={{ flex: 1, height: null, width: null}}
+                  style={{ flex: 1, height: null, width: null }}
                 />
                 <ScoreView
                   style={{ position: 'absolute', bottom: -10, right: 10 }}
@@ -653,7 +652,7 @@ export default class HomeScreen extends Component {
             <View style={{ flex: 1 }}>
               <Image
                 source={pdmImage1}
-                style={{ flex: 1, height: null, width: null}}
+                style={{ flex: 1, height: null, width: null }}
               />
               <ScoreView
                 style={{ position: 'absolute', bottom: -10, right: 10 }}
@@ -665,7 +664,7 @@ export default class HomeScreen extends Component {
               <View style={{ flex: 1 }}>
                 <Image
                   source={pdmImage2}
-                  style={{ flex: 1, height: null, width: null}}
+                  style={{ flex: 1, height: null, width: null }}
                 />
                 <ScoreView
                   style={{ position: 'absolute', bottom: -10, right: 10 }}

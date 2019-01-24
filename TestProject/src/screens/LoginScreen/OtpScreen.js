@@ -14,7 +14,7 @@ import { Navigation } from 'react-native-navigation';
 import { PropTypes } from 'prop-types';
 import ButtonMod from '../../components/UI/ButtonMod/ButtonMod';
 import HeaderText from '../../components/UI/HeaderText/HeaderText';
-import { VALIDATE_OTP, DEBUG } from '../../../Apis';
+import { VALIDATE_OTP, DEBUG, GET_USER_DETAILS_EMAIL } from '../../../Apis';
 import { saveUserID, authHeaders } from '../../../Constant';
 
 export default class OtpScreen extends Component {
@@ -47,6 +47,9 @@ export default class OtpScreen extends Component {
       return;
     }
 
+    // this.getUser();
+    // return;
+
     console.log(this.state.name);
     console.log(this.state.code);
     console.log(this.state.mobileNumber);
@@ -56,35 +59,23 @@ export default class OtpScreen extends Component {
       method: 'POST',
       headers: authHeaders(),
       body: JSON.stringify({
-        userMobile: this.props.code,
-        userCountryCode: this.props.mobileNumber,
+        userMobile: this.props.mobileNumber,
+        userCountryCode: this.props.code,
         userOtp: this.state.name
 
       }),
     }).then((response) => response.json())
       .then((responseJson) => {
+        // alert(responseJson.response);
+        if (responseJson.response === "true") {
 
-        if (responseJson && esponseJson.userId) {
-          // alert(responseJson.response);
-          saveUserID(responseJson.userId);
+          // saveUserID(responseJson.userId);
 
-          Navigation.push(this.props.componentId, {
-            component: {
-              name: 'Profile',
-              options: {
-                topBar: {
-                  visible: false,
-                  animate: false,
-                  drawBehind: true
-                }
-              }
-            },
-          });
+          this.getUser(this);
         } else {
-          alert("something went wrong");
+          // this.getUser(this);
+          alert("Invalid OTP");
         }
-
-
 
         // return responseJson;
       })
@@ -94,6 +85,58 @@ export default class OtpScreen extends Component {
 
 
   };
+
+  getUser(property) {
+    // alert("In651256256P");
+    setTimeout(function () {
+      fetch(GET_USER_DETAILS_EMAIL
+        , {
+          method: 'POST',
+          headers: authHeaders(),
+          body: JSON.stringify({
+            userMobile: property.props.mobileNumber,
+            userCountryCode: property.props.code,
+
+
+          }),
+        }).then((response) =>
+
+          response.json()
+
+        )
+        .then((responseJson) => {
+          console.log(responseJson);
+
+          // alert("In651256256P");
+          if (responseJson) {
+            if (responseJson.userId) {
+              saveUserID(responseJson.userId);
+
+              Navigation.push(property.props.componentId, {
+                component: {
+                  name: 'Profile',
+                  options: {
+                    topBar: {
+                      visible: false,
+                      animate: false,
+                      drawBehind: true
+                    }
+                  }
+                },
+              });
+            } else {
+              alert(responseJson.response);
+            }
+          } else {
+            alert("please check your network");
+          }
+          // return responseJson;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }, 1000);
+  }
 
   textChanged = (sender) => {
     console.log(sender);
@@ -122,7 +165,7 @@ export default class OtpScreen extends Component {
               Enter OTP
           </HeaderText>
           </View>
-          <DefaultInput onChangeText={(text) => this.textChanged(text)} placeholder="Enter OTP" />
+          <DefaultInput onChangeText={(text) => this.textChanged(text)} placeholder="Enter OTP" secureTextEntry={true} />
           <ButtonMod onPress={this.mobileNumberSubmit} color="rgba(86,49,135,1)">
             Submit
           </ButtonMod>

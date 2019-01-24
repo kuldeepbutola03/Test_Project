@@ -21,6 +21,7 @@
     "react-native-navigation": "^2.5.1",
     "react-native-phone-input": "^0.2.1",
     "react-native-svg": "^8.0.10",
+    "react-native-whc-loading": "^1.0.3",
     "victory-native": "^31.0.0",
     "xcode": "^1.1.0"
   },

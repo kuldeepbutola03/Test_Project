@@ -40,7 +40,7 @@ export default userCard = props => (
                     width: normalize(30),
                     backgroundColor: 'transparent',
                 }}
-                source={require('../../../assets/logoComp.png')}
+                source={props.catImage ? props.catImage : require('../../../assets/logoComp.png')}
                 resizeMode="cover"
             />
             {
