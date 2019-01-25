@@ -16,9 +16,14 @@ import { Navigation } from 'react-native-navigation';
 // import {normalize} from '../../../Constant'
 import { PropTypes } from 'prop-types';
 import TrendProfile from '../../components/UI/TrendProfile/TrendProfile';
-import { TREND_ } from '../../../Apis';
-import { authHeaders } from '../../../Constant';
+import { TREND_, TREND_PDM, TREND_CDM } from '../../../Apis';
+import { authHeaders, getUserID } from '../../../Constant';
 export default class TrendScreen extends Component {
+ 
+  locationLatLong = null;
+  user_Id = 1;
+
+
   state = {
     timer: null,
     counter: 0,
@@ -51,9 +56,13 @@ export default class TrendScreen extends Component {
   };
 
   componentDidMount() {
-    this.getDataFromServer(true)
+    // this.getDataFromServer(true)
    
+getUserID().then((userId) => {
 
+  this.user_Id = userId;
+  this.getLocation()
+})
   }
 
   static propTypes = {
@@ -82,23 +91,66 @@ export default class TrendScreen extends Component {
     });
   };
 
+  getLocation() {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const initialPosition = JSON.stringify(position);
+
+        // let latlong = position.coords.latitude.toString() +  "," + position.coords.longitude.toString()
+        let latlong = position.coords.latitude.toString() + "," + position.coords.longitude.toString()
+        if (position.mocked) {
+          if (position.mocked == true) {
+            alert("you are using fake location");
+            return;
+          }
+        }
+
+        this.locationLatLong = latlong;
+  this.getDataFromServer(true)
+        // alert(latlong);
+        // this.setState({ lat_lon: "28.722,77.125" });
+        // this.setState({ lat_lon: latlong });
+        // this.setState({ coordinates: position.coords });
+
+        // alert(latlong);
+        //this.requestToServer()
+      },
+      (error) => {
+        alert(error.message)
+        // this.locationErrorMessage = error.message;
+        // alert(locationErrorMessage)
+        // this.showDialog();
+      },
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+    );
+
+    // this.watchID = navigator.geolocation.watchPosition((position) => {
+    //   const lastPosition = JSON.stringify(position);
+    //   // this.setState({ lastPosition });
+    //   alert(lastPosition)
+    // });
+  
+  }
 
   getDataFromServer(isPDM) {
 
 
     let data = JSON.stringify({
-      resourceId: isPDM ? this.props.resourceIdPDM : this.props.resourceIdCDM,
-      resourceType2: isPDM ? "PDM" : "CDM",
+      // resourceId: isPDM ? this.props.resourceIdPDM : this.props.resourceIdCDM,
+      // resourceType2: isPDM ? "PDM" : "CDM",
+      userId: this.user_Id,
+      latLngSeparatedByComma : this.locationLatLong
     });
 
     // "resourceId" : "1",
     //   "resourceType2" : "PDM"
 
     // setTimeout(function () {
-    // alert(data);
+    //alert(data);
 
+    let urlStr = isPDM ? TREND_PDM : TREND_CDM;
 
-    fetch(TREND_, {
+    fetch(urlStr, {
       method: 'POST',
       headers: authHeaders(),
       body: data,
@@ -106,7 +158,7 @@ export default class TrendScreen extends Component {
       response.json())
       .then((responseJson) => {
 
-        alert(responseJson.resourceName);
+        // alert(responseJson.resourceName);
         console.log("111111111`");
         console.log(responseJson);
 

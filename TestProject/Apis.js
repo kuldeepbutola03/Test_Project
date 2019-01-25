@@ -22,3 +22,6 @@ export const AREA_CDM = BASE_URL + 'area/getAreaByLocationFirDist';
 export const GPR_FLAG = BASE_URL + 'gpr/markGPRFlag';
 
 export const TREND_ = BASE_URL + 'trends/getResourceGprHistoryDetails';
+
+export const TREND_PDM = BASE_URL + 'trends/getPDMResourceGprHistoryDetails';
+export const TREND_CDM = BASE_URL + 'trends/getCDMResourceGprHistoryDetails';

@@ -108,6 +108,7 @@ export default class PoliceProfileScreen extends Component {
     }).then((response) => response.json())
       .then((responseJson) => {
 
+        //alert(JSON.stringify( responseJson));
         // this.setState({ APIresponse: responseJson });
 
         // AsyncStorage

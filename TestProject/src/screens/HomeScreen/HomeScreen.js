@@ -202,6 +202,7 @@ export default class HomeScreen extends Component {
       // return;
     }
 
+
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const initialPosition = JSON.stringify(position);
