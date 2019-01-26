@@ -23,7 +23,7 @@ export default choiceView = props => (
 
 
 
-            <View style={{ flex: 1.5  ,justifyContent : 'center', alignItems : 'flex-end'}} >
+            <View style={{ flex: 1.5, justifyContent: 'center', alignItems: 'flex-end' }} >
                 {props.currentIndex == props.index &&
                     <View style={{ marginRight: 10, width: 20, height: 20, borderRadius: 10, backgroundColor: APP_GLOBAL_COLOR }} />
                 }

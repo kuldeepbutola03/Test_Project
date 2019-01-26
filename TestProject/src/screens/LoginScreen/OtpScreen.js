@@ -17,6 +17,7 @@ import HeaderText from '../../components/UI/HeaderText/HeaderText';
 import { VALIDATE_OTP, DEBUG, GET_USER_DETAILS_EMAIL } from '../../../Apis';
 import { saveUserID, authHeaders } from '../../../Constant';
 
+import Loading from 'react-native-whc-loading';
 export default class OtpScreen extends Component {
   static propTypes = {
     componentId: PropTypes.string,
@@ -29,9 +30,50 @@ export default class OtpScreen extends Component {
     name: null,
     ...this.props
   }
-  mobileNumberSubmit = () => {
 
+
+  getLocation = () => {
+    this.refs.loading.show();
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const initialPosition = JSON.stringify(position);
+
+        // let latlong = position.coords.latitude.toString() +  "," + position.coords.longitude.toString()
+        let lat_lon = position.coords.latitude.toString() + "," + position.coords.longitude.toString();
+        // alert(lat_lon);
+        if (position.mocked) {
+          if (position.mocked == true) {
+            alert("you are using fake location");
+            this.refs.loading.close();
+            return;
+          }
+        }
+
+        // alert(code + "   " + phoneN);
+        // this.setState({ lat_lon: latlong });
+
+        this.mobileNumberSubmit(lat_lon , this);
+      },
+      (error) => {
+        // alert(error.message)
+        // this.locationErrorMessage = error.message;
+        // alert(locationErrorMessage)
+        // this.showDialog();
+        this.mobileNumberSubmit(null , this);
+
+
+      },
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+    );
+  }
+
+
+
+  mobileNumberSubmit = (locationStr, thisObj) => {
+    // let thisObj = this;
+    let location = locationStr;
     if (DEBUG == 0) {
+      this.refs.loading.close();
       Navigation.push(this.props.componentId, {
         component: {
           name: 'Profile',
@@ -47,8 +89,25 @@ export default class OtpScreen extends Component {
       return;
     }
 
-    // this.getUser();
-    // return;
+    let body = null;
+    if (locationStr) {
+      body = JSON.stringify({
+        userMobile: this.props.mobileNumber,
+        userCountryCode: this.props.code,
+        userOtp: this.state.name,
+        userInitCoord: locationStr
+
+      })
+    } else {
+      body = JSON.stringify({
+        userMobile: this.props.mobileNumber,
+        userCountryCode: this.props.code,
+        userOtp: this.state.name
+
+      })
+    }
+
+    // alert(body);
 
     console.log(this.state.name);
     console.log(this.state.code);
@@ -58,85 +117,83 @@ export default class OtpScreen extends Component {
     fetch(VALIDATE_OTP, {
       method: 'POST',
       headers: authHeaders(),
-      body: JSON.stringify({
-        userMobile: this.props.mobileNumber,
-        userCountryCode: this.props.code,
-        userOtp: this.state.name
-
-      }),
+      body: body,
     }).then((response) => response.json())
       .then((responseJson) => {
-        // alert(responseJson.response);
-        if (responseJson.response === "true") {
+        // alert(JSON.stringify(responseJson));
+        this.refs.loading.close();
+        setTimeout(function () {
+        if (responseJson) {
+          if (responseJson.userId) {
+            saveUserID(responseJson.userId);
+
+            if (location) {
+              
+                Navigation.push(thisObj.props.componentId, {
+                  component: {
+                    id: 'Profile',
+                    name: 'Profile',
+                    passProps: {
+                      email: null,
+                      image: null,
+                      name: null,
+                      mobileNumber : thisObj.props.mobileNumber,
+                      code : thisObj.props.code
+                    },
+                    options: {
+                      topBar: {
+                        visible: false,
+                        animate: false,
+                        drawBehind: true
+                      }
+                    }
+                  },
+                });
+            
+            } else {
+
+              // setTimeout(function () {
+                Navigation.push(thisObj.props.componentId, {
+                  component: {
+                    name: 'AreaScreen',
+                    passProps: {
+  
+                      data: responseJson.areaStateMap,
+                      mobileNumber : thisObj.props.mobileNumber,
+                      code : thisObj.props.code
+                    },
+                  },
+                });
+              // }, 1000)
+              
+              
+            }
+
+
+          } else {
+            alert("Invalid OTP");
+          }
 
           // saveUserID(responseJson.userId);
 
-          this.getUser(this);
+
         } else {
           // this.getUser(this);
           alert("Invalid OTP");
         }
+      }, 1000)
 
         // return responseJson;
       })
       .catch((error) => {
+        this.refs.loading.close();
         console.error(error);
       });
 
 
   };
 
-  getUser(property) {
-    // alert("In651256256P");
-    setTimeout(function () {
-      fetch(GET_USER_DETAILS_EMAIL
-        , {
-          method: 'POST',
-          headers: authHeaders(),
-          body: JSON.stringify({
-            userMobile: property.props.mobileNumber,
-            userCountryCode: property.props.code,
 
-
-          }),
-        }).then((response) =>
-
-          response.json()
-
-        )
-        .then((responseJson) => {
-          console.log(responseJson);
-
-          // alert("In651256256P");
-          if (responseJson) {
-            if (responseJson.userId) {
-              saveUserID(responseJson.userId);
-
-              Navigation.push(property.props.componentId, {
-                component: {
-                  name: 'Profile',
-                  options: {
-                    topBar: {
-                      visible: false,
-                      animate: false,
-                      drawBehind: true
-                    }
-                  }
-                },
-              });
-            } else {
-              alert(responseJson.response);
-            }
-          } else {
-            alert("please check your network");
-          }
-          // return responseJson;
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    }, 1000);
-  }
 
   textChanged = (sender) => {
     console.log(sender);
@@ -166,9 +223,12 @@ export default class OtpScreen extends Component {
           </HeaderText>
           </View>
           <DefaultInput onChangeText={(text) => this.textChanged(text)} placeholder="Enter OTP" secureTextEntry={true} />
-          <ButtonMod onPress={this.mobileNumberSubmit} color="rgba(86,49,135,1)">
+          <ButtonMod onPress={this.getLocation} color="rgba(86,49,135,1)">
             Submit
           </ButtonMod>
+
+          <Loading
+            ref="loading" />
         </KeyboardAvoidingView>
       </View>
     );

@@ -6,7 +6,8 @@ import {
   Dimensions,
   Button,
   KeyboardAvoidingView,
-  Platform
+  Platform,
+  Image
 } from 'react-native';
 import DefaultInput from '../../components/UI/DefaultInput/DefaultInput';
 import { Navigation } from 'react-native-navigation';
@@ -15,7 +16,7 @@ import ButtonMod from '../../components/UI/ButtonMod/ButtonMod';
 import PhoneInput from 'react-native-phone-input';
 import HeaderText from '../../components/UI/HeaderText/HeaderText';
 import { SEND_OTP, DEBUG } from '../../../Apis';
-import { authHeaders } from '../../../Constant';
+import { authHeaders, normalize } from '../../../Constant';
 
 export default class MobileNumber extends Component {
   static propTypes = {
@@ -35,6 +36,30 @@ export default class MobileNumber extends Component {
   mobileNumberSubmit = () => {
     // console.log(e);
 
+    let data = [
+      { title: 'Title1', data: ['item1', 'item2'] },
+      { title: 'Title2', data: ['item3', 'item4'] },
+      { title: 'Title3', data: ['item5', 'item6'] },
+    ]
+
+    //   let data = [
+    //     { title: 'Title1', data: 'item1'},
+    //     { title: 'Title2', data: 'item3' },
+    //     { title: 'Title3', data: 'item5'},
+    // ]
+
+    // Navigation.push(this.props.componentId, {
+    //   component: {
+    //     name: 'AreaScreen',
+    //     passProps: {
+
+    //       code: this.phone.getCountryCode(),
+    //       mobileNumber: this.phone.getValue(),
+    //       data : data
+    //     },
+    //   },
+    // });
+    // return
 
     if (DEBUG == 0) {
       Navigation.push(this.props.componentId, {
@@ -60,66 +85,42 @@ export default class MobileNumber extends Component {
 
     // var header = new Headers();
 
+    let code = "+" + this.phone.getCountryCode();
+    let phone = this.phone.getValue();
+    var phoneN = phone.replace(code, "");
+    fetch(SEND_OTP, {
+      method: 'POST',
+      headers: authHeaders(),
+      body: JSON.stringify({
+        userMobile: phoneN,
+        userCountryCode: code,
 
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const initialPosition = JSON.stringify(position);
-
-        // let latlong = position.coords.latitude.toString() +  "," + position.coords.longitude.toString()
-        let lat_lon = position.coords.latitude.toString() + "," + position.coords.longitude.toString();
-        // alert(lat_lon);
-        if (position.mocked) {
-          if (position.mocked == true) {
-            alert("you are using fake location");
-            return;
-          }
-        }
-        let code = this.phone.getCountryCode();
-        let phoneN = this.phone.getValue();
-        // this.setState({ lat_lon: latlong });
-
-        fetch(SEND_OTP, {
-          method: 'POST',
-          headers: authHeaders(),
-          body: JSON.stringify({
-            userMobile: phoneN ,
-            userCountryCode: code,
-            userInitCoord: lat_lon
-          }),
-        }).then((response) => response)
-          .then((responseJson) => {
+      }),
+    }).then((response) => response.json())
+      .then((responseJson) => {
 
 
-            // alert(responseJson.response);
-            // code: this.phone.getCountryCode(),
-            // mobileNumber: this.phone.getValue(),
-            // user_id : responseJson.userId
-            // return responseJson;
-          })
-          .catch((error) => {
-            console.error(error);
-          });
-        Navigation.push(this.props.componentId, {
-          component: {
-            name: 'OtpScreen',
-            passProps: {
+        //alert(responseJson.response);
+        // code: this.phone.getCountryCode(),
+        // mobileNumber: this.phone.getValue(),
+        // user_id : responseJson.userId
+        // return responseJson;
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+    Navigation.push(this.props.componentId, {
+      component: {
+        name: 'OtpScreen',
+        passProps: {
 
-              code: this.phone.getCountryCode(),
-              mobileNumber: this.phone.getValue(),
-            },
-          },
-        });
-
-
+          code:code,
+          mobileNumber: phoneN
+        },
       },
-      (error) => {
-        alert(error.message)
-        // this.locationErrorMessage = error.message;
-        // alert(locationErrorMessage)
-        // this.showDialog();
-      },
-      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
-    );
+    });
+
+    
 
 
 
@@ -156,6 +157,14 @@ export default class MobileNumber extends Component {
           {...options}
           enabled
         >
+          <View style={{ marginBottom: 20 }} alignItems='center' backgroundColor='transparent'>
+
+
+            <Image style={{ position: 'absolute', bottom: 22, height: normalize(150), width: normalize(150), resizeMode: 'cover' }} source={require('../../assets/logoComp.png')} />
+            <Text style={{ position: 'absolute', bottom: 10, fontWeight: "600", fontSize: 14, color: "rgba(86,49,135,1)" }}>AGENCY NAME</Text>
+
+          </View>
+
           <View>
             <HeaderText
               style={{

@@ -16,7 +16,7 @@ import TrendScreen from './src/screens/TrendScreen/TrendScreen';
 import TrendDetailScreen from './src/screens/TrendScreen/TrendDetailScreen';
 import QuestionnaireScreen from './src/screens/QuestionnaireScreen/QuestionnaireScreen';
 
-
+import AreaScreen from './src/screens/LoginScreen/AreaScreen';
 // Register Screens
 
 Navigation.registerComponent ('LoginScreen', () => LoginSceen);
@@ -35,7 +35,7 @@ Navigation.registerComponent ('Test', () => Test);
 Navigation.registerComponent ('TrendScreen', () => TrendScreen);
 Navigation.registerComponent ('TrendDetailScreen', () => TrendDetailScreen);
 Navigation.registerComponent ('QuestionnaireScreen', () => QuestionnaireScreen);
-
+Navigation.registerComponent ('AreaScreen', () => AreaScreen);
 // Start App
 import { AsyncStorage } from "react-native"
 import { DEFAULT_USER_ID, getUserData } from './Constant';
@@ -99,8 +99,8 @@ getUserData().then((data) => {
               children: [
                 {
                   component: {
-                    id: "LandingScreen", // Optional, Auto generated if empty
-                    name: "LandingScreen",
+                    id: "MobileNumber", // Optional, Auto generated if empty
+                    name: "MobileNumber",
                     options: {
                       topBar: {
                         visible:false,

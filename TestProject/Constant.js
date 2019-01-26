@@ -3,8 +3,8 @@ import { AsyncStorage } from "react-native"
 
 export const APP_GLOBAL_COLOR = "rgba(87,48,134,1)";
 
-export const DEFAULT_USER_ID = "userIdInTheAppTest";
-export const DEFAULT_USER_DATA = "userDataInTheAppTest";
+export const DEFAULT_USER_ID = "userIdInTheAppTest3";
+export const DEFAULT_USER_DATA = "userDataInTheAppTest3";
 
 const {
   width: SCREEN_WIDTH,

@@ -25,3 +25,6 @@ export const TREND_ = BASE_URL + 'trends/getResourceGprHistoryDetails';
 
 export const TREND_PDM = BASE_URL + 'trends/getPDMResourceGprHistoryDetails';
 export const TREND_CDM = BASE_URL + 'trends/getCDMResourceGprHistoryDetails';
+
+
+export const UPDATE_USER_AREA = BASE_URL + 'user/insertBaseAreaDetails';

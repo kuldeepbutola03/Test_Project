@@ -35,6 +35,7 @@ export default class Profile extends Component {
     image: this.props.image ? this.props.image : require('../../assets/UserSmall.png'),
     name: this.props.name ? this.props.name : "",
     email: this.props.email,
+    username : ""
   };
 
   // toHomeScreen = () => {
@@ -144,7 +145,7 @@ export default class Profile extends Component {
             <Image source={this.state.image} style={styles.uploadAvatar} />
             <EditButton onPress={this.imagePicker} />
           </View>
-          <DefaultInput placeholder="Email" value={this.state.email} onChangeText={(text) => this.setState({ email: text })} />
+          <DefaultInput placeholder="User name" value={this.state.email} onChangeText={(text) => this.setState({ username: text })} />
           <DefaultInput placeholder="Name" value={this.state.name} onChangeText={(text) => this.setState({ name: text })} />
           {/* <DefaultInput placeholder="Last name" /> */}
           <ButtonMod onPress={this.toHomeScreen} color="rgba(86,49,135,1)">

@@ -223,7 +223,9 @@ export default class HomeScreen extends Component {
         this.requestToServer()
       },
       (error) => {
-        alert(error.message)
+
+        this.requestToServer()
+        // alert(error.message)
         // this.locationErrorMessage = error.message;
         // alert(locationErrorMessage)
         // this.showDialog();
@@ -253,7 +255,7 @@ export default class HomeScreen extends Component {
       this.setState({ user_id: userID })
     })
 
-    
+
 
     this.fetchCurrentLocation();
     // alert(getUserID());
@@ -273,14 +275,24 @@ export default class HomeScreen extends Component {
 
   serverHitForFirstApi() {
 
-    fetch(LANDING_RESOURCES, {
-      method: 'POST',
-      headers: authHeaders(),
-      body: JSON.stringify({
+    let body = null;
+    if (this.state.lat_lon) {
+      body = JSON.stringify({
         userId: this.state.user_id,
         latLngSeparatedByComma: this.state.lat_lon,
         // latLngSeparatedByComma:"28.722,77.125"
-      }),
+      });
+    } else {
+      body = JSON.stringify({
+        userId: this.state.user_id
+
+      });
+    }
+
+    fetch(LANDING_RESOURCES, {
+      method: 'POST',
+      headers: authHeaders(),
+      body: body,
     }).then((response) => response.json())
       .then((responseJson) => {
         // alert(responseJson);
@@ -296,16 +308,25 @@ export default class HomeScreen extends Component {
 
   }
   serverHitForSecondResponse() {
+
+    let body = null;
+    if (this.state.lat_lon) {
+      body = JSON.stringify({
+        userId: this.state.user_id,
+        latLngSeparatedByComma: this.state.lat_lon,
+        // latLngSeparatedByComma:"28.722,77.125"
+      });
+    } else {
+      body = JSON.stringify({
+        userId: this.state.user_id
+
+      });
+    }
+
     fetch(LANDING_PDM, {
       method: 'POST',
       headers: authHeaders(),
-      body: JSON.stringify({
-        userId: this.state.user_id,
-        // userId: 1,
-        latLngSeparatedByComma: this.state.lat_lon,
-        // latLngSeparatedByComma:"28.722,77.125"
-
-      }),
+      body: body,
     }).then((response) => response.json())
       .then((responseJson) => {
 
@@ -321,16 +342,24 @@ export default class HomeScreen extends Component {
   }
 
   serverHitForThirdResponse() {
+    let body = null;
+    if (this.state.lat_lon) {
+      body = JSON.stringify({
+        userId: this.state.user_id,
+        latLngSeparatedByComma: this.state.lat_lon,
+        // latLngSeparatedByComma:"28.722,77.125"
+      });
+    } else {
+      body = JSON.stringify({
+        userId: this.state.user_id
+
+      });
+    }
+
     fetch(LANDING_CDM, {
       method: 'POST',
       headers: authHeaders(),
-      body: JSON.stringify({
-        userId: this.state.user_id,
-        latLngSeparatedByComma: this.state.lat_lon,
-        // userId: 1,
-        // latLngSeparatedByComma:"28.722,77.125"
-
-      }),
+      body: body,
     }).then((response) => response.json())
       .then((responseJson) => {
 
@@ -581,7 +610,7 @@ export default class HomeScreen extends Component {
               color: 'white',
             }}
           >
-            {this.props.data.name}
+            {this.props.data.username}
           </Text>
         </View>
 
