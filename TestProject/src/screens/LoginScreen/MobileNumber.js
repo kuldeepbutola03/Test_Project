@@ -30,17 +30,22 @@ export default class MobileNumber extends Component {
 
   constructor(props) {
     super(props);
+
+    
     // this.pushScreen = this.pushScreen.bind (this);
   }
+
+
+
 
   mobileNumberSubmit = () => {
     // console.log(e);
 
-    let data = [
-      { title: 'Title1', data: ['item1', 'item2'] },
-      { title: 'Title2', data: ['item3', 'item4'] },
-      { title: 'Title3', data: ['item5', 'item6'] },
-    ]
+    // let data = [
+    //   { title: 'Title1', data: ['item1', 'item2'] },
+    //   { title: 'Title2', data: ['item3', 'item4'] },
+    //   { title: 'Title3', data: ['item5', 'item6'] },
+    // ]
 
     //   let data = [
     //     { title: 'Title1', data: 'item1'},
@@ -100,7 +105,7 @@ export default class MobileNumber extends Component {
       .then((responseJson) => {
 
 
-        //alert(responseJson.response);
+        // alert(responseJson);
         // code: this.phone.getCountryCode(),
         // mobileNumber: this.phone.getValue(),
         // user_id : responseJson.userId

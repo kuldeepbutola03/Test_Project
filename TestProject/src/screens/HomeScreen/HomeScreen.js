@@ -215,7 +215,7 @@ export default class HomeScreen extends Component {
             return;
           }
         }
-        // alert(latlong);
+        //alert(latlong);
         // this.setState({ lat_lon: "28.722,77.125" });
         this.setState({ lat_lon: latlong });
         this.setState({ coordinates: position.coords });
@@ -225,7 +225,7 @@ export default class HomeScreen extends Component {
       (error) => {
 
         this.requestToServer()
-        // alert(error.message)
+        //alert(error.message)
         // this.locationErrorMessage = error.message;
         // alert(locationErrorMessage)
         // this.showDialog();

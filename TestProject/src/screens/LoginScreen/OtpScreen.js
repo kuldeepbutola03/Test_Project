@@ -25,6 +25,7 @@ export default class OtpScreen extends Component {
 
   constructor(props) {
     super(props);
+    // this.getLocation();
   }
   state = {
     name: null,
@@ -32,9 +33,10 @@ export default class OtpScreen extends Component {
   }
 
 
-  getLocation = () => {
-    this.refs.loading.show();
-    navigator.geolocation.getCurrentPosition(
+  getLocation =  () => {
+    // this.refs.loading.show();
+
+     navigator.geolocation.getCurrentPosition(
       (position) => {
         const initialPosition = JSON.stringify(position);
 
@@ -49,13 +51,13 @@ export default class OtpScreen extends Component {
           }
         }
 
-        // alert(code + "   " + phoneN);
+        //  alert(code + "   " + phoneN);
         // this.setState({ lat_lon: latlong });
 
         this.mobileNumberSubmit(lat_lon , this);
       },
       (error) => {
-        // alert(error.message)
+        // alert(error.message);
         // this.locationErrorMessage = error.message;
         // alert(locationErrorMessage)
         // this.showDialog();
@@ -113,16 +115,18 @@ export default class OtpScreen extends Component {
     console.log(this.state.code);
     console.log(this.state.mobileNumber);
     //     return;
-
+// alert(body);
     fetch(VALIDATE_OTP, {
       method: 'POST',
       headers: authHeaders(),
       body: body,
     }).then((response) => response.json())
       .then((responseJson) => {
-        // alert(JSON.stringify(responseJson));
-        this.refs.loading.close();
+        //  alert(JSON.stringify(responseJson));
+        //this.refs.loading.close();
         setTimeout(function () {
+
+          // alert(JSON.stringify(responseJson));
         if (responseJson) {
           if (responseJson.userId) {
             saveUserID(responseJson.userId);

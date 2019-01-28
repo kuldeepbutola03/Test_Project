@@ -18,7 +18,7 @@ import { PropTypes } from 'prop-types';
 // import HeaderText from '../../components/UI/HeaderText/HeaderText';
 import { SEND_OTP, DEBUG, UPDATE_USER_AREA } from '../../../Apis';
 import { authHeaders, normalize, getUserID } from '../../../Constant';
-import Accordion from 'react-native-collapsible/Accordion';
+// import Accordion from 'react-native-collapsible/Accordion';
 
 import Loading from 'react-native-whc-loading';
 
