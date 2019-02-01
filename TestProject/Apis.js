@@ -28,3 +28,7 @@ export const TREND_CDM = BASE_URL + 'trends/getCDMResourceGprHistoryDetails';
 
 
 export const UPDATE_USER_AREA = BASE_URL + 'user/insertBaseAreaDetails';
+
+export const TIMELINE_DATA = "http://holygrailwar.babbles.zone/" + 'getUserTimeLine';
+
+// Insignia/

@@ -21,6 +21,7 @@ import ScoreView from '../../components/UI/ProfileCard/ScoreView';
 import HeatMap from '../../components/UI/HeatMap/HeatMap';
 import { LANDING_RESOURCES, LANDING_CDM, DEBUG, LANDING_PDM } from '../../../Apis';
 
+import Geolocation from 'react-native-geolocation-service';
 // import Dialog from 'react-native-dialog';
 
 export default class HomeScreen extends Component {
@@ -203,7 +204,7 @@ export default class HomeScreen extends Component {
     }
 
 
-    navigator.geolocation.getCurrentPosition(
+    Geolocation.getCurrentPosition(
       (position) => {
         const initialPosition = JSON.stringify(position);
 
@@ -232,12 +233,6 @@ export default class HomeScreen extends Component {
       },
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
     );
-
-    // this.watchID = navigator.geolocation.watchPosition((position) => {
-    //   const lastPosition = JSON.stringify(position);
-    //   // this.setState({ lastPosition });
-    //   alert(lastPosition)
-    // });
   }
   componentWillUnmount() {
     clearInterval(this.state.timer);

@@ -2,10 +2,11 @@ import React, {Component} from 'react';
 import {View, StyleSheet, Image, TouchableOpacity, Text} from 'react-native';
 import {normalize} from '../../../../Constant';
 // import Video from 'react-native-video';
+// import ParsedText from 'react-native-parsed-text';
 
 const caseCard = props => {
   return (
-    <View style={styles.container}>
+    <View style={style.container}>
 
       {/* header */}
       <View style={{flex: 0.15, flexDirection: 'row'}}>
@@ -26,7 +27,21 @@ const caseCard = props => {
         </View>
 
         <View style={{flex: 7, justifyContent: 'center'}}>
-          <Text
+        {/* <ParsedText
+          style={styles.text}
+          parse={
+            [
+              // {type: 'url',                       style: styles.url, onPress: this.handleUrlPress},
+              // {type: 'phone',                     style: styles.phone, onPress: this.handlePhonePress},
+              // {type: 'email',                     style: styles.email, onPress: this.handleEmailPress},
+              // {pattern: /Bob|David/,              style: styles.name, onPress: this.handleNamePress},
+              {pattern: /\[(@[^:]+):([^\]]+)\]/i, style: styles.username, onPress: this.handleNamePress, renderText: this.renderText},
+              // {pattern: /42/,                     style: styles.magicNumber},
+              {pattern: /#(\w+)/,                 style: styles.hashTag},
+            ]
+          }
+          childrenProps={{allowFontScaling: false}} */}
+           <Text
             style={{
               textAlign: 'left',
               marginLeft: 5,
@@ -36,6 +51,7 @@ const caseCard = props => {
           >
             {props.name}
           </Text>
+          {/* </ParsedText> */}
           <Text
             style={{
               textAlign: 'left',
@@ -75,7 +91,7 @@ const caseCard = props => {
           </Text>}
         {props.picture &&
           <Image
-            resizeMode="stretch"
+            resizeMode="contain"
             // source={require ('../../../assets/1.png')}
             source={props.picture}
             style={{flex: 1, height: 250, width: '100%'}}
@@ -103,13 +119,61 @@ const caseCard = props => {
   );
 };
 
-const styles = StyleSheet.create ({
+const style = StyleSheet.create ({
   container: {
     flex: 1,
-    marginTop: 3,
-    marginBottom: 3,
+    marginTop: 1,
+    marginBottom: 0,
     backgroundColor: 'white',
   },
+});
+
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5FCFF',
+  },
+
+  url: {
+    color: 'red',
+    textDecorationLine: 'underline',
+  },
+
+  email: {
+    textDecorationLine: 'underline',
+  },
+
+  text: {
+    color: 'black',
+    fontSize: 15,
+  },
+
+  phone: {
+    color: 'blue',
+    textDecorationLine: 'underline',
+  },
+
+  name: {
+    color: 'red',
+  },
+
+  username: {
+    color: 'green',
+    fontWeight: 'bold'
+  },
+
+  magicNumber: {
+    fontSize: 42,
+    color: 'pink',
+  },
+
+  hashTag: {
+    fontStyle: 'italic',
+  },
+
 });
 
 export default caseCard;

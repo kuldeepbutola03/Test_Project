@@ -17,6 +17,7 @@ import TrendDetailScreen from './src/screens/TrendScreen/TrendDetailScreen';
 import QuestionnaireScreen from './src/screens/QuestionnaireScreen/QuestionnaireScreen';
 
 import AreaScreen from './src/screens/LoginScreen/AreaScreen';
+import ComposeScreen from './src/screens/ReportScreen/ComposeScreen';
 // Register Screens
 
 Navigation.registerComponent('LoginScreen', () => LoginSceen);
@@ -37,87 +38,88 @@ Navigation.registerComponent('TrendDetailScreen', () => TrendDetailScreen);
 Navigation.registerComponent('QuestionnaireScreen', () => QuestionnaireScreen);
 Navigation.registerComponent('AreaScreen', () => AreaScreen);
 // Start App
+
+Navigation.registerComponent('ComposeScreen', () => ComposeScreen);
+
 import { AsyncStorage } from "react-native"
-import { DEFAULT_USER_DATA, DEFAULT_USER_ID, getUserData } from './Constant';
+import { DEFAULT_USER_DATA, DEFAULT_USER_ID, getUserData, saveUserID } from './Constant';
+
+
+// saveUserID("10");
+
 
 Navigation.events().registerAppLaunchedListener(() => {
-  Navigation.setRoot({
-    root: {
-      stack: {
-        children: [
-          {
-            component: {
-              id: "MobileNumber", // Optional, Auto generated if empty
-              name: "MobileNumber",
-              options: {
-                topBar: {
-                  visible: false,
-                  drawBehind: true,
-                  animate: false
-                },
-              },
-
-            },
-          },
-        ],
-      },
-    },
-  });
-});
-
-
-getUserData().then((data) => {
-
-// })
-
-// let data = AsyncStorage.getItem(DEFAULT_USER_ID).then((data) => {
-
-// let idName = value ? "HomeScreen" : "LandingScreen";
-//  AsyncStorage.getItem(DEFAULT_USER_DATA).then((retrievedItem) => {
-//   const data = JSON.parse(retrievedItem);
 
 
 
 
-if (data) {
+  getUserData().then((data) => {
 
-  // Navigation.events().registerAppLaunchedListener(() => {
-    Navigation.setRoot({
-      root: {
-        stack: {
-          children: [
-            {
-              component: {
-                id: "HomeScreen", // Optional, Auto generated if empty
-                name: "HomeScreen",
-                options: {
-                  topBar: {
-                    visible: false,
-                    drawBehind: true,
-                    animate: false
+    // data = {};
+
+    if (data) {
+      // Navigation.events().registerAppLaunchedListener(() => {
+      Navigation.setRoot({
+        root: {
+          stack: {
+            children: [
+              {
+                component: {
+                  id: "HomeScreen", // Optional, Auto generated if empty
+                  name: "HomeScreen",
+                  options: {
+                    topBar: {
+                      visible: false,
+                      drawBehind: true,
+                      animate: false
+                    },
+                    popGesture: false
                   },
-                  popGesture: false
-                },
-                passProps: {
-                  data: data
-                },
+                  passProps: {
+                    data: data
+                  },
 
-                sideMenu: {
-                  enabled: false,
-                  visible: false
-                }
+                  sideMenu: {
+                    enabled: false,
+                    visible: false
+                  }
 
+                },
               },
-            },
-          ],
+            ],
+          },
         },
-      },
-    });
-  // });
-} 
+      });
+      // });
+    } else {
+      Navigation.setRoot({
+        root: {
+          stack: {
+            children: [
+              {
+                component: {
+                  id: "MobileNumber", // Optional, Auto generated if empty
+                  name: "MobileNumber",
+                  options: {
+                    topBar: {
+                      visible: false,
+                      drawBehind: true,
+                      animate: false
+                    },
+                  },
+
+                },
+              },
+            ],
+          },
+        },
+      });
+    }
 
 
-  })
+  });
+
+});
 
 
 

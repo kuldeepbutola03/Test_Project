@@ -17,7 +17,8 @@ import PhoneInput from 'react-native-phone-input';
 import HeaderText from '../../components/UI/HeaderText/HeaderText';
 import { SEND_OTP, DEBUG } from '../../../Apis';
 import { authHeaders, normalize } from '../../../Constant';
-
+// import { Geolocation } from 'react-native';
+import Geolocation from 'react-native-geolocation-service';
 export default class MobileNumber extends Component {
   static propTypes = {
     componentId: PropTypes.string,
@@ -31,8 +32,46 @@ export default class MobileNumber extends Component {
   constructor(props) {
     super(props);
 
+
+    // alert("hhhvv");
     
-    // this.pushScreen = this.pushScreen.bind (this);
+    Geolocation.getCurrentPosition(
+      
+      // navigator.geolocation.getCurrentPosition(
+        (position) => {
+          // alert("hhh");
+          // const initialPosition = JSON.stringify(position);
+  
+          // let latlong = position.coords.latitude.toString() +  "," + position.coords.longitude.toString()
+          // let lat_lon = position.coords.latitude.toString() + "," + position.coords.longitude.toString();
+          // alert(lat_lon);
+          // if (position.mocked) {
+          //   if (position.mocked == true) {
+          //     this.refs.loading.close();
+          //     setTimeout(function () {
+          //       alert("you are using fake location");
+          //     }, 1000)
+  
+          //     return;
+          //   }
+          // }
+  
+          //  alert(code + "   " + phoneN);
+          // this.setState({ lat_lon: latlong });
+  
+          // this.mobileNumberSubmit(lat_lon, this);
+        },
+        (error) => {
+          // alert(error.message);
+          // this.locationErrorMessage = error.message;
+          // alert(locationErrorMessage)
+          // this.showDialog();
+          // this.mobileNumberSubmit(null, this);
+  
+  
+        },
+        { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+      );
   }
 
 
@@ -101,7 +140,8 @@ export default class MobileNumber extends Component {
         userCountryCode: code,
 
       }),
-    }).then((response) => response.json())
+    })
+    // .then((response) => response.json())
       .then((responseJson) => {
 
 

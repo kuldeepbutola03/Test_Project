@@ -18,6 +18,8 @@ import { PropTypes } from 'prop-types';
 import TrendProfile from '../../components/UI/TrendProfile/TrendProfile';
 import { TREND_, TREND_PDM, TREND_CDM } from '../../../Apis';
 import { authHeaders, getUserID } from '../../../Constant';
+
+import Geolocation from 'react-native-geolocation-service';
 export default class TrendScreen extends Component {
  
   locationLatLong = null;
@@ -92,7 +94,7 @@ getUserID().then((userId) => {
   };
 
   getLocation() {
-    navigator.geolocation.getCurrentPosition(
+    Geolocation.getCurrentPosition(
       (position) => {
         const initialPosition = JSON.stringify(position);
 
@@ -123,12 +125,6 @@ getUserID().then((userId) => {
       },
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
     );
-
-    // this.watchID = navigator.geolocation.watchPosition((position) => {
-    //   const lastPosition = JSON.stringify(position);
-    //   // this.setState({ lastPosition });
-    //   alert(lastPosition)
-    // });
   
   }
 

@@ -3,8 +3,10 @@ import { AsyncStorage } from "react-native"
 
 export const APP_GLOBAL_COLOR = "rgba(87,48,134,1)";
 
-export const DEFAULT_USER_ID = "userIdInTheAppTest3";
-export const DEFAULT_USER_DATA = "userDataInTheAppTest3";
+export const DEFAULT_USER_ID = "userIdInTheAppTest2";
+export const DEFAULT_USER_DATA = "userDataInTheAppTest2";
+
+import Geolocation from 'react-native-geolocation-service';
 
 const {
   width: SCREEN_WIDTH,
@@ -55,38 +57,17 @@ export const getUserID = async () => {
 
 
 export const saveUserData = async (data) => {
-  
+
   try {
     let dataString = JSON.stringify(data);
     await AsyncStorage.setItem(DEFAULT_USER_DATA, dataString);
 
     // var jsonOfItem = await AsyncStorage.setItem(key, JSON.stringify(item));
     // return jsonOfItem;
-} catch (error) {
-  alert(error);
-  console.log(error.message);
-}
-
-// let path = data.image.uri ? data.image.uri : data.image.url;
-// ImageStore
-//   ImageStore.getBase64ForTag(path , (base64Data) => {
-//     //          console.log(base64Data);
-//     // this.setState({ pictureBase64: `data:image/jpg;base64,${base64Data}` });
-//     alert(base64Data);
-//     // var data2 = data;
-//     // // data2.push({aa:"sada"});
-
-//     // // alert(JSON.stringify(data2));
-//     // data2["image"] = 'data:image/png;base64,' + base64Data;
-
-//     // let dataString = JSON.stringify(data2);
-
-//     // alert(dataString);
-//     // AsyncStorage.setItem(DEFAULT_USER_DATA, dataString);
-
-//   }, (reason) => {
-//     alert(JSON.stringify(reason));
-//     console.log(reason);});
+  } catch (error) {
+    alert(error);
+    console.log(error.message);
+  }
 }
 // export function getUserIdFunc (callback : string ) {
 
@@ -94,11 +75,40 @@ export const saveUserData = async (data) => {
 export const getUserData = async () => {
 
   try {
-    const retrievedItem =  await AsyncStorage.getItem(DEFAULT_USER_DATA);
+    const retrievedItem = await AsyncStorage.getItem(DEFAULT_USER_DATA);
     const item = JSON.parse(retrievedItem);
     return item;
   } catch (error) {
     console.log(error.message);
   }
   return
+}
+
+
+export const getCurrentLocation = (data) => {
+  Geolocation.getCurrentPosition(
+    (position) => {
+       // const initialPosition = JSON.stringify(position);
+
+        // let latlong = position.coords.latitude.toString() +  "," + position.coords.longitude.toString()
+        let latlong = position.coords.latitude.toString() + "," + position.coords.longitude.toString()
+        if (position.mocked) {
+            if (position.mocked == true) {
+                alert("you are using fake location");
+                data( null);
+            }
+        }
+
+        data(position.coords);
+        
+      },
+    (error) => {
+        // alert(error.message)
+        data(error.message);
+        // this.locationErrorMessage = error.message;
+        // alert(locationErrorMessage)
+        // this.showDialog();
+    },
+    { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+);
 }

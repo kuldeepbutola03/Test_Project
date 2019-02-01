@@ -24,6 +24,8 @@ import com.reactnativenavigation.NavigationApplication;
 import com.reactnativenavigation.react.NavigationReactNativeHost;
 import com.reactnativenavigation.react.ReactGateway;
 
+import com.agontuk.RNFusedLocation.RNFusedLocationPackage;
+
 public class MainApplication extends NavigationApplication {
 
   private static CallbackManager mCallbackManager = CallbackManager.Factory.create();
@@ -56,7 +58,8 @@ public class MainApplication extends NavigationApplication {
             new MapsPackage(),
             new ImagePickerPackage(),
             new FBSDKPackage(mCallbackManager),
-            new SvgPackage()
+            new SvgPackage(),
+            new RNFusedLocationPackage()
         );
     }
 

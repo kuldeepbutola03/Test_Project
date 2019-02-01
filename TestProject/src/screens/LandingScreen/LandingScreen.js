@@ -15,7 +15,8 @@ import CustomTextButton from '../../components/UI/ButtonMod/CustomTextButton';
 import CustomButton from '../../components/UI/ButtonMod/CustomButtom';
 import { DEBUG, GET_USER_DETAILS_EMAIL, FACEBOOK_REGISTRATION } from '../../../Apis';
 import Loading from 'react-native-whc-loading';
-import { AsyncStorage } from "react-native"
+import { AsyncStorage } from "react-native";
+import Geolocation from 'react-native-geolocation-service';
 export default class LandingScreen extends Component {
 
 
@@ -402,7 +403,7 @@ export default class LandingScreen extends Component {
   };
 
   locationHandle = () => {
-    navigator.geolocation.getCurrentPosition(
+    Geolocation.getCurrentPosition(
       (position) => {
         const initialPosition = JSON.stringify(position);
 
