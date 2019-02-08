@@ -46,15 +46,27 @@ export default class ReportScreen extends Component {
   }
 
   showCompose = () => {
-    Navigation.showOverlay({
+    // Navigation.push(this.props.componentId, {
+    //   component: {
+    //     name: 'Test',
+        
+    //   },
+    // });
+    // return;
+    Navigation.showModal ({
       component: {
         name: 'ComposeScreen',
-        options: {
-          overlay : {
-            interceptTouchOutside: true
-          },
-        },
-        passProps: null
+        // options: {
+        //   overlay: {
+        //     interceptTouchOutside: true,
+        //   },
+        //   customTransition
+          // topBar:{
+          //   visible:true,
+          //   animate:true,
+          //   drawBehind:false
+          // }
+        // },
       },
     });
   }
@@ -100,6 +112,8 @@ export default class ReportScreen extends Component {
       "appVersion": "5.2.2"
 
     });
+    // alert(body);
+    // return;
 
     fetch(TIMELINE_DATA, {
       method: 'POST',
@@ -109,7 +123,7 @@ export default class ReportScreen extends Component {
 
       .then((responseJson) => {
        
-        // alert(JSON.stringify(responseJson));
+        //  alert(JSON.stringify(responseJson));
         this.filterData(responseJson.result);
       })
       .catch((error) => {
@@ -184,6 +198,7 @@ export default class ReportScreen extends Component {
         >
 
           {this.state.case.map(data => (
+            
             <CaseCard
               picture={data.picture}
               name={data.name}

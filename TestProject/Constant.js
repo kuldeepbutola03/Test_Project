@@ -57,6 +57,11 @@ export const getUserID = async () => {
 
 
 export const saveUserData = async (data) => {
+  // npm install react-native-image-base64 --save
+  // react-native link react-native-image-base64
+  // import ImgToBase64 from 'react-native-image-base64';
+  // ImgToBase64.getBase64String('file://youfileurl', (err, base64string) => doSomethingWith(base64string));
+
 
   try {
     let dataString = JSON.stringify(data);

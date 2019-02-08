@@ -241,6 +241,7 @@ export default class HomeScreen extends Component {
 
   }
 
+  
   componentDidMount() {
     // getUserID();
     AsyncStorage.getItem(DEFAULT_USER_ID).then((value) => {
@@ -250,6 +251,7 @@ export default class HomeScreen extends Component {
       this.setState({ user_id: userID })
     })
 
+    
 
 
     this.fetchCurrentLocation();

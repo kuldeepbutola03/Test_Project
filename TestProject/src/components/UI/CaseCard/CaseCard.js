@@ -3,6 +3,7 @@ import {View, StyleSheet, Image, TouchableOpacity, Text} from 'react-native';
 import {normalize} from '../../../../Constant';
 // import Video from 'react-native-video';
 // import ParsedText from 'react-native-parsed-text';
+import HashTag from '../../../components/UI/HashTag/HashTag';
 
 const caseCard = props => {
   return (
@@ -51,6 +52,7 @@ const caseCard = props => {
           >
             {props.name}
           </Text>
+          <HashTag hashTagString = "a askbdasdb sakdasbdksabd bsa #kuldeep #bbbb sadas #cccc kjsndksadajk"/>
           {/* </ParsedText> */}
           <Text
             style={{

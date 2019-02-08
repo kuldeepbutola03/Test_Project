@@ -18,11 +18,11 @@ PODS:
     - FBSDKMarketingKit
   - FBSDKCoreKit (4.39.1):
     - Bolts (~> 1.9)
-  - FBSDKLoginKit (4.39.1):
+  - FBSDKLoginKit (4.38.1):
     - FBSDKCoreKit
   - FBSDKMarketingKit (4.38.0):
     - FBSDKCoreKit
-  - FBSDKShareKit (4.39.1):
+  - FBSDKShareKit (4.38.1):
     - FBSDKCoreKit
   - Google-Maps-iOS-Utils (2.1.0):
     - Google-Maps-iOS-Utils/Clustering (= 2.1.0)
@@ -45,6 +45,7 @@ PODS:
   - GoogleMaps/Base (2.5.0)
   - GoogleMaps/Maps (2.5.0):
     - GoogleMaps/Base
+  - QBImagePickerController (3.4.0)
   - React (0.57.8):
     - React/Core (= 0.57.8)
   - react-native-fbsdk (0.8.0):
@@ -94,14 +95,19 @@ PODS:
     - React/Core
     - React/fishhook
     - React/RCTBlob
+  - RNImageCropPicker (0.22.0):
+    - QBImagePickerController
+    - React/Core
+    - RSKImageCropper
   - RNSVG (8.0.10):
     - React
+  - RSKImageCropper (2.2.1)
   - yoga (0.57.8.React)
 
 DEPENDENCIES:
-  - FacebookSDK (~> 4.38)
-  - FBSDKLoginKit (~> 4.38)
-  - FBSDKShareKit (~> 4.38)
+  - FacebookSDK (~> 4.38.0)
+  - FBSDKLoginKit (~> 4.38.0)
+  - FBSDKShareKit (~> 4.38.0)
   - Google-Maps-iOS-Utils (from `https://github.com/pjamrozowicz/google-maps-ios-utils.git`)
   - GoogleMaps
   - react-native-fbsdk (from `../node_modules/react-native-fbsdk`)
@@ -118,6 +124,7 @@ DEPENDENCIES:
   - React/RCTText (from `../node_modules/react-native`)
   - React/RCTVibration (from `../node_modules/react-native`)
   - React/RCTWebSocket (from `../node_modules/react-native`)
+  - RNImageCropPicker (from `../node_modules/react-native-image-crop-picker`)
   - RNSVG (from `../node_modules/react-native-svg`)
   - yoga (from `../node_modules/react-native/ReactCommon/yoga/yoga.podspec`)
 
@@ -130,6 +137,8 @@ SPEC REPOS:
     - FBSDKMarketingKit
     - FBSDKShareKit
     - GoogleMaps
+    - QBImagePickerController
+    - RSKImageCropper
 
 EXTERNAL SOURCES:
   Google-Maps-iOS-Utils:
@@ -142,6 +151,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-maps"
   react-native-maps:
     :path: "../node_modules/react-native-maps"
+  RNImageCropPicker:
+    :path: "../node_modules/react-native-image-crop-picker"
   RNSVG:
     :path: "../node_modules/react-native-svg"
   yoga:
@@ -156,18 +167,21 @@ SPEC CHECKSUMS:
   Bolts: ac6567323eac61e203f6a9763667d0f711be34c8
   FacebookSDK: 73f54b8b94e09b05647cdef0af147f470cd3edc6
   FBSDKCoreKit: f442aa96179cc9b382bb4abeb7e340a47cca8f91
-  FBSDKLoginKit: c3079d9a4db27c492287b1eed7a4272b28cf8a59
+  FBSDKLoginKit: 4621c690d9dd8628031a4791497062183ea34b0d
   FBSDKMarketingKit: e609f39d74ab273cf52e2f8b7e8829ed412b2827
-  FBSDKShareKit: 27d7b982e7b1f4638da2f2b1ab6eba5afc6b5888
+  FBSDKShareKit: 6ffe22f0a0618eb7424d4104ab0ef3ce9643d42a
   Google-Maps-iOS-Utils: c32891ff472eaaa1fca032beedafa1a013af7875
   GoogleMaps: c087b8e5dfe87ca6ebf59adb9b4894a4146bec4f
+  QBImagePickerController: d54cf93db6decf26baf6ed3472f336ef35cae022
   React: 1fe0eb13d90b625d94c3b117c274dcfd2e760e11
   react-native-fbsdk: d5f98cc5abecbcc463e3c35c04743d716d002d37
   react-native-google-maps: 963fc78a5ac32dad3a726e4fa08b5307faa5cab2
   react-native-maps: 066c2afcc89e18726377bcc685315f989ca22449
+  RNImageCropPicker: 32ca4b9fef4e1b7b85ba69494242122948117e06
   RNSVG: 6252323c0312735f0af5f58b5adf2965b6a9ffbf
+  RSKImageCropper: 98296ad26b41753f796b6898d015509598f13d97
   yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
 
-PODFILE CHECKSUM: 506250d937cf97520adb0b74117c6419600f9ef8
+PODFILE CHECKSUM: 0c10d3b581b5ac6ae291b681e406ab2dcebbde30
 
 COCOAPODS: 1.5.3

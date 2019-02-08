@@ -18,7 +18,9 @@ import QuestionnaireScreen from './src/screens/QuestionnaireScreen/Questionnaire
 
 import AreaScreen from './src/screens/LoginScreen/AreaScreen';
 import ComposeScreen from './src/screens/ReportScreen/ComposeScreen';
-// Register Screens
+
+// import ExampleScreen from './src/screens/ReportScreen/ExampleScreen';
+
 
 Navigation.registerComponent('LoginScreen', () => LoginSceen);
 Navigation.registerComponent('MobileNumber', () => MobileNumber);
@@ -37,6 +39,9 @@ Navigation.registerComponent('TrendScreen', () => TrendScreen);
 Navigation.registerComponent('TrendDetailScreen', () => TrendDetailScreen);
 Navigation.registerComponent('QuestionnaireScreen', () => QuestionnaireScreen);
 Navigation.registerComponent('AreaScreen', () => AreaScreen);
+
+// Navigation.registerComponent('ExampleScreen', () => ExampleScreen);
+
 // Start App
 
 Navigation.registerComponent('ComposeScreen', () => ComposeScreen);
@@ -49,10 +54,6 @@ import { DEFAULT_USER_DATA, DEFAULT_USER_ID, getUserData, saveUserID } from './C
 
 
 Navigation.events().registerAppLaunchedListener(() => {
-
-
-
-
   getUserData().then((data) => {
 
     // data = {};
@@ -66,6 +67,7 @@ Navigation.events().registerAppLaunchedListener(() => {
               {
                 component: {
                   id: "HomeScreen", // Optional, Auto generated if empty
+                  // name: "HomeScreen",
                   name: "HomeScreen",
                   options: {
                     topBar: {
@@ -115,12 +117,6 @@ Navigation.events().registerAppLaunchedListener(() => {
         },
       });
     }
-
-
   });
 
 });
-
-
-
-

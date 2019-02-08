@@ -5,7 +5,7 @@ buildscript {
         buildToolsVersion = "27.0.3"
         minSdkVersion = 19
         compileSdkVersion = 27
-        targetSdkVersion = 26
+        targetSdkVersion = 27
         supportLibVersion = "27.1.1"
     }
     repositories {
@@ -36,6 +36,8 @@ allprojects {
             dirs "$rootDir/../node_modules/react-native-maps/libs"
         }
         maven { url 'https://jitpack.io' }
+
+           maven { url 'https://maven.google.com' }
     }
 }
 

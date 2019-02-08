@@ -1,29 +1,26 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
-  AppRegistry,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
   SafeAreaView,
   KeyboardAvoidingView,
   TextInput,
-  Button,
   Image,
   ScrollView,
+  Platform
 } from 'react-native';
-import {Navigation} from 'react-native-navigation';
-import {PropTypes} from 'prop-types';
-import ImagePicker from 'react-native-image-picker';
+import { Navigation } from 'react-native-navigation';
+import { PropTypes } from 'prop-types';
 import Remove from './DeleteButton';
+// import Video from 'react-native-video';
+import ImagePicker from 'react-native-image-crop-picker';
 
 export default class ComposeScreen extends Component {
-  constructor (props) {
-    super (props);
-  }
 
   state = {
     selected: [],
+    // isVideo: false
   };
 
   static propTypes = {
@@ -31,152 +28,164 @@ export default class ComposeScreen extends Component {
   };
 
   cancel = () => {
-    Navigation.dismissOverlay (this.props.componentId);
+    Navigation.dismissModal(this.props.componentId);
   };
 
   openCamera = () => {
-    const options = {
-      title: 'Select Image',
-      //   customButtons: [{name: 'fb', title: 'Choose Photo from Facebook'}],
-      storageOptions: {
-        skipBackup: true,
-        path: 'images',
-      },
-    };
+    ImagePicker.openCamera({
+      mediaType: 'photo',
+    }).then(response => {
+      let media = this.state.selected;
 
-    ImagePicker.launchCamera (options, response => {
-      console.log ('Response = ', response);
-
-      if (response.didCancel) {
-        console.log ('User cancelled image picker');
-      } else if (response.error) {
-        console.log ('ImagePicker Error: ', response.error);
-      } else if (response.customButton) {
-        console.log ('User tapped custom button: ', response.customButton);
-      } else {
-        // const source = {uri: response.uri};
-
-        // You can also display the image using data:
-        // const source = { uri: 'data:image/jpeg;base64,' + response.data };
-
-        this.setState ({
-          selected: [...this.state.selected, {uri: response.uri}],
-        });
+      for (i = 0; i < response.length; i++) {
+        media.push({ uri: response[i].path });
       }
+
+      this.setState({
+        selected: media,
+      });
     });
   };
 
-  openGallery = () => {
-    const options = {
-      title: 'Select Image',
-      //   customButtons: [{name: 'fb', title: 'Choose Photo from Facebook'}],
-      storageOptions: {
-        skipBackup: true,
-        path: 'images',
-      },
-    };
+  openImageGallery = () => {
+    ImagePicker.openPicker({
+      multiple: true,
+      mediaType: 'photo'
+    }).then(response => {
 
-    ImagePicker.launchImageLibrary (options, response => {
-      console.log ('Response = ', response);
+      let media = this.state.selected;
 
-      if (response.didCancel) {
-        console.log ('User cancelled image picker');
-      } else if (response.error) {
-        console.log ('ImagePicker Error: ', response.error);
-      } else if (response.customButton) {
-        console.log ('User tapped custom button: ', response.customButton);
-      } else {
-        // const source = {uri: response.uri};
-
-        // You can also display the image using data:
-        // const source = { uri: 'data:image/jpeg;base64,' + response.data };
-
-        this.setState ({
-          selected: [...this.state.selected, {uri: response.uri}],
-        });
+      for (i = 0; i < response.length; i++) {
+        media.push({ uri: response[i].path });
       }
+
+      this.setState({
+        selected: media,
+      });
+
     });
   };
+
+  // openVideoGallery = () => {
+  //   ImagePicker.openPicker({
+  //     multiple: true,
+  //     mediaType: 'video'
+  //   }).then(response => {
+
+  //     for (i = 0; i < response.length; i++) {
+  //       media.push({ uri: response[i].path });
+  //     }
+
+  //     this.setState({
+  //       selected: media
+  //     });
+  //   });
+  // };
 
   removeMedia = i => {
-    // alert (i);
     let media = this.state.selected;
-    media = media.filter (function(item,key){
-        return key != i
+    media = media.filter(function (item, key) {
+      return key != i;
     });
-    this.setState ({
+    this.setState({
       selected: media,
     });
   };
 
-  render () {
-    let images = this.state.selected.map ((image, index) => {
-      alert(index);
+  render() {
+    let images = this.state.selected.map((image, index) => {
       return (
         <View>
-          <Image source={image} style={{height: 200, width: 200, margin: 10}} />
+          <Image
+            source={image}
+            style={{ height: 150, width: 150, marginTop: 10, marginHorizontal: 5, borderRadius: 20 }} 
+            // onError={() => {this.setState({isVideo : true})}}
+            />
           <Remove
-            style={{position: 'absolute', top: 5, left: 5}}
-            onPress={() => this.removeMedia (index)}
+            style={{ position: 'absolute', top: 5, right: 5 }}
+            onPress={() => this.removeMedia(index)}
           />
         </View>
       );
     });
 
     return (
-      <SafeAreaView style={{flex: 1}}>
+      <SafeAreaView style={{ flex: 1 }}>
         <KeyboardAvoidingView
-          style={{flex: 1, backgroundColor: 'white'}}
-          behavior= {Platform.OS === 'ios' ? "padding" : null}
+          style={{ flex: 1, backgroundColor: 'white' }}
+          behavior="padding"
           enabled
         >
 
           {/* Header */}
-          <View style={{height: 50, width: '100%', flexDirection: 'row'}}>
+          <View style={{ height: 50, width: '100%', flexDirection: 'row' }}>
 
-            <TouchableOpacity style={{flex: 1}} onPress={this.cancel}>
-              <Text
-                style={{
-                  flex: 1,
-                  width: '100%',
-                  textAlign: 'left',
-                  paddingTop: 10,
-                  paddingLeft: 10,
-                  fontSize: 18,
-                }}
-              >
-                Cancel
-              </Text>
-            </TouchableOpacity>
+            <View style={{ flex: 1 }}>
+              <TouchableOpacity style={{ height: '100%', width: 50 }} onPress={this.cancel}>
+                <Image
+                  source={require('../../assets/close.png')}
+                  style={{ height: 40, width: 40, marginLeft: 10, marginTop: 5 }} />
+              </TouchableOpacity>
+            </View>
 
-            <TouchableOpacity style={{flex: 1}}>
-              <Text
-                style={{
-                  flex: 1,
-                  width: '100%',
-                  textAlign: 'right',
-                  paddingTop: 10,
-                  paddingRight: 10,
-                  fontSize: 18,
-                }}
-              >
-                Post
+
+            <View style={{ flex: 1, alignItems: 'flex-end' }}>
+              <TouchableOpacity style={{
+                height: '70%',
+                width: '50%',
+                marginRight: 15,
+                marginTop: 5,
+                borderRadius: 100,
+                borderWidth: 1
+                // backgroundColor: 'yellow'
+              }}>
+                <Text
+                  style={{
+                    textAlign: 'center',
+                    fontSize: 18,
+                    paddingTop: 5,
+                    fontWeight: 'bold'
+                    // textShadowRadius:1,
+                    // textShadowOffset:{width:-4,height:1},
+                    // textShadowColor:'grey'
+                  }}
+                >
+                  Post
               </Text>
-            </TouchableOpacity>
+              </TouchableOpacity>
+            </View>
 
           </View>
 
           {/* Middle */}
 
-          <ScrollView style={{flex: 1, backgroundColor: 'white'}}>
+          <ScrollView style={{ flex: 1, backgroundColor: 'white' }}>
+
+            <View style={{ flexDirection: 'row', margin: 10 }}>
+              <View>
+                <Image
+                  source={require('../../assets/1.png')}
+                  style={{ borderRadius: 30, height: 60, width: 60, margin: 10 }}
+                />
+              </View>
+              <View>
+                <Text style={{ paddingTop: 15, fontSize: 18 }}>Username</Text>
+                <Text style={{ paddingTop: 4, fontSize: 14, fontWeight: '200' }}>
+                  @handle
+                </Text>
+              </View>
+            </View>
+
             <TextInput
-              style={{padding: 10, fontSize: 16}}
+              style={{ padding: 10, fontSize: 16, marginLeft: 10 }}
               placeholder="Write Something"
               multiline
               autoFocus
             />
 
-            {images}
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              {images}
+            </ScrollView>
 
           </ScrollView>
 
@@ -185,7 +194,7 @@ export default class ComposeScreen extends Component {
             style={{
               height: 50,
               width: '100%',
-              backgroundColor: 'yellow',
+              // backgroundColor: 'yellow',
               flexDirection: 'row',
             }}
           >
@@ -197,8 +206,8 @@ export default class ComposeScreen extends Component {
               onPress={this.openCamera}
             >
               <Image
-                source={require ('../../assets/opencamera.png')}
-                style={{height: 35, width: 35, marginLeft: 20, marginTop: 10}}
+                source={require('../../assets/screenshot-filled-500.png')}
+                style={{ height: 35, width: 35, marginLeft: 30, marginTop: 10 }}
               />
 
             </TouchableOpacity>
@@ -209,13 +218,27 @@ export default class ComposeScreen extends Component {
                 alignContent: 'center',
                 flexDirection: 'row',
               }}
-              onPress={this.openGallery}
+              onPress={this.openImageGallery}
             >
               <Image
-                source={require ('../../assets/gallery.png')}
-                style={{height: 35, width: 35, marginLeft: 20, marginTop: 10}}
+                source={require('../../assets/image-gallery-filled-480.png')}
+                style={{ height: 35, width: 35, marginLeft: 30, marginTop: 10 }}
               />
             </TouchableOpacity>
+
+            {/* <TouchableOpacity
+              style={{
+                justifyContent: 'flex-start',
+                alignContent: 'center',
+                flexDirection: 'row',
+              }}
+              onPress={this.openVideoGallery}
+            >
+              <Image
+                source={require('../../assets/video-gallery-filled-480.png')}
+                style={{ height: 35, width: 35, marginLeft: 30, marginTop: 10 }}
+              />
+            </TouchableOpacity> */}
 
           </View>
 

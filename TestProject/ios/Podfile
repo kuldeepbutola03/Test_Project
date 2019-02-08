@@ -34,6 +34,8 @@ target 'TestProject' do
 
   pod 'RNSVG', :path => '../node_modules/react-native-svg'
 
+  pod 'RNImageCropPicker', :path =>  '../node_modules/react-native-image-crop-picker'
+
   pod 'react-native-fbsdk', :path => '../node_modules/react-native-fbsdk'
 
   pod 'FacebookSDK','~> 4.38.0'
