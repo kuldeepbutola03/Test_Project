@@ -2,12 +2,8 @@ import React, { Component } from 'react';
 import ParsedText from 'react-native-parsed-text';
 
 import { View, Text, TouchableOpacity , StyleSheet} from 'react-native';
-
-
-
-
-export default class HashTag extends React.Component {
-
+export class Example extends React.Component {
+  
 
   handleUrlPress(url, matchIndex /*: number*/) {
     // LinkingIOS.openURL(url);
@@ -19,17 +15,11 @@ export default class HashTag extends React.Component {
 
   handleNamePress(name, matchIndex /*: number*/) {
     // AlertIOS.alert(`Hello ${name}`);
-    alert(name);
   }
 
   handleEmailPress(email, matchIndex /*: number*/) {
     // AlertIOS.alert(`send email to ${email}`);
   }
-  handleHashTagPress(hashTag, matchIndex /*: number*/) {
-    // AlertIOS.alert(`send email to ${email}`);
-    alert(hashTag);
-  }
-  
 
   renderText(matchingString, matches) {
     // matches => ["[@michel:5455345]", "@michel", "5455345"]
@@ -40,24 +30,26 @@ export default class HashTag extends React.Component {
 
   render() {
     return (
-      <View style={{...styles.container, ...this.props.style}}>
+      <View style={styles.container}>
         <ParsedText
           style={styles.text}
           parse={
             [
-            //   {type: 'url',                       style: styles.url, onPress: this.handleUrlPress},
-            //   {type: 'phone',                     style: styles.phone, onPress: this.handlePhonePress},
+              {type: 'url',                       style: styles.url, onPress: this.handleUrlPress},
+              {type: 'phone',                     style: styles.phone, onPress: this.handlePhonePress},
               {type: 'email',                     style: styles.email, onPress: this.handleEmailPress},
-            //   {pattern: /Bob|David/,              style: styles.name, onPress: this.handleNamePress},
-            //   {pattern: /\[(@[^:]+):([^\]]+)\]/i, style: styles.username, onPress: this.handleNamePress, renderText: this.renderText},
-            //   {pattern: /42/,                     style: styles.magicNumber},
-              {pattern: /#(\w+)/,                 style: styles.hashTag, onPress : this.handleHashTagPress },
-              {pattern: /@(\w+)/,                 style: styles.username, onPress : this.handleNamePress },
+              {pattern: /Bob|David/,              style: styles.name, onPress: this.handleNamePress},
+              {pattern: /\[(@[^:]+):([^\]]+)\]/i, style: styles.username, onPress: this.handleNamePress, renderText: this.renderText},
+              {pattern: /42/,                     style: styles.magicNumber},
+              {pattern: /#(\w+)/,                 style: styles.hashTag},
             ]
           }
           childrenProps={{allowFontScaling: false}}
         >
-          {this.props.children}
+          Hello this is an example of the ParsedText, links like http://www.google.com or http://www.facebook.com are clickable and phone number 444-555-6666 can call too.
+          But you can also do more with this package, for example Bob will change style and David too. foo@gmail.com
+          And the magic number is 42!
+          #react #react-native
         </ParsedText>
       </View>
     );
@@ -67,9 +59,9 @@ export default class HashTag extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'flex-start',
-    // alignItems: 'center',
-    // backgroundColor: '#F5FCFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5FCFF',
   },
 
   url: {
@@ -96,7 +88,7 @@ const styles = StyleSheet.create({
   },
 
   username: {
-    color: 'black',
+    color: 'green',
     fontWeight: 'bold'
   },
 
@@ -107,8 +99,6 @@ const styles = StyleSheet.create({
 
   hashTag: {
     fontStyle: 'italic',
-    color: 'red',
   },
 
 });
-

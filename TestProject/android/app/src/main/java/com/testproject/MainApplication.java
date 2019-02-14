@@ -7,6 +7,8 @@ import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 
 import com.facebook.react.ReactApplication;
+import cl.json.RNSharePackage;
+import cl.json.ShareApplication;
 import com.reactnative.ivpusic.imagepicker.PickerPackage;
 import com.facebook.reactnative.androidsdk.FBSDKPackage;
 import com.facebook.reactnative.androidsdk.FBSDKPackage;
@@ -27,7 +29,7 @@ import com.reactnativenavigation.react.ReactGateway;
 
 import com.agontuk.RNFusedLocation.RNFusedLocationPackage;
 
-public class MainApplication extends NavigationApplication {
+public class MainApplication extends NavigationApplication implements ShareApplication, ReactApplication{
 
   private static CallbackManager mCallbackManager = CallbackManager.Factory.create();
 
@@ -60,7 +62,8 @@ public class MainApplication extends NavigationApplication {
             new ImagePickerPackage(),
             new FBSDKPackage(mCallbackManager),
             new SvgPackage(),
-            new RNFusedLocationPackage()
+            new RNFusedLocationPackage(),
+            new RNSharePackage()
         );
     }
 
@@ -69,4 +72,8 @@ public class MainApplication extends NavigationApplication {
         return getPackages();
     }
 
+@Override
+     public String getFileProviderAuthority() {
+            return "com.testproject.provider";
+     }
 }

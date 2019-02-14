@@ -19,6 +19,9 @@ import QuestionnaireScreen from './src/screens/QuestionnaireScreen/Questionnaire
 import AreaScreen from './src/screens/LoginScreen/AreaScreen';
 import ComposeScreen from './src/screens/ReportScreen/ComposeScreen';
 
+import Sharing from './src/components/UI/Sharing/Sharing';
+
+import ReportReplyScreen from './src/screens/ReportScreen/ReportReplyScreen';
 // import ExampleScreen from './src/screens/ReportScreen/ExampleScreen';
 
 
@@ -40,6 +43,8 @@ Navigation.registerComponent('TrendDetailScreen', () => TrendDetailScreen);
 Navigation.registerComponent('QuestionnaireScreen', () => QuestionnaireScreen);
 Navigation.registerComponent('AreaScreen', () => AreaScreen);
 
+Navigation.registerComponent('ReportReplyScreen', () => ReportReplyScreen);
+Navigation.registerComponent('Sharing', () => Sharing);
 // Navigation.registerComponent('ExampleScreen', () => ExampleScreen);
 
 // Start App

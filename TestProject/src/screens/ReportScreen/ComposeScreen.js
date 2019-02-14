@@ -20,6 +20,7 @@ export default class ComposeScreen extends Component {
 
   state = {
     selected: [],
+    text:''
     // isVideo: false
   };
 
@@ -108,6 +109,9 @@ export default class ComposeScreen extends Component {
         </View>
       );
     });
+    let options = {
+      value : this.props.text ? this.props.text : null
+    }
 
     return (
       <SafeAreaView style={{ flex: 1 }}>
@@ -181,6 +185,7 @@ export default class ComposeScreen extends Component {
               placeholder="Write Something"
               multiline
               autoFocus
+              {...options}
             />
 
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>

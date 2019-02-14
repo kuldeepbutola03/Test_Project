@@ -94,12 +94,12 @@ export default class MobileNumber extends Component {
 
     // Navigation.push(this.props.componentId, {
     //   component: {
-    //     name: 'AreaScreen',
+    //     name: 'Sharing',
     //     passProps: {
 
-    //       code: this.phone.getCountryCode(),
-    //       mobileNumber: this.phone.getValue(),
-    //       data : data
+    //       // code: this.phone.getCountryCode(),
+    //       // mobileNumber: this.phone.getValue(),
+    //       // data : data
     //     },
     //   },
     // });

@@ -264,6 +264,7 @@ export default class HomeScreen extends Component {
   }
 
   requestToServer() {
+    return;
     if (DEBUG == 0) {
       return;
     }

@@ -1,4 +1,7 @@
 export const DEBUG = 1; //put 1 -- api will work
+
+export const MOBILE_NUMBER_ = "918375057836"; //put 1 -- api will work
+
 export const BASE_URL = "http://www.eccfl.co.uk/customMapAPIs/"; //Base url
 export const SEND_OTP = BASE_URL + "user/sendMobileOtp";
 export const VALIDATE_OTP = BASE_URL + "user/validateMobileOtp";
@@ -30,5 +33,6 @@ export const TREND_CDM = BASE_URL + 'trends/getCDMResourceGprHistoryDetails';
 export const UPDATE_USER_AREA = BASE_URL + 'user/insertBaseAreaDetails';
 
 export const TIMELINE_DATA = "http://holygrailwar.babbles.zone/" + 'getUserTimeLine';
+export const LIKDISLIKE_POST = "http://holygrailwar.babbles.zone/" + 'messageLikeDislike';
 
 // Insignia/

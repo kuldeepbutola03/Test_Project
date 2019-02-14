@@ -1,34 +1,67 @@
-import React, {Component} from 'react';
-import {View, StyleSheet, Image, TouchableOpacity, Text} from 'react-native';
-import {normalize} from '../../../../Constant';
+import React, { Component } from 'react';
+import { View, StyleSheet, Image, TouchableOpacity, Text, Dimensions } from 'react-native';
+import { normalize } from '../../../../Constant';
 // import Video from 'react-native-video';
 // import ParsedText from 'react-native-parsed-text';
 import HashTag from '../../../components/UI/HashTag/HashTag';
+import CustomButton from '../ButtonMod/CustomButtom';
+import { MOBILE_NUMBER_ } from '../../../../Apis';
 
 const caseCard = props => {
+
+  // picture={data.picture}
+  //             name={data.name}
+  //             place={data.place}
+  //             details={data.details}
+  //             caseId={data.caseId}
+  //             video={data.video}
+  //             height_Image = {data.height_Image}
+  //             width_Image = {data.width_Image}
+  //             Is_Liked = {data.Is_Liked}
+  let data = props.data;
+  const {
+    width: SCREEN_WIDTH,
+    height: SCREEN_HEIGHT,
+  } = Dimensions.get('window');
+  var imageheight = data.height_Image ? data.height_Image : 1;
+  var imagewidth = data.width_Image ? data.width_Image : 1;
+
+  // "height_Image": 200,
+  //           "width_Image": 157,
+  imageheight = imageheight ? (imageheight > 0 ? imageheight : 1) : 1;
+  imagewidth = imagewidth ? (imagewidth > 0 ? imagewidth : 1) : 1
+
+  var height = (SCREEN_WIDTH * imageheight) / imagewidth;
+
+  var imageLike = (data.Is_Liked === 1) ? require('../../../assets/ReportImages/likeSelected.png') : require('../../../assets/ReportImages/likeUnSelected.png');
+
+  var LikingCount = data.LikingCount ? data.LikingCount : 0;
+  var ReplyCount = data.ReplyCount ? data.ReplyCount : 0;
+
+
   return (
     <View style={style.container}>
 
       {/* header */}
-      <View style={{flex: 0.15, flexDirection: 'row'}}>
+      <View style={{ flexDirection: 'row' }}>
 
-        <View style={{flex: 2, alignItems: 'center'}}>
+        <View style={{ flex: 2, alignItems: 'center' }}>
           <Image
             style={{
               //   marginLeft: normalize (10),
-              width: normalize (40),
-              height: normalize (40),
-              marginTop: normalize (5),
-              marginBottom: normalize (5),
-              borderRadius: normalize (40) / 2,
+              width: normalize(40),
+              height: normalize(40),
+              marginTop: normalize(5),
+              marginBottom: normalize(5),
+              borderRadius: normalize(40) / 2,
             }}
             source={props.picture}
-            // source={require('../../../assets/user.png')}
+          // source={require('../../../assets/user.png')}
           />
         </View>
 
-        <View style={{flex: 7, justifyContent: 'center'}}>
-        {/* <ParsedText
+        <View style={{ flex: 7, justifyContent: 'center' }}>
+          {/* <ParsedText
           style={styles.text}
           parse={
             [
@@ -42,46 +75,49 @@ const caseCard = props => {
             ]
           }
           childrenProps={{allowFontScaling: false}} */}
-           <Text
+          {/* <View
             style={{
               textAlign: 'left',
               marginLeft: 5,
-              fontSize: normalize (12),
+              // fontSize: normalize (12),
               fontWeight: 'bold',
             }}
-          >
-            {props.name}
-          </Text>
-          <HashTag hashTagString = "a askbdasdb sakdasbdksabd bsa #kuldeep #bbbb sadas #cccc kjsndksadajk"/>
+          > */}
+          <HashTag style={{ justifyContent: 'center', marginLeft: 5 }}>
+            {data.name}
+          </HashTag>
+          {/* </View> */}
+          {/* <HashTag hashTagString = "a askbdasdb @sakdasbdksabd bsa #kuldeep #bbbb sadas #cccc kjsndksadajk"/> */}
           {/* </ParsedText> */}
-          <Text
+          {/* <Text
             style={{
               textAlign: 'left',
               marginLeft: 5,
-              fontSize: normalize (10),
+              fontSize: normalize(10),
             }}
           >
             {props.place}
-          </Text>
+          </Text> */}
         </View>
 
-        <View style={{flex: 2, alignItems: 'center', justifyContent: 'center'}}>
+        <View style={{ flex: 2, alignItems: 'center', justifyContent: 'center' }}>
           <Text
             style={{
               textAlign: 'center',
-              fontSize: normalize (12),
+              fontSize: normalize(12),
             }}
           >
-            {props.caseId}
+            {data.place}
+            {/* {props.caseId} */}
           </Text>
         </View>
 
       </View>
 
       {/* middle */}
-      <View style={{flex: 0.75}}>
-        {props.details &&
-          <Text
+      <View style={{}}>
+        {data.details &&
+          <HashTag
             style={{
               marginBottom: 5,
               marginLeft: 5,
@@ -89,21 +125,62 @@ const caseCard = props => {
               textAlign: 'justify',
             }}
           >
-            {props.details}
-          </Text>}
-        {props.picture &&
+            {data.details}
+          </HashTag>}
+        {data.picture &&
           <Image
-            resizeMode="contain"
+            resizeMode='stretch' //"contain"
             // source={require ('../../../assets/1.png')}
-            source={props.picture}
-            style={{flex: 1, height: 250, width: '100%'}}
+            source={data.picture}
+            style={{ flex: 1, height: height, width: '100%' }}
           />}
       </View>
 
       {/* footer */}
-      <View style={{flex: 0.1, flexDirection: 'row'}}>
-        <View style={{flex: 0.4}}>
-          <TouchableOpacity
+      <View style={{ height: normalize(35), flexDirection: 'row' }}>
+        {/* <View style={{ flex: 0.4 }}> */}
+
+        <TouchableOpacity style={{ justifyContent: 'flex-end', alignItems: 'center', width: "25%", flexDirection: 'row' }} onPress={() => {
+          if (MOBILE_NUMBER_ === data.Mobile_Number) {
+            alert("You can not like your own post");
+          } else {
+            if (data.Is_Liked === 1) {
+              props.onPressDisLike(data);
+            } else {
+              props.onPressLike(data);
+            }
+          }
+
+
+        }}>
+          <Text>{LikingCount}</Text>
+          <Image
+            resizeMode="contain"
+            style={{ width: 22, height: 22, marginRight: 5, marginLeft: 8 }}
+            source={imageLike}
+          />
+        </TouchableOpacity>
+
+        <TouchableOpacity style={{ justifyContent: 'flex-end', alignItems: 'center', width: "25%", flexDirection: 'row' }} onPress={() => props.onPressReply(data)}>
+          <Text>{ReplyCount}</Text>
+          <Image
+            resizeMode="contain"
+            style={{ width: 22, height: 22, marginRight: 5, marginLeft: 8 }}
+            source={require('../../../assets/ReportImages/reply.png')}
+          />
+        </TouchableOpacity>
+
+        <TouchableOpacity style={{ justifyContent: 'flex-end', alignItems: 'center', width: "25%", flexDirection: 'row', marginRight: 5 }} onPress={() => props.moreButtonTapped(data)}>
+          <Text></Text>
+          <Image
+            resizeMode="contain"
+            style={{ width: 22, height: 22, marginRight: 5, marginLeft: 8 }}
+            source={require('../../../assets/ReportImages/more.png')}
+          />
+        </TouchableOpacity>
+
+
+        {/* <TouchableOpacity
             style={{
               flex: 1,
               backgroundColor: '#C0C0C0',
@@ -111,17 +188,17 @@ const caseCard = props => {
               margin: 10,
             }}
           >
-            <Text style={{textAlign: 'center', padding: 2}}>Comments</Text>
+            <Text style={{ textAlign: 'center', padding: 2 }}>Comments</Text>
           </TouchableOpacity>
-        </View>
-        <View style={{flex: 0.6}}><Text> </Text></View>
+        </View> */}
+        {/* <View style={{}}><Text>sad sadsada </Text></View> */}
       </View>
 
-    </View>
+    </View >
   );
 };
 
-const style = StyleSheet.create ({
+const style = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: 1,
@@ -179,3 +256,5 @@ const styles = StyleSheet.create({
 });
 
 export default caseCard;
+
+

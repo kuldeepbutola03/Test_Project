@@ -5,7 +5,9 @@
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "test": "jest",
-    "android": "cd ./android && ./gradlew app:assembleDebug && ./gradlew installDebug"
+    "android": "cd ./android && ./gradlew app:assembleDebug && ./gradlew installDebug",
+    "clean" : "cd android && ./gradlew clean && cd ..",
+    "reload" : "adb shell input keyevent 82"
   },
   "dependencies": {
     "adm-zip": "^0.4.13",
@@ -21,7 +23,9 @@
     "react-native-image-picker": "^0.28.0",
     "react-native-maps": "git+https://github.com/pjamrozowicz/react-native-maps.git",
     "react-native-navigation": "^2.5.1",
+    "react-native-parsed-text": "0.0.21",
     "react-native-phone-input": "^0.2.1",
+    "react-native-share": "^1.1.3",
     "react-native-svg": "^8.0.10",
     "react-native-whc-loading": "^1.0.3",
     "victory-native": "^31.0.0",
