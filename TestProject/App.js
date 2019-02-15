@@ -55,13 +55,13 @@ import { AsyncStorage } from "react-native"
 import { DEFAULT_USER_DATA, DEFAULT_USER_ID, getUserData, saveUserID } from './Constant';
 
 
-// saveUserID("10");
+saveUserID("20");
 
 
 Navigation.events().registerAppLaunchedListener(() => {
   getUserData().then((data) => {
 
-    // data = {};
+    data = {};
 
     if (data) {
       // Navigation.events().registerAppLaunchedListener(() => {

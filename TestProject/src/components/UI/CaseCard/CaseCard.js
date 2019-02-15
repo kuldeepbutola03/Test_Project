@@ -7,6 +7,7 @@ import HashTag from '../../../components/UI/HashTag/HashTag';
 import CustomButton from '../ButtonMod/CustomButtom';
 import { MOBILE_NUMBER_ } from '../../../../Apis';
 
+import FastImage from 'react-native-fast-image'
 const caseCard = props => {
 
   // picture={data.picture}
@@ -46,7 +47,7 @@ const caseCard = props => {
       <View style={{ flexDirection: 'row' }}>
 
         <View style={{ flex: 2, alignItems: 'center' }}>
-          <Image
+          <FastImage
             style={{
               //   marginLeft: normalize (10),
               width: normalize(40),
@@ -55,7 +56,7 @@ const caseCard = props => {
               marginBottom: normalize(5),
               borderRadius: normalize(40) / 2,
             }}
-            source={props.picture}
+            source={{...props.picture, priority: FastImage.priority.normal}}
           // source={require('../../../assets/user.png')}
           />
         </View>
@@ -89,28 +90,18 @@ const caseCard = props => {
           {/* </View> */}
           {/* <HashTag hashTagString = "a askbdasdb @sakdasbdksabd bsa #kuldeep #bbbb sadas #cccc kjsndksadajk"/> */}
           {/* </ParsedText> */}
-          {/* <Text
+          <Text
             style={{
               textAlign: 'left',
               marginLeft: 5,
               fontSize: normalize(10),
             }}
           >
-            {props.place}
-          </Text> */}
-        </View>
-
-        <View style={{ flex: 2, alignItems: 'center', justifyContent: 'center' }}>
-          <Text
-            style={{
-              textAlign: 'center',
-              fontSize: normalize(12),
-            }}
-          >
             {data.place}
-            {/* {props.caseId} */}
           </Text>
         </View>
+
+
 
       </View>
 
@@ -120,18 +111,18 @@ const caseCard = props => {
           <HashTag
             style={{
               marginBottom: 5,
-              marginLeft: 5,
-              marginRight: 5,
+              marginLeft: 20,
+              marginRight: 20,
               textAlign: 'justify',
             }}
           >
             {data.details}
           </HashTag>}
         {data.picture &&
-          <Image
+          <FastImage
             resizeMode='stretch' //"contain"
             // source={require ('../../../assets/1.png')}
-            source={data.picture}
+            source={{...data.picture,  priority: FastImage.priority.normal}}
             style={{ flex: 1, height: height, width: '100%' }}
           />}
       </View>
@@ -153,24 +144,26 @@ const caseCard = props => {
 
 
         }}>
-          <Text>{LikingCount}</Text>
+          <Text style={{ fontSize: 14 }}>{LikingCount}</Text>
           <Image
             resizeMode="contain"
-            style={{ width: 22, height: 22, marginRight: 5, marginLeft: 8 }}
+            style={{ width: 18, height: 18, marginRight: 5, marginLeft: 8 }}
             source={imageLike}
+           
           />
         </TouchableOpacity>
 
-        <TouchableOpacity style={{ justifyContent: 'flex-end', alignItems: 'center', width: "25%", flexDirection: 'row' }} onPress={() => props.onPressReply(data)}>
-          <Text>{ReplyCount}</Text>
+        {data.IsOP === 'Y' && <TouchableOpacity style={{ justifyContent: 'flex-end', alignItems: 'center', width: "25%", flexDirection: 'row' }} onPress={() => props.onPressReply(data)}>
+          <Text style={{ fontSize: 14 }}>{ReplyCount}</Text>
           <Image
             resizeMode="contain"
-            style={{ width: 22, height: 22, marginRight: 5, marginLeft: 8 }}
+            style={{ width: 18, height: 18, marginRight: 5, marginLeft: 8 }}
             source={require('../../../assets/ReportImages/reply.png')}
           />
         </TouchableOpacity>
+        }
+        <TouchableOpacity style={{ position : 'absolute', justifyContent: 'flex-end', alignItems: 'center', height: "100%", width: "25%", flexDirection: 'row' ,right : 10}} onPress={() => props.moreButtonTapped(data)}>
 
-        <TouchableOpacity style={{ justifyContent: 'flex-end', alignItems: 'center', width: "25%", flexDirection: 'row', marginRight: 5 }} onPress={() => props.moreButtonTapped(data)}>
           <Text></Text>
           <Image
             resizeMode="contain"

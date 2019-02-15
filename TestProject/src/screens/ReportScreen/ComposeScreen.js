@@ -15,12 +15,14 @@ import { PropTypes } from 'prop-types';
 import Remove from './DeleteButton';
 // import Video from 'react-native-video';
 import ImagePicker from 'react-native-image-crop-picker';
+import { MOBILE_NUMBER_, MESSAGE_COMPOSE, MEDIA_COMPOSE, MEDIA_MESSAGE_REPLY, MESSAGE_REPLY } from '../../../Apis';
+import { normalize, getUserID, DEFAULT_USER_ID, authHeaders, getUserData, authHeadersMedia } from '../../../Constant';
 
 export default class ComposeScreen extends Component {
 
   state = {
     selected: [],
-    text:''
+    text: this.props.text ? this.props.text : ""
     // isVideo: false
   };
 
@@ -51,15 +53,16 @@ export default class ComposeScreen extends Component {
   openImageGallery = () => {
     ImagePicker.openPicker({
       multiple: true,
-      mediaType: 'photo'
+      mediaType: 'photo',
+      includeBase64: true
     }).then(response => {
-
+      console.log(response);
       let media = this.state.selected;
 
-      for (i = 0; i < response.length; i++) {
+      for (i = 0; i < 1; i++) {                //------------------ i < response.length ------------------
         media.push({ uri: response[i].path });
       }
-
+      // alert(JSON.stringify(media));
       this.setState({
         selected: media,
       });
@@ -93,15 +96,146 @@ export default class ComposeScreen extends Component {
     });
   };
 
+  postTapped = () => {
+
+    if (this.state.selected.length > 0) {
+
+      const dateTime = +new Date();
+      const timestamp = Math.floor(dateTime / 1000) + 'IMG_0001.jpg' ;
+      // alert(typeof (timestamp));
+      let formdata = new FormData();
+      formdata.append("file", {
+        "uri": this.state.selected[0].uri,
+        "name": timestamp,
+        "type": 'image/jpg'
+      });
+
+      formdata.append("latitude", "28");
+      formdata.append("longitude", "77");
+      formdata.append("mobileNumber", MOBILE_NUMBER_);
+      formdata.append("message", this.state.text);
+      formdata.append("locationName", "noida");
+      formdata.append("userLocation", "noida");
+      formdata.append("isMessageHasWarning", "N");
+      formdata.append("abusiveWord", "a");
+      formdata.append("language", "Latn");
+      formdata.append("address", "greater noida");
+      formdata.append("countryName", "india");
+      formdata.append("platform", "iOS");
+      formdata.append("height", "2848");
+      formdata.append("width", "4288");
+      formdata.append("imgOrientation", 0);
+      formdata.append("duration", 0);
+      formdata.append("messageType", "Image");
+
+      if (this.props.reply) {
+        formdata.append("threadId", this.props.thread);
+      }
+
+      let FETCH = this.props.reply ? MEDIA_MESSAGE_REPLY : MEDIA_COMPOSE;
+
+      fetch(FETCH, {
+        method: 'POST',
+        headers: authHeadersMedia(),
+        body: formdata,
+      }).then((response) => { 
+        // alert(JSON.stringify(response)) 
+
+        // if (this.props.reply) {
+          this.props.selfObj()
+          
+        // }
+  
+        
+      })
+
+        // .then((responseJson) => {
+
+        // alert(JSON.stringify(responseJson));
+        // this.filterData(responseJson.result);
+        // })
+        .catch((error) => {
+          // this.setState({ refreshing: false });
+          // console.error(error);
+          alert(error);
+        });
+
+    } else {
+      // let body = JSON.stringify({
+      //   "latitude": "28.53",//
+      //   "longitude": "77",//
+      //   "mobileNumber": MOBILE_NUMBER_,//
+      //   "message": this.state.text,//
+      //   "locationName": "noida",//
+      //   "userLocation": "noida",//
+      //   "isMessageHasWarning": null,
+      //   "abusiveWord": "",
+      //   "language": "Latn",
+      //   "address": "greater noida",//
+      //   "countryName": "India",//
+      //   "platform": "iOS"//,
+      // });
+      let body = {
+        "latitude": "28.53",//
+        "longitude": "77",//
+        "mobileNumber": MOBILE_NUMBER_,//
+        "message": this.state.text,//
+        "locationName": "noida",//
+        "userLocation": "noida",//
+        "isMessageHasWarning": null,
+        "abusiveWord": "",
+        "language": "Latn",
+        "address": "greater noida",//
+        "countryName": "India",//
+        "platform": "iOS"//,
+      }
+
+      if (this.props.reply) {
+        body["threadId"] = this.props.thread;
+      }
+
+      body = JSON.stringify(body);
+
+      let FETCH = this.props.reply ? MESSAGE_REPLY : MESSAGE_COMPOSE;
+
+      fetch(FETCH, {
+        method: 'POST',
+        headers: authHeaders(),
+        body: body,
+      }).then((response) => response.json())
+
+        .then((responseJson) => {
+          // if (this.props.reply) {
+            this.props.selfObj()
+          // alert(JSON.stringify(responseJson));
+          // this.filterData(responseJson.result);
+        })
+        .catch((error) => {
+          // this.setState({ refreshing: false });
+          // console.error(error);
+          alert(error);
+        });
+    }
+    this.cancel();
+  }
+
+
+  handleTextChange = (e) => {
+    // let str = this.state.text + e;
+    this.setState({
+      text: e
+    })
+  }
+
   render() {
     let images = this.state.selected.map((image, index) => {
       return (
         <View>
           <Image
             source={image}
-            style={{ height: 150, width: 150, marginTop: 10, marginHorizontal: 5, borderRadius: 20 }} 
-            // onError={() => {this.setState({isVideo : true})}}
-            />
+            style={{ height: 150, width: 150, marginTop: 10, marginHorizontal: 5, borderRadius: 20 }}
+          // onError={() => {this.setState({isVideo : true})}}
+          />
           <Remove
             style={{ position: 'absolute', top: 5, right: 5 }}
             onPress={() => this.removeMedia(index)}
@@ -109,9 +243,6 @@ export default class ComposeScreen extends Component {
         </View>
       );
     });
-    let options = {
-      value : this.props.text ? this.props.text : null
-    }
 
     return (
       <SafeAreaView style={{ flex: 1 }}>
@@ -142,7 +273,9 @@ export default class ComposeScreen extends Component {
                 borderRadius: 100,
                 borderWidth: 1
                 // backgroundColor: 'yellow'
-              }}>
+              }}
+                onPress={() => { this.postTapped() }}
+              >
                 <Text
                   style={{
                     textAlign: 'center',
@@ -185,7 +318,8 @@ export default class ComposeScreen extends Component {
               placeholder="Write Something"
               multiline
               autoFocus
-              {...options}
+              value={this.state.text}
+              onChangeText={(e) => this.handleTextChange(e)}
             />
 
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>

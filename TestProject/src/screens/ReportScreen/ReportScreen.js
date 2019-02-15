@@ -6,14 +6,16 @@ import CustomButton from '../../components/UI/ButtonMod/CustomButtom';
 import { normalize, getUserID, getCurrentLocation } from '../../../Constant';
 import CaseCard from '../../components/UI/CaseCard/CaseCard';
 import Draggable from 'react-native-draggable';
-import { TIMELINE_DATA, MOBILE_NUMBER_, LIKDISLIKE_POST } from '../../../Apis';
+import { TIMELINE_DATA, MOBILE_NUMBER_, LIKDISLIKE_POST, REPORT_POST } from '../../../Apis';
 import { authHeaders } from '../../../Constant';
 
 import { Platform } from 'react-native';
 
 import Share, { ShareSheet, Button } from 'react-native-share';
-export default class ReportScreen extends Component {
 
+// import SharingCard from '../../components/UI/Sharing/SharingCard';
+export default class ReportScreen extends Component {
+  dataTappedForMore = null;
   shareOptions = null;
 
   state = {
@@ -36,6 +38,7 @@ export default class ReportScreen extends Component {
       // },
     ],
     iconSrc: require('../../assets/report.png'),
+
     refreshing: false,
     visible: false
   };
@@ -49,30 +52,16 @@ export default class ReportScreen extends Component {
 
     this._onRefresh();
 
+    // this.shareCard.props.getShareOption(shareOptions);
   }
 
   showCompose = () => {
-    // Navigation.push(this.props.componentId, {
-    //   component: {
-    //     name: 'Test',
-
-    //   },
-    // });
-    // return;
     Navigation.showModal({
       component: {
         name: 'ComposeScreen',
-        // options: {
-        //   overlay: {
-        //     interceptTouchOutside: true,
-        //   },
-        //   customTransition
-        // topBar:{
-        //   visible:true,
-        //   animate:true,
-        //   drawBehind:false
-        // }
-        // },
+        passProps: {
+          selfObj : this._onRefresh
+        }
       },
     });
   }
@@ -104,8 +93,8 @@ export default class ReportScreen extends Component {
 
     let body = JSON.stringify({
 
-      "latitude": location.latitude.toString(),
-      "longitude": location.longitude.toString(),
+      "latitude": '27',// location.latitude.toString(),
+      "longitude": '77',//location.longitude.toString(),
 
       "mobileNumber": MOBILE_NUMBER_,
       "radians": "0",
@@ -139,8 +128,8 @@ export default class ReportScreen extends Component {
       });
   }
 
-  requestForLikeDislike(data, isLiked) {
 
+  requestForLikeDislike(data, isLiked) {
 
     let body = JSON.stringify({
 
@@ -176,7 +165,74 @@ export default class ReportScreen extends Component {
         // data.LikingCount = data.LikingCount + ((isLiked == 1) ? 1 : -1);
         // data.LikingCount = (data.LikingCount < 0) ? 0 : data.LikingCount;
 
+
+        // dataObj[index] = dataObj;
+        // this.setState({case : [...dataObj] });
+
+        //  alert(JSON.stringify(responseJson));
+        // this.filterData(responseJson.result);
+      })
+      .catch((error) => {
+        this.setState({ refreshing: false });
+        console.error(error);
+      });
+  }
+
+
+
+  requestForReport(data) {
+
+
+
+
+    let body = JSON.stringify({
+
+
+      "Mobile_Number_Against": data.Mobile_Number,
+      "Mobile_Number": MOBILE_NUMBER_,
+      "Report_Type": "Hurts Sentiments",
+      
+      "Location_Name": "sector 18, Noida",
+
+      "Message_Id": data.Message_Id,
+      "Report_Type": "Hurts Sentiments",
+
+
+
+      "Latitude": "27.5",
+      "Longitude": "77.5",
+      "Message": data.Message,
+
+      "Report_SubType": "Hide Babble",
+      "User_Comments": "",
+      "isOP": data.IsOP,
+      "is_poll": 0
+
+
+
+    });
+    // alert(body);
+    // return;
+    // µ
+    fetch(REPORT_POST, {
+      method: 'POST',
+      headers: authHeaders(),
+      body: body,
+    }).then((response) => response.json())
+
+      .then((responseJson) => {
+
         
+        alert(JSON.stringify(responseJson));
+        this._onRefresh();
+
+        // var dataObj = this.state.case;
+        // var index = dataObj.indexOf(data);
+        // data.Is_Liked = isLiked;
+        // data.LikingCount = data.LikingCount + ((isLiked == 1) ? 1 : -1);
+        // data.LikingCount = (data.LikingCount < 0) ? 0 : data.LikingCount;
+
+
         // dataObj[index] = dataObj;
         // this.setState({case : [...dataObj] });
 
@@ -229,14 +285,14 @@ export default class ReportScreen extends Component {
         passProps: {
           data: data,
         },
-        // options: {
-        //   topBar: {
-        //     visible: false,
-        //     drawBehind: true,
-        //     animate: false,
-        //   },
+        options: {
+          topBar: {
+            visible: false,
+            drawBehind: true,
+            animate: false,
+          },
 
-        // },
+        },
 
       }
     });
@@ -253,7 +309,7 @@ export default class ReportScreen extends Component {
   }
   moreButtonTapped = (data) => {
     // alert(data);
-
+    dataTappedForMore = data;
     shareOptions = {
       title: "Check out Insignia app",
       message: data.details,
@@ -275,14 +331,18 @@ export default class ReportScreen extends Component {
     console.log("CANCEL")
     this.setState({ visible: false });
   }
-  reportTapped() {
-
+  reportTapped(data) {
+    if (MOBILE_NUMBER_ === data.Mobile_Number) {
+      alert("You can not report your own post");
+    } else {
+      this.requestForReport(data);
+    }
+    
   }
 
+
+
   showActionSheetForIOS() {
-
-
-
 
     var BUTTONS = [
       'Twitter',
@@ -352,7 +412,7 @@ export default class ReportScreen extends Component {
           case 6:
             console.log("Option 7");
             setTimeout(() => {
-              this.reportTapped().bind(this);
+              this.reportTapped(dataTappedForMore);
 
             }, 300);
             break
@@ -377,8 +437,6 @@ export default class ReportScreen extends Component {
       <SafeAreaView
         forceInset={{ bottom: 'always' }}
         style={{ flex: 1, backgroundColor: 'rgba(210,210,208,1)' }}
-
-
       >
 
         <View style={styles.headerView} backgroundColor="rgba(242,241,244,1)">
@@ -437,14 +495,20 @@ export default class ReportScreen extends Component {
 
         </ScrollView> */}
 
-        <ShareSheet visible={this.state.visible} onCancel={() => { this.setState({ visible: false }) }}>
+
+        <ShareSheet visible={this.state.visible} onCancel={() => { this.onCancel() }}>
           <Button iconSrc={{ uri: TWITTER_ICON }}
             onPress={() => {
               this.onCancel();
               setTimeout(() => {
+
                 Share.shareSingle(Object.assign(shareOptions, {
                   "social": "twitter"
                 }));
+
+
+
+
               }, 300);
             }}>Twitter</Button>
           <Button iconSrc={{ uri: FACEBOOK_ICON }}
@@ -467,7 +531,7 @@ export default class ReportScreen extends Component {
             }}>Whatsapp</Button>
           <Button iconSrc={{ uri: GOOGLE_PLUS_ICON }}
             onPress={() => {
-              this.onCancel();
+              this.props.onCancel();
               setTimeout(() => {
                 Share.shareSingle(Object.assign(shareOptions, {
                   "social": "googleplus"
@@ -488,7 +552,6 @@ export default class ReportScreen extends Component {
           <Button iconSrc={{ uri: MORE_ICON }}
             onPress={() => {
               this.onCancel();
-
               setTimeout(() => {
 
                 Share.open(shareOptions);
@@ -505,7 +568,7 @@ export default class ReportScreen extends Component {
                 // Share.shareSingle(Object.assign(shareOptions, {
                 //   "social": "twitter"
                 // }));
-                this.reportTapped().bind(this);
+                this.reportTapped(dataTappedForMore);
 
               }, 300);
             }}>Report</Button>

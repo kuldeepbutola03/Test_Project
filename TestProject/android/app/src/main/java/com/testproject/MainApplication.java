@@ -7,6 +7,7 @@ import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 
 import com.facebook.react.ReactApplication;
+import com.dylanvann.fastimage.FastImageViewPackage;
 import cl.json.RNSharePackage;
 import cl.json.ShareApplication;
 import com.reactnative.ivpusic.imagepicker.PickerPackage;

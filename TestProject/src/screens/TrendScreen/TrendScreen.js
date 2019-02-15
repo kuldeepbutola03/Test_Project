@@ -85,7 +85,7 @@ getUserID().then((userId) => {
         options: {
           topBar: {
             visible: false,
-            animate: false,
+            animate: false, 
             drawBehind: true,
           },
         },
