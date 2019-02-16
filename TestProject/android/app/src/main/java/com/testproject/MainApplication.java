@@ -64,7 +64,8 @@ public class MainApplication extends NavigationApplication implements ShareAppli
             new FBSDKPackage(mCallbackManager),
             new SvgPackage(),
             new RNFusedLocationPackage(),
-            new RNSharePackage()
+            new RNSharePackage(),
+            new FastImageViewPackage()
         );
     }
 
