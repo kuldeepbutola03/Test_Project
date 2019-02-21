@@ -68,6 +68,7 @@ export default class ComposeScreen extends Component {
       });
 
     });
+    
   };
 
   // openVideoGallery = () => {
@@ -101,7 +102,7 @@ export default class ComposeScreen extends Component {
     if (this.state.selected.length > 0) {
 
       const dateTime = +new Date();
-      const timestamp = Math.floor(dateTime / 1000) + 'IMG_0001.jpg' ;
+      const timestamp = Math.floor(dateTime / 1000) + 'IMG_0001.jpg';
       // alert(typeof (timestamp));
       let formdata = new FormData();
       formdata.append("file", {
@@ -138,15 +139,15 @@ export default class ComposeScreen extends Component {
         method: 'POST',
         headers: authHeadersMedia(),
         body: formdata,
-      }).then((response) => { 
+      }).then((response) => {
         // alert(JSON.stringify(response)) 
 
         // if (this.props.reply) {
-          this.props.selfObj()
-          
+        this.props.selfObj()
+
         // }
-  
-        
+
+
       })
 
         // .then((responseJson) => {
@@ -161,62 +162,62 @@ export default class ComposeScreen extends Component {
         });
 
     } else {
-      // let body = JSON.stringify({
-      //   "latitude": "28.53",//
-      //   "longitude": "77",//
-      //   "mobileNumber": MOBILE_NUMBER_,//
-      //   "message": this.state.text,//
-      //   "locationName": "noida",//
-      //   "userLocation": "noida",//
-      //   "isMessageHasWarning": null,
-      //   "abusiveWord": "",
-      //   "language": "Latn",
-      //   "address": "greater noida",//
-      //   "countryName": "India",//
-      //   "platform": "iOS"//,
-      // });
-      let body = {
-        "latitude": "28.53",//
-        "longitude": "77",//
-        "mobileNumber": MOBILE_NUMBER_,//
-        "message": this.state.text,//
-        "locationName": "noida",//
-        "userLocation": "noida",//
-        "isMessageHasWarning": null,
-        "abusiveWord": "",
-        "language": "Latn",
-        "address": "greater noida",//
-        "countryName": "India",//
-        "platform": "iOS"//,
-      }
 
-      if (this.props.reply) {
-        body["threadId"] = this.props.thread;
-      }
 
-      body = JSON.stringify(body);
+      getUserID().then((userId) => {
 
-      let FETCH = this.props.reply ? MESSAGE_REPLY : MESSAGE_COMPOSE;
+        let body = {
 
-      fetch(FETCH, {
-        method: 'POST',
-        headers: authHeaders(),
-        body: body,
-      }).then((response) => response.json())
 
-        .then((responseJson) => {
-          // if (this.props.reply) {
+          "message": this.state.text,//
+
+
+          "userMaster":
+          {
+            "userId": userId
+          },
+          "latitude": "33.3353629",
+          "longitude": "-119.5354356"
+        }
+
+        if (this.props.reply) {
+          body["threadId"] = this.props.thread;
+        }
+
+        body = JSON.stringify(body);
+
+        let FETCH = this.props.reply ? MESSAGE_REPLY : MESSAGE_COMPOSE;
+
+        fetch(FETCH, {
+          method: 'POST',
+          headers: authHeaders(),
+          body: body,
+        }).then((response) => response.json())
+
+          .then((responseJson) => {
+            // if (this.props.reply) {
             this.props.selfObj()
-          // alert(JSON.stringify(responseJson));
-          // this.filterData(responseJson.result);
-        })
-        .catch((error) => {
-          // this.setState({ refreshing: false });
-          // console.error(error);
-          alert(error);
-        });
+            // alert(JSON.stringify(responseJson));
+            // this.filterData(responseJson.result);
+          })
+          .catch((error) => {
+            // this.setState({ refreshing: false });
+            // console.error(error);
+            alert(error);
+          });
+
+        this.cancel();
+
+      });
+
+
+
+
+
+
     }
-    this.cancel();
+
+
   }
 
 

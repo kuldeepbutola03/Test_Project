@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import { FlatList, View, StyleSheet, SafeAreaView, Text, ScrollView, RefreshControl, Dimensions, KeyboardAvoidingView, TextInput, Image, TouchableOpacity, ActionSheetIOS } from 'react-native';
 import { Navigation } from 'react-native-navigation';
 import { PropTypes } from 'prop-types';
-import { normalize } from '../../../Constant';
+import { normalize, APP_GLOBAL_COLOR } from '../../../Constant';
 import CustomButton from "../../components/UI/ButtonMod/CustomButtom";
 import CaseCard from "../../components/UI/CaseCard/CaseCard";
 import { Platform } from 'react-native';
-import { authHeaders } from '../../../Constant';
+import { authHeaders, getUserID } from '../../../Constant';
 
 import { FETCH_REPLY_POST, MOBILE_NUMBER_, LIKDISLIKE_POST, REPORT_POST, MESSAGE_REPLY, MEDIA_MESSAGE_REPLY } from '../../../Apis';
 import Share, { ShareSheet, Button } from 'react-native-share';
@@ -40,7 +40,7 @@ export default class ReportReplyScreen extends Component {
           text: this.state.text,
           reply: true,
           thread: this.props.data.Thread_Id,
-          selfObj : this._onRefresh
+          selfObj: this._onRefresh
         }
       },
     });
@@ -85,8 +85,8 @@ export default class ReportReplyScreen extends Component {
   fetchUserMessage() {
 
     let body = JSON.stringify({
-      "threadId": this.props.data.Thread_Id,
-      "mobileNumber": MOBILE_NUMBER_
+      "threadId": this.props.data.threadId
+      // "mobileNumber": MOBILE_NUMBER_
     });
 
     fetch(FETCH_REPLY_POST, {
@@ -96,7 +96,12 @@ export default class ReportReplyScreen extends Component {
     }).then(resp => resp.json()).then(respJson => {
       // this.setState({ refreshing: false });
       console.log(respJson);
-      this.filterData2(respJson.result)
+      if (Array.isArray(respJson)) {
+        this.filterData2(respJson)
+      } else {
+        alert(respJson.response);
+      }
+
     }).catch(err => { alert(error) })
     console.log("asdahjdfb");
     this.setState({ refreshing: false });
@@ -105,56 +110,63 @@ export default class ReportReplyScreen extends Component {
   }
   requestForLikeDislike(data, isLiked) {
 
-    let body = JSON.stringify({
+    getUserID().then((userId) => {
 
-      "latitude": "27",
-      "longitude": "77",
+      let body = JSON.stringify({
 
-      "mobileNumber": MOBILE_NUMBER_,
-      "messageId": data.Message_Id,
-      "isLiked": isLiked,
+        "message":
+        {
+          "messageId": data.messageId
+        },
+        "userMaster":
+        {
+          "userId": userId
+        },
+        "latitude": "",
+        "longitude": "",
+        "isLiked": isLiked
+
+      });
+
+      fetch(LIKDISLIKE_POST, {
+        method: 'POST',
+        headers: authHeaders(),
+        body: body,
+      }).then((response) => response.json())
+
+        .then((responseJson) => {
+
+          this._onRefresh();
+          // alert(JSON.stringify(responseJson));
+
+          // var dataObj = this.state.case;
+          // var index = dataObj.indexOf(data);
+          // data.Is_Liked = isLiked;
+          // data.LikingCount = data.LikingCount + ((isLiked == 1) ? 1 : -1);
+          // data.LikingCount = (data.LikingCount < 0) ? 0 : data.LikingCount;
 
 
+          // dataObj[index] = dataObj;
+          // this.setState({case : [...dataObj] });
 
-      "User_Mobile_Number": data.Mobile_Number
-
+          //  alert(JSON.stringify(responseJson));
+          // this.filterData(responseJson.result);
+        })
+        .catch((error) => {
+          this.setState({ refreshing: false });
+          console.error(error);
+        });
     });
+
+
+
+
     // alert(body);
     // return;
     // µ
-    fetch(LIKDISLIKE_POST, {
-      method: 'POST',
-      headers: authHeaders(),
-      body: body,
-    }).then((response) => response.json())
 
-      .then((responseJson) => {
-
-        this._onRefresh();
-        // alert(JSON.stringify(responseJson));
-
-        // var dataObj = this.state.case;
-        // var index = dataObj.indexOf(data);
-        // data.Is_Liked = isLiked;
-        // data.LikingCount = data.LikingCount + ((isLiked == 1) ? 1 : -1);
-        // data.LikingCount = (data.LikingCount < 0) ? 0 : data.LikingCount;
-
-
-        // dataObj[index] = dataObj;
-        // this.setState({case : [...dataObj] });
-
-        //  alert(JSON.stringify(responseJson));
-        // this.filterData(responseJson.result);
-      })
-      .catch((error) => {
-        this.setState({ refreshing: false });
-        console.error(error);
-      });
   }
   requestForReport(data) {
-
-
-
 
     let body = JSON.stringify({
 
@@ -194,7 +206,7 @@ export default class ReportReplyScreen extends Component {
       .then((responseJson) => {
 
 
-        alert(JSON.stringify(responseJson));
+        // alert(JSON.stringify(responseJson));
         this._onRefresh();
 
         // var dataObj = this.state.case;
@@ -242,16 +254,16 @@ export default class ReportReplyScreen extends Component {
 
         key: key,
         picture: (dict.Image_Path && (dict.messageType === 'Image' || dict.messageType === 'Gif')) ? { uri: dict.Image_Path } : videoURL,
-        name: "@" + dict.Mobile_Number,
+        name: dict.Mobile_Number ? ("@" + dict.Mobile_Number) : "Anonymous",
         place: dict.Location_Name,
-        details: dict.Message ? dict.Message : null,
+        details: dict.message ? dict.message : null,
         caseId: null,
         video: (dict.contentUrl && dict.messageType === 'Video') ? { uri: dict.contentUrl } : null,// "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
 
-        height_Image: dict.height_Image,
-        width_Image: dict.width_Image,
+        height_Image: dict.height,
+        width_Image: dict.width,
         Is_Liked: dict.Is_Liked,
-        LikingCount: dict.LikingCount,
+        LikingCount: dict.likingCount,
         ...dict
 
       }
@@ -467,39 +479,42 @@ export default class ReportReplyScreen extends Component {
 
     // alert(this.state.text);
 
-    let body = JSON.stringify({
-      "latitude": "28.53",
-      "longitude": "77",
-      "mobileNumber": MOBILE_NUMBER_,
-      "message": this.state.text,
-      "locationName": "noida",
-      "userLocation": "noida",
-      "isMessageHasWarning": "N",
-      "abusiveWord": "",
-      "language": "Latn",
-      "address": "greater noida",
-      "countryName": "India",
-      "platform": "iOS",
-      "threadId": this.props.data.Thread_Id
-    });
-    // alert(body);
-    fetch(MESSAGE_REPLY, {
-      method: 'POST',
-      headers: authHeaders(),
-      body: body,
-    }).then((response) => response.json())
 
-      .then((responseJson) => {
-        this.setState({ text: "" });
-        this.fetchUserMessage();
-        // alert(JSON.stringify(responseJson));
-        // this.filterData(responseJson.result);
-      })
-      .catch((error) => {
-        // this.setState({ refreshing: false });
-        // console.error(error);
-        alert(error);
+
+    getUserID().then((userId) => {
+
+      let body = JSON.stringify({
+
+        "userMaster":
+        {
+          "userId": userId
+        },
+        "latitude": "33.3353629",
+        "longitude": "-119.5354356",
+        "threadId": this.props.data.threadId,
+        "message": this.state.text
       });
+
+
+      // alert(MESSAGE_REPLY);
+      fetch(MESSAGE_REPLY, {
+        method: 'POST',
+        headers: authHeaders(),
+        body: body,
+      }).then((response) => response.json())
+
+        .then((responseJson) => {
+          this.setState({ text: "" });
+          this.fetchUserMessage();
+          // alert(JSON.stringify(responseJson));
+          // this.filterData(responseJson.result);
+        })
+        .catch((error) => {
+          // this.setState({ refreshing: false });
+          // console.error(error);
+          alert(error);
+        });
+    });
 
   }
 
@@ -521,6 +536,7 @@ export default class ReportReplyScreen extends Component {
         forceInset={{ bottom: 'always' }}
         style={{ flex: 1, backgroundColor: 'rgba(210,210,208,1)' }}
       >
+
         <KeyboardAvoidingView
           style={{ flex: 1 }}
 
@@ -528,14 +544,15 @@ export default class ReportReplyScreen extends Component {
           {...options}
         >
 
-          <View style={styles.headerView} backgroundColor="rgba(242,241,244,1)">
+          <View style={styles.headerView} backgroundColor={APP_GLOBAL_COLOR}>
 
-            <View style={{ flex: 1, backgroundColor: 'rgba(87,48,134,1)' }}>
+            <View style={{ flex: 1, backgroundColor: 'clear' }}>
               <CustomButton
                 source={require('../../assets/back.png')}
                 style={{
                   flexDirection: 'row',
                   flex: 1,
+                  margin: normalize(5)
                 }}
                 onPress={this.homeButtonTapped}
               />
@@ -545,43 +562,6 @@ export default class ReportReplyScreen extends Component {
             </View>
 
           </View>
-
-          {/* <FlatList
-            ref={ref => {
-              this.scroll = ref;
-            }}
-            style={styles.bottomView}
-            onRefresh={this._onRefresh}
-            refreshing={this.state.refreshing}
-            data={this.state.replies}
-            renderItem={({ item }) => {
-              index = 0;
-              if (index === 0) {
-                <View style={{ padding: 1, backgroundColor: 'black', margin: 5, elevation: 100 }}>
-                  <CaseCard
-                    moreButtonTapped={() => { }}
-                    onPressLike={(data2) => { }}
-                    onPressDisLike={(data2) => { }}
-                    data={item}
-                    onPressReply={(data2) => { }}
-                  />
-                </View>
-              } else {
-                <CaseCard
-                  moreButtonTapped={() => { }}
-                  onPressLike={(data2) => { }}
-                  onPressDisLike={(data2) => { }}
-                  data={item}
-                  onPressReply={(data2) => { }}
-                />
-              }
-
-
-            }
-
-            }
-          >
-          </FlatList> */}
 
           <ScrollView style={styles.bottomView}
             ref={ref => {
@@ -599,18 +579,18 @@ export default class ReportReplyScreen extends Component {
 
             {this.state.replies.map((data, index) => {
 
-              if (index === 0) {
-                return (<View style={{ padding: 1, backgroundColor: 'black', margin: 5, elevation: 100 }}>
-                  <CaseCard
-                    moreButtonTapped={this.moreButtonTapped}
-                    onPressLike={(data2) => this.likeButtonTapped(data2)}
-                    onPressDisLike={(data2) => this.disLikeButtonTapped(data2)}
-                    data={data}
-                    onPressReply={(data2) => { }}
-                  />
+              // if (index === 0) {
+              //   return (<View style={{ padding: 1, backgroundColor: 'black', margin: 5, elevation: 100 }}>
+              //     <CaseCard
+              //       moreButtonTapped={this.moreButtonTapped}
+              //       onPressLike={(data2) => this.likeButtonTapped(data2)}
+              //       onPressDisLike={(data2) => this.disLikeButtonTapped(data2)}
+              //       data={data}
+              //       onPressReply={(data2) => { }}
+              //     />
 
-                </View>)
-              }
+              //   </View>)
+              // }
               return (
 
                 <CaseCard
@@ -627,12 +607,7 @@ export default class ReportReplyScreen extends Component {
           </ScrollView >
           <View style={{ flexDirection: 'row' }}>
 
-            <TouchableOpacity
-              style={{ height: 40, width: 40, borderRadius: 20, backgroundColor: 'white', marginTop: 5, marginLeft: 5, alignItems: 'center', justifyContent: 'center' }}
-              onPress={this.attachment}
-            >
-              <Image source={require("../../assets/attach.png")} style={{ height: 30, width: 30 }} />
-            </TouchableOpacity>
+
 
             <TextInput
               autoFocus={true}
@@ -645,14 +620,21 @@ export default class ReportReplyScreen extends Component {
                 this.setState({ height: event.nativeEvent.contentSize.height > 100 ? 100 : event.nativeEvent.contentSize.height < 40 ? 40 : event.nativeEvent.contentSize.height })
               }}
               // style={[styles.default, {height: Math.max(35, this.state.height)}]}
-              style={{ borderRadius: 20, backgroundColor: 'white', height: this.state.height, paddingTop: 10, paddingLeft: 10, paddingRight: 10, paddingBottom: 5, margin: 5, flex: 1, }}
+              style={{ borderRadius: 20, backgroundColor: 'white', height: this.state.height, paddingTop: 10, paddingLeft: 60, paddingRight: 15, paddingBottom: 5, margin: 5, marginRight : 50, flex: 1, }}
             />
 
             <TouchableOpacity
-              style={{ height: 40, width: 40, borderRadius: 20, backgroundColor: 'white', marginTop: 5, marginRight: 5, alignItems: 'center', justifyContent: 'center' }}
+              style={{ position: 'absolute', bottom: 5, left: 10,  height: 40, width: 40, alignItems: 'center', justifyContent: 'center' }}
+              onPress={this.attachment}
+            >
+              <Image source={require("../../assets/attach.png")} style={{ height: 25, width: 25 }} />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={{position: 'absolute', bottom: 7, right : 10 , height: 36, width: 36, borderRadius: 18, backgroundColor: APP_GLOBAL_COLOR, alignItems: 'center', justifyContent: 'center' }}
               onPress={this.sendReply}
             >
-              <Image source={require("../../assets/send.png")} style={{ height: 30, width: 30 }} />
+              <Image source={require("../../assets/send.png")} style={{ height: 20, width: 20 }} />
             </TouchableOpacity>
 
           </View>
@@ -743,11 +725,12 @@ export default class ReportReplyScreen extends Component {
 
 const styles = StyleSheet.create({
   headerView: {
-    flex: 0.07,
+    // flex: 0.07,
     justifyContent: 'center',
     flexDirection: 'row',
     elevation: 5,
     backgroundColor: 'white',
+    height: Dimensions.get('window').height * 0.07
   },
   textheaderView: {
     flex: 5,
@@ -755,9 +738,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   textView: {
+    position: 'absolute',
     backgroundColor: 'transparent',
-    marginLeft: 10,
-    fontSize: normalize(14),
+    right: 15,
+    fontSize: normalize(17),
+    fontWeight: 'bold',
+    color: 'white'
   },
   bottomView: {
     flex: 0.93,

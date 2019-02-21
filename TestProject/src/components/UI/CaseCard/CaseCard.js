@@ -39,6 +39,7 @@ const caseCard = props => {
   var LikingCount = data.LikingCount ? data.LikingCount : 0;
   var ReplyCount = data.ReplyCount ? data.ReplyCount : 0;
 
+  let picture = data.picture ? { ...data.picture, priority: FastImage.priority.normal } : require('../../../assets/Profile/Guest_.png');
 
   return (
     <View style={style.container}>
@@ -46,125 +47,98 @@ const caseCard = props => {
       {/* header */}
       <View style={{ flexDirection: 'row' }}>
 
-        <View style={{ flex: 2, alignItems: 'center' }}>
+        <View style={{ width: normalize(80), alignItems: 'center' }}>
           <FastImage
             style={{
-              //   marginLeft: normalize (10),
-              width: normalize(40),
-              height: normalize(40),
+              // marginRight: normalize(10),
+              width: normalize(70),
+              height: normalize(70),
               marginTop: normalize(5),
-              marginBottom: normalize(5),
-              borderRadius: normalize(40) / 2,
+              marginBottom: normalize(0),
+              // borderRadius: normalize(40) / 2,
             }}
-            source={{...props.picture, priority: FastImage.priority.normal}}
+            source={picture}
           // source={require('../../../assets/user.png')}
           />
+          <View style={{ width: '100%', height: normalize(35), flexDirection: 'row' }}>
+
+            <TouchableOpacity style={{ justifyContent: 'flex-start', alignItems: 'center', width: "50%", flexDirection: 'row' }} onPress={() => {
+              if (MOBILE_NUMBER_ === data.Mobile_Number) {
+                alert("You can not like your own post");
+              } else {
+                if (data.Is_Liked === 1) {
+                  props.onPressDisLike(data);
+                } else {
+                  props.onPressLike(data);
+                }
+              }
+
+
+            }}>
+              <Image
+                resizeMode="contain"
+                style={{ width: 15, height: 15, marginRight: 3, marginLeft: 8 }}
+                source={imageLike}
+
+              />
+              <Text style={{ fontSize: 12 }}>{LikingCount}</Text>
+
+            </TouchableOpacity>
+
+            {data.isOP === 'Y' && <TouchableOpacity style={{ justifyContent: 'flex-start', alignItems: 'center', width: "50%", flexDirection: 'row' }} onPress={() => props.onPressReply(data)}>
+              <Image
+                resizeMode="contain"
+                style={{ width: 15, height: 15, marginRight: 3, marginLeft: 4 }}
+                source={require('../../../assets/ReportImages/reply.png')}
+              />
+              <Text style={{ fontSize: 12 }}>{ReplyCount}</Text>
+
+            </TouchableOpacity>
+            }
+
+          </View>
         </View>
 
         <View style={{ flex: 7, justifyContent: 'center' }}>
-          {/* <ParsedText
-          style={styles.text}
-          parse={
-            [
-              // {type: 'url',                       style: styles.url, onPress: this.handleUrlPress},
-              // {type: 'phone',                     style: styles.phone, onPress: this.handlePhonePress},
-              // {type: 'email',                     style: styles.email, onPress: this.handleEmailPress},
-              // {pattern: /Bob|David/,              style: styles.name, onPress: this.handleNamePress},
-              {pattern: /\[(@[^:]+):([^\]]+)\]/i, style: styles.username, onPress: this.handleNamePress, renderText: this.renderText},
-              // {pattern: /42/,                     style: styles.magicNumber},
-              {pattern: /#(\w+)/,                 style: styles.hashTag},
-            ]
-          }
-          childrenProps={{allowFontScaling: false}} */}
-          {/* <View
-            style={{
-              textAlign: 'left',
-              marginLeft: 5,
-              // fontSize: normalize (12),
-              fontWeight: 'bold',
-            }}
-          > */}
-          <HashTag style={{ justifyContent: 'center', marginLeft: 5 }}>
+
+          <HashTag style={{ marginTop: 5, marginLeft: 6, marginRight: 6, fontSize: normalize(14) }}>
             {data.name}
           </HashTag>
+          <Text
+            style={{
+              marginTop: 0,
+              // textAlign: 'left',
+              marginLeft: 6,
+              fontSize: normalize(9),
+              color: 'grey'
+            }}
+          // textSize = {normalize(9)}
+          >
+            Location : {data.place}
+          </Text>
+          {data.details &&
+            <HashTag
+              style={{
+                marginTop: 2,
+                marginLeft: 5,
+                marginRight: 6,
+
+                // backgroundColor : 'green'
+                // textAlign: 'justify',
+                fontSize: normalize(10)
+              }}
+            // textSize = {normalize(10)}
+            >
+              {data.details}
+            </HashTag>}
           {/* </View> */}
           {/* <HashTag hashTagString = "a askbdasdb @sakdasbdksabd bsa #kuldeep #bbbb sadas #cccc kjsndksadajk"/> */}
           {/* </ParsedText> */}
-          <Text
-            style={{
-              textAlign: 'left',
-              marginLeft: 5,
-              fontSize: normalize(10),
-            }}
-          >
-            {data.place}
-          </Text>
+          <View style={{ flex: 1, height: 10 }} />
         </View>
 
+        <TouchableOpacity style={{ position: 'absolute', justifyContent: 'flex-end', alignItems: 'center', height: 50, width: 50, flexDirection: 'row', right: 10 }} onPress={() => props.moreButtonTapped(data)}>
 
-
-      </View>
-
-      {/* middle */}
-      <View style={{}}>
-        {data.details &&
-          <HashTag
-            style={{
-              marginBottom: 5,
-              marginLeft: 20,
-              marginRight: 20,
-              textAlign: 'justify',
-            }}
-          >
-            {data.details}
-          </HashTag>}
-        {data.picture &&
-          <FastImage
-            resizeMode='stretch' //"contain"
-            // source={require ('../../../assets/1.png')}
-            source={{...data.picture,  priority: FastImage.priority.normal}}
-            style={{ flex: 1, height: height, width: '100%' }}
-          />}
-      </View>
-
-      {/* footer */}
-      <View style={{ height: normalize(35), flexDirection: 'row' }}>
-        {/* <View style={{ flex: 0.4 }}> */}
-
-        <TouchableOpacity style={{ justifyContent: 'flex-end', alignItems: 'center', width: "25%", flexDirection: 'row' }} onPress={() => {
-          if (MOBILE_NUMBER_ === data.Mobile_Number) {
-            alert("You can not like your own post");
-          } else {
-            if (data.Is_Liked === 1) {
-              props.onPressDisLike(data);
-            } else {
-              props.onPressLike(data);
-            }
-          }
-
-
-        }}>
-          <Text style={{ fontSize: 14 }}>{LikingCount}</Text>
-          <Image
-            resizeMode="contain"
-            style={{ width: 18, height: 18, marginRight: 5, marginLeft: 8 }}
-            source={imageLike}
-           
-          />
-        </TouchableOpacity>
-
-        {data.IsOP === 'Y' && <TouchableOpacity style={{ justifyContent: 'flex-end', alignItems: 'center', width: "25%", flexDirection: 'row' }} onPress={() => props.onPressReply(data)}>
-          <Text style={{ fontSize: 14 }}>{ReplyCount}</Text>
-          <Image
-            resizeMode="contain"
-            style={{ width: 18, height: 18, marginRight: 5, marginLeft: 8 }}
-            source={require('../../../assets/ReportImages/reply.png')}
-          />
-        </TouchableOpacity>
-        }
-        <TouchableOpacity style={{ position : 'absolute', justifyContent: 'flex-end', alignItems: 'center', height: "100%", width: "25%", flexDirection: 'row' ,right : 10}} onPress={() => props.moreButtonTapped(data)}>
-
-          <Text></Text>
           <Image
             resizeMode="contain"
             style={{ width: 22, height: 22, marginRight: 5, marginLeft: 8 }}
@@ -172,20 +146,22 @@ const caseCard = props => {
           />
         </TouchableOpacity>
 
-
-        {/* <TouchableOpacity
-            style={{
-              flex: 1,
-              backgroundColor: '#C0C0C0',
-              borderRadius: 10,
-              margin: 10,
-            }}
-          >
-            <Text style={{ textAlign: 'center', padding: 2 }}>Comments</Text>
-          </TouchableOpacity>
-        </View> */}
-        {/* <View style={{}}><Text>sad sadsada </Text></View> */}
       </View>
+
+      {/* middle */}
+      <View style={{}}>
+
+        {data.picture &&
+          <FastImage
+            resizeMode='stretch' //"contain"
+            // source={require ('../../../assets/1.png')}
+            source={{ ...data.picture, priority: FastImage.priority.normal }}
+            style={{ flex: 1, height: height, width: '100%' }}
+          />}
+      </View>
+
+      {/* footer */}
+
 
     </View >
   );

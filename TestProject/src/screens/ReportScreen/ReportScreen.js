@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, SafeAreaView, Text, ScrollView, RefreshControl, Dimensions, ActionSheetIOS, FlatList } from 'react-native';
+import { View, StyleSheet, SafeAreaView, Text, ScrollView, RefreshControl, Dimensions, ActionSheetIOS, FlatList, Image,TouchableOpacity } from 'react-native';
 import { Navigation } from 'react-native-navigation';
 import { PropTypes } from 'prop-types';
 import CustomButton from '../../components/UI/ButtonMod/CustomButtom';
-import { normalize, getUserID, getCurrentLocation } from '../../../Constant';
+import { normalize, getUserID, getCurrentLocation, APP_GLOBAL_COLOR } from '../../../Constant';
 import CaseCard from '../../components/UI/CaseCard/CaseCard';
 import Draggable from 'react-native-draggable';
 import { TIMELINE_DATA, MOBILE_NUMBER_, LIKDISLIKE_POST, REPORT_POST } from '../../../Apis';
@@ -12,6 +12,7 @@ import { authHeaders } from '../../../Constant';
 import { Platform } from 'react-native';
 
 import Share, { ShareSheet, Button } from 'react-native-share';
+
 
 // import SharingCard from '../../components/UI/Sharing/SharingCard';
 export default class ReportScreen extends Component {
@@ -37,8 +38,7 @@ export default class ReportScreen extends Component {
       //   video: null //"http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
       // },
     ],
-    iconSrc: require('../../assets/report.png'),
-
+    iconSrc: require('../../assets/Profile/compose_.png'),
     refreshing: false,
     visible: false
   };
@@ -60,7 +60,7 @@ export default class ReportScreen extends Component {
       component: {
         name: 'ComposeScreen',
         passProps: {
-          selfObj : this._onRefresh
+          selfObj: this._onRefresh
         }
       },
     });
@@ -69,18 +69,21 @@ export default class ReportScreen extends Component {
   _onRefresh = () => {
     // alert("asd");
     this.setState({ refreshing: true });
-    getUserID().then((userId) => {
-      getCurrentLocation((location) => {
-        if (location) {
-          if (typeof (location) === 'string') {
-            alert(location);
-            this.setState({ refreshing: false });
-          } else {
-            this.fetchTimeLineData(userId, location);
-          }
-        }
 
-      })
+
+    getUserID().then((userId) => {
+      this.fetchTimeLineData(userId, null);
+      //   getCurrentLocation((location) => {
+      //     if (location) {
+      //       if (typeof (location) === 'string') {
+      //         alert(location);
+      //         this.setState({ refreshing: false });
+      //       } else {
+      //         this.fetchTimeLineData(userId, location);
+      //       }
+      //     }
+
+      //   })
 
     })
   }
@@ -93,19 +96,7 @@ export default class ReportScreen extends Component {
 
     let body = JSON.stringify({
 
-      "latitude": '27',// location.latitude.toString(),
-      "longitude": '77',//location.longitude.toString(),
-
-      "mobileNumber": MOBILE_NUMBER_,
-      "radians": "0",
-      "Location_Name": "noida",
-
-      "timestamp": timeStamp,
-
-      "deviceTocken": "xxxxxxxxxxxxxxxx",
-      "platform": Platform.OS === 'ios' ? "iOS" : "android",
-      "countryName": "India",
-      "appVersion": "5.2.2"
+      "userId": user_id
 
     });
     // alert(body);
@@ -120,7 +111,13 @@ export default class ReportScreen extends Component {
       .then((responseJson) => {
 
         //  alert(JSON.stringify(responseJson));
-        this.filterData(responseJson.result);
+        if (Array.isArray(responseJson)) {
+          this.filterData(responseJson);
+        } else {
+          alert(responseJson.response);
+          this.setState({ refreshing: false });
+        }
+
       })
       .catch((error) => {
         this.setState({ refreshing: false });
@@ -131,51 +128,63 @@ export default class ReportScreen extends Component {
 
   requestForLikeDislike(data, isLiked) {
 
-    let body = JSON.stringify({
+    getUserID().then((userId) => {
 
-      "latitude": "27",
-      "longitude": "77",
+      let body = JSON.stringify({
 
-      "mobileNumber": MOBILE_NUMBER_,
-      "messageId": data.Message_Id,
-      "isLiked": isLiked,
+        "message":
+        {
+          "messageId": data.messageId
+        },
+        "userMaster":
+        {
+          "userId": userId
+        },
+        "latitude": "",
+        "longitude": "",
+        "isLiked": isLiked
+      });
 
 
 
-      "User_Mobile_Number": data.Mobile_Number
+
+
+
+      // alert(body);
+      // return;
+      // µ
+      fetch(LIKDISLIKE_POST, {
+        method: 'POST',
+        headers: authHeaders(),
+        body: body,
+      }).then((response) => response.json())
+
+        .then((responseJson) => {
+
+          this._onRefresh();
+          // alert(JSON.stringify(responseJson));
+
+          // var dataObj = this.state.case;
+          // var index = dataObj.indexOf(data);
+          // data.Is_Liked = isLiked;
+          // data.LikingCount = data.LikingCount + ((isLiked == 1) ? 1 : -1);
+          // data.LikingCount = (data.LikingCount < 0) ? 0 : data.LikingCount;
+
+
+          // dataObj[index] = dataObj;
+          // this.setState({case : [...dataObj] });
+
+          //  alert(JSON.stringify(responseJson));
+          // this.filterData(responseJson.result);
+        })
+        .catch((error) => {
+          this.setState({ refreshing: false });
+          console.error(error);
+        });
+
 
     });
-    // alert(body);
-    // return;
-    // µ
-    fetch(LIKDISLIKE_POST, {
-      method: 'POST',
-      headers: authHeaders(),
-      body: body,
-    }).then((response) => response.json())
 
-      .then((responseJson) => {
-
-        this._onRefresh();
-        // alert(JSON.stringify(responseJson));
-
-        // var dataObj = this.state.case;
-        // var index = dataObj.indexOf(data);
-        // data.Is_Liked = isLiked;
-        // data.LikingCount = data.LikingCount + ((isLiked == 1) ? 1 : -1);
-        // data.LikingCount = (data.LikingCount < 0) ? 0 : data.LikingCount;
-
-
-        // dataObj[index] = dataObj;
-        // this.setState({case : [...dataObj] });
-
-        //  alert(JSON.stringify(responseJson));
-        // this.filterData(responseJson.result);
-      })
-      .catch((error) => {
-        this.setState({ refreshing: false });
-        console.error(error);
-      });
   }
 
 
@@ -191,7 +200,7 @@ export default class ReportScreen extends Component {
       "Mobile_Number_Against": data.Mobile_Number,
       "Mobile_Number": MOBILE_NUMBER_,
       "Report_Type": "Hurts Sentiments",
-      
+
       "Location_Name": "sector 18, Noida",
 
       "Message_Id": data.Message_Id,
@@ -222,7 +231,7 @@ export default class ReportScreen extends Component {
 
       .then((responseJson) => {
 
-        
+
         alert(JSON.stringify(responseJson));
         this._onRefresh();
 
@@ -255,16 +264,16 @@ export default class ReportScreen extends Component {
       let innerData = {
         key: key,
         picture: (dict.Image_Path && (dict.messageType === 'Image' || dict.messageType === 'Gif')) ? { uri: dict.Image_Path } : videoURL,
-        name: "@" + dict.Mobile_Number,
+        name: dict.Mobile_Number ? ("@" + dict.Mobile_Number) : "Anonymous",
         place: dict.Location_Name,
-        details: dict.Message ? dict.Message : null,
+        details: dict.message ? dict.message : null,
         caseId: null,
         video: (dict.contentUrl && dict.messageType === 'Video') ? { uri: dict.contentUrl } : null,// "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
 
-        height_Image: dict.height_Image,
-        width_Image: dict.width_Image,
+        height_Image: dict.height,
+        width_Image: dict.width,
         Is_Liked: dict.Is_Liked,
-        LikingCount: dict.LikingCount,
+        LikingCount: dict.likingCount,
         ...dict
 
       }
@@ -337,7 +346,7 @@ export default class ReportScreen extends Component {
     } else {
       this.requestForReport(data);
     }
-    
+
   }
 
 
@@ -439,14 +448,15 @@ export default class ReportScreen extends Component {
         style={{ flex: 1, backgroundColor: 'rgba(210,210,208,1)' }}
       >
 
-        <View style={styles.headerView} backgroundColor="rgba(242,241,244,1)">
+        <View style={styles.headerView} backgroundColor={APP_GLOBAL_COLOR}>
 
-          <View style={{ flex: 1, backgroundColor: 'rgba(87,48,134,1)' }}>
+          <View style={{ flex: 1, backgroundColor: 'clear' }}>
             <CustomButton
               source={require('../../assets/home.png')}
               style={{
                 flexDirection: 'row',
                 flex: 1,
+                margin: normalize(5)
               }}
               onPress={this.homeButtonTapped}
             />
@@ -462,13 +472,15 @@ export default class ReportScreen extends Component {
           refreshing={this.state.refreshing}
           data={this.state.case}
           renderItem={({ item }) =>
-            <CaseCard
-              moreButtonTapped={this.moreButtonTapped}
-              onPressLike={(data2) => this.likeButtonTapped(data2)}
-              onPressDisLike={(data2) => this.disLikeButtonTapped(data2)}
-              data={item}
-              onPressReply={(data2) => this.replyButtonTapped(data2)}
-            />
+            <TouchableOpacity onPress = {() => this.replyButtonTapped(item)}>
+              <CaseCard
+                moreButtonTapped={this.moreButtonTapped}
+                onPressLike={(data2) => this.likeButtonTapped(data2)}
+                onPressDisLike={(data2) => this.disLikeButtonTapped(data2)}
+                data={item}
+                onPressReply={(data2) => this.replyButtonTapped(data2)}
+              />
+            </TouchableOpacity>
           }
         >
         </FlatList>
@@ -577,13 +589,15 @@ export default class ReportScreen extends Component {
         <Draggable
           reverse={false}
           renderShape='image'
-          // backgroundColor="#000000"
+          backgroundColor={APP_GLOBAL_COLOR}
           offsetX={SCREEN_WIDTH / 2 - 10}
           offsetY={SCREEN_HEIGHT / 2 - 50}
           imageSource={this.state.iconSrc}
-          renderSize={60}
+          renderSize={50}
           pressDrag={this.showCompose}
-        />
+        >
+          {/* <Image source = {require('../../assets/1.png')} styles = {{flex : 1}} /> */}
+        </Draggable>
 
       </SafeAreaView>
     );
@@ -592,11 +606,12 @@ export default class ReportScreen extends Component {
 
 const styles = StyleSheet.create({
   headerView: {
-    flex: 0.07,
+    // flex: 0.08,
     justifyContent: 'center',
     flexDirection: 'row',
     elevation: 5,
     backgroundColor: 'white',
+    height: Dimensions.get('window').height * 0.07
   },
   textheaderView: {
     flex: 5,
@@ -604,9 +619,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   textView: {
+    position: 'absolute',
     backgroundColor: 'transparent',
-    marginLeft: 10,
-    fontSize: normalize(14),
+    right: 15,
+    fontSize: normalize(17),
+    fontWeight: 'bold',
+    color: 'white'
   },
   bottomView: {
     flex: 0.93,

@@ -52,18 +52,16 @@ Navigation.registerComponent('Sharing', () => Sharing);
 Navigation.registerComponent('ComposeScreen', () => ComposeScreen);
 
 import { AsyncStorage } from "react-native"
-import { DEFAULT_USER_DATA, DEFAULT_USER_ID, getUserData, saveUserID } from './Constant';
+import { DEFAULT_USER_DATA, DEFAULT_USER_ID, getUserData, saveUserID, saveUserData } from './Constant';
 
-
-// saveUserID("20");
-
-
+// saveUserID(null);
+// saveUserData(null);
 Navigation.events().registerAppLaunchedListener(() => {
   getUserData().then((data) => {
 
-    // data = {};
+    // alert(data);
 
-    if (data) {
+    if (data && data.confirmed) {
       // Navigation.events().registerAppLaunchedListener(() => {
       Navigation.setRoot({
         root: {
@@ -98,7 +96,30 @@ Navigation.events().registerAppLaunchedListener(() => {
         },
       });
       // });
-    } else {
+    } else if(data) {
+      Navigation.setRoot({
+        root: {
+          stack: {
+            children: [
+              {
+                component: {
+                  id: "Profile", // Optional, Auto generated if empty
+                  name: "Profile",
+                  options: {
+                    topBar: {
+                      visible: false,
+                      drawBehind: true,
+                      animate: false
+                    },
+                  },
+
+                },
+              },
+            ],
+          },
+        },
+      });
+    }else {
       Navigation.setRoot({
         root: {
           stack: {
@@ -114,7 +135,6 @@ Navigation.events().registerAppLaunchedListener(() => {
                       animate: false
                     },
                   },
-
                 },
               },
             ],

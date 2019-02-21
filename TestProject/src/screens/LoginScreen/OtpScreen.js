@@ -1,26 +1,23 @@
 import React, { Component } from 'react';
 import {
-  Text,
   View,
   StyleSheet,
   Dimensions,
-  Button,
   KeyboardAvoidingView,
   Platform,
-  TextInput
 } from 'react-native';
 import DefaultInput from '../../components/UI/DefaultInput/DefaultInput';
 import { Navigation } from 'react-native-navigation';
 import { PropTypes } from 'prop-types';
 import ButtonMod from '../../components/UI/ButtonMod/ButtonMod';
 import HeaderText from '../../components/UI/HeaderText/HeaderText';
+
 import { VALIDATE_OTP, DEBUG, GET_USER_DETAILS_EMAIL } from '../../../Apis';
-import { saveUserID, authHeaders } from '../../../Constant';
+import { saveUserID, authHeaders, defaultUser, saveUserData } from '../../../Constant';
 
 import Loading from 'react-native-whc-loading';
 import Geolocation from 'react-native-geolocation-service';
-import {PermissionsAndroid} from 'react-native';
-
+// import { PermissionsAndroid } from 'react-native';
 
 export default class OtpScreen extends Component {
   static propTypes = {
@@ -32,41 +29,17 @@ export default class OtpScreen extends Component {
     // this.getLocation();
   }
   state = {
-    name: null,
-    ...this.props
+    otp: null,
+    // ...this.props
   }
-
-  // async function requestCameraPermission() {
-  //   try {
-  //     const granted = await PermissionsAndroid.request(
-  //       PermissionsAndroid.PERMISSIONS.CAMERA,
-  //       {
-  //         title: 'Cool Photo App Camera Permission',
-  //         message:
-  //           'Cool Photo App needs access to your camera ' +
-  //           'so you can take awesome pictures.',
-  //         buttonNeutral: 'Ask Me Later',
-  //         buttonNegative: 'Cancel',
-  //         buttonPositive: 'OK',
-  //       },
-  //     );
-  //     if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-  //       console.log('You can use the camera');
-  //     } else {
-  //       console.log('Camera permission denied');
-  //     }
-  //   } catch (err) {
-  //     console.warn(err);
-  //   }
-  // }
 
   getLocation = () => {
     //this.refs.loading.show();
     // geolocation.setRNConfiguration(config);
-    
-    
+
     Geolocation.getCurrentPosition(
       (position) => {
+
         const initialPosition = JSON.stringify(position);
 
         // let latlong = position.coords.latitude.toString() +  "," + position.coords.longitude.toString()
@@ -76,9 +49,8 @@ export default class OtpScreen extends Component {
           if (position.mocked == true) {
             this.refs.loading.close();
             setTimeout(function () {
-              alert("you are using fake location");
+              alert("You are using fake location");
             }, 1000)
-
             return;
           }
         }
@@ -94,14 +66,10 @@ export default class OtpScreen extends Component {
         // alert(locationErrorMessage)
         // this.showDialog();
         this.mobileNumberSubmit(null, this);
-
-
       },
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
     );
   }
-
-
 
   mobileNumberSubmit = (locationStr, thisObj) => {
     // let thisObj = this;
@@ -124,30 +92,30 @@ export default class OtpScreen extends Component {
     }
 
     let body = null;
+    
     if (locationStr) {
       body = JSON.stringify({
         userMobile: this.props.mobileNumber,
         userCountryCode: this.props.code,
-        userOtp: this.state.name,
+        userOtp: this.state.otp,
         userInitCoord: locationStr
-
       })
     } else {
       body = JSON.stringify({
         userMobile: this.props.mobileNumber,
         userCountryCode: this.props.code,
-        userOtp: this.state.name
-
+        userOtp: this.state.otp
       })
     }
 
     // alert(body);
 
-    console.log(this.state.name);
-    console.log(this.state.code);
-    console.log(this.state.mobileNumber);
+    // console.log(this.state.otp);
+    // console.log(this.state.code);
+    // console.log(this.state.mobileNumber);
     //     return;
     // alert(body);
+
     fetch(VALIDATE_OTP, {
       method: 'POST',
       headers: authHeaders(),
@@ -161,7 +129,10 @@ export default class OtpScreen extends Component {
           // alert(JSON.stringify(responseJson));
           if (responseJson) {
             if (responseJson.userId) {
+
               saveUserID(responseJson.userId);
+              saveUserData(responseJson);
+              // alert(JSON.stringify(responseJson));
 
               if (location) {
 
@@ -170,11 +141,11 @@ export default class OtpScreen extends Component {
                     id: 'Profile',
                     name: 'Profile',
                     passProps: {
-                      email: null,
-                      image: null,
-                      name: null,
+                      // email: null,
+                      image: responseJson.image ? responseJson.image : defaultUser,  //null
+                      name: responseJson.name ? responseJson.name : null,           //null 
                       mobileNumber: thisObj.props.mobileNumber,
-                      code: thisObj.props.code
+                      code: thisObj.props.code,
                     },
                     options: {
                       topBar: {
@@ -188,52 +159,39 @@ export default class OtpScreen extends Component {
 
               } else {
 
-                // setTimeout(function () {
                 Navigation.push(thisObj.props.componentId, {
                   component: {
                     name: 'AreaScreen',
                     passProps: {
-
                       data: responseJson.areaStateMap,
                       mobileNumber: thisObj.props.mobileNumber,
-                      code: thisObj.props.code
+                      code: thisObj.props.code,
+                      image: responseJson.image ? responseJson.image : defaultUser, // ++
+                      name: responseJson.name ? responseJson.name : null,            // ++
                     },
                   },
                 });
-                // }, 1000)
-
-
               }
-
-
             } else {
               alert("Invalid OTP");
             }
-
             // saveUserID(responseJson.userId);
-
-
           } else {
             // this.getUser(this);
             alert("Invalid OTP");
           }
-        }, 1000)
-
+        }, 300)
         // return responseJson;
       })
       .catch((error) => {
         this.refs.loading.close();
         console.error(error);
       });
-
-
   };
 
-
-
   textChanged = (sender) => {
-    console.log(sender);
-    this.setState({ name: sender });
+    // console.log(sender);
+    this.setState({ otp: sender });
   }
 
   render() {
@@ -258,7 +216,13 @@ export default class OtpScreen extends Component {
               Enter OTP
           </HeaderText>
           </View>
-          <DefaultInput onChangeText={(text) => this.textChanged(text)} placeholder="Enter OTP" secureTextEntry={true} />
+
+          <DefaultInput 
+              onChangeText={(text) => this.textChanged(text)} 
+              placeholder="Enter OTP" 
+              secureTextEntry={true} 
+             />
+
           <ButtonMod onPress={this.getLocation} color="rgba(86,49,135,1)">
             Submit
           </ButtonMod>

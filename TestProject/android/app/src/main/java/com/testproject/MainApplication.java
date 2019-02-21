@@ -30,6 +30,7 @@ import com.reactnativenavigation.react.ReactGateway;
 
 import com.agontuk.RNFusedLocation.RNFusedLocationPackage;
 
+
 public class MainApplication extends NavigationApplication implements ShareApplication, ReactApplication{
 
   private static CallbackManager mCallbackManager = CallbackManager.Factory.create();

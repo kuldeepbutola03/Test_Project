@@ -32,16 +32,32 @@ export const TREND_CDM = BASE_URL + 'trends/getCDMResourceGprHistoryDetails';
 
 export const UPDATE_USER_AREA = BASE_URL + 'user/insertBaseAreaDetails';
 
-export const TIMELINE_DATA = "http://holygrailwar.babbles.zone/" + 'getUserTimeLine';
-export const LIKDISLIKE_POST = "http://holygrailwar.babbles.zone/" + 'messageLikeDislike';
+// export const TIMELINE_DATA = "http://holygrailwar.babbles.zone/" + 'getUserTimeLine';
+// export const LIKDISLIKE_POST = "http://holygrailwar.babbles.zone/" + 'messageLikeDislike';
 
-export const REPORT_POST = "http://ios.babbles.zone/Holygrail/" + "Report_Abuse.php";
+// export const REPORT_POST = "http://ios.babbles.zone/Holygrail/" + "Report_Abuse.php";
 
-export const FETCH_REPLY_POST = "http://holygrailwar.babbles.zone/" + "getUserMessage";
+// export const FETCH_REPLY_POST = "http://holygrailwar.babbles.zone/" + "getUserMessage";
 
 
-export const MESSAGE_COMPOSE = "http://holygrailwar.babbles.zone/" + 'messageCompose';
-export const MEDIA_COMPOSE = "http://holygrailwar.babbles.zone/" + 'mediaCompose';
-export const MESSAGE_REPLY = "http://holygrailwar.babbles.zone/" + 'messageReply';
-export const MEDIA_MESSAGE_REPLY = "http://holygrailwar.babbles.zone/" + 'mediaMessageReply';
+// export const MESSAGE_COMPOSE = "http://holygrailwar.babbles.zone/" + 'messageCompose';
+// export const MEDIA_COMPOSE = "http://holygrailwar.babbles.zone/" + 'mediaCompose';
+// export const MESSAGE_REPLY = "http://holygrailwar.babbles.zone/" + 'messageReply';
+// export const MEDIA_MESSAGE_REPLY = "http://holygrailwar.babbles.zone/" + 'mediaMessageReply';
 // Insignia/
+
+export const TIMELINE_DATA = BASE_URL + 'message/getUserTimeLine';
+export const LIKDISLIKE_POST = BASE_URL + 'message/messageLikeDislike';
+
+export const REPORT_POST = BASE_URL  + "Report_Abuse.php"; //Do not have the api
+
+export const FETCH_REPLY_POST = BASE_URL + "message/getMessageByThreadId";
+
+
+export const MESSAGE_COMPOSE = BASE_URL + 'message/messageCompose';
+export const MEDIA_COMPOSE = BASE_URL + 'mediaCompose';//Do not have the api
+
+export const MESSAGE_REPLY = BASE_URL + 'message/messageReply';
+export const MEDIA_MESSAGE_REPLY = "http://holygrailwar.babbles.zone/" + 'mediaMessageReply';//Do not have the api
+
+// http://localhost/customMapAPIs/message/messageCompose

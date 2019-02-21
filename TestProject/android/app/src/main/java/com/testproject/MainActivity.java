@@ -5,6 +5,7 @@ import com.imagepicker.permissions.OnImagePickerPermissionsCallback; // <- add t
 import com.facebook.react.modules.core.PermissionListener; // <- add this import
 import android.content.Intent;
 
+
 public class MainActivity extends NavigationActivity implements OnImagePickerPermissionsCallback {
   private PermissionListener listener; //imagepicker
     /**

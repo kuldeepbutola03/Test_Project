@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import ParsedText from 'react-native-parsed-text';
 
 import { View, Text, TouchableOpacity , StyleSheet} from 'react-native';
+import { normalize } from '../../../../Constant';
 
 
 
@@ -19,7 +20,7 @@ export default class HashTag extends React.Component {
 
   handleNamePress(name, matchIndex /*: number*/) {
     // AlertIOS.alert(`Hello ${name}`);
-    alert(name);
+    // alert(name);
   }
 
   handleEmailPress(email, matchIndex /*: number*/) {
@@ -27,7 +28,7 @@ export default class HashTag extends React.Component {
   }
   handleHashTagPress(hashTag, matchIndex /*: number*/) {
     // AlertIOS.alert(`send email to ${email}`);
-    alert(hashTag);
+    // alert(hashTag);
   }
   
 
@@ -39,10 +40,12 @@ export default class HashTag extends React.Component {
   }
 
   render() {
+    
+    // let textStyle = this.props.textSize ? {...styles.text, fontSize : this.props.textSize} : {...styles.text, fontSize : normalize(10)};
     return (
       <View style={{...styles.container, ...this.props.style}}>
         <ParsedText
-          style={styles.text}
+          style={{...styles.text , fontSize : this.props.style.fontSize ? this.props.style.fontSize : 13}}
           parse={
             [
             //   {type: 'url',                       style: styles.url, onPress: this.handleUrlPress},
@@ -66,7 +69,7 @@ export default class HashTag extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
     justifyContent: 'flex-start',
     // alignItems: 'center',
     // backgroundColor: '#F5FCFF',
@@ -83,7 +86,7 @@ const styles = StyleSheet.create({
 
   text: {
     color: 'black',
-    fontSize: 15,
+
   },
 
   phone: {

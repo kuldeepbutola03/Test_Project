@@ -4,7 +4,6 @@ import {
     View,
     StyleSheet,
     Dimensions,
-
     KeyboardAvoidingView,
     Platform,
     TouchableOpacity,
@@ -17,7 +16,7 @@ import { PropTypes } from 'prop-types';
 // import PhoneInput from 'react-native-phone-input';
 // import HeaderText from '../../components/UI/HeaderText/HeaderText';
 import { SEND_OTP, DEBUG, UPDATE_USER_AREA } from '../../../Apis';
-import { authHeaders, normalize, getUserID } from '../../../Constant';
+import { authHeaders, normalize, getUserID, saveUserData } from '../../../Constant';
 // import Accordion from 'react-native-collapsible/Accordion';
 
 import Loading from 'react-native-whc-loading';
@@ -28,12 +27,9 @@ export default class AreaScreen extends Component {
     };
 
     state = {
-
         activeSections: [0, 1],
-
         data: [],
         originalData: []
-
     }
     user_id = 1;
     sectionSelected = -1;
@@ -128,18 +124,22 @@ export default class AreaScreen extends Component {
             .then((responseJson) => {
 
                 thisObject.refs.loading.close();
+
                 setTimeout(function () {
                     // alert(responseJson.response);
+
+                    saveUserData(thisObject.props);  // ++
+
                     Navigation.push(thisObject.props.componentId, {
                         component: {
                             id: 'Profile',
                             name: 'Profile',
                             passProps: {
-                                email: null,
-                                image: null,
-                                name: null,
+                                // email: null,
+                                image: thisObject.props.image,  // ++  null
+                                name: thisObject.props.name,    // ++  null
                                 mobileNumber: thisObject.props.mobileNumber,
-                                code: thisObject.props.code
+                                code: thisObject.props.code,
                             },
                             options: {
                                 topBar: {
@@ -157,15 +157,10 @@ export default class AreaScreen extends Component {
                 this.refs.loading.close();
                 console.error(error);
             });
-
-
     }
 
     render() {
         // let data = [];
-
-
-
 
         var { height, width } = Dimensions.get('window');
         const options = {
@@ -188,7 +183,7 @@ export default class AreaScreen extends Component {
                 >
                     <SectionList style={{ flex: 1, width: Dimensions.get('window').width }}
                         renderItem={({ item, index, section }) =>
-                            <View style={{ flex: 1 , height: 40, width: null, justifyContent: "center" }}>
+                            <View style={{ flex: 1, height: 40, width: null, justifyContent: "center" }}>
                                 <TouchableOpacity onPress={() => {
                                     this.hitServerToUpdateData(this, index, section, item);
                                 }}>
@@ -234,9 +229,6 @@ export default class AreaScreen extends Component {
                         sections={this.state.data}
                         keyExtractor={(item, index) => item + index}
                     />
-
-
-
 
                     <Loading
                         ref="loading" />

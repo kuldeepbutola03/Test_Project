@@ -16,13 +16,16 @@ import MenuButtons from '../../components/UI/ProfileView/MenuButtons';
 import { Navigation } from 'react-native-navigation/';
 import { PropTypes } from 'prop-types';
 import profileView from '../../components/UI/ProfileView/ProfileView';
-import { normalize, getUserID, DEFAULT_USER_ID, authHeaders, getUserData } from '../../../Constant';
+import { normalize, getUserID, DEFAULT_USER_ID, authHeaders, getUserData, fileToBase64 } from '../../../Constant';
 import ScoreView from '../../components/UI/ProfileCard/ScoreView';
 import HeatMap from '../../components/UI/HeatMap/HeatMap';
 import { LANDING_RESOURCES, LANDING_CDM, DEBUG, LANDING_PDM } from '../../../Apis';
 
 import Geolocation from 'react-native-geolocation-service';
 // import Dialog from 'react-native-dialog';
+// import RNImgToBase64 from 'react-native-image-base64';
+
+// var RNFS = require('react-native-fs');
 
 export default class HomeScreen extends Component {
 
@@ -31,6 +34,8 @@ export default class HomeScreen extends Component {
 
   static propTypes = {
     componentId: PropTypes.string,
+    base64: ''
+
   };
 
   constructor(props) {
@@ -241,7 +246,7 @@ export default class HomeScreen extends Component {
 
   }
 
-  
+
   componentDidMount() {
     // getUserID();
     AsyncStorage.getItem(DEFAULT_USER_ID).then((value) => {
@@ -251,18 +256,15 @@ export default class HomeScreen extends Component {
       this.setState({ user_id: userID })
     })
 
-    
+
+    // alert(JSON.stringify(this.props));
 
 
     this.fetchCurrentLocation();
     // alert(getUserID());
 
-    BackHandler.addEventListener('hardwareBackPress', () => {
-      return true;
-    });
 
   }
-
 
   requestToServer() {
     // return;
@@ -585,7 +587,7 @@ export default class HomeScreen extends Component {
         forceInset={{ bottom: 'always' }}
         style={{ flex: 1, backgroundColor: 'rgba(210,210,208,1)' }}
       >
-
+        {/* <Image source = {{uri : 'data:image/png;base64,' + this.state.base64string}}></Image> */}
 
         <View style={stylesTopView.container}>
           <Image
@@ -597,8 +599,7 @@ export default class HomeScreen extends Component {
               marginBottom: normalize(5),
               borderRadius: normalize(40) / 2,
             }}
-            source={this.props.data.image}
-          />
+            source={{uri:this.props.data.image}}          />
 
           <Text
             style={{
