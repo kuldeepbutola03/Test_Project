@@ -32,6 +32,7 @@ export default class Profile extends Component {
       name: this.props.name ? this.props.name : "",
       username: this.props.username ? this.props.username : "",
       confirmed: false,
+      isUserNameDisabled : (this.props.username !== null)
       // isFocusedUserName: false,
       // isFocusedName: false,
       // nameBorderColor: "#eee",
@@ -164,7 +165,7 @@ export default class Profile extends Component {
           enabled
         >
           <View style={{ marginTop: 10 }}>
-            <Image source={{ uri: this.state.image }} style={styles.uploadAvatar} />
+            <Image source={{ uri: "data:image/png;base64,"+ this.state.image }} style={styles.uploadAvatar} />
             <EditButton onPress={this.imagePicker} />
           </View>
 
@@ -172,6 +173,7 @@ export default class Profile extends Component {
             placeholder="@username"
             value={this.state.username}
             onChangeText={this.changeText}
+            disabled = {this.state.username !== null}
           />
 
           <DefaultInput
@@ -180,6 +182,7 @@ export default class Profile extends Component {
             onChangeText={(text) => {
               this.setState({ name: text })
             }}
+            
           />
 
           <ButtonMod onPress={this.toHomeScreen} color="rgba(86,49,135,1)" >

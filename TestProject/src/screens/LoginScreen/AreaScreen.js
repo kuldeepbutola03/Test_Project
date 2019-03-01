@@ -138,6 +138,7 @@ export default class AreaScreen extends Component {
                                 // email: null,
                                 image: thisObject.props.image,  // ++  null
                                 name: thisObject.props.name,    // ++  null
+                                username: thisObject.props.username,
                                 mobileNumber: thisObject.props.mobileNumber,
                                 code: thisObject.props.code,
                             },

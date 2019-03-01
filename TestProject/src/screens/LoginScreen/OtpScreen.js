@@ -132,7 +132,7 @@ export default class OtpScreen extends Component {
 
               saveUserID(responseJson.userId);
               saveUserData(responseJson);
-              // alert(JSON.stringify(responseJson));
+              alert(JSON.stringify(responseJson));
 
               if (location) {
 
@@ -142,8 +142,9 @@ export default class OtpScreen extends Component {
                     name: 'Profile',
                     passProps: {
                       // email: null,
-                      image: responseJson.image ? responseJson.image : defaultUser,  //null
-                      name: responseJson.name ? responseJson.name : null,           //null 
+                      image: responseJson.userImageData ? responseJson.userImageData : defaultUser,  //null
+                      name: responseJson.userFirstName ? responseJson.userFirstName : null,           //null 
+                      username: responseJson.userName,
                       mobileNumber: thisObj.props.mobileNumber,
                       code: thisObj.props.code,
                     },
@@ -166,8 +167,9 @@ export default class OtpScreen extends Component {
                       data: responseJson.areaStateMap,
                       mobileNumber: thisObj.props.mobileNumber,
                       code: thisObj.props.code,
-                      image: responseJson.image ? responseJson.image : defaultUser, // ++
-                      name: responseJson.name ? responseJson.name : null,            // ++
+                      username: responseJson.userName,
+                      image: responseJson.userImageData ? responseJson.userImageData : defaultUser, // ++
+                      name: responseJson.userFirstName ? responseJson.userFirstName : null,            // ++
                     },
                   },
                 });

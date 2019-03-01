@@ -599,7 +599,7 @@ export default class HomeScreen extends Component {
               marginBottom: normalize(5),
               borderRadius: normalize(40) / 2,
             }}
-            source={{uri:this.props.data.image}}          />
+            source={{uri:  "data:image/png;base64,"+ this.props.data.image}}          />
 
           <Text
             style={{
