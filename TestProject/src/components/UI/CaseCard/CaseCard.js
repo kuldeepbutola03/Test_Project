@@ -9,8 +9,7 @@ import { MOBILE_NUMBER_ } from '../../../../Apis';
 
 import FastImage from 'react-native-fast-image'
 const caseCard = props => {
-
-  // picture={data.picture}
+  //             picture={data.picture}
   //             name={data.name}
   //             place={data.place}
   //             details={data.details}
@@ -72,14 +71,11 @@ const caseCard = props => {
                   props.onPressLike(data);
                 }
               }
-
-
             }}>
               <Image
                 resizeMode="contain"
                 style={{ width: 15, height: 15, marginRight: 3, marginLeft: 8 }}
                 source={imageLike}
-
               />
               <Text style={{ fontSize: 12 }}>{LikingCount}</Text>
 
@@ -161,7 +157,6 @@ const caseCard = props => {
       </View>
 
       {/* footer */}
-
 
     </View >
   );

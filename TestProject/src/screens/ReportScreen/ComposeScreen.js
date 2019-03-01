@@ -22,7 +22,12 @@ export default class ComposeScreen extends Component {
 
   state = {
     selected: [],
-    text: this.props.text ? this.props.text : ""
+    text: this.props.text ? this.props.text : "",
+    mimeType: '',
+    dimensions: {
+      height: null,
+      width: null
+    }
     // isVideo: false
   };
 
@@ -37,11 +42,12 @@ export default class ComposeScreen extends Component {
   openCamera = () => {
     ImagePicker.openCamera({
       mediaType: 'photo',
+      includeBase64: true
     }).then(response => {
       let media = this.state.selected;
 
       for (i = 0; i < response.length; i++) {
-        media.push({ uri: response[i].path });
+        media.push({ uri: "data:image/png;base64," + response[i].data });
       }
 
       this.setState({
@@ -60,7 +66,7 @@ export default class ComposeScreen extends Component {
       let media = this.state.selected;
 
       for (i = 0; i < 1; i++) {                //------------------ i < response.length ------------------
-        media.push({ uri: response[i].path });
+        media.push({ uri: response[i].data });
       }
       // alert(JSON.stringify(media));
       this.setState({
@@ -68,7 +74,7 @@ export default class ComposeScreen extends Component {
       });
 
     });
-    
+
   };
 
   // openVideoGallery = () => {
@@ -101,65 +107,105 @@ export default class ComposeScreen extends Component {
 
     if (this.state.selected.length > 0) {
 
-      const dateTime = +new Date();
+      const dateTime = new Date();
       const timestamp = Math.floor(dateTime / 1000) + 'IMG_0001.jpg';
       // alert(typeof (timestamp));
       let formdata = new FormData();
-      formdata.append("file", {
-        "uri": this.state.selected[0].uri,
-        "name": timestamp,
-        "type": 'image/jpg'
-      });
+      // formdata.append("file", {
+      //   "uri": this.state.selected[0].uri,
+      //   "name": timestamp,
+      //   "type": 'image/jpg'
+      // });
 
-      formdata.append("latitude", "28");
-      formdata.append("longitude", "77");
-      formdata.append("mobileNumber", MOBILE_NUMBER_);
-      formdata.append("message", this.state.text);
-      formdata.append("locationName", "noida");
-      formdata.append("userLocation", "noida");
-      formdata.append("isMessageHasWarning", "N");
-      formdata.append("abusiveWord", "a");
-      formdata.append("language", "Latn");
-      formdata.append("address", "greater noida");
-      formdata.append("countryName", "india");
-      formdata.append("platform", "iOS");
-      formdata.append("height", "2848");
-      formdata.append("width", "4288");
-      formdata.append("imgOrientation", 0);
-      formdata.append("duration", 0);
-      formdata.append("messageType", "Image");
+      getUserID().then((userId) => {
+        let body = {
+          "userMaster":
+          {
+            "userId": userId
+          },
+          "latitude": "33.3353629",
+          "longitude": "-119.5354356",
+          "message": this.state.text,
+          "height": "100",
+          "width": "200",
+          "messageType": this.state.mimeType === "image/jpeg" || this.state.mimeType === "image/png" ? "Image" : "Gif",
+          
+          "mediaContentData": this.state.selected[0].uri,
+          // "threadId" : this.props.reply ? this.props.thread : null
+        }
 
-      if (this.props.reply) {
-        formdata.append("threadId", this.props.thread);
-      }
-
-      let FETCH = this.props.reply ? MEDIA_MESSAGE_REPLY : MEDIA_COMPOSE;
-
-      fetch(FETCH, {
-        method: 'POST',
-        headers: authHeadersMedia(),
-        body: formdata,
-      }).then((response) => {
-        // alert(JSON.stringify(response)) 
-
-        // if (this.props.reply) {
-        this.props.selfObj()
-
+        // let obj = {
+        //   "userId": userId
         // }
 
+        //   for ( var key in body ) {
+        //     formdata.append(key, body[key]);
+        // }
 
-      })
+        // formdata.append("userMaster", obj);
 
-        // .then((responseJson) => {
+        // formdata.append("latitude", "28");
+        // formdata.append("longitude", "77");
+        // formdata.append("mobileNumber", MOBILE_NUMBER_);
+        // formdata.append("message", this.state.text);
+        // formdata.append("locationName", "noida");
+        // formdata.append("userLocation", "noida");
+        // formdata.append("isMessageHasWarning", "N");
+        // formdata.append("abusiveWord", "a");
+        // formdata.append("language", "Latn");
+        // formdata.append("address", "greater noida");
+        // formdata.append("countryName", "india");
+        // formdata.append("platform", "iOS");
+        // formdata.append("height", "100");
+        // formdata.append("width", "200");
+        // formdata.append("imgOrientation", 0);
+        // formdata.append("duration", 0);
+        // formdata.append("messageType", "Image");
+        // formdata.append("mediaContentData", this.state.selected[0].uri);
 
-        // alert(JSON.stringify(responseJson));
-        // this.filterData(responseJson.result);
-        // })
-        .catch((error) => {
-          // this.setState({ refreshing: false });
-          // console.error(error);
-          alert(error);
-        });
+        // console.log(JSON.stringify(formdata));
+
+        if (this.props.reply) {
+          // body = { ...body, "threadId": this.props.thread}
+
+          // body = Object.assign({ "threadId": this.props.thread }, body);
+
+          body["threadId"] = this.props.thread
+        }
+
+        body = JSON.stringify(body);
+        console.log(body);
+
+        let FETCH = this.props.reply ? MESSAGE_REPLY : MESSAGE_COMPOSE; // +_+
+
+        fetch(FETCH, {
+          method: 'POST',
+          headers: authHeaders(),
+          body: body,
+        }).then((response) => {
+          // alert(JSON.stringify(response))
+          this.cancel();
+          // if (this.props.reply) {
+          this.props.selfObj()
+
+          // }
+
+        })
+
+          // .then((responseJson) => {
+
+          // alert(JSON.stringify(responseJson));
+          // this.filterData(responseJson.result);
+          // })
+          .catch((error) => {
+            // this.setState({ refreshing: false });
+            console.error(error);
+            // alert(error);
+          });
+      });
+
+
+
 
     } else {
 
@@ -167,11 +213,7 @@ export default class ComposeScreen extends Component {
       getUserID().then((userId) => {
 
         let body = {
-
-
-          "message": this.state.text,//
-
-
+          "message": this.state.text,
           "userMaster":
           {
             "userId": userId
@@ -210,13 +252,7 @@ export default class ComposeScreen extends Component {
 
       });
 
-
-
-
-
-
     }
-
 
   }
 
@@ -230,10 +266,12 @@ export default class ComposeScreen extends Component {
 
   render() {
     let images = this.state.selected.map((image, index) => {
+      //  let img = "data:image/png;base64,"+image;
+      console.log(image)
       return (
         <View>
           <Image
-            source={image}
+            source={{ uri: "data:image/png;base64," + image.uri }}
             style={{ height: 150, width: 150, marginTop: 10, marginHorizontal: 5, borderRadius: 20 }}
           // onError={() => {this.setState({isVideo : true})}}
           />

@@ -108,6 +108,8 @@ export default class ReportReplyScreen extends Component {
 
 
   }
+
+
   requestForLikeDislike(data, isLiked) {
 
     getUserID().then((userId) => {
@@ -253,7 +255,7 @@ export default class ReportReplyScreen extends Component {
 
 
         key: key,
-        picture: (dict.Image_Path && (dict.messageType === 'Image' || dict.messageType === 'Gif')) ? { uri: dict.Image_Path } : videoURL,
+        picture: (dict.mediaContentData && (dict.messageType === 'Image' || dict.messageType === 'Gif')) ? { uri: "data:image/png;base64," + dict.mediaContentData } : videoURL,
         name: dict.Mobile_Number ? ("@" + dict.Mobile_Number) : "Anonymous",
         place: dict.Location_Name,
         details: dict.message ? dict.message : null,
@@ -264,6 +266,8 @@ export default class ReportReplyScreen extends Component {
         width_Image: dict.width,
         Is_Liked: dict.Is_Liked,
         LikingCount: dict.likingCount,
+        ReplyCount: dict.replyCount,
+        isOP: dict.isOP,
         ...dict
 
       }
@@ -479,8 +483,6 @@ export default class ReportReplyScreen extends Component {
 
     // alert(this.state.text);
 
-
-
     getUserID().then((userId) => {
 
       let body = JSON.stringify({
@@ -494,7 +496,6 @@ export default class ReportReplyScreen extends Component {
         "threadId": this.props.data.threadId,
         "message": this.state.text
       });
-
 
       // alert(MESSAGE_REPLY);
       fetch(MESSAGE_REPLY, {
@@ -575,6 +576,36 @@ export default class ReportReplyScreen extends Component {
               />
             }
           >
+            {this.state.replies.map((data, index) => {
+
+              // if (index === 0) {
+              //   return (<View style={{ padding: 1, backgroundColor: 'black', margin: 5, elevation: 100 }}>
+              //     <CaseCard
+              //       moreButtonTapped={this.moreButtonTapped}
+              //       onPressLike={(data2) => this.likeButtonTapped(data2)}
+              //       onPressDisLike={(data2) => this.disLikeButtonTapped(data2)}
+              //       data={data}
+              //       onPressReply={(data2) => { }}
+              //     />
+
+              //   </View>)
+              // }
+
+              if(data.isOP === "Y"){
+                return (
+                
+                  <CaseCard
+                    moreButtonTapped={this.moreButtonTapped}
+                    onPressLike={(data2) => this.likeButtonTapped(data2)}
+                    onPressDisLike={(data2) => this.disLikeButtonTapped(data2)}
+                    data={data}
+                    onPressReply={(data2) => { }}
+                  />
+                )
+              }
+              
+
+            })}
 
 
             {this.state.replies.map((data, index) => {
@@ -591,16 +622,19 @@ export default class ReportReplyScreen extends Component {
 
               //   </View>)
               // }
-              return (
+              if(data.isOP === "N"){
+                return (
 
-                <CaseCard
-                  moreButtonTapped={this.moreButtonTapped}
-                  onPressLike={(data2) => this.likeButtonTapped(data2)}
-                  onPressDisLike={(data2) => this.disLikeButtonTapped(data2)}
-                  data={data}
-                  onPressReply={(data2) => { }}
-                />
-              )
+                  <CaseCard
+                    moreButtonTapped={this.moreButtonTapped}
+                    onPressLike={(data2) => this.likeButtonTapped(data2)}
+                    onPressDisLike={(data2) => this.disLikeButtonTapped(data2)}
+                    data={data}
+                    onPressReply={(data2) => { }}
+                  />
+                )
+              }
+              
 
             })}
 
@@ -620,18 +654,18 @@ export default class ReportReplyScreen extends Component {
                 this.setState({ height: event.nativeEvent.contentSize.height > 100 ? 100 : event.nativeEvent.contentSize.height < 40 ? 40 : event.nativeEvent.contentSize.height })
               }}
               // style={[styles.default, {height: Math.max(35, this.state.height)}]}
-              style={{ borderRadius: 20, backgroundColor: 'white', height: this.state.height, paddingTop: 10, paddingLeft: 60, paddingRight: 15, paddingBottom: 5, margin: 5, marginRight : 50, flex: 1, }}
+              style={{ borderRadius: 20, backgroundColor: 'white', height: this.state.height, paddingTop: 10, paddingLeft: 60, paddingRight: 15, paddingBottom: 5, margin: 5, marginRight: 50, flex: 1, }}
             />
 
             <TouchableOpacity
-              style={{ position: 'absolute', bottom: 5, left: 10,  height: 40, width: 40, alignItems: 'center', justifyContent: 'center' }}
+              style={{ position: 'absolute', bottom: 5, left: 10, height: 40, width: 40, alignItems: 'center', justifyContent: 'center' }}
               onPress={this.attachment}
             >
               <Image source={require("../../assets/attach.png")} style={{ height: 25, width: 25 }} />
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={{position: 'absolute', bottom: 7, right : 10 , height: 36, width: 36, borderRadius: 18, backgroundColor: APP_GLOBAL_COLOR, alignItems: 'center', justifyContent: 'center' }}
+              style={{ position: 'absolute', bottom: 7, right: 10, height: 36, width: 36, borderRadius: 18, backgroundColor: APP_GLOBAL_COLOR, alignItems: 'center', justifyContent: 'center' }}
               onPress={this.sendReply}
             >
               <Image source={require("../../assets/send.png")} style={{ height: 20, width: 20 }} />

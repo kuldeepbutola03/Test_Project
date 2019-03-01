@@ -132,7 +132,7 @@ export default class OtpScreen extends Component {
 
               saveUserID(responseJson.userId);
               saveUserData(responseJson);
-              alert(JSON.stringify(responseJson));
+              // alert(JSON.stringify(responseJson));
 
               if (location) {
 

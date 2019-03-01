@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, SafeAreaView, Text, ScrollView, RefreshControl, Dimensions, ActionSheetIOS, FlatList, Image,TouchableOpacity } from 'react-native';
+import { View, StyleSheet, SafeAreaView, Text, ScrollView, RefreshControl, Dimensions, ActionSheetIOS, FlatList, Image, TouchableOpacity } from 'react-native';
 import { Navigation } from 'react-native-navigation';
 import { PropTypes } from 'prop-types';
 import CustomButton from '../../components/UI/ButtonMod/CustomButtom';
@@ -70,7 +70,6 @@ export default class ReportScreen extends Component {
     // alert("asd");
     this.setState({ refreshing: true });
 
-
     getUserID().then((userId) => {
       this.fetchTimeLineData(userId, null);
       //   getCurrentLocation((location) => {
@@ -82,15 +81,11 @@ export default class ReportScreen extends Component {
       //         this.fetchTimeLineData(userId, location);
       //       }
       //     }
-
       //   })
-
     })
   }
 
   fetchTimeLineData(user_id, location) {
-
-
 
     var timeStamp = Math.floor(Date.now() / 1000);
 
@@ -191,9 +186,6 @@ export default class ReportScreen extends Component {
 
   requestForReport(data) {
 
-
-
-
     let body = JSON.stringify({
 
 
@@ -206,8 +198,6 @@ export default class ReportScreen extends Component {
       "Message_Id": data.Message_Id,
       "Report_Type": "Hurts Sentiments",
 
-
-
       "Latitude": "27.5",
       "Longitude": "77.5",
       "Message": data.Message,
@@ -216,8 +206,6 @@ export default class ReportScreen extends Component {
       "User_Comments": "",
       "isOP": data.IsOP,
       "is_poll": 0
-
-
 
     });
     // alert(body);
@@ -263,17 +251,19 @@ export default class ReportScreen extends Component {
       videoURL = null; // ((dict.thumbnailUrl && dict.messageType === 'Video') ? { uri: dict.thumbnailUrl} : null)
       let innerData = {
         key: key,
-        picture: (dict.Image_Path && (dict.messageType === 'Image' || dict.messageType === 'Gif')) ? { uri: dict.Image_Path } : videoURL,
+        picture: (dict.mediaContentData && (dict.messageType === 'Image' || dict.messageType === 'Gif')) ? { uri: "data:image/png;base64,"+dict.mediaContentData } : videoURL, // ++
         name: dict.Mobile_Number ? ("@" + dict.Mobile_Number) : "Anonymous",
         place: dict.Location_Name,
         details: dict.message ? dict.message : null,
         caseId: null,
         video: (dict.contentUrl && dict.messageType === 'Video') ? { uri: dict.contentUrl } : null,// "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-
         height_Image: dict.height,
         width_Image: dict.width,
         Is_Liked: dict.Is_Liked,
+        Thread_Id : dict.threadId,
         LikingCount: dict.likingCount,
+        ReplyCount : dict.replyCount,
+
         ...dict
 
       }
@@ -287,7 +277,6 @@ export default class ReportScreen extends Component {
   }
 
   replyButtonTapped = (data) => {
-
     Navigation.push(this.props.componentId, {
       component: {
         name: 'ReportReplyScreen',
@@ -300,9 +289,7 @@ export default class ReportScreen extends Component {
             drawBehind: true,
             animate: false,
           },
-
         },
-
       }
     });
   }
@@ -333,13 +320,12 @@ export default class ReportScreen extends Component {
       this.showActionSheetForIOS();
     }
 
-
-
   }
   onCancel() {
     console.log("CANCEL")
     this.setState({ visible: false });
   }
+
   reportTapped(data) {
     if (MOBILE_NUMBER_ === data.Mobile_Number) {
       alert("You can not report your own post");
@@ -472,7 +458,7 @@ export default class ReportScreen extends Component {
           refreshing={this.state.refreshing}
           data={this.state.case}
           renderItem={({ item }) =>
-            <TouchableOpacity onPress = {() => this.replyButtonTapped(item)}>
+            <TouchableOpacity onPress={() => this.replyButtonTapped(item)}>
               <CaseCard
                 moreButtonTapped={this.moreButtonTapped}
                 onPressLike={(data2) => this.likeButtonTapped(data2)}
@@ -495,7 +481,6 @@ export default class ReportScreen extends Component {
           }
         >
 
-
           {this.state.case.map(data => (
 
             <CaseCard
@@ -517,9 +502,6 @@ export default class ReportScreen extends Component {
                 Share.shareSingle(Object.assign(shareOptions, {
                   "social": "twitter"
                 }));
-
-
-
 
               }, 300);
             }}>Twitter</Button>
