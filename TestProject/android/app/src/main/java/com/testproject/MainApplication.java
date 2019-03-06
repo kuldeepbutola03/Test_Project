@@ -2,15 +2,14 @@ package com.testproject;
 
 import android.app.Application;
 
+
 import com.facebook.CallbackManager;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 
 import com.facebook.react.ReactApplication;
-import com.dylanvann.fastimage.FastImageViewPackage;
-import cl.json.RNSharePackage;
-import cl.json.ShareApplication;
-import com.reactnative.ivpusic.imagepicker.PickerPackage;
+import com.brentvatne.react.ReactVideoPackage;
+import com.oblador.vectoricons.VectorIconsPackage;
 import com.facebook.reactnative.androidsdk.FBSDKPackage;
 import com.facebook.reactnative.androidsdk.FBSDKPackage;
 import com.horcrux.svg.SvgPackage;
@@ -27,11 +26,13 @@ import com.airbnb.android.react.maps.MapsPackage;
 import com.reactnativenavigation.NavigationApplication;
 import com.reactnativenavigation.react.NavigationReactNativeHost;
 import com.reactnativenavigation.react.ReactGateway;
-
+import org.devio.rn.splashscreen.SplashScreenReactPackage;
+import com.dylanvann.fastimage.FastImageViewPackage;
 import com.agontuk.RNFusedLocation.RNFusedLocationPackage;
+import cl.json.ShareApplication;
+import cl.json.RNSharePackage;
 
-
-public class MainApplication extends NavigationApplication implements ShareApplication, ReactApplication{
+public class MainApplication extends NavigationApplication implements ShareApplication, ReactApplication {
 
   private static CallbackManager mCallbackManager = CallbackManager.Factory.create();
 
@@ -64,9 +65,11 @@ public class MainApplication extends NavigationApplication implements ShareAppli
             new ImagePickerPackage(),
             new FBSDKPackage(mCallbackManager),
             new SvgPackage(),
+            new VectorIconsPackage(),
+            new SplashScreenReactPackage(),
+            new FastImageViewPackage(),
             new RNFusedLocationPackage(),
-            new RNSharePackage(),
-            new FastImageViewPackage()
+            new RNSharePackage()
         );
     }
 
@@ -75,8 +78,9 @@ public class MainApplication extends NavigationApplication implements ShareAppli
         return getPackages();
     }
 
-@Override
+    @Override
      public String getFileProviderAuthority() {
-            return "com.testproject.provider";
-     }
+            return BuildConfig.APPLICATION_ID + ".provider";
+    }
+
 }

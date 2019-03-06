@@ -3,7 +3,7 @@ import { View, StyleSheet, SafeAreaView, Text, ScrollView, RefreshControl, Dimen
 import { Navigation } from 'react-native-navigation';
 import { PropTypes } from 'prop-types';
 import CustomButton from '../../components/UI/ButtonMod/CustomButtom';
-import { normalize, getUserID, getCurrentLocation, APP_GLOBAL_COLOR } from '../../../Constant';
+import { normalize, getUserID, getCurrentLocation, APP_GLOBAL_COLOR, getUserData } from '../../../Constant';
 import CaseCard from '../../components/UI/CaseCard/CaseCard';
 import Draggable from 'react-native-draggable';
 import { TIMELINE_DATA, MOBILE_NUMBER_, LIKDISLIKE_POST, REPORT_POST } from '../../../Apis';
@@ -12,6 +12,7 @@ import { authHeaders } from '../../../Constant';
 import { Platform } from 'react-native';
 
 import Share, { ShareSheet, Button } from 'react-native-share';
+import { Data } from 'victory-native';
 
 
 // import SharingCard from '../../components/UI/Sharing/SharingCard';
@@ -46,6 +47,7 @@ export default class ReportScreen extends Component {
   static propTypes = {
     componentId: PropTypes.string,
   };
+
   componentDidMount() {
 
     // weakRef = this;
@@ -56,14 +58,19 @@ export default class ReportScreen extends Component {
   }
 
   showCompose = () => {
-    Navigation.showModal({
-      component: {
-        name: 'ComposeScreen',
-        passProps: {
-          selfObj: this._onRefresh
-        }
-      },
+    getUserData().then((data) => {
+      Navigation.showModal({
+        component: {
+          name: 'ComposeScreen',
+          passProps: {
+            selfObj: this._onRefresh,
+            data: data
+          }
+        },
+      });
+
     });
+
   }
 
   _onRefresh = () => {
@@ -107,6 +114,7 @@ export default class ReportScreen extends Component {
 
         //  alert(JSON.stringify(responseJson));
         if (Array.isArray(responseJson)) {
+          // console.log(responseJson)
           this.filterData(responseJson);
         } else {
           alert(responseJson.response);
@@ -186,60 +194,68 @@ export default class ReportScreen extends Component {
 
   requestForReport(data) {
 
-    let body = JSON.stringify({
-
-
-      "Mobile_Number_Against": data.Mobile_Number,
-      "Mobile_Number": MOBILE_NUMBER_,
-      "Report_Type": "Hurts Sentiments",
-
-      "Location_Name": "sector 18, Noida",
-
-      "Message_Id": data.Message_Id,
-      "Report_Type": "Hurts Sentiments",
-
-      "Latitude": "27.5",
-      "Longitude": "77.5",
-      "Message": data.Message,
-
-      "Report_SubType": "Hide Babble",
-      "User_Comments": "",
-      "isOP": data.IsOP,
-      "is_poll": 0
-
-    });
-    // alert(body);
+    // alert(JSON.stringify(data));
     // return;
-    // µ
-    fetch(REPORT_POST, {
-      method: 'POST',
-      headers: authHeaders(),
-      body: body,
-    }).then((response) => response.json())
-
-      .then((responseJson) => {
+    getUserID((userID) => {
+      // getCurrentLocation((location) => {
+        // if (location) {
+          let body = JSON.stringify({
 
 
-        alert(JSON.stringify(responseJson));
-        this._onRefresh();
+            "message":
+            {
+              "messageId": data.messageId
+            },
+            "userMaster":
+            {
+              "userId": userID
+            },
+            "displayMessage": "N",
+            "reportReason": "",
+            "reportCustomReason": "",
+            "latitude":  0,
+            "longitude":  0
 
-        // var dataObj = this.state.case;
-        // var index = dataObj.indexOf(data);
-        // data.Is_Liked = isLiked;
-        // data.LikingCount = data.LikingCount + ((isLiked == 1) ? 1 : -1);
-        // data.LikingCount = (data.LikingCount < 0) ? 0 : data.LikingCount;
+
+          });
+
+          // alert(body);
+          // return;
+          // µ
+          fetch(REPORT_POST, {
+            method: 'POST',
+            headers: authHeaders(),
+            body: body,
+          }).then((response) => response.json())
+
+            .then((responseJson) => {
 
 
-        // dataObj[index] = dataObj;
-        // this.setState({case : [...dataObj] });
+              // alert(JSON.stringify(responseJson));
+              this._onRefresh();
 
-        //  alert(JSON.stringify(responseJson));
-        // this.filterData(responseJson.result);
-      })
-      .catch((error) => {
-        this.setState({ refreshing: false });
-        console.error(error);
+              // var dataObj = this.state.case;
+              // var index = dataObj.indexOf(data);
+              // data.Is_Liked = isLiked;
+              // data.LikingCount = data.LikingCount + ((isLiked == 1) ? 1 : -1);
+              // data.LikingCount = (data.LikingCount < 0) ? 0 : data.LikingCount;
+
+
+              // dataObj[index] = dataObj;
+              // this.setState({case : [...dataObj] });
+
+              //  alert(JSON.stringify(responseJson));
+              // this.filterData(responseJson.result);
+            })
+            .catch((error) => {
+              this.setState({ refreshing: false });
+              console.error(error);
+            });
+        // }
       });
+
+    // })
+
   }
 
   filterData(data) {
@@ -251,24 +267,24 @@ export default class ReportScreen extends Component {
       videoURL = null; // ((dict.thumbnailUrl && dict.messageType === 'Video') ? { uri: dict.thumbnailUrl} : null)
       let innerData = {
         key: key,
-        picture: (dict.mediaContentData && (dict.messageType === 'Image' || dict.messageType === 'Gif')) ? { uri: "data:image/png;base64,"+dict.mediaContentData } : videoURL, // ++
-        name: dict.Mobile_Number ? ("@" + dict.Mobile_Number) : "Anonymous",
-        place: dict.Location_Name,
+        picture: (dict.mediaContentData && (dict.messageType === 'Image' || dict.messageType === 'Gif')) ? { uri: "data:image/png;base64," + dict.mediaContentData } : videoURL, // ++
+        name: dict.username ? ("@" + dict.username) : "Anonymous",
+        place: dict.location,
         details: dict.message ? dict.message : null,
         caseId: null,
         video: (dict.contentUrl && dict.messageType === 'Video') ? { uri: dict.contentUrl } : null,// "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
         height_Image: dict.height,
         width_Image: dict.width,
         Is_Liked: dict.Is_Liked,
-        Thread_Id : dict.threadId,
+        Thread_Id: dict.threadId,
         LikingCount: dict.likingCount,
-        ReplyCount : dict.replyCount,
+        ReplyCount: dict.replyCount,
 
         ...dict
 
       }
       // console.log(innerData);
-      console.log(JSON.stringify(innerData));
+      // console.log(JSON.stringify(innerData));
       array.push(innerData);
       key = key + 1;
     });
@@ -306,8 +322,10 @@ export default class ReportScreen extends Component {
   moreButtonTapped = (data) => {
     // alert(data);
     dataTappedForMore = data;
+    // alert(JSON.stringify(dataTappedForMore));
+
     shareOptions = {
-      title: "Check out Insignia app",
+      title: "Check out Raajneeti app",
       message: data.details,
       subject: "Share Link" //  for email
     };
@@ -327,6 +345,7 @@ export default class ReportScreen extends Component {
   }
 
   reportTapped(data) {
+    alert(JSON.stringify(data))
     if (MOBILE_NUMBER_ === data.Mobile_Number) {
       alert("You can not report your own post");
     } else {
@@ -342,9 +361,9 @@ export default class ReportScreen extends Component {
     var BUTTONS = [
       'Twitter',
       'Facebook',
-      'whatsapp',
-      'googleplus',
-      'email',
+      'WhatsApp',
+      'GooglePlus',
+      'Email',
       'More',
       'Report',
       'Cancel',
@@ -407,6 +426,7 @@ export default class ReportScreen extends Component {
           case 6:
             console.log("Option 7");
             setTimeout(() => {
+
               this.reportTapped(dataTappedForMore);
 
             }, 300);
@@ -427,7 +447,6 @@ export default class ReportScreen extends Component {
       width: SCREEN_WIDTH,
       height: SCREEN_HEIGHT,
     } = Dimensions.get('window');
-
     return (
       <SafeAreaView
         forceInset={{ bottom: 'always' }}
@@ -438,7 +457,7 @@ export default class ReportScreen extends Component {
 
           <View style={{ flex: 1, backgroundColor: 'clear' }}>
             <CustomButton
-              source={require('../../assets/home.png')}
+              source={require('../../assets/homez.png')}
               style={{
                 flexDirection: 'row',
                 flex: 1,
@@ -448,7 +467,7 @@ export default class ReportScreen extends Component {
             />
           </View>
           <View style={styles.textheaderView}>
-            <Text style={styles.textView}>Reports</Text>
+            <Text style={styles.textView}>Timeline</Text>
           </View>
 
         </View>
@@ -576,7 +595,9 @@ export default class ReportScreen extends Component {
           offsetY={SCREEN_HEIGHT / 2 - 50}
           imageSource={this.state.iconSrc}
           renderSize={50}
-          pressDrag={this.showCompose}
+          // pressDrag={() => console.log('called here')}
+          pressInDrag={() => this.showCompose()}
+        // pressOutDrag={()=>console.log('out press')}
         >
           {/* <Image source = {require('../../assets/1.png')} styles = {{flex : 1}} /> */}
         </Draggable>

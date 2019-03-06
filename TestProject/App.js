@@ -1,4 +1,5 @@
 import { Navigation } from 'react-native-navigation';
+import SplashScreen from 'react-native-splash-screen';
 import LoginSceen from './src/screens/LoginScreen/LoginScreen';
 import Profile from './src/screens/Profile/Profile';
 import MobileNumber from './src/screens/LoginScreen/MobileNumber';
@@ -18,130 +19,166 @@ import QuestionnaireScreen from './src/screens/QuestionnaireScreen/Questionnaire
 
 import AreaScreen from './src/screens/LoginScreen/AreaScreen';
 import ComposeScreen from './src/screens/ReportScreen/ComposeScreen';
-
 import Sharing from './src/components/UI/Sharing/Sharing';
-
 import ReportReplyScreen from './src/screens/ReportScreen/ReportReplyScreen';
-// import ExampleScreen from './src/screens/ReportScreen/ExampleScreen';
+// Register Screens
 
-
-Navigation.registerComponent('LoginScreen', () => LoginSceen);
-Navigation.registerComponent('MobileNumber', () => MobileNumber);
-Navigation.registerComponent('OtpScreen', () => OtpScreen);
-Navigation.registerComponent('RegistrationScreen', () => RegistrationScreen);
-Navigation.registerComponent('EmailScreen', () => EmailScreen);
-Navigation.registerComponent('Profile', () => Profile);
-Navigation.registerComponent('HomeScreen', () => HomeScreen);
-Navigation.registerComponent('DataScreen', () => DataScreen);
-Navigation.registerComponent('FireDepartmentScreen', () => FireDepartmentScreen);
-Navigation.registerComponent('PoliceProfileScreen', () => PoliceProfileScreen);
-Navigation.registerComponent('ReportScreen', () => ReportScreen);
-Navigation.registerComponent('LandingScreen', () => LandingScreen);
-Navigation.registerComponent('Test', () => Test);
-Navigation.registerComponent('TrendScreen', () => TrendScreen);
-Navigation.registerComponent('TrendDetailScreen', () => TrendDetailScreen);
-Navigation.registerComponent('QuestionnaireScreen', () => QuestionnaireScreen);
-Navigation.registerComponent('AreaScreen', () => AreaScreen);
-
+Navigation.registerComponent ('LoginScreen', () => LoginSceen);
+Navigation.registerComponent ('MobileNumber', () => MobileNumber);
+Navigation.registerComponent ('OtpScreen', () => OtpScreen);
+Navigation.registerComponent ('RegistrationScreen', () => RegistrationScreen);
+Navigation.registerComponent ('EmailScreen', () => EmailScreen);
+Navigation.registerComponent ('Profile', () => Profile);
+Navigation.registerComponent ('HomeScreen', () => HomeScreen);
+Navigation.registerComponent ('DataScreen', () => DataScreen);
+Navigation.registerComponent ('FireDepartmentScreen', () => FireDepartmentScreen);
+Navigation.registerComponent ('PoliceProfileScreen', () => PoliceProfileScreen);
+Navigation.registerComponent ('ReportScreen', () => ReportScreen);
+Navigation.registerComponent ('LandingScreen', () => LandingScreen);
+Navigation.registerComponent ('Test', () => Test);
+Navigation.registerComponent ('TrendScreen', () => TrendScreen);
+Navigation.registerComponent ('TrendDetailScreen', () => TrendDetailScreen);
+Navigation.registerComponent ('QuestionnaireScreen', () => QuestionnaireScreen);
+Navigation.registerComponent ('AreaScreen', () => AreaScreen);
 Navigation.registerComponent('ReportReplyScreen', () => ReportReplyScreen);
 Navigation.registerComponent('Sharing', () => Sharing);
-// Navigation.registerComponent('ExampleScreen', () => ExampleScreen);
-
-// Start App
-
 Navigation.registerComponent('ComposeScreen', () => ComposeScreen);
 
+// Start App
 import { AsyncStorage } from "react-native"
-import { DEFAULT_USER_DATA, DEFAULT_USER_ID, getUserData, saveUserID, saveUserData } from './Constant';
+import { DEFAULT_USER_ID, getUserData, saveUserData } from './Constant';
 
-// saveUserID(null);
 // saveUserData(null);
-Navigation.events().registerAppLaunchedListener(() => {
-  getUserData().then((data) => {
 
-    // alert(data);
+Navigation.events ().registerAppLaunchedListener (() => {
+//   SplashScreen.hide()
+//   Navigation.setRoot ({
+//     root: {
+//       stack: {
+//         children: [
+//           {
+//             component: {
+//               id: "Test", // Optional, Auto generated if empty
+//               name: "Test",
+//               options: {
+//                 topBar: {
+//                   visible:false,
+//                     drawBehind:true,
+//                     animate:false
+//                 },
+//               },
+              
+//             },
+//           },
+//         ],
+//       },
+//     },
+//   });
+// });
+// return;
 
-    if (data && data.confirmed) {
-      // Navigation.events().registerAppLaunchedListener(() => {
-      Navigation.setRoot({
-        root: {
-          stack: {
-            children: [
-              {
-                component: {
-                  id: "HomeScreen", // Optional, Auto generated if empty
-                  // name: "HomeScreen",
-                  name: "HomeScreen",
-                  options: {
-                    topBar: {
-                      visible: false,
-                      drawBehind: true,
-                      animate: false
+getUserData().then((data) => {
+    SplashScreen.hide()
+    if(data) {
+      if(data.username) {
+        // Navigation.events ().registerAppLaunchedListener (() => {
+          Navigation.setRoot ({
+            root: {
+              stack: {
+                children: [
+                  {
+                    component: {
+                      id: "HomeScreen", // Optional, Auto generated if empty
+                      name: "HomeScreen",
+                      options: {
+                        topBar: {
+                          visible:false,
+                            drawBehind:true,
+                            animate:false
+                        },
+                        popGesture:false
+                      },
+                      passProps:{
+                        data : data
+                      },
+                      
+                      sideMenu:{
+                        enabled : false,
+                        visible: false
+                      }
+                      
                     },
-                    popGesture: false
                   },
-                  passProps: {
-                    data: data
-                  },
-
-                  sideMenu: {
-                    enabled: false,
-                    visible: false
-                  }
-
-                },
+                ],
               },
-            ],
+            },
+          });
+        // });
+      } else {
+        // Navigation.events ().registerAppLaunchedListener (() => {
+          Navigation.setRoot ({
+            root: {
+              stack: {
+                children: [
+                  {
+                    component: {
+                      id: 'Profile',
+                      name: 'Profile',
+                      options: {
+                        topBar: {
+                          visible: false,
+                          animate: false,
+                          drawBehind: true
+                        }
+                      }
+                    },
+                    // component: {
+                    //   id: "MobileNumber", // Optional, Auto generated if empty
+                    //   name: "MobileNumber",
+                    //   options: {
+                    //     topBar: {
+                    //       visible:false,
+                    //         drawBehind:true,
+                    //         animate:false
+                    //     },
+                    //   },
+                      
+                    // },
+                  },
+                ],
+              },
+            },
+          });
+        // });
+      }
+    }      
+     else {
+      // Navigation.events ().registerAppLaunchedListener (() => {
+        Navigation.setRoot ({
+          root: {
+            stack: {
+              children: [
+                {
+                  component: {
+                    id: "MobileNumber", // Optional, Auto generated if empty
+                    name: "MobileNumber",
+                    options: {
+                      topBar: {
+                        visible:false,
+                          drawBehind:true,
+                          animate:false
+                      },
+                    },
+                    
+                  },
+                },
+              ],
+            },
           },
-        },
-      });
+        });
       // });
-    } else if(data) {
-      Navigation.setRoot({
-        root: {
-          stack: {
-            children: [
-              {
-                component: {
-                  id: "Profile", // Optional, Auto generated if empty
-                  name: "Profile",
-                  options: {
-                    topBar: {
-                      visible: false,
-                      drawBehind: true,
-                      animate: false
-                    },
-                  },
-
-                },
-              },
-            ],
-          },
-        },
-      });
-    }else {
-      Navigation.setRoot({
-        root: {
-          stack: {
-            children: [
-              {
-                component: {
-                  id: "MobileNumber", // Optional, Auto generated if empty
-                  name: "MobileNumber",
-                  options: {
-                    topBar: {
-                      visible: false,
-                      drawBehind: true,
-                      animate: false
-                    },
-                  },
-                },
-              },
-            ],
-          },
-        },
-      });
     }
-  });
+})
+
 
 });

@@ -44,7 +44,7 @@ export default userCard = props => (
                 resizeMode="cover"
             />
             {
-                props.gpr && props.gpr >= 1 &&
+                props.gpr && props.gpr >= 1 ?
                 <View
                     style={{
                         position: 'absolute',
@@ -63,7 +63,7 @@ export default userCard = props => (
                     }}
                 >
                     <Text style = {{color : 'white' , fontSize : normalize(15) , fontWeight : '600'}}>{props.gpr}%</Text>
-                </View>
+                </View> : null
             }
         </View>
     </TouchableOpacity>

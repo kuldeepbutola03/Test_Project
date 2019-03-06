@@ -8,10 +8,14 @@ import {
   Platform,
   Text,
 } from 'react-native';
+import { normalize } from '../../../../Constant';
 
 const editButton = props => {
   const content = (
-    <Image source={require ('./../../../assets/camera.png')} style={styles.icon} />
+    <Image 
+      resizeMode={"contain"}
+      source={require ('./../../../assets/login_icon.png')} 
+      style={styles.icon} />
   );
 
   // if (Platform.OS === 'android') {
@@ -33,8 +37,8 @@ const styles = StyleSheet.create ({
     // position: 'absolute',
     // bottom: 20,
     // left: 45,
-    height: 40,
-    width: 40,
+    height: normalize(35),
+    width: normalize(35),
     // backgroundColor:'rgba(0,0,0,.5)',
     borderRadius:20,
   },

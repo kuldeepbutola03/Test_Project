@@ -1,11 +1,17 @@
 import React, {Component} from 'react';
-import {View, StyleSheet, Text, Slider, Button} from 'react-native';
-
+import { View, StyleSheet, Text, LayoutAnimation, UIManager } from 'react-native';
+import Slider from "react-native-slider";
+import SliderPoll from '../../Poll/SliderPoll';
+import { normalize, APP_GLOBAL_COLOR } from '../../../../../Constant';
 
 class Sliders extends Component {
-
     state = {
-        color:'#FFFF00'
+        color: APP_GLOBAL_COLOR,
+        clicked: false,
+    }
+
+    componentDidMount() {
+      // UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
     }
 
     colorChange = color => {
@@ -41,18 +47,56 @@ class Sliders extends Component {
             break;
           }
         }
-      };
+    };
 
+    componentWillUpdate() {
+      // LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+    }
+
+    showPoll = () => {
+      this.setState({ clicked: true })
+    }
+
+    renderPoll = () => {
+      // console.log(this.props)
+      const { data } = this.props;
+      if(data.userAnswerId) {
+        return (
+          <SliderPoll 
+            surveyAnswerList={this.props.data.surveyAnswerList}
+            userAnswerId={this.props.data.userAnswerId}
+          />
+        )
+      } else return null;
+    }
+
+    disabled = () => {
+      let disable;
+      
+      if(this.props.data.userAnswerId) {
+        disable = true;
+      } else {
+        disable = false
+      }
+
+      return disable;
+    }
+
+    onValueChange = (value) => {
+      this.props.data.userAnswerId = value;
+      this.props.onChangeData(this.props.data, this.props.index);
+    }
     render(){
-        return(<View >
+        return(
+        <View style={{ marginBottom: normalize(10) }} >
             <View style={{flexDirection: 'row', paddingTop: 10, paddingBottom: 10}}>
               <View
                 style={{flex: 1.5, justifyContent: 'center', alignContent: 'center'}}
               >
-                <Text style={{textAlign: 'center'}}>{this.props.data.number}</Text>
+                <Text style={{textAlign: 'center'}}>{this.props.i}</Text>
               </View>
               <View style={{flex: 8.5, marginRight: 10}}>
-                <Text>{this.props.data.question}</Text>
+                <Text>{this.props.data.questionText}</Text>
               </View>
             </View>
         
@@ -67,18 +111,25 @@ class Sliders extends Component {
                 }}
               >
                 <Slider
-                  value={2}
+                  disabled={this.props.isSurveyTaken === 'N' ? false : true }
+                  value={this.props.data.userAnswerId ? this.props.data.userAnswerId : 2 }
                   maximumValue={4}
                   minimumValue={0}
-                  style={{height: 30, width: '80%'}}
+                  style={{height: 30, width: '80%', marginBottom: normalize(5) }}
                   step={1}
                   minimumTrackTintColor={this.state.color}
                   maximumTrackTintColor={this.state.color}
-                  onValueChange={this.colorChange}
-                  // onValueChange={(value) =>  {
-                  //   props.data.colorValue = value;
-                  //   props.onChangeData(props.data, props.index);
-                  // }}
+                  trackStyle={{ height: 1 }}
+                  thumbStyle={{ 
+                    shadowColor: '#000000', 
+                    shadowOffset: { width: 0, height: 1 }, 
+                    shadowRadius: 5, 
+                    shadowOpacity: 0.5,
+                    elevation: 2  }}
+                  thumbTintColor={this.props.data.userAnswerId === null ? '#fff' : APP_GLOBAL_COLOR}
+                  onValueChange={(value) =>  {
+                    this.onValueChange(value);
+                  }}
                 />
                 <View style={{flexDirection: 'row', width: '90%'}}>
                   <Text style={{width: '20%', textAlign: 'center',fontSize:11}}>
@@ -93,6 +144,7 @@ class Sliders extends Component {
                 </View>
               </View>
             </View>
+            {/* {this.renderPoll()} */}
           </View>)
     }
   

@@ -13,14 +13,15 @@ import { PropTypes } from 'prop-types';
 // import { normalize } from '../../../../Constant';
 
 export default customTextButton = props => {
-
-    
-
-    return (<TouchableOpacity style={{
-        ...props.style,
-        // padding: normalize(5),
-        alignItems: 'center', justifyContent: 'center', backgroundColor : props.bgColor
-    }} onPress={props.onPress} >
+    return (<TouchableOpacity style={[
+        {
+            backgroundColor: props.bgColor,
+            alignItems: 'center', justifyContent: 'center',
+        },
+        {
+            ...props.style,
+        }
+    ]} onPress={props.onPress} >
         <Text style = {{color : props.textColor ? props.textColor : "black"}}>
             {props.children}
         </Text>

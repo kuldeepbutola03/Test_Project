@@ -16,8 +16,6 @@ import HeaderText from '../../components/UI/HeaderText/HeaderText'
 import { EMAIL_REGISTRATION, DEBUG } from '../../../Apis';
 import { validateEmail, saveUserID, authHeaders } from '../../../Constant';
 
-import Geolocation from 'react-native-geolocation-service';
-
 export default class RegistrationScreen extends Component {
     static propTypes = {
         componentId: PropTypes.string,
@@ -68,7 +66,7 @@ export default class RegistrationScreen extends Component {
         // }
 
 
-        Geolocation.getCurrentPosition(
+        navigator.geolocation.getCurrentPosition(
             (position) => {
                 const initialPosition = JSON.stringify(position);
 

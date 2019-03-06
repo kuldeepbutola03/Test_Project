@@ -1,37 +1,23 @@
 import React from 'react';
 import {
   StyleSheet,
-  TextInput,
   View,
-  Dimensions,
   Text,
-  TouchableOpacity,
-  Image,
-  Button,
   FlatList,
-  PixelRatio,
+  TouchableHighlight,
+  TouchableWithoutFeedback,
+  ActivityIndicator,
+  Alert,
+  Image
 } from 'react-native';
+import { Avatar, Divider } from 'react-native-elements';
 import CustomButton from '../ButtonMod/CustomButtom';
 import ScoreView from './ScoreView';
-import {Navigation} from 'react-native-navigation';
-import {normalize} from '../../../../Constant';
-// Navigation.push (this.props.componentId, {
-//   component: {
-//     name: 'FireDepartmentScreen',
-//   },
-//   options: {
-//     topBar: {
-//       visible: false,
-//       drawBehind: true,
-//       animate: false
-//     }
-//   }
-// });
-
-// homeButtonTapped = (props) => {
-// alert('asdsadasad');
-//     Navigation.pop(props.componentId);
-// }
+import { normalize, APP_GLOBAL_COLOR, APP_ALERT_MESSAGE } from '../../../../Constant';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import StarRating from 'react-native-star-rating';
+import axios from 'axios';
+import { GPR_FLAG } from '../../../../Apis';
 
 homeButton = props => {
   if (props.showHome) {
@@ -41,7 +27,7 @@ homeButton = props => {
           flexDirection: 'row',
           flex: 1,
         }}
-        source={require ('../../../assets/home.png')}
+        source={require('../../../assets/homez.png')}
         onPress={props.onPress}
       />
     );
@@ -50,255 +36,403 @@ homeButton = props => {
   }
 };
 
-const menuButtons = props => {
-  let flag = props.showHome;
-return (
 
-  <View style={props.style} backgroundColor={props.backgroundColor}>
-    {/* //TopView */}
-    <View
-      style={cardViewStyle.headerView}
-      backgroundColor="rgba(242,241,244,1)"
-    >
-      {flag && <View style={{flex: 1, backgroundColor: 'rgba(87,48,134,1)'}}>
-        {homeButton (props)}
-      </View>}
-      <View style={cardViewStyle.textheaderView}>
-        <Text adjustsFontSizeToFit numberOfLines={1} minimumFontScale={.8} style={cardViewStyle.textView}>{props.data.name}</Text>
-        <Text style={cardViewStyle.textView2}>{props.data.area}</Text>
-      </View>
+class menuButtons extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      starCount: 5,
+      submitted: false,
+    };
+  }
 
-    </View>
+  onStarRatingPress(rating) {
+    this.setState({
+      starCount: rating,
+    });
+  }
 
-    {/* //bottomView */}
-    <View style={cardBottomViewStyle.bottomView}>
+  submitRating = () => {
+    this.setState({ loading: true });
+    const { userId, location, resourceId } = this.props.data;
+    const { isFlagEnabled, resourceType } = this.props;
+    const { starCount, submitted } = this.state;
 
-      {/* first Half */}
-      <View style={cardBottomViewStyle.profileView}>
+    if (isFlagEnabled === 'Y' && submitted === false) {
+      axios.post(GPR_FLAG, {
+        userLocationCoord: location,
+        resourceMaster:
+        {
+          resourceId: resourceId
+        },
+        userMaster:
+        {
+          userId: userId
+        },
+        flagValue: starCount,
+        customAreaId: this.props.customAreaId
+      })
+        .then(response => {
+          // console.log(response.data);
+          Alert.alert(
+            APP_ALERT_MESSAGE,
+            'Thanks for your Rating!',
+            [
+              { text: 'OK', onPress: () => { } },
+            ],
+            { cancelable: false },
+          );
+          console.log(response.data)
+          let responseData = response.data;
+          this.props.updateResources({
+            resourceType: resourceType,
+            resourceGPR: responseData.resourceGPR,
+            rtnGprI: responseData.rtnGprI,
+            rtnGprO: responseData.rtnGprO,
+            totalFlagCount: responseData.totalFlagCount,
+            totalFlagUniqueCount: responseData.totalFlagUniqueCount,
+          })
+          this.setState({ loading: false, submitted: true });
+        })
+        .catch(error => {
+          console.error(error);
+          this.setState({ loading: false, submitted: false });
+        })
+    } else {
+      alert("You have already sent a feedback");
+      this.setState({ loading: false })
+    }
 
-        <View style={{flex: 0.5}}>
-          <Image
-            style={{
-              flex: 1,
-              margin: 10,
-              height: null,
-              width: null,
-              borderRadius: 5,
-            }}
 
+  }
 
-            source={props.data.profilePic}
-            resizeMode="cover"
-          />
-          <Image
-            style={{
-              position: 'absolute',
-              bottom: 10 + 5,
-              right: 15,
-              // // borderRight: 10,
-              // // marginVertical: 10,
-              // // padding : 10,
-              height: normalize(30),
-              width: normalize(30),
-              backgroundColor: 'transparent',
-            }}
-            source={props.data.profileCompPic}
-            resizeMode="cover"
-          />
-        </View>
+  _keyExtractor = (item, index) => index + "abc";
 
+  renderItem = ({ item, index }) => {
+    if (index === 0) {
+      return null;
+    } else {
+      return (
         <View
           style={{
-            flex: 0.5,
-            // backgroundColor : 'red'
-            // alignContent : 'center'
-          }}
-        >
-          <Text
-            style={{
-              marginTop: -6,
-              marginLeft: 10,
-              marginRight: 5,
-              // margin: 5
-              fontSize: normalize(12),
-              fontWeight: 'bold',
-              //   textAlign : 'center'
-            }}
-          >
-            TOTAL: {props.data.totalCount}
-          </Text>
-          <Text
-            style={{
-              marginTop: 0,
-              marginLeft: 10,
-              marginRight: 5,
-              fontSize: normalize(12),
-              fontWeight: 'bold',
-              //   textAlign : 'center'
-            }}
-          >
-            UNIQUE: {props.data.uniqueCount}
-          </Text>
-        </View>
-      </View>
-
-      {/* second Half */}
-      <View style={cardBottomViewStyle.profileDetails}>
-
-        {/* score View */}
-        <View style={cardDetailsViewStyle.detailsProfileLogo}>
-          <ScoreView
-            style={ratingView.scoreViewStyle}
-            text={[props.data.score.gpr.name, props.data.score.gpr.score]}
-            backgroundColor="#279FC4"
-          />
-          <ScoreView
-            style={ratingView.scoreViewStyle}
-            text={[props.data.score.agpr.name, props.data.score.agpr.score]}
-            backgroundColor="#FAA21B"
-          />
-          <ScoreView
-            style={ratingView.scoreViewStyle}
-            text={[
-              props.data.score.extraCount.name,
-              props.data.score.extraCount.score,
-            ]}
-            backgroundColor="#9D3995"
-          />
-          <View style={ratingView.scoreViewStyle} pointerEvents={props.pointerEvents}>
-
-            <CustomButton
-              style={{flex: 1, flexDirection: 'row' }}
-              source={props.isLiked == 1 ? require ('../../../assets/Flags/RedFlag.png') : require ('../../../assets/Flags/RedFlagLight.png')}
-              onPress = {props.onPressLike}
-            />
-
-            <CustomButton
-              style={{flex: 1, flexDirection: 'row' }}
-              source={props.isLiked == 2 ? require ('../../../assets/Flags/blueFlag.png') : require ('../../../assets/Flags/blueFlagLight.png')}
-              onPress = {props.onPressDislike}
-              
-            />
-
+            flex: 1,
+            padding: 5,
+            marginHorizontal: normalize(13),
+            width: '100%'
+          }}>
+          <View>
+            <Text
+              style={
+                index == 0 ? listTitleStyle.headerView : listTitleStyle.view
+              }
+            >
+              {item.attributeName}
+            </Text>
           </View>
         </View>
+      )
+    }
+  }
 
-        {/* seperator view */}
-        <View style={{height: 1, margin: 0}} backgroundColor="#B5B5B5" />
+  renderItem2 = ({ item, index }) => {
+    if (index === 0) {
+      return null;
+    } else {
+      return (
+        <View
+          style={{
+            flex: 1,
+            padding: 5,
+            marginHorizontal: normalize(13),
+            width: '100%'
+          }}>
+          <View style={{}}>
+            <Text
+              style={
+                index == 0 ? listTitleStyle.headerView : listTitleStyle.view
+              }
+            >
+              {item.attributeValue}
+            </Text>
+          </View>
+        </View>
+      )
+    }
+  }
 
-        {/* list View */}
-        <View style={cardDetailsViewStyle.listView}>
-          <FlatList
-            data={props.data.data}
-            renderItem={({item, index}) => (
-              <View
-                style={{
-                  flex: 1,
-                  padding: 5,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
+  renderSubmitIcon = () => {
+    const { isFlagEnabled } = this.props;
+    if (isFlagEnabled === 'Y' && this.state.submitted === false) {
+      return (
+        <TouchableHighlight onPress={() => this.submitRating()}>
+          <FontAwesome name="check-circle" size={20} color="green" />
+        </TouchableHighlight>
+      )
+    } else {
+      return (
+        <TouchableWithoutFeedback onPress={() => { }}>
+          <FontAwesome name="check-circle" size={20} color="#999" />
+        </TouchableWithoutFeedback>
+      )
+    }
+  }
+
+  render() {
+    console.log(this.props)
+    let flag = this.props.showHome;
+    const { loading } = this.state;
+    return (
+      <View style={this.props.style} backgroundColor={this.props.backgroundColor}>
+        {/* //TopView */}
+        {/* <View
+            // style={cardViewStyle.headerView}
+            backgroundColor="rgba(242,241,244,1)"
+          >
+            {flag && <View style={{flex: 1, backgroundColor: APP_GLOBAL_COLOR}}>
+              {homeButton (this.props)}
+          </View> */}
+        {/* } */}
+        {/* <View style={cardViewStyle.textheaderView}> */}
+        {/* <Text adjustsFontSizeToFit numberOfLines={1} minimumFontScale={.8} style={cardViewStyle.textView}>{this.props.data.name}</Text> */}
+        {/* <Text style={cardViewStyle.textView2}>{this.props.data.area === "PDM | null" ? "PDM" : this.props.data.area}</Text> */}
+        {/* </View> */}
+        {/* </View> */}
+        <View style={{ flex: 1 }}>
+          <View style={[styles.row, styles.firstRow]}>
+            <View style={styles.scoreRatingContainer}>
+
+              <View style={{}}>
+                <Text adjustsFontSizeToFit numberOfLines={1} minimumFontScale={.8} style={cardViewStyle.textView}>{this.props.data.name}</Text>
+                {/* <Text style={cardViewStyle.textView2}>{this.props.data.area === "PDM | null" ? "PDM" : this.props.data.area}</Text> */}
+                <Text style={cardViewStyle.textView2}>{this.props.data.area.includes("null") ? "" : this.props.data.area}</Text>
+              </View>
+
+              <View style={styles.scoreViewContainer}>
+                <ScoreView
+                  style={ratingView.scoreViewStyle}
+                  text={[this.props.data.score.gpr.name, this.props.resourceGPR]}
+                  backgroundColor="#279FC4"
+                  bottomText={false}
+                />
+                <ScoreView
+                  style={ratingView.scoreViewStyle}
+                  text={[this.props.data.score.agpr.name, this.props.rtnGprI]}
+                  backgroundColor="#FAA21B"
+                  bottomText={false}
+                />
+                <ScoreView
+                  style={ratingView.scoreViewStyle}
+                  text={[
+                    this.props.data.score.extraCount.name,
+                    this.props.rtnGprO
+                  ]}
+                  backgroundColor="#9D3995"
+                  bottomText={false}
+                />
+              </View>
+
+              <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                <Image  source={require("../../../assets/flagIn.png")} resizeMode="cover" style={{height:20,width:25, marginTop:6,}}/>
                 <Text
-                  style={
-                    index == 0 ? listTitleStyle.headerView : listTitleStyle.view
-                  }
-                >
-                  {item.attributeName}
-                </Text>
+                  style={{
+
+                    marginTop: 8,
+                    marginHorizontal: 5,
+                    fontSize: normalize(11.5),
+                    fontWeight: 'bold',
+
+                  }}> : {this.props.totalFlagCount}</Text>
+                  
+                  <View style={{height:1,width:10}} backgroundColor="transparent"/>
+
+                <Image source={require("../../../assets/earth.png")} resizeMode="contain" style={{height:20,width:25, marginTop: 6,}}/>
                 <Text
-                  style={
-                    index == 0 ? listTitleStyle.headerView : listTitleStyle.view
-                  }
-                >
-                  {item.attributeValue}
+                  style={{
+                    marginTop: 8  ,
+                    marginHorizontal: 5,
+                    fontSize: normalize(11.5),
+                    fontWeight: 'bold',
+                  }}> : {this.props.totalFlagUniqueCount}
                 </Text>
               </View>
-            )}
-          />
+            </View>
+
+            {/* <View height={1} style={{ borderTopColor: '#999', borderTopWidth: 1, width: '100%' }} /> */}
+
+            <View style={{ flex: 0.40, position: 'relative', alignItems: 'center' }}>
+              <View style={{}}>
+                <Avatar
+                  rounded
+                  imageProps={{ resizeMode: 'cover' }}
+                  size={normalize(80)}
+                  containerStyle={{ marginVertical: 8 }}
+                  source={this.props.data.profilePic}
+                />
+                <Avatar
+                  rounded
+                  containerStyle={{
+                    position: 'absolute',
+                    bottom: 15,
+                    left: 0,
+                  }}
+                  overlayContainerStyle={{
+                    backgroundColor: '#fff'
+                  }}
+                  size={normalize(25)}
+                  source={this.props.data.profileCompPic}
+                  imageProps={{ resizeMode: 'contain' }}
+                />
+              </View>
+              <View style={styles.ratingContainer}>
+                <StarRating
+                  disabled={this.props.isFlagEnabled === 'Y' || this.state.submitted === false ? false : true}
+                  maxStars={5}
+                  rating={this.state.starCount}
+                  fullStarColor={'#FAA21B'}
+                  starSize={20}
+                  selectedStar={(rating) => this.onStarRatingPress(rating)}
+                />
+                {loading ?
+                  <View style={{ marginTop: normalize(3) }}>
+                    <ActivityIndicator size="small" color={APP_GLOBAL_COLOR} />
+                  </View> :
+                  <View>
+                    {this.renderSubmitIcon()}
+                  </View>
+                }
+              </View>
+            </View>
+
+          </View>
+          <Divider />
+          <View style={[styles.row, styles.thirdRow]}>
+            <View style={{ flex: 1, flexDirection: 'row' }}>
+              <View style={{ flex: 1, width: '50%', marginRight: normalize(4) }}>
+                <FlatList
+                  data={this.props.data.data}
+                  keyExtractor={this._keyExtractor}
+                  renderItem={this.renderItem}
+                  showsVerticalScrollIndicator={false}
+                />
+              </View>
+              <View style={{ height: '100%', width: 1, backgroundColor: '#ddd' }} />
+              <View style={{ flex: 1, width: '50%', marginRight: normalize(4), justifyContent: 'flex-end' }}>
+                <FlatList
+                  data={this.props.data.data}
+                  keyExtractor={this._keyExtractor}
+                  renderItem={this.renderItem2}
+                  showsVerticalScrollIndicator={false}
+                />
+              </View>
+            </View>
+          </View>
         </View>
       </View>
-    </View>
+    );
+  }
+}
 
-  </View>);
-};
+const styles = StyleSheet.create({
+  row: {
+    // flex: 1,
+    marginVertical: normalize(5),
+    backgroundColor: '#fff'
+  },
 
-const cardViewStyle = StyleSheet.create ({
+  firstRow: {
+    flex: 0.50,
+    flexDirection: 'row',
+  },
+
+  secondRow: {
+    flexDirection: 'row',
+    flex: 2
+  },
+
+  thirdRow: {
+    flexDirection: 'row',
+    flex: 0.50,
+  },
+
+  scoreRatingContainer: {
+    flex: 0.60,
+    // justifyContent: 'center'
+    justifyContent: 'space-around'
+  },
+
+  scoreViewContainer: {
+    // flex: 1, 
+    flexDirection: 'row',
+    marginVertical: 4
+    // justifyContent: 'space-around', 
+    // alignItems: 'center', 
+    // marginTop: normalize(10)
+  },
+
+  ratingContainer: {
+    flex: 1,
+    marginHorizontal: normalize(8),
+    flexDirection: 'row',
+    justifyContent: 'space-around'
+  }
+})
+
+const cardViewStyle = StyleSheet.create({
   headerView: {
     flex: 0.15,
-    // position: 'absolute',
-    // backgroundColor: 'red',
-    // backgroundColor: 'rgba(244,244,246,1)',
     justifyContent: 'center',
-    // alignItems: 'center'
-    // borderRadius: 10,
     flexDirection: 'row',
-    // height: '20%',
   },
 
   textheaderView: {
     flex: 5,
-    // position: 'absolute',
-    // backgroundColor: 'red',
     backgroundColor: 'transparent',
     justifyContent: 'center',
-    // alignItems: 'center'
-    // borderRadius: 10,
-    // height: 50
-    // marginLeft : 0,
   },
   buttonContainer: {
-    // flex : 1,
     justifyContent: 'center',
     alignItems: 'center',
-    // margin : 0,
     backgroundColor: 'transparent',
     width: 50,
   },
 
   textView: {
-    // flex: 1,
-    // position: 'absolute',
     backgroundColor: 'transparent',
-    marginLeft: 10,
-    fontSize : normalize(13),
-    // fontSize: PixelRatio.get () <= 2 ? 14 : 15,
-    //   fontWeight: 'bold',
+    // marginLeft: normalize(13),
+    fontSize: normalize(22),
+    // marginBottom: normalize(5)
+    paddingBottom: 5,
+    paddingLeft: 5
   },
   textView2: {
-    // flex: 1,
-    // position: 'absolute',
     backgroundColor: 'transparent',
-    marginLeft: 10,
-    fontSize : normalize(12),
-    // fontSize: PixelRatio.get () <= 2 ? 12 : 13,
-    //   fontWeight: 'bold',
+    // marginLeft: normalize(13),
+    fontSize: normalize(12),
+    // marginBottom: normalize(10)
+    paddingBottom: 5,
+    paddingLeft: 5
   },
 });
-const cardBottomViewStyle = StyleSheet.create ({
+
+const cardBottomViewStyle = StyleSheet.create({
   bottomView: {
     flex: 0.85,
-    // position: 'absolute',
     backgroundColor: 'transparent',
     flexDirection: 'row',
   },
   profileView: {
     flex: 0.35,
-    // position: 'absolute',
     backgroundColor: 'transparent',
   },
   profileDetails: {
     flex: 0.65,
-    // position: 'absolute',
     backgroundColor: 'transparent',
   },
 });
 
-const cardDetailsViewStyle = StyleSheet.create ({
+const cardDetailsViewStyle = StyleSheet.create({
   detailsProfileLogo: {
     flex: 0.35,
-    // position: 'absolute',
     backgroundColor: 'transparent',
     flexDirection: 'row',
   },
@@ -310,16 +444,14 @@ const cardDetailsViewStyle = StyleSheet.create ({
   },
 });
 
-const ratingView = StyleSheet.create ({
+const ratingView = StyleSheet.create({
   detailsProfileLogo: {
     flex: 1,
-    // position: 'absolute',
     backgroundColor: 'transparent',
     flexDirection: 'row',
   },
   listView: {
     flex: 1,
-    // position: 'absolute',
     backgroundColor: 'transparent',
   },
   scoreViewStyle: {
@@ -327,13 +459,10 @@ const ratingView = StyleSheet.create ({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'transparent',
-    // height : 100,
-    // width: 100//(Dimensions.get('window').width )/8
-    // margin : 0
   },
 });
 
-const listTitleStyle = StyleSheet.create ({
+const listTitleStyle = StyleSheet.create({
   headerView: {
     flex: 1,
     fontSize: normalize(12),
@@ -342,9 +471,8 @@ const listTitleStyle = StyleSheet.create ({
   },
   view: {
     flex: 1,
-    // margin : 10,
     fontSize: normalize(12),
-    // fontWeight: 'bold',
+    paddingRight: normalize(7)
   },
 });
 

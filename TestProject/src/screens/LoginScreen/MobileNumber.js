@@ -7,9 +7,12 @@ import {
   Button,
   KeyboardAvoidingView,
   Platform,
-  Image
+  Image,
+  SafeAreaView,
+  ScrollView
+
 } from 'react-native';
-import DefaultInput from '../../components/UI/DefaultInput/DefaultInput';
+import SplashScreen from 'react-native-splash-screen'
 import { Navigation } from 'react-native-navigation';
 import { PropTypes } from 'prop-types';
 import ButtonMod from '../../components/UI/ButtonMod/ButtonMod';
@@ -17,93 +20,54 @@ import PhoneInput from 'react-native-phone-input';
 import HeaderText from '../../components/UI/HeaderText/HeaderText';
 import { SEND_OTP, DEBUG } from '../../../Apis';
 import { authHeaders, normalize } from '../../../Constant';
-// import { Geolocation } from 'react-native';
-import Geolocation from 'react-native-geolocation-service';
+import Spinner from '../../components/UI/Spinner/Spinner';
+import axios from 'axios';
+
+import { APP_GLOBAL_COLOR } from '../../../Constant';
 export default class MobileNumber extends Component {
   static propTypes = {
     componentId: PropTypes.string,
   };
 
-  // state={
-  //   // number : null,
-  //   // countryCode : null
-  // }
+  state = {
+    loading: false,
+    success: false,
+  }
 
   constructor(props) {
     super(props);
-
-
-    // alert("hhhvv");
-    
-    Geolocation.getCurrentPosition(
-      
-      // navigator.geolocation.getCurrentPosition(
-        (position) => {
-          // alert("hhh");
-          // const initialPosition = JSON.stringify(position);
-  
-          // let latlong = position.coords.latitude.toString() +  "," + position.coords.longitude.toString()
-          // let lat_lon = position.coords.latitude.toString() + "," + position.coords.longitude.toString();
-          // alert(lat_lon);
-          // if (position.mocked) {
-          //   if (position.mocked == true) {
-          //     this.refs.loading.close();
-          //     setTimeout(function () {
-          //       alert("you are using fake location");
-          //     }, 1000)
-  
-          //     return;
-          //   }
-          // }
-  
-          //  alert(code + "   " + phoneN);
-          // this.setState({ lat_lon: latlong });
-  
-          // this.mobileNumberSubmit(lat_lon, this);
-        },
-        (error) => {
-          // alert(error.message);
-          // this.locationErrorMessage = error.message;
-          // alert(locationErrorMessage)
-          // this.showDialog();
-          // this.mobileNumberSubmit(null, this);
-  
-  
-        },
-        { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
-      );
+    // this.pushScreen = this.pushScreen.bind (this);
   }
 
+  componentDidMount() {
+    this.phone.selectCountry('in')
+    // SplashScreen.hide()
 
 
+  }
+
+  goOtp = (code, phoneN, responseData) => {
+    // alert(responseData);
+    Navigation.push(this.props.componentId, {
+      component: {
+        name: 'OtpScreen',
+        passProps: {
+          code: code,
+          mobileNumber: phoneN
+        },
+      },
+    });
+  }
 
   mobileNumberSubmit = () => {
     // console.log(e);
+    let data = [
+      { title: 'Title1', data: ['item1', 'item2'] },
+      { title: 'Title2', data: ['item3', 'item4'] },
+      { title: 'Title3', data: ['item5', 'item6'] },
+    ]
 
-    // let data = [
-    //   { title: 'Title1', data: ['item1', 'item2'] },
-    //   { title: 'Title2', data: ['item3', 'item4'] },
-    //   { title: 'Title3', data: ['item5', 'item6'] },
-    // ]
-
-    //   let data = [
-    //     { title: 'Title1', data: 'item1'},
-    //     { title: 'Title2', data: 'item3' },
-    //     { title: 'Title3', data: 'item5'},
-    // ]
-
-    // Navigation.push(this.props.componentId, {
-    //   component: {
-    //     name: 'Sharing',
-    //     passProps: {
-
-    //       // code: this.phone.getCountryCode(),
-    //       // mobileNumber: this.phone.getValue(),
-    //       // data : data
-    //     },
-    //   },
-    // });
-    // return
+    this.setState({ loading: true })
 
     if (DEBUG == 0) {
       Navigation.push(this.props.componentId, {
@@ -119,10 +83,8 @@ export default class MobileNumber extends Component {
       return;
     }
 
-    console.log(this.phone.getCountryCode());
-    console.log(this.phone.getValue());
-
     if (!this.phone.isValidNumber()) {
+      this.setState({ loading: false })
       alert('Please enter a valid number');
       return;
     }
@@ -132,56 +94,41 @@ export default class MobileNumber extends Component {
     let code = "+" + this.phone.getCountryCode();
     let phone = this.phone.getValue();
     var phoneN = phone.replace(code, "");
-    fetch(SEND_OTP, {
-      method: 'POST',
-      headers: authHeaders(),
-      body: JSON.stringify({
-        userMobile: phoneN,
-        userCountryCode: code,
 
-      }),
+    axios.post(SEND_OTP, {
+      userMobile: phoneN,
+      userCountryCode: code
     })
-    // .then((response) => response.json())
-      .then((responseJson) => {
-
-
-        // alert(responseJson);
-        // code: this.phone.getCountryCode(),
-        // mobileNumber: this.phone.getValue(),
-        // user_id : responseJson.userId
-        // return responseJson;
+      .then(response => {
+        let responseData = response.data.response;
+        this.setState({ loading: false, success: true })
+        this.goOtp(code, phoneN, responseData);
       })
-      .catch((error) => {
-        console.error(error);
-      });
-    Navigation.push(this.props.componentId, {
-      component: {
-        name: 'OtpScreen',
-        passProps: {
-
-          code:code,
-          mobileNumber: phoneN
-        },
-      },
-    });
-
-    
-
-
-
+      .catch(error => {
+        console.error(error)
+      })
 
   };
 
-  // mobileNumberChanged = (changedNumber) => {
-  // console.log(changedNumber);
-  // console.log(this.phone.getCountryCode());
-  // console.log(this.phone.getValue());
+  renderButton = () => {
+    const { loading } = this.state;
 
-  // this.setState ({
-  //   number : changedNumber,
-  //   countryCode : '+1'
-  // })
-  // }
+    if (loading) {
+      return (
+        <Spinner />
+      )
+    } else if (!loading) {
+      return (
+        <ButtonMod
+          style={{ marginTop: 20 }}
+          onPress={this.mobileNumberSubmit}
+          color="#a01414"
+        >
+          Get OTP
+        </ButtonMod>
+      )
+    }
+  }
 
   render() {
     var { height, width } = Dimensions.get('window');
@@ -189,55 +136,69 @@ export default class MobileNumber extends Component {
       behavior: Platform.OS === "ios" ? "padding" : "null"
     }
     return (
-      <View style={styles.container}>
-        <KeyboardAvoidingView
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: 'clear',
-            margin: 30,
-            width: width - 30,
-          }}
-          {...options}
-          enabled
-        >
-          <View style={{ marginBottom: 20 }} alignItems='center' backgroundColor='transparent'>
-
-
-            <Image style={{ position: 'absolute', bottom: 22, height: normalize(150), width: normalize(150), resizeMode: 'cover' }} source={require('../../assets/logoComp.png')} />
-            <Text style={{ position: 'absolute', bottom: 10, fontWeight: "600", fontSize: 14, color: "rgba(86,49,135,1)" }}>AGENCY NAME</Text>
-
-          </View>
-
-          <View>
-            <HeaderText
-              style={{
-                marginBottom: 20,
-              }}
-            >
-              Mobile Number Verification
-          </HeaderText>
-          </View>
-
-          <PhoneInput
-            ref={(ref) => { this.phone = ref }}
-            style={styles.phoneInput}
-            textProps={{ placeholder: 'Mobile Number', height: 25 }}
-            textStyle={{ borderBottomWidth: 1, borderColor: '#BFBFBF' }}
-          // onChangePhoneNumber={(e) => this.mobileNumberChanged(e)}
-
-          />
-
-          <ButtonMod
-            style={{ marginTop: 20 }}
-            onPress={this.mobileNumberSubmit}
-            color="rgba(86,49,135,1)"
+      <SafeAreaView
+        forceInset={{ bottom: 'always' }} style={styles.container}>
+        {/* <ScrollView style={{ flex: 1 ,margin : 0, width : '100%' , height : '100%', backgroundColor : 'green' }}> */}
+          <KeyboardAvoidingView
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+              backgroundColor: 'clear',
+              // margin: 30,
+              width: '100%',
+            }}
+            {...options}
+            enabled
           >
-            Get OTP
-          </ButtonMod>
-        </KeyboardAvoidingView>
-      </View>
+
+
+            <View style={{ flex: 1, width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', backgroundColor: APP_GLOBAL_COLOR }}>
+
+              {/* <View style = {{flex : 1 , margin : 5 , backgroundColor : 'green'}}/>  */}
+              {/* <View style={{ marginBottom: 20 }} alignItems='center' backgroundColor='transparent'> */}
+
+
+              <Image style={{ marginBottom: 10, height: normalize(100), width: normalize(100), resizeMode: 'cover' }} source={require('../../assets/icon1.png')} />
+              {/* <Text style={{ position: 'absolute', bottom: 10, fontWeight: "600", fontSize: 14, color: "#a01414" }}>AGENCY NAME</Text> */}
+
+              {/* </View> */}
+              <Text style={{ fontSize: 15, margin: 5, color: 'white' }}>What is Raajneeti</Text>
+              <Text style={{ fontSize: 12, margin: 10, textAlign: 'center', color: 'white' }}>Join India's First Political Social Network to bring democracy back to people. Make yourself heard by participating in unbiased political discussions and surveys. Rate your leaders, view the latest trends, discuss with people around you and much more on Raajneeti.</Text>
+
+            </View>
+
+            <View style={{ flex: 1 }} justifyContent='center' alignItems='center' backgroundColor='transparent'>
+
+
+
+              <View>
+                <HeaderText
+                  style={{
+                    marginBottom: 20,
+                  }}
+                >
+                  Mobile Number Verification
+          </HeaderText>
+              </View>
+
+              <PhoneInput
+                initial
+                ref={(ref) => { this.phone = ref }}
+                style={styles.phoneInput}
+                textProps={{ placeholder: 'Mobile Number', height: 25 }}
+                textStyle={{ borderBottomWidth: 1, borderColor: '#BFBFBF' }}
+              // onChangePhoneNumber={(e) => this.mobileNumberChanged(e)}
+
+              />
+
+              {this.renderButton()}
+
+            </View>
+
+          </KeyboardAvoidingView>
+        {/* </ScrollView> */}
+      </SafeAreaView>
     );
   }
 }

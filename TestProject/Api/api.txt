@@ -1,0 +1,313 @@
+Please Note: Red Text are Mandatory in respective APIs 
+API 1: Send OTP To Mobile & Create New User
+
+In This API , "userMobile", "userCountryCode" are required and Works on POST, This API will return UserMaster Json if any user already exists with mobile and country code, else will create New User and return response String as "response: Otp Sent! New User Created!" and send Mobile Otp to User.
+
+URL : user/sendMobileOtp
+
+Sample Request : 
+{
+"userMobile": "447817799083",
+"userCountryCode": "44",
+"userInitCoord": "48.92100020832678,-112.2370634060909" //comma sep.(Lat-Lng)
+}
+
+Sample Response 1: (When New User is Created)
+{
+"response": "Otp Sent! New User Created!"
+}
+
+Sample Response 2 : (When User already Exists)
+{
+"userId": 3,
+"userFirstName": "Jackson",
+"userLastName": "Jackson",
+"userEmail": "j@j.com",
+"userFb": 23412341234,
+"userMobile": 447817799083,
+"userCountryCode": "44",
+"userOtp": "013855",
+"isUserValidated": "Y",
+"isEnabled": "Y",
+"userPassword": "asd32!",
+"userVerificationToken": �dfsdfasdfa232as� ,
+"userImageName": "user_image.jpg",
+"userImageData": �DATA IN FORM OF BASE64 STRING�,
+"latLngSeparatedByComma": null, //DUMMY - THIS FIELD IS NOT IN USE
+"userInitCoord": "33.24303428541258,-119.52491207485241",
+"userPolArea": "POL Alternative Area 1",
+"userFirArea": "FIR Alternative Area 1",
+"userState": "Alabama"
+}
+
+API 2: Validate Mobile OT
+In This API, "userMobile", "userCountryCode", "userOtp" are required and Works on Post, This API will return response String as "response:true" or "response:false".
+
+URL : user/validateMobileOtp
+
+Sample Request: 
+{
+"userMobile": "447817799083",
+"userCountryCode": "44",
+"userOtp": "013855"
+
+Sample Response 1:
+{
+"response": "true"
+}
+
+Sample Response 2:
+{
+"response": "false"
+}
+
+API 3: Send Registration Link To Mail & Create New User
+
+In This API , "userEmail" is required and rest field are optional and Works on POST, This API will return UserMaster Json if any user already exists with EmailId, else will create New User and return response String as "response: Email Sent! New User Created!" and send Registration Link to User.
+
+URL : user/sendEmailRegistrationLink
+
+Sample Request: 
+{
+"userEmail": "j@j.com",
+"userInitCoord": "48.92100020832678,-112.2370634060909" //comma sep.(Lat-Lng)
+}
+Sample Response 1 : 
+{
+"
+
+Sample Response 1 : 
+{
+"response": "Email Sent! New User Created!"
+}
+
+Sample Response 2 : (When User already Exists)
+{
+"userId": 3,
+"userFirstName": "Jackson",
+"userLastName": "Jackson",
+"userEmail": "j@j.com",
+"userFb": 23412341234,
+"userMobile": 447817799083,
+"userCountryCode": "44",
+"userOtp": "013855",
+"isUserValidated": "Y",
+"isEnabled": "Y",
+"userPassword": "asd32!",
+"userVerificationToken": �dfsdfasdfa232as� ,
+"userImageName": "user_image.jpg",
+"userImageData": �DATA IN FORM OF BASE64 STRING�,
+"latLngSeparatedByComma": null, //DUMMY - THIS FIELD IS NOT IN USE
+"userInitCoord": "33.24303428541258,-119.52491207485241",
+"userPolArea": "POL Alternative Area 1",
+"userFirArea": "FIR Alternative Area 1",
+"userState": "Alabama"
+
+}
+
+API 4: Create/Update Password - Only when Registration is done via Emai
+
+In This API, "userEmail" and "userPassword" are required and Works on POST.
+
+
+This API will return response String as "response:true" or "response:false".
+
+URL: user/createPassword
+
+Sample Request : 
+{
+"userEmail": "j@j.com",
+"userPassword": "asd32!"
+} 
+Sample Response 1: 
+{
+"response": "true"
+}
+Sample Response 2: 
+{
+"response": "User is not Verfied!"
+}
+
+
+API 5: Create User By FB
+
+
+
+In This API, "userFb" is required and rest are optional and Works on Post,
+
+This API will return response String as "response:true" or "response:false".
+
+
+
+URL: user/userRegistratoionByFB
+
+
+
+Sample Request: 
+{
+"userFirstName": "Jackson",
+"userLastName": "Jackson",
+"userEmail": "j@j.com",
+"userFb": 123123123424353453,
+"userMobile": "447817799083",
+"userCountryCode": "44",
+"userImageName": "user_image.jpg",
+"userImageData": �DATA IN FORM OF BASE64 STRING�,
+"userInitCoord": "48.92100020832678,-112.2370634060909" //comma sep.(Lat-Lng)
+}
+
+Sample Response 1:
+{
+"response": "true"
+}
+
+Sample Response 2:
+{
+"response": "false"
+}
+
+API 6: Get User Profile Either By mobile and countryCode or email or Fb
+
+In This API , Either "userMobile" and "userCountryCode" or �userEmail� or �userFb�, are required and Works on POST.
+This API will return UserMaster Json String or response String as "response:User Not Found!".
+
+URL : user/getUserDetails
+
+Sample Request 1: 
+{
+"userMobile": "447817799083",
+"userCountryCode": "44"
+}
+
+Sample Request 2: 
+{
+"userEmail": "j@j.com"
+}
+
+Sample Request 3: 
+{
+" userFb": "3234113234"
+}
+
+Sample Response 1: 
+{
+"userId": 3,
+"userFirstName": "Jackson",
+"userLastName": "Jackson",
+"userEmail":j@j.com,
+"userFb": 123123123424353453,
+"userMobile": 447817799083,
+"userCountryCode": "44",
+"userOtp": "013855",
+"isUserValidated": "Y",
+"isEnabled": "Y",
+"userPassword": "asd32!",
+"userVerificationToken": "fa84cd13-028e-45fb-ad3c-c984369bb894",
+"userImageName": "user_image.jpg",
+"userImageData": �DATA IN FORM OF BASE64 STRING�,
+"latLngSeparatedByComma": null, //DUMMY - THIS FIELD IS NOT IN USE
+"userInitCoord": "33.24303428541258,-119.52491207485241",
+"userPolArea": "POL Alternative Area 1",
+"userFirArea": "FIR Alternative Area 1",
+"userState": "Alabama"
+}
+
+
+Sample Response 2:
+{
+"response": "User Not Found"
+}
+
+API 7: Update User Profile Either By mobile and countryCode or email or Fb
+
+In This API, Either "userMobile" and "userCountryCode" or �userEmail� or �userFb�, are required and whole userMaster profile is required to update and Works on POST.
+
+This API will return response String as �response:true� Or "response:User Not Found!".
+
+
+URL: user/updateUserDetails
+
+
+
+Following fields can only be updated in this API
+
+
+
+Sample Request 1: 
+
+{
+"userFirstName": "Jackson",
+"userLastName": "Jackson",
+"userEmail":j@j.com,
+"userFb": 123123123424353453,
+"userMobile": 447817799083,
+"userCountryCode": "44",
+"isEnabled": "Y", // Only �Y� or �N� is allowed
+"userPassword": "asd32!",
+"userImageName": "user_image.jpg",
+"userImageData": �DATA IN FORM OF BASE64 STRING�
+}
+
+
+
+
+Sample Response 1:
+{
+"response": "true"
+}
+
+Sample Response 2:
+{
+"response": "User Not Found"
+}
+
+
+11:37January 14, 2019 Report
+S
+susheelarya
+API 8: Forget Password - Only when User Have Email
+
+
+In This API , "userEmail" is required Works on POST, This API will send a Verification Link to User.
+
+
+URL : user/forgetPassword
+
+
+Sample Request: 
+{
+"userEmail": "j@j.com",
+}
+
+Sample Response 1: 
+{
+"response": "Email Sent for Verfication!"
+}
+
+Sample Response 2: 
+{
+"response": " User Not Found!"
+}
+
+Once Verification has been done, User can Create / Update Password with the help of createPassword API.
+
+API 9: Check Email Verification
+
+In This API , "userEmail" is required Works on POST, This API will check if Email Verification is done or not.
+
+URL: user/checkUserEmailVerfication
+
+Sample Request: 
+{
+"userEmail": "j@j.com",
+}
+
+Sample Response 1: 
+{
+"response": "User is Verified!"
+}
+
+Sample Response 2: 
+{
+"response": "User is not Verified!"
+}

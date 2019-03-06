@@ -13,7 +13,6 @@
             "sourceMaps": true,
             "outDir": "${workspaceRoot}/.vscode/.react"
         },
-
         {
             "type": "node",
             "request": "launch",

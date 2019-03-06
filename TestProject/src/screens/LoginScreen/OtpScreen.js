@@ -1,24 +1,24 @@
 import React, { Component } from 'react';
 import {
+  Text,
   View,
   StyleSheet,
   Dimensions,
+  Button,
   KeyboardAvoidingView,
   Platform,
+  TextInput
 } from 'react-native';
 import DefaultInput from '../../components/UI/DefaultInput/DefaultInput';
 import { Navigation } from 'react-native-navigation';
 import { PropTypes } from 'prop-types';
 import ButtonMod from '../../components/UI/ButtonMod/ButtonMod';
 import HeaderText from '../../components/UI/HeaderText/HeaderText';
-
 import { VALIDATE_OTP, DEBUG, GET_USER_DETAILS_EMAIL } from '../../../Apis';
-import { saveUserID, authHeaders, defaultUser, saveUserData } from '../../../Constant';
-
-import Loading from 'react-native-whc-loading';
+import { saveUserID, authHeaders, saveUserData, getCurrentLocation, defaultUser } from '../../../Constant';
+import axios from 'axios';
 import Geolocation from 'react-native-geolocation-service';
-// import { PermissionsAndroid } from 'react-native';
-
+import Loading from 'react-native-whc-loading';
 export default class OtpScreen extends Component {
   static propTypes = {
     componentId: PropTypes.string,
@@ -26,17 +26,45 @@ export default class OtpScreen extends Component {
 
   constructor(props) {
     super(props);
-    // this.getLocation();
   }
   state = {
-    otp: null,
-    // ...this.props
+    name: null,
+    ...this.props
   }
 
-  getLocation = () => {
-    //this.refs.loading.show();
-    // geolocation.setRNConfiguration(config);
 
+  getLocation = () => {
+    this.refs.loading.show();
+    // navigator.geolocation.getCurrentPosition(
+    //   (position) => {
+    //     const initialPosition = JSON.stringify(position);
+
+    //     // let latlong = position.coords.latitude.toString() +  "," + position.coords.longitude.toString()
+    //     let lat_lon = position.coords.latitude.toString() + "," + position.coords.longitude.toString();
+    //     // alert(lat_lon);
+    //     if (position.mocked) {
+    //       if (position.mocked == true) {
+    //         alert("you are using fake location");
+    //         this.refs.loading.close();
+    //         return;
+    //       }
+    //     }
+
+    //     // alert(code + "   " + phoneN);
+    //     // this.setState({ lat_lon: latlong });
+    //     this.mobileNumberSubmit(lat_lon , this);
+    //   },
+    //   (error) => {
+    //     // alert(error.message)
+    //     // this.locationErrorMessage = error.message;
+    //     // alert(locationErrorMessage)
+    //     // this.showDialog();
+    //     this.mobileNumberSubmit(null , this);
+
+
+    //   },
+    //   { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+    // );
     Geolocation.getCurrentPosition(
       (position) => {
 
@@ -71,6 +99,8 @@ export default class OtpScreen extends Component {
     );
   }
 
+
+
   mobileNumberSubmit = (locationStr, thisObj) => {
     // let thisObj = this;
     let location = locationStr;
@@ -92,98 +122,120 @@ export default class OtpScreen extends Component {
     }
 
     let body = null;
-    
     if (locationStr) {
       body = JSON.stringify({
         userMobile: this.props.mobileNumber,
         userCountryCode: this.props.code,
-        userOtp: this.state.otp,
+        userOtp: this.state.name,
         userInitCoord: locationStr
+
       })
     } else {
-      body = JSON.stringify({
-        userMobile: this.props.mobileNumber,
-        userCountryCode: this.props.code,
-        userOtp: this.state.otp
-      })
+      // body = JSON.stringify({
+      //   userMobile: this.props.mobileNumber,
+      //   userCountryCode: this.props.code,
+      //   userOtp: this.state.name
+
+      // })
     }
+    axios.post(VALIDATE_OTP, {
+      userMobile: this.props.mobileNumber,
+      userCountryCode: this.props.code,
+      userOtp: this.state.name
+    })
+      .then(response => {
+        let responseData = response.data;
+        this.refs.loading.close();
+        console.log(responseData)
 
-    // alert(body);
+        let data = {
+          image: responseData.userImageData,
+          name: responseData.userFirstName,
+          email: responseData.userEmail,
+          username: responseData.userName
+        }
 
-    // console.log(this.state.otp);
-    // console.log(this.state.code);
-    // console.log(this.state.mobileNumber);
-    //     return;
-    // alert(body);
-
-    fetch(VALIDATE_OTP, {
-      method: 'POST',
-      headers: authHeaders(),
-      body: body,
-    }).then((response) => response.json())
-      .then((responseJson) => {
-        //  alert(JSON.stringify(responseJson));
-        //this.refs.loading.close();
         setTimeout(function () {
-
-          // alert(JSON.stringify(responseJson));
-          if (responseJson) {
-            if (responseJson.userId) {
-
-              saveUserID(responseJson.userId);
-              saveUserData(responseJson);
-              // alert(JSON.stringify(responseJson));
+          if (responseData) {
+            if (responseData.userId) {
+              saveUserID(responseData.userId);
+              saveUserData(data)
 
               if (location) {
-
-                Navigation.push(thisObj.props.componentId, {
-                  component: {
-                    id: 'Profile',
-                    name: 'Profile',
-                    passProps: {
-                      // email: null,
-                      image: responseJson.userImageData ? responseJson.userImageData : defaultUser,  //null
-                      name: responseJson.userFirstName ? responseJson.userFirstName : null,           //null 
-                      username: responseJson.userName,
-                      mobileNumber: thisObj.props.mobileNumber,
-                      code: thisObj.props.code,
-                    },
-                    options: {
-                      topBar: {
-                        visible: false,
-                        animate: false,
-                        drawBehind: true
+                if (responseData.userName) {
+                  Navigation.push(thisObj.props.componentId, {
+                    component: {
+                      name: 'HomeScreen',
+                      passProps: {
+                        data: data
+                      },
+                      options: {
+                        topBar: {
+                          visible: false,
+                          drawBehind: true,
+                          animate: false,
+                        },
+                        popGesture: false
+                      },
+                      sideMenu: {
+                        enabled: false,
+                        visible: false
                       }
                     }
-                  },
-                });
-
+                  });
+                } else {
+                  Navigation.push(thisObj.props.componentId, {
+                    component: {
+                      id: 'Profile',
+                      name: 'Profile',
+                      passProps: {
+                        email: responseData.userEmail,
+                        image: responseData.userImageData,
+                        name: responseData.userFirstName,
+                        username: responseData.userName,
+                        mobileNumber: thisObj.props.mobileNumber,
+                        code: thisObj.props.code
+                      },
+                      options: {
+                        topBar: {
+                          visible: false,
+                          animate: false,
+                          drawBehind: true
+                        }
+                      }
+                    },
+                  });
+                }
               } else {
-
+                console.log('no location')
                 Navigation.push(thisObj.props.componentId, {
                   component: {
                     name: 'AreaScreen',
                     passProps: {
-                      data: responseJson.areaStateMap,
+                      data: responseData.areaStateMap,
                       mobileNumber: thisObj.props.mobileNumber,
                       code: thisObj.props.code,
-                      username: responseJson.userName,
-                      image: responseJson.userImageData ? responseJson.userImageData : defaultUser, // ++
-                      name: responseJson.userFirstName ? responseJson.userFirstName : null,            // ++
+                      username: responseData.userName,
+                      name: responseData.userFirstName,
+                      responseData: responseData
                     },
+                    options: {
+                      topBar: {
+                        visible: false,
+                        drawBehind: true,
+                        animate: false,
+                      },
+                      popGesture: false
+                    }
                   },
                 });
+                // }, 1000)
               }
             } else {
               alert("Invalid OTP");
             }
-            // saveUserID(responseJson.userId);
-          } else {
-            // this.getUser(this);
-            alert("Invalid OTP");
           }
-        }, 300)
-        // return responseJson;
+        }, 1000)
       })
       .catch((error) => {
         this.refs.loading.close();
@@ -191,9 +243,10 @@ export default class OtpScreen extends Component {
       });
   };
 
+
+
   textChanged = (sender) => {
-    // console.log(sender);
-    this.setState({ otp: sender });
+    this.setState({ name: sender });
   }
 
   render() {
@@ -218,14 +271,8 @@ export default class OtpScreen extends Component {
               Enter OTP
           </HeaderText>
           </View>
-
-          <DefaultInput 
-              onChangeText={(text) => this.textChanged(text)} 
-              placeholder="Enter OTP" 
-              secureTextEntry={true} 
-             />
-
-          <ButtonMod onPress={this.getLocation} color="rgba(86,49,135,1)">
+          <DefaultInput onChangeText={(text) => this.textChanged(text)} placeholder="Enter OTP" secureTextEntry={true} />
+          <ButtonMod onPress={this.getLocation} color="#a01414">
             Submit
           </ButtonMod>
 

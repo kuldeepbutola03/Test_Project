@@ -3,13 +3,14 @@
 buildscript {
     ext {
         buildToolsVersion = "27.0.3"
-        minSdkVersion = 19
+        minSdkVersion = 21
         compileSdkVersion = 27
-        targetSdkVersion = 27
+        targetSdkVersion = 26
         supportLibVersion = "27.1.1"
+        googlePlayServicesVersion = "11.0.0"
     }
     repositories {
-        google()
+         google()
         jcenter()
         mavenLocal()
         mavenCentral()
@@ -35,11 +36,11 @@ allprojects {
         flatDir {
             dirs "$rootDir/../node_modules/react-native-maps/libs"
         }
+        maven { url 'https://maven.google.com' }
         maven { url 'https://jitpack.io' }
-
-           maven { url 'https://maven.google.com' }
     }
 }
+
 
 
 task wrapper(type: Wrapper) {

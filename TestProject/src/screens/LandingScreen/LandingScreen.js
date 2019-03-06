@@ -15,8 +15,7 @@ import CustomTextButton from '../../components/UI/ButtonMod/CustomTextButton';
 import CustomButton from '../../components/UI/ButtonMod/CustomButtom';
 import { DEBUG, GET_USER_DETAILS_EMAIL, FACEBOOK_REGISTRATION } from '../../../Apis';
 import Loading from 'react-native-whc-loading';
-import { AsyncStorage } from "react-native";
-import Geolocation from 'react-native-geolocation-service';
+import { AsyncStorage } from "react-native"
 export default class LandingScreen extends Component {
 
 
@@ -32,14 +31,6 @@ export default class LandingScreen extends Component {
       password: null,
       lat_lon: null
     }
-
-    
-    // var data2 = {};
-    // data2["aa"] = "sada";
-
-    // alert(JSON.stringify(data2));
-    // saveUserID("abcdef");
-    // this.pushScreen = this.pushScreen.bind(this);
   }
 
   
@@ -168,15 +159,6 @@ export default class LandingScreen extends Component {
       this.refs.loading.close();
       return;
     } else {
-      //   "userFirstName": "Jackson",
-      // "userLastName": "Jackson",
-      // "userEmail": "j@j.com",
-      // "userFb": 123123123424353453,
-      // "userMobile": "447817799083",
-      // "userCountryCode": "44",
-      // "userImageName": "user_image.jpg",
-      // "userImageData": “DATA IN FORM OF BASE64 STRING”
-      // json.picture.data
 
       let dataFB = JSON.stringify({
         userFirstName: "",
@@ -403,7 +385,7 @@ export default class LandingScreen extends Component {
   };
 
   locationHandle = () => {
-    Geolocation.getCurrentPosition(
+    navigator.geolocation.getCurrentPosition(
       (position) => {
         const initialPosition = JSON.stringify(position);
 

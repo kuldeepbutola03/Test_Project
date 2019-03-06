@@ -26,11 +26,12 @@ const styles = StyleSheet.create ({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor:"rgba(87,48,134,1)"
+    backgroundColor:"#a01414"
   },
   icon: {
-    height: normalize(35),
-    width: normalize(35),
+    height: normalize(25),
+    width: normalize(25),
+    marginBottom: normalize(5)
   },
   text: {
     fontSize: normalize(11),

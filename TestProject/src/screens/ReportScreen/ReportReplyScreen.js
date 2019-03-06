@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { FlatList, View, StyleSheet, SafeAreaView, Text, ScrollView, RefreshControl, Dimensions, KeyboardAvoidingView, TextInput, Image, TouchableOpacity, ActionSheetIOS } from 'react-native';
 import { Navigation } from 'react-native-navigation';
 import { PropTypes } from 'prop-types';
-import { normalize, APP_GLOBAL_COLOR } from '../../../Constant';
+import { normalize, APP_GLOBAL_COLOR, getCurrentLocation } from '../../../Constant';
 import CustomButton from "../../components/UI/ButtonMod/CustomButtom";
 import CaseCard from "../../components/UI/CaseCard/CaseCard";
 import { Platform } from 'react-native';
@@ -14,7 +14,7 @@ import Share, { ShareSheet, Button } from 'react-native-share';
 export default class ReportReplyScreen extends Component {
   dataTappedForMore = null;
   shareOptions = null;
-
+  // currentUserId = null;
   static propTypes = {
     componentId: PropTypes.string,
   };
@@ -22,6 +22,12 @@ export default class ReportReplyScreen extends Component {
   componentDidMount() {
     console.log(this.props.data);
     this._onRefresh();
+
+    // getUserID((usrid) => {
+
+    //   currentUserId = usrid
+    //   alert(currentUserId);
+    // });
   }
 
   state = {
@@ -130,6 +136,8 @@ export default class ReportReplyScreen extends Component {
 
       });
 
+
+
       fetch(LIKDISLIKE_POST, {
         method: 'POST',
         headers: authHeaders(),
@@ -169,65 +177,91 @@ export default class ReportReplyScreen extends Component {
 
   }
   requestForReport(data) {
-
-    let body = JSON.stringify({
-
-
-      "Mobile_Number_Against": data.Mobile_Number,
-      "Mobile_Number": MOBILE_NUMBER_,
-      "Report_Type": "Hurts Sentiments",
-
-      "Location_Name": "sector 18, Noida",
-
-      "Message_Id": data.Message_Id,
-      "Report_Type": "Hurts Sentiments",
+    // alert(currentUserId);
+    getUserID((userId) => {
+    //   alert(userId);
+      // getCurrentLocation((location) => {
+        // if (location) {
+        let body = JSON.stringify({
 
 
-
-      "Latitude": "27.5",
-      "Longitude": "77.5",
-      "Message": data.Message,
-
-      "Report_SubType": "Hide Babble",
-      "User_Comments": "",
-      "isOP": data.IsOP,
-      "is_poll": 0
-
-
-
-    });
-    // alert(body);
-    // return;
-    // µ
-    fetch(REPORT_POST, {
-      method: 'POST',
-      headers: authHeaders(),
-      body: body,
-    }).then((response) => response.json())
-
-      .then((responseJson) => {
+          "message":
+          {
+            "messageId": data.messageId
+          },
+          "userMaster":
+          {
+            "userId": userId
+          },
+          "displayMessage": "N",
+          "reportReason": "",
+          "reportCustomReason": "",
+          "latitude": location.latitude ? location.latitude : 0,
+          "longitude": location.longitude ? location.longitude : 0
 
 
-        // alert(JSON.stringify(responseJson));
-        this._onRefresh();
+          // "Mobile_Number_Against": data.Mobile_Number,
+          // "Mobile_Number": MOBILE_NUMBER_,
+          // "Report_Type": "Hurts Sentiments",
 
-        // var dataObj = this.state.case;
-        // var index = dataObj.indexOf(data);
-        // data.Is_Liked = isLiked;
-        // data.LikingCount = data.LikingCount + ((isLiked == 1) ? 1 : -1);
-        // data.LikingCount = (data.LikingCount < 0) ? 0 : data.LikingCount;
+          // "Location_Name": "sector 18, Noida",
+
+          // "Message_Id": data.Message_Id,
+          // "Report_Type": "Hurts Sentiments",
 
 
-        // dataObj[index] = dataObj;
-        // this.setState({case : [...dataObj] });
 
-        //  alert(JSON.stringify(responseJson));
-        // this.filterData(responseJson.result);
-      })
-      .catch((error) => {
-        // this.setState({ refreshing: false });
-        console.error(error);
+          // "Latitude": "27.5",
+          // "Longitude": "77.5",
+          // "Message": data.Message,
+
+          // "Report_SubType": "Hide Babble",
+          // "User_Comments": "",
+          // "isOP": data.IsOP,
+          // "is_poll": 0
+
+
+
+        });
+        alert(body);
+        // return;
+        // µ
+        fetch(REPORT_POST, {
+          method: 'POST',
+          headers: authHeaders(),
+          body: body,
+        }).then((response) => response.json())
+
+          .then((responseJson) => {
+
+
+            // alert(JSON.stringify(responseJson));
+            this._onRefresh();
+
+            // var dataObj = this.state.case;
+            // var index = dataObj.indexOf(data);
+            // data.Is_Liked = isLiked;
+            // data.LikingCount = data.LikingCount + ((isLiked == 1) ? 1 : -1);
+            // data.LikingCount = (data.LikingCount < 0) ? 0 : data.LikingCount;
+
+
+            // dataObj[index] = dataObj;
+            // this.setState({case : [...dataObj] });
+
+            //  alert(JSON.stringify(responseJson));
+            // this.filterData(responseJson.result);
+          })
+          .catch((error) => {
+            // this.setState({ refreshing: false });
+            console.error(error);
+          });
+
+        // }
       });
+    // })
+
+
+
   }
   filterData2(data) {
 
@@ -284,70 +318,7 @@ export default class ReportReplyScreen extends Component {
 
   }
 
-  requestForReport(data) {
 
-
-
-
-    let body = JSON.stringify({
-
-
-      "Mobile_Number_Against": data.Mobile_Number,
-      "Mobile_Number": MOBILE_NUMBER_,
-      "Report_Type": "Hurts Sentiments",
-
-      "Location_Name": "sector 18, Noida",
-
-      "Message_Id": data.Message_Id,
-      "Report_Type": "Hurts Sentiments",
-
-
-
-      "Latitude": "27.5",
-      "Longitude": "77.5",
-      "Message": data.Message,
-
-      "Report_SubType": "Hide Babble",
-      "User_Comments": "",
-      "isOP": data.IsOP,
-      "is_poll": 0
-
-
-
-    });
-    // alert(body);
-    // return;
-    // µ
-    fetch(REPORT_POST, {
-      method: 'POST',
-      headers: authHeaders(),
-      body: body,
-    }).then((response) => response.json())
-
-      .then((responseJson) => {
-
-
-        alert(JSON.stringify(responseJson));
-        this._onRefresh();
-
-        // var dataObj = this.state.case;
-        // var index = dataObj.indexOf(data);
-        // data.Is_Liked = isLiked;
-        // data.LikingCount = data.LikingCount + ((isLiked == 1) ? 1 : -1);
-        // data.LikingCount = (data.LikingCount < 0) ? 0 : data.LikingCount;
-
-
-        // dataObj[index] = dataObj;
-        // this.setState({case : [...dataObj] });
-
-        //  alert(JSON.stringify(responseJson));
-        // this.filterData(responseJson.result);
-      })
-      .catch((error) => {
-        // this.setState({ refreshing: false });
-        console.error(error);
-      });
-  }
 
   likeButtonTapped = (data) => {
     this.requestForLikeDislike(data, 1);
@@ -359,7 +330,7 @@ export default class ReportReplyScreen extends Component {
     // alert(data);
     dataTappedForMore = data;
     shareOptions = {
-      title: "Check out Insignia app",
+      title: "Check out Raajneeti app",
       message: data.details,
       subject: "Share Link" //  for email
     };
@@ -395,9 +366,9 @@ export default class ReportReplyScreen extends Component {
     var BUTTONS = [
       'Twitter',
       'Facebook',
-      'whatsapp',
-      'googleplus',
-      'email',
+      'WhatsApp',
+      'GooglePlus',
+      'Email',
       'More',
       'Report',
       'Cancel',
@@ -559,7 +530,7 @@ export default class ReportReplyScreen extends Component {
               />
             </View>
             <View style={styles.textheaderView}>
-              <Text style={styles.textView}>Reports</Text>
+              <Text style={styles.textView}>Timeline</Text>
             </View>
 
           </View>
@@ -591,9 +562,9 @@ export default class ReportReplyScreen extends Component {
               //   </View>)
               // }
 
-              if(data.isOP === "Y"){
+              if (data.isOP === "Y") {
                 return (
-                
+
                   <CaseCard
                     moreButtonTapped={this.moreButtonTapped}
                     onPressLike={(data2) => this.likeButtonTapped(data2)}
@@ -603,7 +574,7 @@ export default class ReportReplyScreen extends Component {
                   />
                 )
               }
-              
+
 
             })}
 
@@ -622,7 +593,7 @@ export default class ReportReplyScreen extends Component {
 
               //   </View>)
               // }
-              if(data.isOP === "N"){
+              if (data.isOP === "N") {
                 return (
 
                   <CaseCard
@@ -634,7 +605,7 @@ export default class ReportReplyScreen extends Component {
                   />
                 )
               }
-              
+
 
             })}
 

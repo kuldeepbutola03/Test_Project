@@ -5,71 +5,49 @@ import {
   Text,
   Dimensions,
   SafeAreaView,
-  ScrollView,
-  TimerMixin,
+  Image,
 } from 'react-native';
 
-// import ProfileCard from '../../components/UI/ProfileCard/ProfileCard';
-// import Apis from '../../../Apis';
+
 import { Navigation } from 'react-native-navigation';
-// import CustomButton from '../../components/UI/ButtonMod/CustomButtom';
-// import {normalize} from '../../../Constant'
+import Spinner from '../../components/UI/Spinner/Spinner';
+import CustomButton from '../../components/UI/ButtonMod/CustomButtom';
 import { PropTypes } from 'prop-types';
 import TrendProfile from '../../components/UI/TrendProfile/TrendProfile';
-import { TREND_, TREND_PDM, TREND_CDM } from '../../../Apis';
-import { authHeaders, getUserID } from '../../../Constant';
+import { TREND_, TREND_PDM, TREND_CDM, TREND_IMAGE } from '../../../Apis';
+import { authHeaders, getUserID, APP_GLOBAL_COLOR } from '../../../Constant';
+import axios from 'axios';
+import Carousel, { Pagination } from 'react-native-snap-carousel';
+import _ from 'lodash';
+import { normalize } from '../../../Constant';
+import { sliderWidth, itemWidth } from './SliderEntry.style.js';
 
-import Geolocation from 'react-native-geolocation-service';
-export default class TrendScreen extends Component {
- 
+const SCREEN_WIDTH = Dimensions.get('window').width;
+const SCREEN_HEIGHT = Dimensions.get('window').height;
+
+class TrendScreen extends Component {
   locationLatLong = null;
   user_Id = 1;
 
-
   state = {
-    timer: null,
-    counter: 0,
-
-    pdmResponse: null,
-    cdmResponse: null,
-
-    timeFrame: {
-
-      '6 Months': ["Jan'18", "Feb'18", "Mar'18", "Apr'18", "May'18", "Jun'18"],
-      '1 Year': ["Mar'18", "Jun'18", "Sep'18", "Dec'18", null, null],
-      '2 Year': ['2017', '2018', null, null, null, null],
-      '3 Year': ['2016', '2017', '2018', null, null, null],
-      '4 Year': ['2015', '2016', '2017', '2018', null, null],
-      '5 Year': ['2014', '2015', '2016', '2017', '2018', null],
-      '6 Year': ['2013', '2014', '2015', '2016', '2017', '2018'],
-    },
-    percentage: {
-
-      '6 Months': [20, 40, 70, 60, 80, 20],
-      '1 Year': [40, 60, 30, 70, null, null],
-      '2 Year': [50, 30, null, null, null, null],
-      '3 Year': [30, 50, 90, null, null, null],
-      '4 Year': [20, 40, 90, 30, null, null],
-      '5 Year': [30, 60, 20, 50, 70, null],
-      '6 Year': [40, 30, 50, 60, 80, 60],
-    },
-    modalVisible: false,
-    timePeriod: '3 Months',
-  };
+    trendImages: null,
+    imageList: [],
+    activeSlide: 0,
+    loading: true,
+  }
 
   componentDidMount() {
     // this.getDataFromServer(true)
-   
-getUserID().then((userId) => {
-
-  this.user_Id = userId;
-  this.getLocation()
-})
+    getUserID().then((userId) => {
+      this.user_Id = userId;
+      this.getLocation()
+    })
   }
 
   static propTypes = {
     componentId: PropTypes.string,
   };
+
   constructor(props) {
     super(props);
   }
@@ -85,7 +63,7 @@ getUserID().then((userId) => {
         options: {
           topBar: {
             visible: false,
-            animate: false, 
+            animate: false,
             drawBehind: true,
           },
         },
@@ -94,7 +72,7 @@ getUserID().then((userId) => {
   };
 
   getLocation() {
-    Geolocation.getCurrentPosition(
+    navigator.geolocation.getCurrentPosition(
       (position) => {
         const initialPosition = JSON.stringify(position);
 
@@ -108,233 +86,185 @@ getUserID().then((userId) => {
         }
 
         this.locationLatLong = latlong;
-  this.getDataFromServer(true)
-        // alert(latlong);
-        // this.setState({ lat_lon: "28.722,77.125" });
-        // this.setState({ lat_lon: latlong });
-        // this.setState({ coordinates: position.coords });
-
-        // alert(latlong);
-        //this.requestToServer()
-      },
-      (error) => {
-        alert(error.message)
-        // this.locationErrorMessage = error.message;
-        // alert(locationErrorMessage)
-        // this.showDialog();
-      },
-      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+        this.getDataFromServer(true)
+        },
+        (error) => {
+          // alert(error.message)
+          this.getDataFromServer(true)
+        },
+        { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
     );
-  
   }
 
-  getDataFromServer(isPDM) {
+  getDataFromServer = () => {
+    axios.post(TREND_IMAGE, {
+      userId: this.user_Id
+    })
+    .then(response => {
+      let responseData = response.data;
+    
+      this.setState({ trendImages: responseData });
 
-
-    let data = JSON.stringify({
-      // resourceId: isPDM ? this.props.resourceIdPDM : this.props.resourceIdCDM,
-      // resourceType2: isPDM ? "PDM" : "CDM",
-      userId: this.user_Id,
-      latLngSeparatedByComma : this.locationLatLong
-    });
-
-    // "resourceId" : "1",
-    //   "resourceType2" : "PDM"
-
-    // setTimeout(function () {
-    //alert(data);
-
-    let urlStr = isPDM ? TREND_PDM : TREND_CDM;
-
-    fetch(urlStr, {
-      method: 'POST',
-      headers: authHeaders(),
-      body: data,
-    }).then((response) =>
-      response.json())
-      .then((responseJson) => {
-
-        // alert(responseJson.resourceName);
-        console.log("111111111`");
-        console.log(responseJson);
-
-
-
-        if (responseJson) {
-          let data = isPDM ? { pdmResponse: responseJson } : { cdmResponse: responseJson };
-          this.setState(data);
-          if (isPDM) {
-            this.getDataFromServer(false);
-          }
-        } else {
-
-          // setTimeout(function () {
-          alert("something went wrong");
-          // }, 100)
-
-
-        }
-
-
-        // return responseJson;
+      let mappedState = _.map(this.state.trendImages.imagesMap, (val, index) => {
+        return {[index] :  val} 
       })
-      .catch((error) => {
-        alert(error);
-        console.error(error);
-      });
+
+      this.setState({ imageList: mappedState, loading: false })
+
+    })
+    .catch(error => {
+      console.log(error)
+      this.setState({ loading: false })
+    })
   }
 
-  getDataFromObject(dataObject) {
+  homeButtonTapped = () => {
+    Navigation.pop(this.props.componentId);
+  };
 
-    let list = [
-      { key: 'ATTRIBUTE NAME', value: 'ATTRIBUTE VALUE' },
-      { key: 'Devin', value: 'Devin' },
-      { key: 'Jackson', value: 'Devin' },
-      { key: 'James', value: 'Devin' },
-      { key: 'Joel', value: 'Devin' },
-      { key: 'John', value: 'Devin' },
-      { key: 'Jillian', value: 'Devin' },
-      { key: 'Jimmy', value: 'Devin' },
-      { key: 'Julie', value: 'Devin' },
-    ];
+  renderComponent = () => {
+    const { loading } = this.state;
 
-    return {
-      name: dataObject ? dataObject.resourceName : '',
-      area: dataObject ? (dataObject.resourceType + " | " + dataObject.resourceType2) : '',
-      totalCount: dataObject ? dataObject.resourceTotalFlagCount : 0,
-      uniqueCount: dataObject ? dataObject.resourceTotalFlagUniqueCount : 0,
-      score: {
-        gpr: {
-          score: dataObject ? (dataObject.resourceGPR + '%') : '0%',
-          name: 'GPR',
-        },
-        agpr: {
-          score: '0',
-          name: 'AGPR',
-        },
-        extraCount: {
-          score: '0',
-          name: 'XYZ',
-        },
-      },
-
-      data: dataObject ? dataObject.basicResourceDetailsPojoList : list,
+    if (loading) {
+      return (
+        <View style={{ flex: 12, justifyContent: 'center', alignItems: 'center' }}>
+          <Spinner />
+        </View>
+      )
+    } else if(!loading) {
+      return (
+        <View style={styles.carouselContainer}>
+            <Carousel
+              layout={'default'} layoutCardOffset={18}
+              ref={(c) => { this._carousel = c; }}
+              data={this.state.imageList}
+              renderItem={this._renderItem}
+              sliderWidth={sliderWidth}
+              itemWidth={itemWidth}
+              shouldOptimizeUpdates
+              onSnapToItem={(index) => this.setState({ activeSlide: index }) }
+            />
+            { this.pagination }
+        </View>
+      )
     }
   }
 
+  get pagination () {
+    const { activeSlide, imageList } = this.state;
+    return (
+        <Pagination
+          dotsLength={imageList.length}
+          activeDotIndex={activeSlide}
+          containerStyle={{ 
+            backgroundColor: APP_GLOBAL_COLOR,
+            // backgroundColor: 'rgba(0, 0, 0, 0.75)',
+            width: SCREEN_WIDTH, 
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-around'
+         }}
+          dotStyle={{
+              width: 10,
+              height: 10,
+              borderRadius: 5,
+              backgroundColor: 'rgba(255, 255, 255, 0.92)'
+          }}
+          inactiveDotStyle={{
+              // Define styles for inactive dots here
+          }}
+          inactiveDotOpacity={0.4}
+          inactiveDotScale={0.6}
+        />
+    );
+  }
+
+  _renderItem ({item, index}) {
+    let data = "trendsImage"+(index+1)+".jpg";
+    return (
+      <View key={index + "abc"} style={styles.imageContainer}>
+        { data === null ?
+          <Image
+            resizeMode="stretch"
+            resizeMethod="scale"
+            style={{ height: SCREEN_HEIGHT/1.5, width: '100%', marginTop: normalize(30), borderRadius: 10 }}
+            source={ require('../../assets/info.jpg')} 
+          /> : 
+          <Image 
+            resizeMode="stretch"
+            resizeMethod="scale"
+            style={{ height: SCREEN_HEIGHT/1.5, width: '100%', marginTop: normalize(30), borderRadius: 10 }}
+            source={{ uri: `data:image/jpg;base64,${item[data]}`}}
+          />
+        }
+      </View>
+    );
+}
+
   render() {
-    
-
-    // var lss = [{key : 'ATTRIBUTE NAME'}];
-    // lss.append (list);
-
-    // list.push({key : 'ATTRIBUTE NAME'} index : 0);
-
-    let dataPDM = this.getDataFromObject(this.state.pdmResponse);
-    let dataCDM = this.getDataFromObject(this.state.cdmResponse);
-
     return (
       <SafeAreaView
         forceInset={{ bottom: 'always' }}
-        style={{ flex: 1, backgroundColor: 'rgba(210,210,208,1)' }}
-      >
-        <ScrollView
-          ref={view => (this._scrollView = view)}
-          horizontal={true}
-          pagingEnabled={true}
-        >
-          <TrendProfile
-            timeFrame={this.state.timeFrame}
-            percentage={this.state.percentage}
-            onPressProfile={this.handlePress}
-            style={{
-              flex: 1,
-              height: '100%',
-              width: Dimensions.get('window').width,
-            }}
-            backgroundColor="transparent"
-            data={dataCDM}
-            onPress={this.homeButtonTapped}
-            image = {this.state.pdmResponse ? { uri: 'data:image/png;base64,' + this.state.pdmResponse.resourceImageData } : require("../../assets/1.png") }
-            catImage = {this.state.pdmResponse ? { uri: 'data:image/png;base64,' + this.state.pdmResponse.resourceCategoryLogoData } : null }
-          />
-          <TrendProfile
-            timeFrame={this.state.timeFrame}
-            percentage={this.state.percentage}
-            onPressProfile={this.handlePress}
-            style={{
-              flex: 1,
-              height: '100%',
-              width: Dimensions.get('window').width,
-            }}
-            backgroundColor="transparent"
-            data={dataPDM}
-            onPress={this.homeButtonTapped}
-            image={this.state.cdmResponse ? { uri: 'data:image/png;base64,' + this.state.cdmResponse.resourceImageData } : require("../../assets/2.png")}
-            catImage = {this.state.pdmResponse ? { uri: 'data:image/png;base64,' + this.state.pdmResponse.resourceCategoryLogoData } : null }
-          />
+        style={styles.safeViewContainer}>
+            <View style={{ flex: 1, flexDirection: 'row' }}> 
+              <View style={{flex: 1, backgroundColor: APP_GLOBAL_COLOR}}>
+                <CustomButton
+                  style={{
+                    flexDirection: 'row',
+                    flex: 1,
+                  }}
+                  source={require ('../../assets/home.png')}
+                  onPress={this.homeButtonTapped}
+                />
+              </View>
+              <View style={{ flex: 5, backgroundColor:'rgba(255,255,255,1)', flexDirection: 'row', alignItems: 'center' }}>
+                <Image
+                  style={{
+                    backgroundColor: APP_GLOBAL_COLOR,
+                    marginLeft: normalize(10),
+                    width: normalize(30),
+                    height: normalize(30),
+                    marginTop: normalize(5),
+                    marginBottom: normalize(5),
+                    borderRadius: normalize(30) / 2,
+                  }}
+                  source={this.props.image ? {uri : "data:image/png;base64,"+this.props.image} : require('../../assets/UserSmall.png')}
+                />
 
-        </ScrollView>
+                <Text
+                  style={{
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    marginLeft: 5,
+                    fontSize: normalize(14),
+                    color: '#000',
+                  }}>
+                  {this.props.username}
+                </Text>
+              </View>
+            </View>
+          {this.renderComponent()}
       </SafeAreaView>
-    );
+    )
   }
 }
 
-const cardViewStyle = StyleSheet.create({
-  headerView: {
-    // flex: 0.15,
-    // position: 'absolute',
-    // backgroundColor: 'red',
-    // backgroundColor: 'rgba(244,244,246,1)',
-    justifyContent: 'center',
-    // alignItems: 'center'
-    // borderRadius: 10,
-    flexDirection: 'row',
-    height: '20%',
+const styles = StyleSheet.create({
+  safeViewContainer: {
+    flex: 1, 
+    backgroundColor: 'rgba(210,210,208,1)' 
   },
 
-  textheaderView: {
-    flex: 5,
-    // position: 'absolute',
-    // backgroundColor: 'red',
-    backgroundColor: 'transparent',
-    justifyContent: 'center',
-    // alignItems: 'center'
-    // borderRadius: 10,
-    // height: 50
-    // marginLeft : 0,
+  imageContainer: {
+    flex: 1, 
   },
 
-  textView: {
-    // flex: 1,
-    // position: 'absolute',
-    backgroundColor: 'transparent',
-    marginLeft: 10,
-    fontSize: 13, // normalize(13),
-    // fontSize: PixelRatio.get () <= 2 ? 14 : 15,
-    //   fontWeight: 'bold',
-  },
-  textView2: {
-    // flex: 1,
-    // position: 'absolute',
-    backgroundColor: 'transparent',
-    marginLeft: 10,
-    fontSize: 12, // normalize(12),
-    // fontSize: PixelRatio.get () <= 2 ? 12 : 13,
-    //   fontWeight: 'bold',
-  },
-});
+  carouselContainer: {
+    flex: 12, 
+    margin: 0,
+  }
 
-const secondHalfView = StyleSheet.create({
-  secondHalf: {
-    flex: 0.85,
-    // position: 'absolute',
-    // backgroundColor: 'red',
-    // backgroundColor: 'rgba(244,244,246,1)',
-    justifyContent: 'center',
-    // alignItems: 'center'
-    // borderRadius: 10,
-    flexDirection: 'row',
-    height: '80%',
-  },
-});
+})
+
+export default TrendScreen;
+

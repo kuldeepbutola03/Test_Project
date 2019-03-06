@@ -1,26 +1,28 @@
 import React, { Component } from 'react';
 import {
-
     StyleSheet,
     View,
     Text,
-
     Dimensions,
     SafeAreaView,
-
     ScrollView,
-
+    ActivityIndicator,
+    Alert,
 } from 'react-native';
 import { PropTypes } from 'prop-types';
-import { normalize, APP_GLOBAL_COLOR } from '../../../Constant';
+import { normalize, APP_GLOBAL_COLOR, APP_ALERT_MESSAGE } from '../../../Constant';
 import CustomButton from '../../components/UI/ButtonMod/CustomButtom';
-
 import { Navigation } from 'react-native-navigation';
 import CustomTextButton from '../../components/UI/ButtonMod/CustomTextButton';
-// import { PropTypes } from 'prop-types';
+import axios from 'axios';
 import QuestionniareListView from '../../components/UI/QuestionView/QuestionniareListView'
+import { GET_CURRENT_ACTIVE_SURVEY, SUBMIT_USER_SURVEY_QUESTION } from '../../../Apis';
+import Loading from 'react-native-whc-loading';
+import _ from 'lodash';
+
 export default class QuestionnireScreen extends Component {
     state = {
+        loading: true,
         state: true,
         questionniareData1: [
             { type: 'slider', number: '01', choice: ['abc', 'ced', 'asdasds', 'asdasddsa'], question: 'It is better to polite and rule-obedient rather than carefree' },
@@ -29,7 +31,6 @@ export default class QuestionnireScreen extends Component {
             { type: 'slider', number: '04', choice: ['abc', 'ced', 'asdasds', 'asdasddsa'], question: 'My manager defends me from unfair criticism', isSelected: 0 },
             { type: 'optional', number: '05', choice: ['abc', 'ced', 'asdasds', 'asdasddsa'], question: 'A big part of success is luck?', isSelected: -1  },
             { type: 'optional', number: '06', choice: ['abc', 'ced', 'asdasds', 'asdasddsa'], question: 'I Sometime lie a lot', isSelected: -1  },
-           
         ],
         questionniareData2: [
             { type: 'slider', number: '01', choice: ['abc', 'ced', 'asdasds', 'asdasddsa'], question: 'It is better to polite and rule-obedient rather than carefree' },
@@ -38,41 +39,281 @@ export default class QuestionnireScreen extends Component {
             { type: 'slider', number: '04', choice: ['abc', 'ced', 'asdasds', 'asdasddsa'], question: 'My manager defends me from unfair criticism', isSelected: 0 },
             { type: 'optional', number: '05', choice: ['abc', 'ced', 'asdasds', 'asdasddsa'], question: 'A big part of success is luck?', isSelected: -1  },
             { type: 'optional', number: '06', choice: ['abc', 'ced', 'asdasds', 'asdasddsa'], question: 'I Sometime lie a lot', isSelected: -1  },
-           
-        ]
-
+        ],
+        questionnaire1: null,
+        questionnaire2: {},
+        isSurveyTaken1: 'N',
+        isSurveyTaken2: 'N',
+        surveyTitle: 'SURVEY'
     }
+
     static propTypes = {
         componentId: PropTypes.string,
     };
-    constructor(props) {
-        super(props);
 
-        
+    constructor(props) {
+        super(props);  
     };
 
 
+    getSurvey = (mount) => {
+        const { surveyType } = this.props;
+        if(mount) {
+            if(surveyType) {
+                axios.post(GET_CURRENT_ACTIVE_SURVEY, {
+                    isNationalLevel : surveyType,
+                    userId : this.props.user_id,
+                    userCurrentCoord: this.props.lat_lon
+                })
+                .then(response => {
+                    let responseData = response.data;
 
+                    this.setState({ 
+                        questionniareData2: responseData.surveyQuestionList, 
+                        questionnaire2: responseData,
+                        isSurveyTaken2: responseData.isSurveyTaken
+                    })
+    
+                    axios.post(GET_CURRENT_ACTIVE_SURVEY, {
+                        isNationalLevel : 'N',
+                        userId : this.props.user_id,
+                        userCurrentCoord: this.props.lat_lon
+                    })
+                    .then(response_2 => {
+                        let responseData_2 = response_2.data;
+                        this.setState({ 
+                            questionniareData1: responseData_2.surveyQuestionList, 
+                            loading: false, 
+                            questionnaire1: responseData_2,
+                            isSurveyTaken1: responseData_2.isSurveyTaken,
+                            surveyTitle: responseData_2.surveyDesc
+                        })
+                        this.refs.scrollview.scrollTo({ x: Dimensions.get('window').width, animate: true });
+                        // console.log(this.state)
+                        this.refs.loading.close();
+                        setTimeout(() => {
+                            Alert.alert(
+                                APP_ALERT_MESSAGE,
+                                'Your feedback has been sent successfully!',
+                                [
+                                  {text: 'OK', onPress: () => { }},
+                                ],
+                                {cancelable: false},
+                            );
+                        }, 200)
+                    })
+                    .catch(error => {
+                        console.error(error)
+                    })
+                })
+                .catch(error => {
+                    console.error(error)
+                })
+                this.setState({
+                    state: false
+                })
+                
+            } else {
+                axios.post(GET_CURRENT_ACTIVE_SURVEY, {
+                    isNationalLevel : this.state.state ? 'N' : 'Y',
+                    userId : this.props.user_id,
+                    userCurrentCoord: this.props.lat_lon
+                })
 
+                .then(response => {
+                    let responseData = response.data;
+                    this.setState({ 
+                        questionniareData1: responseData.surveyQuestionList, 
+                        questionnaire1: responseData,
+                        isSurveyTaken1: responseData.isSurveyTaken,
+                        surveyTitle: responseData.surveyDesc
+
+                    })
+    
+                    axios.post(GET_CURRENT_ACTIVE_SURVEY, {
+                        isNationalLevel : 'Y',
+                        userId : this.props.user_id,
+                        
+                    })
+                    .then(response_2 => {
+                        let responseData_2 = response_2.data;
+                        this.setState({ 
+                            questionniareData2: responseData_2.surveyQuestionList, 
+                            loading: false, 
+                            questionnaire2: responseData_2,
+                            isSurveyTaken2: responseData_2.isSurveyTaken,
+                        })
+
+                        this.refs.loading.close()
+                        setTimeout(() => {
+                            Alert.alert(
+                                APP_ALERT_MESSAGE,
+                                'Your feedback has been sent successfully!',
+                                [
+                                  {text: 'OK', onPress: () => { }},
+                                ],
+                                {cancelable: false},
+                            );
+                        }, 200)
+                    })
+                    .catch(error => {
+                        console.error(error)
+                    })
+                })
+                .catch(error => {
+                    console.error(error)
+                })
+            }
+        } else {
+            if(surveyType) {
+                axios.post(GET_CURRENT_ACTIVE_SURVEY, {
+                    isNationalLevel : surveyType,
+                    userId : this.props.user_id,
+                    userCurrentCoord: this.props.lat_lon,
+                    
+                })
+                .then(response => {
+                    let responseData = response.data;
+                    this.setState({ 
+                        questionniareData2: responseData.surveyQuestionList, 
+                        questionnaire2: responseData,
+                        isSurveyTaken2: responseData.isSurveyTaken,
+                        // surveyTitle: responseData.surveyDesc
+                    })
+    
+                    axios.post(GET_CURRENT_ACTIVE_SURVEY, {
+                        isNationalLevel : 'N',
+                        userId : this.props.user_id,
+                        userCurrentCoord: this.props.lat_lon
+                    })
+                    .then(response_2 => {
+                        let responseData_2 = response_2.data;
+                        this.setState({ 
+                            questionniareData1: responseData_2.surveyQuestionList, 
+                            loading: false, 
+                            questionnaire1: responseData_2,
+                            isSurveyTaken1: responseData_2.isSurveyTaken,
+                        })
+                        console.log(this.props.user_id)
+                        console.log(responseData_2)
+                        this.refs.scrollview.scrollTo({ x: Dimensions.get('window').width, animate: true });
+                    })
+                    .catch(error => {
+                        console.error(error)
+                    })
+                })
+                .catch(error => {
+                    console.error(error)
+                })
+                this.setState({
+                    state: false
+                })
+                
+            } else {
+                axios.post(GET_CURRENT_ACTIVE_SURVEY, {
+                    isNationalLevel : this.state.state ? 'N' : 'Y',
+                    userId : this.props.user_id,
+                    userCurrentCoord: this.props.lat_lon,
+                    
+                })
+                .then(response => {
+                    let responseData = response.data;
+                    this.setState({ 
+                        questionniareData1: responseData.surveyQuestionList, 
+                        // loading: false, 
+                        questionnaire1: responseData,
+                        isSurveyTaken1: responseData.isSurveyTaken,
+                        surveyTitle: responseData.surveyDesc
+                    })
+    
+                    axios.post(GET_CURRENT_ACTIVE_SURVEY, {
+                        isNationalLevel : 'Y',
+                        userId : this.props.user_id,
+                        userCurrentCoord: this.props.userCurrentCoord,
+                    })
+                    .then(response_2 => {
+                        let responseData_2 = response_2.data;
+                        this.setState({ 
+                            questionniareData2: responseData_2.surveyQuestionList, 
+                            loading: false, 
+                            questionnaire2: responseData_2,
+                            isSurveyTaken2: responseData_2.isSurveyTaken,
+                        })
+                    })
+                    .catch(error => {
+                        console.error(error)
+                    })
+                })
+                .catch(error => {
+                    console.error(error)
+                })
+            }
+        }
+    }
+
+    componentDidMount() {
+        this.getSurvey();
+        const { surveyTitle } = this.props;
+
+        if(this.props.surveyTitle) {
+            this.setState({ surveyTitle: `SURVEY - ${surveyTitle.toUpperCase()}`})
+        }
+    }
 
     homeButtonTapped = () => {
         Navigation.pop(this.props.componentId);
     };
 
     stateBttnTapped = () => {
-        // this._bttnNational._view.backgroundColor = "green";
+        const { questionnaire1 } = this.state;
+
         this.setState({
             state: true
         })
-        _scrollView.scrollTo({ x: 0, animate: true })
-        // {this.state ? APP_GLOBAL_COLOR : "transparent"}
+
+        this.refs.scrollview.scrollTo({ x: 0, animate: true });
+        if(questionnaire1) {
+            this.setState({ surveyTitle: questionnaire1.surveyDesc })
+        }
+        
+        // this.setState({ loading: true })
+        // axios.post(GET_CURRENT_ACTIVE_SURVEY, {
+        //     isNationalLevel : 'N',
+        //     userId : this.props.user_id,
+            
+        // })
+        // .then(response => {
+        //     let responseData = response.data;
+        //     this.setState({ 
+        //         questionniareData1: responseData.surveyQuestionList, 
+        //         loading: false, 
+        //         questionnaire2: responseData,
+        //         isSurveyTaken: responseData.isSurveyTaken
+        //     })
+        //     console.log(responseData)
+        // })
+        // .catch(error => {
+        //     console.error(error)
+        // })
     }
+
     nationalBttnTapped = () => {
-        // this._bttnNational._view.backgroundColor = "green";
+        const { surveyTitle } = this.props;
+        const { questionnaire2 } = this.state;
+
         this.setState({
             state: false
         })
-        _scrollView.scrollTo({ x: Dimensions.get('window').width, animate: true })
+        this.refs.scrollview.scrollTo({ x: Dimensions.get('window').width, animate: true });
+
+        if(this.props.surveyTitle) {
+            this.setState({ surveyTitle: `SURVEY - ${surveyTitle.toUpperCase()}`})
+            // this.setState({ surveyTitle:  `SURVEY - ${surveyTitle.toUpperCase()}` })
+        } else {
+            if(questionnaire2) {
+                this.setState({ surveyTitle: questionnaire2.surveyDesc })
+            }
+        }
     }
 
     onScrollEndSnapToEdge = () => {
@@ -91,155 +332,297 @@ export default class QuestionnireScreen extends Component {
 
     }
 
+    updateQuestionaire = (survey) => {
+        const { surveyType } = this.props;
+        this.refs.loading.show();
+
+        if(survey === 'N') {
+            let authSubmit = [];
+
+            this.state.questionniareData1.map((question, index) => {
+                if(question.userAnswerId === null ) {
+                    authSubmit.push(false)
+                } else {
+                    authSubmit.push(true)
+                }
+            })
+
+            let submit = _.includes(authSubmit, false);
+
+            if(submit) {
+                Alert.alert(
+                    APP_ALERT_MESSAGE,
+                    'Please answer all questions in the survey!',
+                    [
+                      {text: 'OK', onPress: () => { }},
+                    ],
+                    {cancelable: false},
+                );
+                this.refs.loading.close();
+            } else if(!submit) {
+                axios.post(SUBMIT_USER_SURVEY_QUESTION, {
+                    surveyId: this.state.questionnaire1.surveyId,
+                    userId: this.props.user_id,
+                    userCurrentCoord: this.props.lat_lon,
+                    surveyQuestionList: this.state.questionniareData1
+                        
+                })
+                .then(response => {
+                    let responseData = response.data;
+                    this.getSurvey(true);
+                })
+                .catch(error => {
+                    console.log(error)
+                })
+            }
+        } else if(survey === 'L') {
+            let authSubmit = [];
+
+            this.state.questionniareData2.map((question, index) => {
+
+                if(question.userAnswerId === null ) {
+                    authSubmit.push(false)
+                } else {
+                    authSubmit.push(true)
+                }
+            })
+
+            let submit = _.includes(authSubmit, false);
+            console.log(submit)
+            console.log(this.state.questionniareData2)
+            console.log(authSubmit)
+            if(submit) {
+                Alert.alert(
+                    APP_ALERT_MESSAGE,
+                    'Please answer all questions in the survey!',
+                    [
+                      {text: 'OK', onPress: () => { }},
+                    ],
+                    {cancelable: false},
+                );
+                this.refs.loading.close()
+            } else if(!submit) {
+                axios.post(SUBMIT_USER_SURVEY_QUESTION, {
+                    surveyId: this.state.questionnaire2.surveyId,
+                    userId: this.props.user_id,
+                    userCurrentCoord: this.props.lat_lon,
+                    surveyQuestionList: this.state.questionniareData2
+                        
+                })
+                .then(response => {
+                    let responseData = response.data;
+                    this.getSurvey(true);
+                })
+                .catch(error => {
+                    console.log(error)
+                })
+            }
+        } else if(survey === 'Y') {
+            let authSubmit = [];
+
+            this.state.questionniareData2.map((question, index) => {
+                console.log(question.userAnswerId)
+                if(question.userAnswerId === null ) {
+                    authSubmit.push(false)
+                } else {
+                    authSubmit.push(true)
+                }
+            })
+
+            let submit = _.includes(authSubmit, false);
+            console.log(submit)
+            console.log(this.state.questionniareData2)
+            console.log(authSubmit)
+
+            if(submit) {
+                Alert.alert(
+                    APP_ALERT_MESSAGE,
+                    'Please answer all questions in the survey!',
+                    [
+                      {text: 'OK', onPress: () => { }},
+                    ],
+                    {cancelable: false},
+                );
+                this.refs.loading.close();
+            } else if(!submit) {
+                axios.post(SUBMIT_USER_SURVEY_QUESTION, {
+                    surveyId: this.state.questionnaire2.surveyId,
+                    userId: this.props.user_id,
+                    userCurrentCoord: this.props.lat_lon,
+                    surveyQuestionList: this.state.questionniareData2
+                        
+                })
+                .then(response => {
+                    let responseData = response.data;
+                    this.getSurvey(true);
+                })
+                .catch(error => {
+                    console.log(error)
+                })
+            }
+        }
+    }
+
+    renderTitle = () => {
+        const { surveyTitle } = this.state;
+        return (
+            <View style={topViewStyle.textheaderView}>
+                <Text adjustsFontSizeToFit numberOfLines={1} minimumFontScale={.8} style={topViewStyle.textView}> {surveyTitle} </Text>
+            </View>
+        )
+    }
+
+    renderComponent = () => {
+        const { loading } = this.state;
+        if(loading) {
+            return (
+                <SafeAreaView 
+                    forceInset={{ bottom: 'always' }} 
+                    style={{ flex: 1 , backgroundColor: 'rgba(210,210,208,1)' }}>
+                    <View
+                        style={topViewStyle.headerView}
+                        backgroundColor="rgba(242,241,244,1)">
+                        <View style={{ flex: 1, backgroundColor: APP_GLOBAL_COLOR }}>
+                            <CustomButton
+                                style={{
+                                    flexDirection: 'row',
+                                    flex: 1,
+                                }}
+                                source={require('../../assets/homez.png')}
+                                onPress={this.homeButtonTapped}
+                            />
+                        </View>
+                        {this.renderTitle()}
+                    </View>
+                    <View style={{ width: "100%", height: 1 }} backgroundColor="gray" />
+                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' }}>
+                        <ActivityIndicator color={APP_GLOBAL_COLOR} size="small" />
+                    </View>
+                </SafeAreaView>
+            )
+        } else if(!loading) {
+            return (
+                <SafeAreaView
+                    forceInset={{ bottom: 'always' }}
+                    style={{ flex: 1, backgroundColor: 'rgba(210,210,208,1)' }}>
+                    <Loading
+                        ref="loading" />
+                    <View
+                        style={topViewStyle.headerView}
+                        backgroundColor="rgba(242,241,244,1)">
+                        <View style={{ flex: 1, backgroundColor: APP_GLOBAL_COLOR }}>
+                            <CustomButton
+                                style={{
+                                    flexDirection: 'row',
+                                    flex: 1,
+                                }}
+                                source={require('../../assets/homez.png')}
+                                onPress={this.homeButtonTapped}
+                            />
+                        </View>
+                        {this.renderTitle()}
+                    </View>
+                    <View style={{ width: "100%", height: 1 }} backgroundColor="gray" />
+                    
+                    {/* secondViewStyle */}
+                    <View style={secondViewStyle.secondView}>
+                        <CustomTextButton 
+                            onPress={this.stateBttnTapped} 
+                            style={{ flex: 1 }} 
+                            textColor = {this.state.state ? "white" : "black"} 
+                            bgColor={this.state.state ? APP_GLOBAL_COLOR : "transparent"} > 
+                                {this.state.questionnaire1.userCurrentState ? this.state.questionnaire1.userCurrentState.toUpperCase() : "STATE" } 
+                        </CustomTextButton>
+                        <CustomTextButton onPress={this.nationalBttnTapped} style={{ flex: 1 }} textColor = {!this.state.state ? "white" : "black"} bgColor={!this.state.state ? APP_GLOBAL_COLOR : "transparent"} >NATIONAL</CustomTextButton>
+                    </View>
+
+                    <View style={{ width: "100%", height: 1 }} backgroundColor="white" />
+
+                    {/* thirdViewStyle */}
+                    <View style={thirdViewStyle.thirdView} >
+                        <ScrollView horizontal={true} pagingEnabled={true} scrollEnabled={false} 
+                            ref="scrollview"
+                        >
+
+                            <View style={thirdViewStyle.innerViewSecond}>
+                                <QuestionniareListView 
+                                    data={this.state.questionniareData1} 
+                                    updateQuestionaire={this.updateQuestionaire}
+                                    isSurveyTaken={this.state.isSurveyTaken1}
+                                    survey={"N"}
+                                    onChangeData={(data, index) => {
+                                        var d = [];
+                                        this.state.questionniareData1.map ((object,indexIn ) => {
+                                            if (index === indexIn){
+                                                d.push(data)
+                                            }else{
+                                                d.push(object)
+                                            } 
+                                        })
+                                        this.setState({questionniareData1 : d});
+                                    }}>
+                                </QuestionniareListView>
+                            </View>
+                            <View style={thirdViewStyle.innerViewSecond}>
+                                <QuestionniareListView 
+                                    data={this.state.questionniareData2} 
+                                    survey={this.props.surveyType ? 'L' : 'Y'}
+                                    isSurveyTaken={this.state.isSurveyTaken2}
+                                    updateQuestionaire={this.updateQuestionaire}
+                                    onChangeData={(data, index) => {
+                                        var d = [];
+                                        this.state.questionniareData2.map ((object,indexIn ) => {
+                                            if (index == indexIn){
+                                                d.push(data)
+                                            } else{
+                                                d.push(object)
+                                            }  
+                                        })
+                                        this.setState({questionniareData2 : d});
+                                    }}>
+                                </QuestionniareListView>
+                            </View>
+                        </ScrollView>
+                    </View>
+                </SafeAreaView>
+            )
+        }
+    }
+
     render() {
-        return <SafeAreaView
-            forceInset={{ bottom: 'always' }}
-            style={{ flex: 1, backgroundColor: 'rgba(210,210,208,1)' }}
-        >
-
-            <View
-                style={topViewStyle.headerView}
-                backgroundColor="rgba(242,241,244,1)"
-            >
-                <View style={{ flex: 1, backgroundColor: 'rgba(87,48,134,1)' }}>
-                    <CustomButton
-                        style={{
-                            flexDirection: 'row',
-                            flex: 1,
-                        }}
-                        source={require('../../assets/home.png')}
-                        onPress={this.homeButtonTapped}
-                    />
-                </View>
-
-                <View style={topViewStyle.textheaderView}>
-                    <Text adjustsFontSizeToFit numberOfLines={1} minimumFontScale={.8} style={topViewStyle.textView}>QUESTIONNAIRE</Text>
-                    {/* <Text style={topViewStyle.textView2}>{data.area}</Text> */}
-                </View>
-
-            </View>
-
-            <View style={{ width: "100%", height: 1 }} backgroundColor="gray" />
-            {/* secondViewStyle */}
-            <View style={secondViewStyle.secondView}>
-                <CustomTextButton onPress={this.stateBttnTapped} style={{ flex: 1 }} textColor = {this.state.state ? "white" : "black"} bgColor={this.state.state ? APP_GLOBAL_COLOR : "transparent"} >STATE</CustomTextButton>
-                <CustomTextButton onPress={this.nationalBttnTapped} style={{ flex: 1 }} textColor = {!this.state.state ? "white" : "black"} bgColor={!this.state.state ? APP_GLOBAL_COLOR : "transparent"} >NATIONAL</CustomTextButton>
-            </View>
-
-            <View style={{ width: "100%", height: 1 }} backgroundColor="white" />
-
-            {/* thirdViewStyle */}
-            <View style={thirdViewStyle.thirdView} >
-                <ScrollView horizontal={true} pagingEnabled={true} scrollEnabled={false} ref={scrollView => {
-                    _scrollView = scrollView;
-                }}>
-
-                    <View style={thirdViewStyle.innerViewSecond}>
-                        <QuestionniareListView data={this.state.questionniareData1} onChangeData={(data, index) => {
-                            // alert('asdsads');
-                            // alert(JSON.stringify(index));
-                            var d = [];
-                            
-                            this.state.questionniareData1.map ((object,indexIn ) => {
-                                if (index == indexIn){
-                                    d.push(data)
-                                }else{
-                                    d.push(object)
-                                }
-                                
-                            })
-                            // var items = this.state.questionniareData1
-                            // items[index] = data;
-                            // items.push(data)
-
-                            
-                            // alert(JSON.stringify(items));
-                            // this._scrollView.refreshing = true
-                            this.setState({questionniareData1 : d});
-                            
-                            
-                        }
-                        }>
-                        </QuestionniareListView>
-                    </View>
-
-                    <View style={thirdViewStyle.innerViewSecond}>
-                    <QuestionniareListView data={this.state.questionniareData2} onChangeData={(data, index) => {
-                            // alert('asdsads');
-                            // alert(JSON.stringify(index));
-                            var d = [];
-                            
-                            this.state.questionniareData2.map ((object,indexIn ) => {
-                                if (index == indexIn){
-                                    d.push(data)
-                                }else{
-                                    d.push(object)
-                                }
-                                
-                            })
-                            this.setState({questionniareData2 : d});
-                        }
-                        }>
-                        </QuestionniareListView>
-                    </View>
-                </ScrollView>
-            </View>
-
-
-
-        </SafeAreaView>
+        return this.renderComponent()
     }
 }
+
 
 const topViewStyle = StyleSheet.create({
     headerView: {
         flex: 0.075,
-        // position: 'absolute',
-        // backgroundColor: 'red',
-        // backgroundColor: 'rgba(244,244,246,1)',
         justifyContent: 'center',
-        // alignItems: 'center'
-        // borderRadius: 10,
         flexDirection: 'row',
-        // height: '20%',
     },
 
     textheaderView: {
         flex: 5,
-        // position: 'absolute',
-        // backgroundColor: 'red',
         backgroundColor: 'transparent',
         justifyContent: 'center',
-        // alignItems: 'center'
-        // borderRadius: 10,
-        // height: 50
-        // marginLeft : 0,
     },
 
     textView: {
-        // flex: 1,
-        // position: 'absolute',
         backgroundColor: 'transparent',
         marginLeft: 10,
         fontSize: normalize(13),
-        // fontSize: PixelRatio.get () <= 2 ? 14 : 15,
-        //   fontWeight: 'bold',
     },
     textView2: {
-        // flex: 1,
-        // position: 'absolute',
         backgroundColor: 'transparent',
         marginLeft: 10,
         fontSize: normalize(12),
-        // fontSize: PixelRatio.get () <= 2 ? 12 : 13,
-        //   fontWeight: 'bold',
     },
 });
 
 const secondViewStyle = StyleSheet.create({
     secondView: {
         flex: 0.075,
-        // position: 'absolute',
         backgroundColor: 'transparent',
         flexDirection: 'row',
     },
@@ -248,18 +631,12 @@ const secondViewStyle = StyleSheet.create({
 const thirdViewStyle = StyleSheet.create({
     thirdView: {
         flex: 0.85,
-        // position: 'absolute',
-        backgroundColor: 'transparent',
-        // flexDirection: 'row',
+        backgroundColor: '#fff',
     },
     innerViewSecond: {
         flex: 1,
-        // position: 'absolute',
-
         height: '100%',
         width: Dimensions.get('window').width,
-
-        // backgroundColor: 'red',
         flexDirection: 'row',
     },
 });

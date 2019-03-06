@@ -7,7 +7,6 @@ import {
   Dimensions,
   Platform,
   SafeAreaView,
-  BackHandler
 } from 'react-native';
 import ImagePicker from 'react-native-image-picker';
 import DefaultInput from '../../components/UI/DefaultInput/DefaultInput';
@@ -15,7 +14,7 @@ import ButtonMod from '../../components/UI/ButtonMod/ButtonMod';
 import EditButton from '../../components/UI/EditButton/EditButton';
 import { Navigation } from 'react-native-navigation';
 import { PropTypes } from 'prop-types';
-import { saveUserData, getUserData } from '../../../Constant';
+import { saveUserData, defaultUser } from '../../../Constant';
 
 
 export default class Profile extends Component {
@@ -24,81 +23,58 @@ export default class Profile extends Component {
     componentId: PropTypes.string,
   };
 
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      image: this.props.image,
-      name: this.props.name ? this.props.name : "",
-      username: this.props.username ? this.props.username : "",
-      confirmed: false,
-      isUserNameDisabled : (this.props.username !== null)
-      // isFocusedUserName: false,
-      // isFocusedName: false,
-      // nameBorderColor: "#eee",
-      // userNameBorderColor: "#eee",
-      // isValid: false
-    };
-
-    // BackHandler.addEventListener('hardwareBackPress', () => {
-    //   return true;
-    // });
-
-    // saveUserData(this.state);
-  }
-
-  componentDidMount() {
-    // getUserData().then(data => {
-    //   this.setState({
-    //     image : data.image,
-    //     name : data.name,
-    //     username: data.username
-    //   })
-    // });
+  state = {
+    image: this.props.image ? this.props.image : defaultUser,
+    name: this.props.name ? this.props.name : "",
+    email: this.props.email ? this.props.email : "",
+    username : this.props.username ? this.props.username : ""
   }
 
   toHomeScreen = () => {
 
-    if (!this.state.username || !this.state.name) {
-      alert("Please enter details");
+    const { name, username } = this.state;
+    console.log(this.state.image)
+    let usernameRegex = /^[a-zA-Z0-9]+$/;
+
+    let validUsername = username.match(usernameRegex);
+
+    if(name.length < 1) {
+      alert('Please fill in your name');
       return;
-    }
-
-    // if (!this.state.username || !this.state.name) { this.setState({ confirmed: true }); }
-
-    var sttts = this.state;
-    sttts["confirmed"] = true;
-    // this.setState({ confirmed: true });
-    Navigation.push(this.props.componentId, {
-      component: {
-        name: 'HomeScreen',
-        passProps: {
-          data: this.state
-        },
-        options: {
-          topBar: {
-            visible: false,
-            drawBehind: true,
-            animate: false,
+    } else if(username.length < 1 ) {
+      alert('Please fill in your username');
+      return
+    } else if (!validUsername) {
+      alert('Your handle can only contain alphabets and numbers');
+    } else {
+      saveUserData(this.state);
+      Navigation.push(this.props.componentId, {
+        component: {
+          name: 'HomeScreen',
+          passProps: {
+            data: this.state
           },
-          popGesture: false
-        },
-        sideMenu: {
-          enabled: false,
-          visible: false
+          options: {
+            topBar: {
+              visible: false,
+              drawBehind: true,
+              animate: false,
+            },
+            popGesture: false
+          },
+          sideMenu: {
+            enabled: false,
+            visible: false
+          }
         }
-      }
-    });
-
-    saveUserData(sttts);
-
+      });
+    }
   }
 
   /**
    * The first arg is the options object for customization (it can also be null or omitted for default options),
    * The second arg is the callback which sends object: response (more info in the API Reference)
    */
-
   imagePicker = () => {
     ImagePicker.showImagePicker({ title: 'Select an Image' }, response => {
       console.log('Response = ', response);
@@ -110,11 +86,11 @@ export default class Profile extends Component {
       } else if (response.customButton) {
         console.log('User tapped custom button: ', response.customButton);
       } else {
-        // const source = { uri: response.uri };
+        const source = { uri: response.uri };
+
         // You can also display the image using data:
         // const source = { uri: 'data:image/jpeg;base64,' + response.data };
-        const source = 'data:image/jpeg;base64,' + response.data;
-
+        console.log(source)
         this.setState({
           image: source,
         });
@@ -122,30 +98,7 @@ export default class Profile extends Component {
     });
   };
 
-  changeText = (text) => {
-    this.setState({
-      username: text.trim()
-    });
-  }
-
-  // onBlurHandler = (isUserName) => {
-
-  //   const user = this.state.username;
-  //   const name = this.state.name;
-
-
-  //   if (user.length > 0 && user.includes(" ") && isUserName) {
-  //     // alert("whitespace is not allowed");
-  //     this.setState({ userNameBorderColor: 'red' })
-  //   }
-  //   else if (name.length <= 0) {
-  //     // alert("Please enter a name");
-  //     this.setState({ nameBorderColor: 'red' })
-  //   }
-  // }
-
   render() {
-
     var { height, width } = Dimensions.get('window');
     const options = {
       behavior: Platform.OS === 'ios' ? 'padding' : 'null',
@@ -165,27 +118,13 @@ export default class Profile extends Component {
           enabled
         >
           <View style={{ marginTop: 10 }}>
-            <Image source={{ uri: "data:image/png;base64,"+ this.state.image }} style={styles.uploadAvatar} />
+            <Image source={{uri : "data:image/png;base64,"+this.state.image}} style={styles.uploadAvatar} />
             <EditButton onPress={this.imagePicker} />
           </View>
-
-          <DefaultInput
-            placeholder="@username"
-            value={this.state.username}
-            onChangeText={this.changeText}
-            disabled = {this.state.username !== null}
-          />
-
-          <DefaultInput
-            placeholder="Name"
-            value={this.state.name}
-            onChangeText={(text) => {
-              this.setState({ name: text })
-            }}
-            
-          />
-
-          <ButtonMod onPress={this.toHomeScreen} color="rgba(86,49,135,1)" >
+          <DefaultInput placeholder="Handle" value={this.state.username} onChangeText={(text) => this.setState({ username: text })} />
+          <DefaultInput placeholder="Name" value={this.state.name} onChangeText={(text) => this.setState({ name: text })} />
+          {/* <DefaultInput placeholder="Last name" /> */}
+          <ButtonMod onPress={this.toHomeScreen} color="#a01414">
             Submit
           </ButtonMod>
           <View style={{ height: 100 }} />
