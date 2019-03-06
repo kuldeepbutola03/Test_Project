@@ -201,8 +201,7 @@ export default class ReportScreen extends Component {
         // if (location) {
           let body = JSON.stringify({
 
-
-            "message":
+            "message" :
             {
               "messageId": data.messageId
             },
@@ -215,8 +214,7 @@ export default class ReportScreen extends Component {
             "reportCustomReason": "",
             "latitude":  0,
             "longitude":  0
-
-
+            
           });
 
           // alert(body);
