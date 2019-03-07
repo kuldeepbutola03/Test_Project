@@ -40,7 +40,8 @@ export default class Profile extends Component {
   }
 
   componentDidMount(){
-    if(this.props.username !== null && this.props.username.length > 0){
+    // alert(this.props.username);
+    if(this.props.username && this.props.username.length > 0){
       this.setState({
         editable:false
       });
@@ -81,7 +82,7 @@ export default class Profile extends Component {
    * The second arg is the callback which sends object: response (more info in the API Reference)
    */
   imagePicker = () => {
-    ImagePicker.showImagePicker({ title: 'Select an Image',quality:0.3 }, response => {
+    ImagePicker.showImagePicker({ title: 'Select an Image',quality:0.3,allowsEditing:false }, response => {
       console.log('Response = ', response);
 
       if (response.didCancel) {

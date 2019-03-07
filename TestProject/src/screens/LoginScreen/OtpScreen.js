@@ -19,11 +19,13 @@ import { saveUserID, authHeaders, saveUserData, getCurrentLocation, defaultUser 
 import axios from 'axios';
 import Geolocation from 'react-native-geolocation-service';
 import Loading from 'react-native-whc-loading';
-
+import Permissions from 'react-native-permissions';
+import { CheckBox } from 'react-native-elements'
 export default class OtpScreen extends Component {
 
   static propTypes = {
     componentId: PropTypes.string,
+
   };
 
   constructor(props) {
@@ -32,12 +34,33 @@ export default class OtpScreen extends Component {
 
   state = {
     name: null,
+    location: null,
+    checkBocSelected: false,
     ...this.props
   }
 
+  componentDidMount() {
+    Permissions.check('location').then(response => {
+      if (response === 'denied' || response === 'undetermined') {
+        this._requestPermission();
+      } else if (response === 'authorized') {
+        // this.getLocation()
+      }
+    })
+  }
+
+  _requestPermission = () => {
+    Permissions.request('location').then(response => {
+      this.setState({ location: response })
+      // this.getLocation()
+    })
+  }
+
+  
+
   getLocation = () => {
     this.refs.loading.show();
-    
+
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const initialPosition = JSON.stringify(position);
@@ -55,14 +78,14 @@ export default class OtpScreen extends Component {
 
         // alert(code + "   " + phoneN);
         // this.setState({ lat_lon: latlong });
-        this.mobileNumberSubmit(lat_lon , this);
+        this.mobileNumberSubmit(lat_lon, this);
       },
       (error) => {
         // alert(error.message)
         // this.locationErrorMessage = error.message;
         // alert(locationErrorMessage)
         // this.showDialog();
-        this.mobileNumberSubmit(null , this);
+        this.mobileNumberSubmit(null, this);
 
 
       },
@@ -153,9 +176,9 @@ export default class OtpScreen extends Component {
               saveUserID(responseData.userId);
               saveUserData(data);
 
-              
+
               if (location) {
-                
+
                 Navigation.push(thisObj.props.componentId, {
                   component: {
                     id: 'Profile',
@@ -220,7 +243,23 @@ export default class OtpScreen extends Component {
       });
   };
 
-
+  showTC() {
+    // if(this.state.)
+    Navigation.push(this.props.componentId, {
+      component: {
+        name: 'TcScreen',
+        // options: {
+        //   topBar: {
+        //     visible: false,
+        //     animate: false,
+        //     drawBehind: true
+        //   }
+        // }
+      },
+    });
+    
+  }
+  
 
   textChanged = (sender) => {
     this.setState({ name: sender });
@@ -253,6 +292,24 @@ export default class OtpScreen extends Component {
             Submit
           </ButtonMod>
 
+
+
+          <CheckBox style = {{marginTop : 20}}
+            title='Agree to Terms and Conditions'
+            checked={this.state.checkBocSelected}
+            onPress = {()=> {
+              
+              // this.showTC();
+              
+              if(!this.state.checkBocSelected) {
+                this.showTC();
+              }
+              // setTimeout(() => {
+                this.setState({checkBocSelected : !this.state.checkBocSelected});
+              // },300);
+              
+            }}
+          />
           <Loading
             ref="loading" />
         </KeyboardAvoidingView>

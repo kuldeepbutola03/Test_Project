@@ -26,6 +26,8 @@ import AboutAppScreen from './src/screens/AboutAppScreen/AboutAppScreen';
 
 import TutorialScreen from './src/screens/AboutAppScreen/TutorialScreen';
 
+import TcScreen from './src/screens/LoginScreen/TcScreen';
+
 Navigation.registerComponent ('LoginScreen', () => LoginSceen);
 Navigation.registerComponent ('MobileNumber', () => MobileNumber);
 Navigation.registerComponent ('OtpScreen', () => OtpScreen);
@@ -50,11 +52,13 @@ Navigation.registerComponent('AboutAppScreen', () => AboutAppScreen);
 
 Navigation.registerComponent('TutorialScreen', () => TutorialScreen);
 
+Navigation.registerComponent('TcScreen', () => TcScreen);
+
 // Start App
 import { AsyncStorage } from "react-native"
 import { DEFAULT_USER_ID, getUserData, saveUserData } from './Constant';
 
-saveUserData(null);
+// saveUserData(null);
 
 Navigation.events ().registerAppLaunchedListener (() => {
 //   SplashScreen.hide()

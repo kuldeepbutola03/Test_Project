@@ -155,23 +155,26 @@ configurations.all {
 }
 
 dependencies {
-    compile project(':react-native-video')
+    
+    compile project(':react-native-fs')
+    compile project(':react-native-image-base64')
+    
     compile project(':react-native-vector-icons')
     compile project(':react-native-fbsdk')
     compile project(':react-native-share')
     compile project(':react-native-svg')
     compile project(':react-native-image-picker')
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
-    implementation 'com.facebook.react:react-native:+'
-    // From node_modules
-    implementation(project(':react-native-maps')) {
-        exclude group: 'com.google.android.gms', module: 'play-services-base'
-        exclude group: 'com.google.android.gms', module: 'play-services-maps'
-    }
+    implementation "com.facebook.react:react-native:+"  // From node_modules
+    implementation(project(':react-native-maps')){
+       exclude group: 'com.google.android.gms', module: 'play-services-base'
+       exclude group: 'com.google.android.gms', module: 'play-services-maps'
+   }
     implementation 'com.google.android.gms:play-services-base:+'
     implementation 'com.google.android.gms:play-services-maps:+'
     implementation project(':react-native-navigation')
+
     implementation 'com.facebook.android:facebook-android-sdk:4.34.0'
     implementation project(':react-native-fbsdk')
     compile project(':react-native-splash-screen')
@@ -181,7 +184,6 @@ dependencies {
         exclude group: 'com.google.android.gms', module: 'play-services-location'
     }
     compile 'com.google.android.gms:play-services-location:16.0.0'
-//    compile 'com.android.support:multidex:1.0.1'
 }
 
 // Run this once to be able to run the application with BUCK

@@ -2,13 +2,14 @@ package com.testproject;
 
 import android.app.Application;
 
-
 import com.facebook.CallbackManager;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 
 import com.facebook.react.ReactApplication;
-import com.brentvatne.react.ReactVideoPackage;
+// import com.yonahforst.rnpermissions.RNPermissionsPackage;
+import com.rnfs.RNFSPackage;
+import fr.snapp.imagebase64.RNImgToBase64Package;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.facebook.reactnative.androidsdk.FBSDKPackage;
 import com.facebook.reactnative.androidsdk.FBSDKPackage;
@@ -30,7 +31,9 @@ import org.devio.rn.splashscreen.SplashScreenReactPackage;
 import com.dylanvann.fastimage.FastImageViewPackage;
 import com.agontuk.RNFusedLocation.RNFusedLocationPackage;
 import cl.json.ShareApplication;
+
 import cl.json.RNSharePackage;
+
 
 public class MainApplication extends NavigationApplication implements ShareApplication, ReactApplication {
 
@@ -69,7 +72,9 @@ public class MainApplication extends NavigationApplication implements ShareAppli
             new SplashScreenReactPackage(),
             new FastImageViewPackage(),
             new RNFusedLocationPackage(),
+            new RNImgToBase64Package(),
             new RNSharePackage()
+
         );
     }
 

@@ -3,14 +3,14 @@
 buildscript {
     ext {
         buildToolsVersion = "27.0.3"
-        minSdkVersion = 21
+        minSdkVersion = 19
         compileSdkVersion = 27
         targetSdkVersion = 26
         supportLibVersion = "27.1.1"
         googlePlayServicesVersion = "11.0.0"
     }
     repositories {
-         google()
+        google()
         jcenter()
         mavenLocal()
         mavenCentral()
@@ -40,7 +40,6 @@ allprojects {
         maven { url 'https://jitpack.io' }
     }
 }
-
 
 
 task wrapper(type: Wrapper) {

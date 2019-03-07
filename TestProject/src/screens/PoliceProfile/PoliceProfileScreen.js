@@ -350,7 +350,7 @@ export default class PoliceProfileScreen extends Component {
               fontSize: normalize(17),
               fontWeight: 'bold',
               color: 'white'
-            }}>MLA</Text>
+            }}>{this.props.isPolice ? "MLA" : "MP"}</Text>
             {/* <Text adjustsFontSizeToFit numberOfLines={1} minimumFontScale={.8} style={cardViewStyle.textView}>{this.props.name}</Text> */}
             {/* <Text style={cardViewStyle.textView2}>{this.props.area === "PDM | null" ? "PDM" : this.props.area}</Text> */}
           </View>

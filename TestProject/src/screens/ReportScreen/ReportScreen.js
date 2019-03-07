@@ -94,7 +94,8 @@ export default class ReportScreen extends Component {
   }
 
   fetchTimeLineData(user_id, location) {
-
+// alert(user_id);
+// return;
     var timeStamp = Math.floor(Date.now() / 1000);
 
     let body = JSON.stringify({
