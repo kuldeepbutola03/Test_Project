@@ -54,7 +54,7 @@ Navigation.registerComponent('TutorialScreen', () => TutorialScreen);
 import { AsyncStorage } from "react-native"
 import { DEFAULT_USER_ID, getUserData, saveUserData } from './Constant';
 
-// saveUserData(null);
+saveUserData(null);
 
 Navigation.events ().registerAppLaunchedListener (() => {
 //   SplashScreen.hide()
