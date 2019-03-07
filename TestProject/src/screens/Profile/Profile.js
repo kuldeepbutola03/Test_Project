@@ -14,7 +14,9 @@ import ButtonMod from '../../components/UI/ButtonMod/ButtonMod';
 import EditButton from '../../components/UI/EditButton/EditButton';
 import { Navigation } from 'react-native-navigation';
 import { PropTypes } from 'prop-types';
-import { saveUserData, defaultUser } from '../../../Constant';
+import { saveUserData, defaultUser, authHeaders, getUserID } from '../../../Constant';
+import { UPDATE_USER } from '../../../Apis';
+
 
 
 export default class Profile extends Component {
@@ -23,12 +25,34 @@ export default class Profile extends Component {
     componentId: PropTypes.string,
   };
 
-  state = {
-    image: this.props.image ? this.props.image : defaultUser,
-    name: this.props.name ? this.props.name : "",
-    email: this.props.email ? this.props.email : "",
-    username : this.props.username ? this.props.username : ""
+  constructor(props) {
+    super(props)
+
+    
+    this.state = {
+      image: this.props.image ? this.props.image : defaultUser,
+      name: this.props.name ? this.props.name : "",
+      email: this.props.email ? this.props.email : "",
+      username: this.props.username,
+      userId: this.props.userId,
+      editable:true
+    }
   }
+
+  componentDidMount(){
+    if(this.props.username !== null && this.props.username.length > 0){
+      this.setState({
+        editable:false
+      });
+    }
+
+
+    // getUserID((user_id) => {
+    //   alert(user_id);
+    // })
+    // alert(JSON.stringify(this.props))
+  }
+
 
   toHomeScreen = () => {
 
@@ -38,36 +62,17 @@ export default class Profile extends Component {
 
     let validUsername = username.match(usernameRegex);
 
-    if(name.length < 1) {
+    if (name.length < 1) {
       alert('Please fill in your name');
       return;
-    } else if(username.length < 1 ) {
+    } else if (username.length < 1) {
       alert('Please fill in your username');
       return
     } else if (!validUsername) {
       alert('Your handle can only contain alphabets and numbers');
     } else {
-      saveUserData(this.state);
-      Navigation.push(this.props.componentId, {
-        component: {
-          name: 'HomeScreen',
-          passProps: {
-            data: this.state
-          },
-          options: {
-            topBar: {
-              visible: false,
-              drawBehind: true,
-              animate: false,
-            },
-            popGesture: false
-          },
-          sideMenu: {
-            enabled: false,
-            visible: false
-          }
-        }
-      });
+      // saveUserData(this.state);
+      this.updateDetails();
     }
   }
 
@@ -76,7 +81,7 @@ export default class Profile extends Component {
    * The second arg is the callback which sends object: response (more info in the API Reference)
    */
   imagePicker = () => {
-    ImagePicker.showImagePicker({ title: 'Select an Image' }, response => {
+    ImagePicker.showImagePicker({ title: 'Select an Image',quality:0.3 }, response => {
       console.log('Response = ', response);
 
       if (response.didCancel) {
@@ -86,17 +91,65 @@ export default class Profile extends Component {
       } else if (response.customButton) {
         console.log('User tapped custom button: ', response.customButton);
       } else {
-        const source = { uri: response.uri };
+        const source = response.data;
 
         // You can also display the image using data:
         // const source = { uri: 'data:image/jpeg;base64,' + response.data };
-        console.log(source)
+        // console.log(source)
         this.setState({
           image: source,
         });
       }
     });
   };
+
+  updateDetails = () => {
+
+    let imgName = "IMG" + (+new Date());
+
+    let body = JSON.stringify({
+      userId: this.state.userId,
+      userName: this.state.username,
+      userImageData: this.state.image,
+      userImageName: imgName,
+      userFirstName: this.state.name
+    });
+
+    fetch(UPDATE_USER, {
+      method: 'POST',
+      headers: authHeaders(),
+      body: body,
+    }).then((response) => response.json())
+      .then((responseJson) => {
+        console.log(responseJson);
+        saveUserData(this.state);
+
+        Navigation.push(this.props.componentId, {
+          component: {
+            name: 'HomeScreen',
+            passProps: {
+              data: this.state
+            },
+            options: {
+              topBar: {
+                visible: false,
+                drawBehind: true,
+                animate: false,
+              },
+              popGesture: false
+            },
+            sideMenu: {
+              enabled: false,
+              visible: false
+            }
+          }
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+        // alert("Some Error Occured !");
+      });
+  }
 
   render() {
     var { height, width } = Dimensions.get('window');
@@ -105,7 +158,7 @@ export default class Profile extends Component {
     };
 
     return (
-      <SafeAreaView forceInset={{ bottom: 'always' }} style={{ flex: 1 }}>
+      <SafeAreaView forceInset={{ bottom: 'always' }} style={{ flex: 1 , backgroundColor : "white"}} >
         <KeyboardAvoidingView
           style={{
             // flex: 1,
@@ -118,12 +171,13 @@ export default class Profile extends Component {
           enabled
         >
           <View style={{ marginTop: 10 }}>
-            <Image source={{uri : "data:image/png;base64,"+this.state.image}} style={styles.uploadAvatar} />
+            <Image source={{ uri: "data:image/png;base64," + this.state.image }} style={styles.uploadAvatar} />
             <EditButton onPress={this.imagePicker} />
           </View>
-          <DefaultInput placeholder="Handle" value={this.state.username} onChangeText={(text) => this.setState({ username: text })} />
+
+          <DefaultInput placeholder="Handle" value={this.state.username} editable={this.state.editable} onChangeText={(text) => this.setState({ username: text })} />
           <DefaultInput placeholder="Name" value={this.state.name} onChangeText={(text) => this.setState({ name: text })} />
-          {/* <DefaultInput placeholder="Last name" /> */}
+
           <ButtonMod onPress={this.toHomeScreen} color="#a01414">
             Submit
           </ButtonMod>

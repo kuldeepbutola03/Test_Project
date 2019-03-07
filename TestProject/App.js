@@ -22,6 +22,9 @@ import ComposeScreen from './src/screens/ReportScreen/ComposeScreen';
 import Sharing from './src/components/UI/Sharing/Sharing';
 import ReportReplyScreen from './src/screens/ReportScreen/ReportReplyScreen';
 // Register Screens
+import AboutAppScreen from './src/screens/AboutAppScreen/AboutAppScreen';
+
+import TutorialScreen from './src/screens/AboutAppScreen/TutorialScreen';
 
 Navigation.registerComponent ('LoginScreen', () => LoginSceen);
 Navigation.registerComponent ('MobileNumber', () => MobileNumber);
@@ -43,6 +46,9 @@ Navigation.registerComponent ('AreaScreen', () => AreaScreen);
 Navigation.registerComponent('ReportReplyScreen', () => ReportReplyScreen);
 Navigation.registerComponent('Sharing', () => Sharing);
 Navigation.registerComponent('ComposeScreen', () => ComposeScreen);
+Navigation.registerComponent('AboutAppScreen', () => AboutAppScreen);
+
+Navigation.registerComponent('TutorialScreen', () => TutorialScreen);
 
 // Start App
 import { AsyncStorage } from "react-native"
@@ -80,7 +86,7 @@ Navigation.events ().registerAppLaunchedListener (() => {
 getUserData().then((data) => {
     SplashScreen.hide()
     if(data) {
-      if(data.username) {
+      if(data.username || data.userName) {
         // Navigation.events ().registerAppLaunchedListener (() => {
           Navigation.setRoot ({
             root: {
@@ -160,8 +166,8 @@ getUserData().then((data) => {
               children: [
                 {
                   component: {
-                    id: "MobileNumber", // Optional, Auto generated if empty
-                    name: "MobileNumber",
+                    id: "AboutAppScreen", // Optional, Auto generated if empty
+                    name: "AboutAppScreen",
                     options: {
                       topBar: {
                         visible:false,

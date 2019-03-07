@@ -56,16 +56,16 @@ export default class ReportReplyScreen extends Component {
     })
   }
 
-  componentDidAppear() {
-    alert("DidApperar");
-  }
+  // componentDidAppear() {
+  //   // alert("DidApperar");
+  // }
 
-  componentDidDisappear() {
-    alert("Asdhjsdfjk");
-    this.setState({
-      text: ''
-    });
-  }
+  // componentDidDisappear() {
+  //   alert("Asdhjsdfjk");
+  //   this.setState({
+  //     text: ''
+  //   });
+  // }
 
   // attachment = () => {
   //   Navigation.showModal({
@@ -89,6 +89,8 @@ export default class ReportReplyScreen extends Component {
   }
 
   fetchUserMessage() {
+
+
 
     let body = JSON.stringify({
       "threadId": this.props.data.threadId
@@ -130,8 +132,7 @@ export default class ReportReplyScreen extends Component {
         {
           "userId": userId
         },
-        "latitude": "",
-        "longitude": "",
+       
         "isLiked": isLiked
 
       });
@@ -178,86 +179,69 @@ export default class ReportReplyScreen extends Component {
   }
   requestForReport(data) {
     // alert(currentUserId);
-    getUserID((userId) => {
-    //   alert(userId);
+
+    let userId = this.props.user_id;
+    // getUserID((userId) => {
+      //   alert(userId);
       // getCurrentLocation((location) => {
-        // if (location) {
-        let body = JSON.stringify({
+      // if (location) {
+      let body = JSON.stringify({
 
 
-          "message":
-          {
-            "messageId": data.messageId
-          },
-          "userMaster":
-          {
-            "userId": userId
-          },
-          "displayMessage": "N",
-          "reportReason": "",
-          "reportCustomReason": "",
-          "latitude": location.latitude ? location.latitude : 0,
-          "longitude": location.longitude ? location.longitude : 0
-
-
-          // "Mobile_Number_Against": data.Mobile_Number,
-          // "Mobile_Number": MOBILE_NUMBER_,
-          // "Report_Type": "Hurts Sentiments",
-
-          // "Location_Name": "sector 18, Noida",
-
-          // "Message_Id": data.Message_Id,
-          // "Report_Type": "Hurts Sentiments",
+        "message":
+        {
+          "messageId": data.messageId
+        },
+        "userMaster":
+        {
+          "userId": userId
+        },
+        "displayMessage": "N",
+        "reportReason": "",
+        "reportCustomReason": "",
+        "latitude":  0,
+        "longitude":  0
 
 
 
-          // "Latitude": "27.5",
-          // "Longitude": "77.5",
-          // "Message": data.Message,
-
-          // "Report_SubType": "Hide Babble",
-          // "User_Comments": "",
-          // "isOP": data.IsOP,
-          // "is_poll": 0
 
 
-
-        });
-        alert(body);
-        // return;
-        // µ
-        fetch(REPORT_POST, {
-          method: 'POST',
-          headers: authHeaders(),
-          body: body,
-        }).then((response) => response.json())
-
-          .then((responseJson) => {
-
-
-            // alert(JSON.stringify(responseJson));
-            this._onRefresh();
-
-            // var dataObj = this.state.case;
-            // var index = dataObj.indexOf(data);
-            // data.Is_Liked = isLiked;
-            // data.LikingCount = data.LikingCount + ((isLiked == 1) ? 1 : -1);
-            // data.LikingCount = (data.LikingCount < 0) ? 0 : data.LikingCount;
-
-
-            // dataObj[index] = dataObj;
-            // this.setState({case : [...dataObj] });
-
-            //  alert(JSON.stringify(responseJson));
-            // this.filterData(responseJson.result);
-          })
-          .catch((error) => {
-            // this.setState({ refreshing: false });
-            console.error(error);
-          });
-
-        // }
       });
+      // alert(body);
+      // return;
+      // µ
+      fetch(REPORT_POST, {
+        method: 'POST',
+        headers: authHeaders(),
+        body: body,
+      }).then((response) => response.json())
+
+        .then((responseJson) => {
+
+
+          // alert(JSON.stringify(responseJson));
+          this._onRefresh();
+
+          // var dataObj = this.state.case;
+          // var index = dataObj.indexOf(data);
+          // data.Is_Liked = isLiked;
+          // data.LikingCount = data.LikingCount + ((isLiked == 1) ? 1 : -1);
+          // data.LikingCount = (data.LikingCount < 0) ? 0 : data.LikingCount;
+
+
+          // dataObj[index] = dataObj;
+          // this.setState({case : [...dataObj] });
+
+          //  alert(JSON.stringify(responseJson));
+          // this.filterData(responseJson.result);
+        })
+        .catch((error) => {
+          // this.setState({ refreshing: false });
+          console.error(error);
+        });
+
+      // }
+    // });
     // })
 
 
@@ -290,15 +274,15 @@ export default class ReportReplyScreen extends Component {
 
         key: key,
         picture: (dict.mediaContentData && (dict.messageType === 'Image' || dict.messageType === 'Gif')) ? { uri: "data:image/png;base64," + dict.mediaContentData } : videoURL,
-        name: dict.Mobile_Number ? ("@" + dict.Mobile_Number) : "Anonymous",
-        place: dict.Location_Name,
+        name: dict.userName ? ("@" + dict.userName) : "Anonymous",
+        place: dict.locationName,
         details: dict.message ? dict.message : null,
         caseId: null,
         video: (dict.contentUrl && dict.messageType === 'Video') ? { uri: dict.contentUrl } : null,// "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
 
         height_Image: dict.height,
         width_Image: dict.width,
-        Is_Liked: dict.Is_Liked,
+        Is_Liked: dict.isSelfLiked,
         LikingCount: dict.likingCount,
         ReplyCount: dict.replyCount,
         isOP: dict.isOP,
@@ -351,11 +335,11 @@ export default class ReportReplyScreen extends Component {
     this.setState({ visible: false });
   }
   reportTapped(data) {
-    if (MOBILE_NUMBER_ === data.Mobile_Number) {
-      alert("You can not report your own post");
-    } else {
+    // if (MOBILE_NUMBER_ === data.Mobile_Number) {
+    //   alert("You can not report your own post");
+    // } else {
       this.requestForReport(data);
-    }
+    // }
 
   }
 
@@ -454,7 +438,16 @@ export default class ReportReplyScreen extends Component {
 
     // alert(this.state.text);
 
-    getUserID().then((userId) => {
+    let locationCoordinates = {};
+    if (this.props.coordinates) {
+      locationCoordinates = {
+        "latitude": this.props.coordinates.latitude,
+        "longitude": this.props.coordinates.longitude,
+      }
+    }
+
+    let userId = this.props.user_id;
+    // getUserID().then((userId) => {
 
       let body = JSON.stringify({
 
@@ -462,10 +455,11 @@ export default class ReportReplyScreen extends Component {
         {
           "userId": userId
         },
-        "latitude": "33.3353629",
-        "longitude": "-119.5354356",
+       
         "threadId": this.props.data.threadId,
-        "message": this.state.text
+        "message": this.state.text,
+
+        ...locationCoordinates
       });
 
       // alert(MESSAGE_REPLY);
@@ -486,7 +480,7 @@ export default class ReportReplyScreen extends Component {
           // console.error(error);
           alert(error);
         });
-    });
+    // });
 
   }
 
@@ -529,8 +523,33 @@ export default class ReportReplyScreen extends Component {
                 onPress={this.homeButtonTapped}
               />
             </View>
+            <View style={{ flex: 2.5, backgroundColor:'clear', flexDirection: 'row', alignItems: 'center' }}>
+                <Image
+                  style={{
+                    backgroundColor: APP_GLOBAL_COLOR,
+                    marginLeft: normalize(10),
+                    width: normalize(30),
+                    height: normalize(30),
+                    marginTop: normalize(5),
+                    marginBottom: normalize(5),
+                    borderRadius: normalize(30) / 2,
+                  }}
+                  source={this.props.userData.image ? {uri : "data:image/png;base64,"+this.props.userData.image} : require('../../assets/UserSmall.png')}
+                />
+
+                <Text
+                  style={{
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    marginLeft: 5,
+                    fontSize: normalize(14),
+                    color: 'white',
+                  }}>
+                  {this.props.userData.username}
+                </Text>
+              </View>
             <View style={styles.textheaderView}>
-              <Text style={styles.textView}>Timeline</Text>
+              <Text style={styles.textView}>Arena</Text>
             </View>
 
           </View>
@@ -738,7 +757,7 @@ const styles = StyleSheet.create({
     height: Dimensions.get('window').height * 0.07
   },
   textheaderView: {
-    flex: 5,
+    flex: 2.5,
     backgroundColor: 'transparent',
     justifyContent: 'center',
   },

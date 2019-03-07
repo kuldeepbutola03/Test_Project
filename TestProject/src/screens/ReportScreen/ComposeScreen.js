@@ -89,6 +89,16 @@ export default class ComposeScreen extends Component {
 
   postTapped = () => {
 
+
+    let locationCoordinates = {};
+    if (this.props.coordinates) {
+      locationCoordinates = {
+        "latitude": this.props.coordinates.latitude,
+        "longitude": this.props.coordinates.longitude,
+      }
+    }
+    
+
     if (this.state.selected.length > 0) {
 
       const dateTime = new Date();
@@ -107,14 +117,15 @@ export default class ComposeScreen extends Component {
           {
             "userId": userId
           },
-          "latitude": "33.3353629",
-          "longitude": "-119.5354356",
+          
           "message": this.state.text,
           "height": "100",
           "width": "200",
           "messageType": this.state.mimeType === "image/jpeg" || this.state.mimeType === "image/png" ? "Image" : "Gif",
 
           "mediaContentData": this.state.selected[0].uri,
+
+          ...locationCoordinates
           // "threadId" : this.props.reply ? this.props.thread : null
         }
 
@@ -196,14 +207,18 @@ export default class ComposeScreen extends Component {
 
       getUserID().then((userId) => {
 
-        let body = {
+        let body = null;
+
+
+        
+        
+        body = {
           "message": this.state.text,
           "userMaster":
           {
             "userId": userId
           },
-          "latitude": "33.3353629",
-          "longitude": "-119.5354356"
+          ...locationCoordinates
         }
 
         if (this.props.reply) {
@@ -211,7 +226,8 @@ export default class ComposeScreen extends Component {
         }
 
         body = JSON.stringify(body);
-
+// alert(body);
+// return;
         let FETCH = this.props.reply ? MESSAGE_REPLY : MESSAGE_COMPOSE;
 
         fetch(FETCH, {
@@ -267,11 +283,14 @@ export default class ComposeScreen extends Component {
       );
     });
 
+    const options = {
+      behavior: Platform.OS === "ios" ? "padding" : "null"
+    }
     return (
       <SafeAreaView style={{ flex: 1 }}>
         <KeyboardAvoidingView
           style={{ flex: 1, backgroundColor: 'white' }}
-          behavior="padding"
+          {...options}
           enabled
         >
 

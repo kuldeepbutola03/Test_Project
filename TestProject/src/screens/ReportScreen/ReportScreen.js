@@ -58,18 +58,19 @@ export default class ReportScreen extends Component {
   }
 
   showCompose = () => {
-    getUserData().then((data) => {
+    // getUserData().then((data) => {
       Navigation.showModal({
         component: {
           name: 'ComposeScreen',
           passProps: {
             selfObj: this._onRefresh,
-            data: data
+            data: this.props.data,
+            coordinates : this.props.coordinates
           }
         },
       });
 
-    });
+    // });
 
   }
 
@@ -131,7 +132,8 @@ export default class ReportScreen extends Component {
 
   requestForLikeDislike(data, isLiked) {
 
-    getUserID().then((userId) => {
+    let userId = this.props.user_id;
+    // getUserID().then((userId) => {
 
       let body = JSON.stringify({
 
@@ -143,8 +145,7 @@ export default class ReportScreen extends Component {
         {
           "userId": userId
         },
-        "latitude": "",
-        "longitude": "",
+       
         "isLiked": isLiked
       });
 
@@ -186,17 +187,17 @@ export default class ReportScreen extends Component {
         });
 
 
-    });
+    // });
 
   }
 
 
 
   requestForReport(data) {
-
+    let userID = this.props.user_id;
     // alert(JSON.stringify(data));
     // return;
-    getUserID((userID) => {
+    // getUserID((userID) => {
       // getCurrentLocation((location) => {
         // if (location) {
           let body = JSON.stringify({
@@ -252,7 +253,7 @@ export default class ReportScreen extends Component {
               console.error(error);
             });
         // }
-      });
+      // });
 
     // })
 
@@ -268,14 +269,14 @@ export default class ReportScreen extends Component {
       let innerData = {
         key: key,
         picture: (dict.mediaContentData && (dict.messageType === 'Image' || dict.messageType === 'Gif')) ? { uri: "data:image/png;base64," + dict.mediaContentData } : videoURL, // ++
-        name: dict.username ? ("@" + dict.username) : "Anonymous",
-        place: dict.location,
+        name: dict.userName ? ("@" + dict.userName) : "Anonymous",
+        place: dict.locationName,
         details: dict.message ? dict.message : null,
         caseId: null,
         video: (dict.contentUrl && dict.messageType === 'Video') ? { uri: dict.contentUrl } : null,// "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
         height_Image: dict.height,
         width_Image: dict.width,
-        Is_Liked: dict.Is_Liked,
+        Is_Liked: dict.isSelfLiked,
         Thread_Id: dict.threadId,
         LikingCount: dict.likingCount,
         ReplyCount: dict.replyCount,
@@ -297,7 +298,10 @@ export default class ReportScreen extends Component {
       component: {
         name: 'ReportReplyScreen',
         passProps: {
+          userData : this.props.data,
           data: data,
+          user_id: this.props.user_id,
+          coordinates : this.props.coordinates,
         },
         options: {
           topBar: {
@@ -305,7 +309,7 @@ export default class ReportScreen extends Component {
             drawBehind: true,
             animate: false,
           },
-        },
+        }
       }
     });
   }
@@ -345,12 +349,12 @@ export default class ReportScreen extends Component {
   }
 
   reportTapped(data) {
-    alert(JSON.stringify(data))
-    if (MOBILE_NUMBER_ === data.Mobile_Number) {
-      alert("You can not report your own post");
-    } else {
+    // alert(JSON.stringify(data))
+    // if (MOBILE_NUMBER_ === data.Mobile_Number) {
+    //   alert("You can not report your own post");
+    // } else {
       this.requestForReport(data);
-    }
+    // }
 
   }
 
@@ -447,6 +451,7 @@ export default class ReportScreen extends Component {
       width: SCREEN_WIDTH,
       height: SCREEN_HEIGHT,
     } = Dimensions.get('window');
+    // alert(JSON.stringify(this.props.data));
     return (
       <SafeAreaView
         forceInset={{ bottom: 'always' }}
@@ -461,13 +466,38 @@ export default class ReportScreen extends Component {
               style={{
                 flexDirection: 'row',
                 flex: 1,
-                margin: normalize(5)
+                // margin: normalize(5)
               }}
               onPress={this.homeButtonTapped}
             />
           </View>
+          <View style={{ flex: 2.5, backgroundColor:'clear', flexDirection: 'row', alignItems: 'center' }}>
+                <Image
+                  style={{
+                    backgroundColor: APP_GLOBAL_COLOR,
+                    marginLeft: normalize(10),
+                    width: normalize(30),
+                    height: normalize(30),
+                    marginTop: normalize(5),
+                    marginBottom: normalize(5),
+                    borderRadius: normalize(30) / 2,
+                  }}
+                  source={this.props.data.image ? {uri : "data:image/png;base64,"+this.props.data.image} : require('../../assets/UserSmall.png')}
+                />
+
+                <Text
+                  style={{
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    marginLeft: 5,
+                    fontSize: normalize(14),
+                    color: 'white',
+                  }}>
+                  {this.props.data.username}
+                </Text>
+              </View>
           <View style={styles.textheaderView}>
-            <Text style={styles.textView}>Timeline</Text>
+            <Text style={styles.textView}>Arena</Text>
           </View>
 
         </View>
@@ -617,7 +647,7 @@ const styles = StyleSheet.create({
     height: Dimensions.get('window').height * 0.07
   },
   textheaderView: {
-    flex: 5,
+    flex: 2.5,
     backgroundColor: 'transparent',
     justifyContent: 'center',
   },

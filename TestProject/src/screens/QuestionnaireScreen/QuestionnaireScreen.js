@@ -86,7 +86,7 @@ export default class QuestionnireScreen extends Component {
                             loading: false, 
                             questionnaire1: responseData_2,
                             isSurveyTaken1: responseData_2.isSurveyTaken,
-                            surveyTitle: responseData_2.surveyDesc
+                            surveyTitle: responseData_2.surveyDesc ? (responseData_2.surveyDesc === '' ? responseData_2.surveyDesc : this.state.surveyTitle) : this.state.surveyTitle
                         })
                         this.refs.scrollview.scrollTo({ x: Dimensions.get('window').width, animate: true });
                         // console.log(this.state)
@@ -223,7 +223,7 @@ export default class QuestionnireScreen extends Component {
                         // loading: false, 
                         questionnaire1: responseData,
                         isSurveyTaken1: responseData.isSurveyTaken,
-                        surveyTitle: responseData.surveyDesc
+                        surveyTitle: responseData.surveyDesc ? (responseData.surveyDesc === '' ? responseData.surveyDesc : this.state.surveyTitle) : this.state.surveyTitle
                     })
     
                     axios.post(GET_CURRENT_ACTIVE_SURVEY, {

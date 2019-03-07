@@ -19,7 +19,9 @@ import { saveUserID, authHeaders, saveUserData, getCurrentLocation, defaultUser 
 import axios from 'axios';
 import Geolocation from 'react-native-geolocation-service';
 import Loading from 'react-native-whc-loading';
+
 export default class OtpScreen extends Component {
+
   static propTypes = {
     componentId: PropTypes.string,
   };
@@ -27,47 +29,17 @@ export default class OtpScreen extends Component {
   constructor(props) {
     super(props);
   }
+
   state = {
     name: null,
     ...this.props
   }
 
-
   getLocation = () => {
     this.refs.loading.show();
-    // navigator.geolocation.getCurrentPosition(
-    //   (position) => {
-    //     const initialPosition = JSON.stringify(position);
-
-    //     // let latlong = position.coords.latitude.toString() +  "," + position.coords.longitude.toString()
-    //     let lat_lon = position.coords.latitude.toString() + "," + position.coords.longitude.toString();
-    //     // alert(lat_lon);
-    //     if (position.mocked) {
-    //       if (position.mocked == true) {
-    //         alert("you are using fake location");
-    //         this.refs.loading.close();
-    //         return;
-    //       }
-    //     }
-
-    //     // alert(code + "   " + phoneN);
-    //     // this.setState({ lat_lon: latlong });
-    //     this.mobileNumberSubmit(lat_lon , this);
-    //   },
-    //   (error) => {
-    //     // alert(error.message)
-    //     // this.locationErrorMessage = error.message;
-    //     // alert(locationErrorMessage)
-    //     // this.showDialog();
-    //     this.mobileNumberSubmit(null , this);
-
-
-    //   },
-    //   { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
-    // );
-    Geolocation.getCurrentPosition(
+    
+    navigator.geolocation.getCurrentPosition(
       (position) => {
-
         const initialPosition = JSON.stringify(position);
 
         // let latlong = position.coords.latitude.toString() +  "," + position.coords.longitude.toString()
@@ -75,31 +47,57 @@ export default class OtpScreen extends Component {
         // alert(lat_lon);
         if (position.mocked) {
           if (position.mocked == true) {
+            alert("you are using fake location");
             this.refs.loading.close();
-            setTimeout(function () {
-              alert("You are using fake location");
-            }, 1000)
             return;
           }
         }
 
-        //  alert(code + "   " + phoneN);
+        // alert(code + "   " + phoneN);
         // this.setState({ lat_lon: latlong });
-
-        this.mobileNumberSubmit(lat_lon, this);
+        this.mobileNumberSubmit(lat_lon , this);
       },
       (error) => {
-        // alert(error.message);
+        // alert(error.message)
         // this.locationErrorMessage = error.message;
         // alert(locationErrorMessage)
         // this.showDialog();
-        this.mobileNumberSubmit(null, this);
+        this.mobileNumberSubmit(null , this);
+
+
       },
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
     );
+
+    // Geolocation.getCurrentPosition(
+    //   (position) => {
+    //     const initialPosition = JSON.stringify(position);
+    //     // let latlong = position.coords.latitude.toString() +  "," + position.coords.longitude.toString()
+    //     let lat_lon = position.coords.latitude.toString() + "," + position.coords.longitude.toString();
+    //     // alert(lat_lon);
+    //     if (position.mocked) {
+    //       if (position.mocked == true) {
+    //         this.refs.loading.close();
+    //         setTimeout(function () {
+    //           alert("You are using fake location");
+    //         }, 1000)
+    //         return;
+    //       }
+    //     }
+    //     //  alert(code + "   " + phoneN);
+    //     // this.setState({ lat_lon: latlong });
+    //     this.mobileNumberSubmit(lat_lon, this);
+    //   },
+    //   (error) => {
+    //     // alert(error.message);
+    //     // this.locationErrorMessage = error.message;
+    //     // alert(locationErrorMessage)
+    //     // this.showDialog();
+    //     this.mobileNumberSubmit(null, this);
+    //   },
+    //   { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+    // );
   }
-
-
 
   mobileNumberSubmit = (locationStr, thisObj) => {
     // let thisObj = this;
@@ -123,26 +121,20 @@ export default class OtpScreen extends Component {
 
     let body = null;
     if (locationStr) {
-      body = JSON.stringify({
+      body = {
         userMobile: this.props.mobileNumber,
         userCountryCode: this.props.code,
         userOtp: this.state.name,
         userInitCoord: locationStr
-
-      })
+      }
     } else {
-      // body = JSON.stringify({
-      //   userMobile: this.props.mobileNumber,
-      //   userCountryCode: this.props.code,
-      //   userOtp: this.state.name
-
-      // })
+      body = {
+        userMobile: this.props.mobileNumber,
+        userCountryCode: this.props.code,
+        userOtp: this.state.name
+      }
     }
-    axios.post(VALIDATE_OTP, {
-      userMobile: this.props.mobileNumber,
-      userCountryCode: this.props.code,
-      userOtp: this.state.name
-    })
+    axios.post(VALIDATE_OTP, body)
       .then(response => {
         let responseData = response.data;
         this.refs.loading.close();
@@ -159,55 +151,36 @@ export default class OtpScreen extends Component {
           if (responseData) {
             if (responseData.userId) {
               saveUserID(responseData.userId);
-              saveUserData(data)
+              saveUserData(data);
 
+              
               if (location) {
-                if (responseData.userName) {
-                  Navigation.push(thisObj.props.componentId, {
-                    component: {
-                      name: 'HomeScreen',
-                      passProps: {
-                        data: data
-                      },
-                      options: {
-                        topBar: {
-                          visible: false,
-                          drawBehind: true,
-                          animate: false,
-                        },
-                        popGesture: false
-                      },
-                      sideMenu: {
-                        enabled: false,
-                        visible: false
+                
+                Navigation.push(thisObj.props.componentId, {
+                  component: {
+                    id: 'Profile',
+                    name: 'Profile',
+                    passProps: {
+                      email: responseData.userEmail,
+                      image: responseData.userImageData,
+                      name: responseData.userFirstName,
+                      username: responseData.userName,
+                      mobileNumber: thisObj.props.mobileNumber,
+                      code: thisObj.props.code,
+                      userId: responseData.userId
+                    },
+                    options: {
+                      topBar: {
+                        visible: false,
+                        animate: false,
+                        drawBehind: true
                       }
                     }
-                  });
-                } else {
-                  Navigation.push(thisObj.props.componentId, {
-                    component: {
-                      id: 'Profile',
-                      name: 'Profile',
-                      passProps: {
-                        email: responseData.userEmail,
-                        image: responseData.userImageData,
-                        name: responseData.userFirstName,
-                        username: responseData.userName,
-                        mobileNumber: thisObj.props.mobileNumber,
-                        code: thisObj.props.code
-                      },
-                      options: {
-                        topBar: {
-                          visible: false,
-                          animate: false,
-                          drawBehind: true
-                        }
-                      }
-                    },
-                  });
-                }
+                  },
+                });
+                // }
               } else {
-                console.log('no location')
+                // console.log('no location')
                 Navigation.push(thisObj.props.componentId, {
                   component: {
                     name: 'AreaScreen',
@@ -217,6 +190,7 @@ export default class OtpScreen extends Component {
                       code: thisObj.props.code,
                       username: responseData.userName,
                       name: responseData.userFirstName,
+                      image: responseData.userImageData,
                       responseData: responseData
                     },
                     options: {
@@ -231,6 +205,9 @@ export default class OtpScreen extends Component {
                 });
                 // }, 1000)
               }
+              // }
+
+
             } else {
               alert("Invalid OTP");
             }

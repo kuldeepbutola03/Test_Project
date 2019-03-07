@@ -135,37 +135,39 @@ export default class AreaScreen extends Component {
                 // responseData: responseData
                 thisObject.refs.loading.close();
                 setTimeout(function () {
-                    if (username) {
-                        Navigation.push(thisObject.props.componentId, {
-                            component: {
-                                name: 'HomeScreen',
-                                passProps: {
-                                    data: data
-                                },
-                                options: {
-                                    topBar: {
-                                        visible: false,
-                                        drawBehind: true,
-                                        animate: false,
-                                    },
-                                    popGesture: false
-                                },
-                                sideMenu: {
-                                    enabled: false,
-                                    visible: false
-                                }
-                            }
-                        });
-                        saveUserData(data)
-                    } else if (!username) {
+                    // if (username) {
+                    //     Navigation.push(thisObject.props.componentId, {
+                    //         component: {
+                    //             name: 'HomeScreen',
+                    //             passProps: {
+                    //                 data: data
+                    //             },
+                    //             options: {
+                    //                 topBar: {
+                    //                     visible: false,
+                    //                     drawBehind: true,
+                    //                     animate: false,
+                    //                 },
+                    //                 popGesture: false
+                    //             },
+                    //             sideMenu: {
+                    //                 enabled: false,
+                    //                 visible: false
+                    //             }
+                    //         }
+                    //     });
+                    //     saveUserData(data)
+                    // } else if (!username) {
                         Navigation.push(thisObject.props.componentId, {
                             component: {
                                 id: 'Profile',
                                 name: 'Profile',
                                 passProps: {
                                     email: null,
-                                    image: null,
-                                    name: null,
+                                    
+                                    name: thisObject.props.name,
+                                    image: thisObject.props.image,
+                                    username: username,
                                     mobileNumber: thisObject.props.mobileNumber,
                                     code: thisObject.props.code
                                 },
@@ -178,7 +180,7 @@ export default class AreaScreen extends Component {
                                 }
                             },
                         });
-                    }
+                    // }
                 }, 1000);
 
             })
@@ -214,6 +216,7 @@ export default class AreaScreen extends Component {
             <SafeAreaView
                 forceInset={{ bottom: 'always' }}
                 style={{ flex: 1 }}
+                backgroundColor="white"
             >
                 {/* <KeyboardAvoidingView
                     style={{ flex: 1 }}

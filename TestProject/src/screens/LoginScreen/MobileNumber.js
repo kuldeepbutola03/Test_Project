@@ -23,6 +23,7 @@ import { authHeaders, normalize } from '../../../Constant';
 import Spinner from '../../components/UI/Spinner/Spinner';
 import axios from 'axios';
 
+import Geolocation from 'react-native-geolocation-service';
 import { APP_GLOBAL_COLOR } from '../../../Constant';
 export default class MobileNumber extends Component {
   static propTypes = {
@@ -43,6 +44,66 @@ export default class MobileNumber extends Component {
     this.phone.selectCountry('in')
     // SplashScreen.hide()
 
+    // navigator.geolocation.getCurrentPosition(
+    //   (position) => {
+    //     const initialPosition = JSON.stringify(position);
+
+    //     // let latlong = position.coords.latitude.toString() +  "," + position.coords.longitude.toString()
+    //     let latlong = position.coords.latitude.toString() + "," + position.coords.longitude.toString()
+    //     if (position.mocked) {
+    //       if (position.mocked == true) {
+    //         alert("you are using fake location");
+    //         return;
+    //       }
+    //     }
+    //     alert(latlong);
+    //     // this.setState({ lat_lon: "28.722,77.125" });
+    //     // this.setState({ lat_lon: latlong });
+    //     // this.setState({ coordinates: position.coords });
+    //     // // alert(latlong);
+    //     // this.requestToServer()
+    //     // this.serverHitForFourthResponse()
+    //   },
+    //   (error) => {
+    //     console.log(error)
+    //     // this.requestToServer();
+    //     // this.serverHitForFourthResponse()
+    //     alert(error.message)
+    //     // this.locationErrorMessage = error.message;
+    //     // alert(locationErrorMessage)
+    //     // this.showDialog();
+    //   },
+    //   { enableHighAccuracy: false, timeout: 20000, maximumAge: 1000 }
+    // );
+
+    // Geolocation.getCurrentPosition(
+    //     (position) => {
+    //       const initialPosition = JSON.stringify(position);
+    //       // let latlong = position.coords.latitude.toString() +  "," + position.coords.longitude.toString()
+    //       let lat_lon = position.coords.latitude.toString() + "," + position.coords.longitude.toString();
+    //       // alert(lat_lon);
+    //       if (position.mocked) {
+    //         if (position.mocked == true) {
+    //           this.refs.loading.close();
+    //           setTimeout(function () {
+    //             alert("You are using fake location");
+    //           }, 1000)
+    //           return;
+    //         }
+    //       }
+    //        alert(lat_lon);
+    //       // this.setState({ lat_lon: latlong });
+    //       // this.mobileNumberSubmit(lat_lon, this);
+    //     },
+    //     (error) => {
+    //       alert(error.message);
+    //       // this.locationErrorMessage = error.message;
+    //       // alert(locationErrorMessage)
+    //       // this.showDialog();
+    //       // this.mobileNumberSubmit(null, this);
+    //     },
+    //     { enableHighAccuracy: false, timeout: 20000, maximumAge: 1000 }
+    //   );
 
   }
 
@@ -153,24 +214,19 @@ export default class MobileNumber extends Component {
           >
 
 
-            <View style={{ flex: 1, width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', backgroundColor: APP_GLOBAL_COLOR }}>
+            
 
               {/* <View style = {{flex : 1 , margin : 5 , backgroundColor : 'green'}}/>  */}
               {/* <View style={{ marginBottom: 20 }} alignItems='center' backgroundColor='transparent'> */}
 
 
-              <Image style={{ marginBottom: 10, height: normalize(100), width: normalize(100), resizeMode: 'cover' }} source={require('../../assets/icon1.png')} />
+             
               {/* <Text style={{ position: 'absolute', bottom: 10, fontWeight: "600", fontSize: 14, color: "#a01414" }}>AGENCY NAME</Text> */}
 
-              {/* </View> */}
-              <Text style={{ fontSize: 15, margin: 5, color: 'white' }}>What is Raajneeti</Text>
-              <Text style={{ fontSize: 12, margin: 10, textAlign: 'center', color: 'white' }}>Join India's First Political Social Network to bring democracy back to people. Make yourself heard by participating in unbiased political discussions and surveys. Rate your leaders, view the latest trends, discuss with people around you and much more on Raajneeti.</Text>
-
-            </View>
 
             <View style={{ flex: 1 }} justifyContent='center' alignItems='center' backgroundColor='transparent'>
 
-
+            <Image style={{ marginBottom: 10, height: normalize(100), width: normalize(100), resizeMode: 'cover' }} source={require('../../assets/icon1.png')} />
 
               <View>
                 <HeaderText

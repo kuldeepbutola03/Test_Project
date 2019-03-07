@@ -110,7 +110,7 @@ const caseCard = props => {
             }}
           // textSize = {normalize(9)}
           >
-            Location : {data.place}
+            {data.place}
           </Text>
           {data.details &&
             <HashTag

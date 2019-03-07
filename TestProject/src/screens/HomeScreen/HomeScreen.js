@@ -128,7 +128,9 @@ export default class HomeScreen extends Component {
           },
         },
         passProps: {
-          data: this.props.data.image,
+          coordinates : this.state.coordinates,
+          user_id: this.state.user_id,
+          data: this.props.data,
         },
       },
     });
@@ -543,7 +545,7 @@ export default class HomeScreen extends Component {
   }
 
   render() {
-    let menuName = ['Trends', 'Survey', 'Timeline'];
+    let menuName = ['Trends', 'Survey', 'Arena'];
     let menuImageName = [
       require('../../assets/trends.png'),
       require('../../assets/survey.png'),
