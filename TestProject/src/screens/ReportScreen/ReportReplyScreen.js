@@ -7,7 +7,6 @@ import CustomButton from "../../components/UI/ButtonMod/CustomButtom";
 import CaseCard from "../../components/UI/CaseCard/CaseCard";
 import { Platform } from 'react-native';
 import { authHeaders, getUserID } from '../../../Constant';
-
 import { FETCH_REPLY_POST, MOBILE_NUMBER_, LIKDISLIKE_POST, REPORT_POST, MESSAGE_REPLY, MEDIA_MESSAGE_REPLY } from '../../../Apis';
 import Share, { ShareSheet, Button } from 'react-native-share';
 
@@ -24,7 +23,6 @@ export default class ReportReplyScreen extends Component {
     this._onRefresh();
 
     // getUserID((usrid) => {
-
     //   currentUserId = usrid
     //   alert(currentUserId);
     // });
@@ -35,7 +33,8 @@ export default class ReportReplyScreen extends Component {
     height: 40,
     text: '',
     refreshing: false,
-    visible: false
+    visible: false,
+    disabled : false
   }
 
   attachment = () => {
@@ -46,7 +45,8 @@ export default class ReportReplyScreen extends Component {
           text: this.state.text,
           reply: true,
           thread: this.props.data.Thread_Id,
-          selfObj: this._onRefresh
+          selfObj: this._onRefresh,
+          data: this.props.data2
         }
       },
     });
@@ -90,8 +90,6 @@ export default class ReportReplyScreen extends Component {
 
   fetchUserMessage() {
 
-
-
     let body = JSON.stringify({
       "threadId": this.props.data.threadId
       // "mobileNumber": MOBILE_NUMBER_
@@ -132,7 +130,7 @@ export default class ReportReplyScreen extends Component {
         {
           "userId": userId
         },
-       
+
         "isLiked": isLiked
 
       });
@@ -182,65 +180,65 @@ export default class ReportReplyScreen extends Component {
 
     let userId = this.props.user_id;
     // getUserID((userId) => {
-      //   alert(userId);
-      // getCurrentLocation((location) => {
-      // if (location) {
-      let body = JSON.stringify({
+    //   alert(userId);
+    // getCurrentLocation((location) => {
+    // if (location) {
+    let body = JSON.stringify({
 
 
-        "message":
-        {
-          "messageId": data.messageId
-        },
-        "userMaster":
-        {
-          "userId": userId
-        },
-        "displayMessage": "N",
-        "reportReason": "",
-        "reportCustomReason": "",
-        "latitude":  0,
-        "longitude":  0
+      "message":
+      {
+        "messageId": data.messageId
+      },
+      "userMaster":
+      {
+        "userId": userId
+      },
+      "displayMessage": "N",
+      "reportReason": "",
+      "reportCustomReason": "",
+      "latitude": 0,
+      "longitude": 0
 
 
 
 
 
+    });
+    // alert(body);
+    // return;
+    // µ
+    fetch(REPORT_POST, {
+      method: 'POST',
+      headers: authHeaders(),
+      body: body,
+    }).then((response) => response.json())
+
+      .then((responseJson) => {
+
+
+        // alert(JSON.stringify(responseJson));
+        this._onRefresh();
+
+        // var dataObj = this.state.case;
+        // var index = dataObj.indexOf(data);
+        // data.Is_Liked = isLiked;
+        // data.LikingCount = data.LikingCount + ((isLiked == 1) ? 1 : -1);
+        // data.LikingCount = (data.LikingCount < 0) ? 0 : data.LikingCount;
+
+
+        // dataObj[index] = dataObj;
+        // this.setState({case : [...dataObj] });
+
+        //  alert(JSON.stringify(responseJson));
+        // this.filterData(responseJson.result);
+      })
+      .catch((error) => {
+        // this.setState({ refreshing: false });
+        console.error(error);
       });
-      // alert(body);
-      // return;
-      // µ
-      fetch(REPORT_POST, {
-        method: 'POST',
-        headers: authHeaders(),
-        body: body,
-      }).then((response) => response.json())
 
-        .then((responseJson) => {
-
-
-          // alert(JSON.stringify(responseJson));
-          this._onRefresh();
-
-          // var dataObj = this.state.case;
-          // var index = dataObj.indexOf(data);
-          // data.Is_Liked = isLiked;
-          // data.LikingCount = data.LikingCount + ((isLiked == 1) ? 1 : -1);
-          // data.LikingCount = (data.LikingCount < 0) ? 0 : data.LikingCount;
-
-
-          // dataObj[index] = dataObj;
-          // this.setState({case : [...dataObj] });
-
-          //  alert(JSON.stringify(responseJson));
-          // this.filterData(responseJson.result);
-        })
-        .catch((error) => {
-          // this.setState({ refreshing: false });
-          console.error(error);
-        });
-
-      // }
+    // }
     // });
     // })
 
@@ -302,8 +300,6 @@ export default class ReportReplyScreen extends Component {
 
   }
 
-
-
   likeButtonTapped = (data) => {
     this.requestForLikeDislike(data, 1);
   }
@@ -327,23 +323,21 @@ export default class ReportReplyScreen extends Component {
       this.showActionSheetForIOS();
     }
 
-
-
   }
+
+
   onCancel() {
     console.log("CANCEL")
     this.setState({ visible: false });
   }
+
   reportTapped(data) {
     // if (MOBILE_NUMBER_ === data.Mobile_Number) {
     //   alert("You can not report your own post");
     // } else {
-      this.requestForReport(data);
+    this.requestForReport(data);
     // }
-
   }
-
-
 
   showActionSheetForIOS() {
 
@@ -421,13 +415,9 @@ export default class ReportReplyScreen extends Component {
             break
           case 7:
             console.log("Option 7");
-
             break
-
         }
-
       });
-
   }
 
   //-----------------------------------------------------------------------------------
@@ -448,6 +438,9 @@ export default class ReportReplyScreen extends Component {
 
     let userId = this.props.user_id;
     // getUserID().then((userId) => {
+    if (this.state.text.length > 0) {
+
+      this.setState({disabled:true});
 
       let body = JSON.stringify({
 
@@ -455,7 +448,7 @@ export default class ReportReplyScreen extends Component {
         {
           "userId": userId
         },
-       
+
         "threadId": this.props.data.threadId,
         "message": this.state.text,
 
@@ -470,7 +463,7 @@ export default class ReportReplyScreen extends Component {
       }).then((response) => response.json())
 
         .then((responseJson) => {
-          this.setState({ text: "" });
+          this.setState({ text: "",disabled:false });
           this.fetchUserMessage();
           // alert(JSON.stringify(responseJson));
           // this.filterData(responseJson.result);
@@ -480,8 +473,10 @@ export default class ReportReplyScreen extends Component {
           // console.error(error);
           alert(error);
         });
+    }else {
+      alert("Please write something to post!");
+    }
     // });
-
   }
 
   //-------------------------------------------------------------------------------------
@@ -523,31 +518,31 @@ export default class ReportReplyScreen extends Component {
                 onPress={this.homeButtonTapped}
               />
             </View>
-            <View style={{ flex: 2.5, backgroundColor:'clear', flexDirection: 'row', alignItems: 'center' }}>
-                <Image
-                  style={{
-                    backgroundColor: APP_GLOBAL_COLOR,
-                    marginLeft: normalize(10),
-                    width: normalize(30),
-                    height: normalize(30),
-                    marginTop: normalize(5),
-                    marginBottom: normalize(5),
-                    borderRadius: normalize(30) / 2,
-                  }}
-                  source={this.props.userData.image ? {uri : "data:image/png;base64,"+this.props.userData.image} : require('../../assets/UserSmall.png')}
-                />
+            <View style={{ flex: 2.5, backgroundColor: 'clear', flexDirection: 'row', alignItems: 'center' }}>
+              <Image
+                style={{
+                  backgroundColor: APP_GLOBAL_COLOR,
+                  marginLeft: normalize(10),
+                  width: normalize(30),
+                  height: normalize(30),
+                  marginTop: normalize(5),
+                  marginBottom: normalize(5),
+                  borderRadius: normalize(30) / 2,
+                }}
+                source={this.props.userData.image ? { uri: "data:image/png;base64," + this.props.userData.image } : require('../../assets/UserSmall.png')}
+              />
 
-                <Text
-                  style={{
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    marginLeft: 5,
-                    fontSize: normalize(14),
-                    color: 'white',
-                  }}>
-                  {this.props.userData.username}
-                </Text>
-              </View>
+              <Text
+                style={{
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginLeft: 5,
+                  fontSize: normalize(14),
+                  color: 'white',
+                }}>
+                {this.props.userData.username}
+              </Text>
+            </View>
             <View style={styles.textheaderView}>
               <Text style={styles.textView}>Arena</Text>
             </View>
@@ -657,6 +652,7 @@ export default class ReportReplyScreen extends Component {
             <TouchableOpacity
               style={{ position: 'absolute', bottom: 7, right: 10, height: 36, width: 36, borderRadius: 18, backgroundColor: APP_GLOBAL_COLOR, alignItems: 'center', justifyContent: 'center' }}
               onPress={this.sendReply}
+              disabled={this.state.disabled}
             >
               <Image source={require("../../assets/send.png")} style={{ height: 20, width: 20 }} />
             </TouchableOpacity>

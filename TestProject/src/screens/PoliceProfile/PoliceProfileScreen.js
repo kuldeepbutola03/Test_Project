@@ -5,7 +5,9 @@ import {
   SafeAreaView,
   AsyncStorage,
   Text,
-  Dimensions
+  Dimensions,
+  Image,
+  TouchableOpacity
 } from 'react-native';
 
 import ProfileCard from '../../components/UI/ProfileCard/ProfileCard';
@@ -37,9 +39,13 @@ export default class PoliceProfileScreen extends Component {
       totalFlagCount_2: null,
       totalFlagUniqueCount_1: null,
       totalFlagUniqueCount_2: null,
+      showInfo: false
     }
   };
 
+  showInfoScreen(show) {
+    this.setState({ showInfo: show });
+  }
   homeButtonTapped = () => {
 
 
@@ -347,10 +353,12 @@ export default class PoliceProfileScreen extends Component {
               position: 'absolute',
               backgroundColor: 'transparent',
               right: 15,
-              fontSize: normalize(17),
+              fontSize: normalize(14),
               fontWeight: 'bold',
               color: 'white'
-            }}>{this.props.isPolice ? "MLA" : "MP"}</Text>
+            }}>
+              {"Every Opinion Counts. Rate Now !"}</Text>
+            {/* {this.props.isPolice ? "Every Opinion Counts. Rate Now !" : "Rate Your MP | PM"}</Text> */}
             {/* <Text adjustsFontSizeToFit numberOfLines={1} minimumFontScale={.8} style={cardViewStyle.textView}>{this.props.name}</Text> */}
             {/* <Text style={cardViewStyle.textView2}>{this.props.area === "PDM | null" ? "PDM" : this.props.area}</Text> */}
           </View>
@@ -376,6 +384,9 @@ export default class PoliceProfileScreen extends Component {
             totalFlagUniqueCount={this.state.totalFlagUniqueCount_1}
             resourceType={1}
             updateResources={this.updateResources}
+            onPressInfo={() => {
+              this.showInfoScreen(true)
+            }}
           /> :
           <View style={{ backgroundColor: '#fff', flex: 6, marginButtom: 10, justifyContent: 'center', alignItems: 'center' }}>
             <Spinner />
@@ -407,6 +418,18 @@ export default class PoliceProfileScreen extends Component {
           /> :
           <View style={{ backgroundColor: '#fff', flex: 6, justifyContent: 'center', alignItems: 'center' }}>
             <Spinner />
+          </View>
+        }
+
+        {this.state.showInfo &&
+          <View style={{ position: 'absolute', height: Dimensions.get('window').height, width: Dimensions.get('window').width, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(1,1,1,0.5)', }}>
+            <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+              <Image source={require('../../assets/Home_1_2/infoScreen2.png')} />
+              <TouchableOpacity style={{ position: 'absolute', height: 50, width: 50, right: 0, top: 0 }} onPress={() => this.showInfoScreen(false)}>
+
+              </TouchableOpacity>
+            </View>
+
           </View>
         }
       </SafeAreaView>

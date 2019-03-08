@@ -27,7 +27,8 @@ export default class ComposeScreen extends Component {
     dimensions: {
       height: null,
       width: null
-    }
+    },
+    disabled : false
     // isVideo: false
   };
 
@@ -89,7 +90,6 @@ export default class ComposeScreen extends Component {
 
   postTapped = () => {
 
-
     let locationCoordinates = {};
     if (this.props.coordinates) {
       locationCoordinates = {
@@ -97,9 +97,11 @@ export default class ComposeScreen extends Component {
         "longitude": this.props.coordinates.longitude,
       }
     }
-    
+
 
     if (this.state.selected.length > 0) {
+
+      this.setState({disabled:true});
 
       const dateTime = new Date();
       const timestamp = Math.floor(dateTime / 1000) + 'IMG_0001.jpg';
@@ -117,7 +119,7 @@ export default class ComposeScreen extends Component {
           {
             "userId": userId
           },
-          
+
           "message": this.state.text,
           "height": "100",
           "width": "200",
@@ -186,7 +188,6 @@ export default class ComposeScreen extends Component {
           // }
 
         })
-
           // .then((responseJson) => {
 
           // alert(JSON.stringify(responseJson));
@@ -199,19 +200,14 @@ export default class ComposeScreen extends Component {
           });
       });
 
+    } else if (this.state.text.length > 0) {
 
-
-
-    } else {
-
+      this.setState({disabled:true});
 
       getUserID().then((userId) => {
 
         let body = null;
 
-
-        
-        
         body = {
           "message": this.state.text,
           "userMaster":
@@ -226,8 +222,8 @@ export default class ComposeScreen extends Component {
         }
 
         body = JSON.stringify(body);
-// alert(body);
-// return;
+        // alert(body);
+        // return;
         let FETCH = this.props.reply ? MESSAGE_REPLY : MESSAGE_COMPOSE;
 
         fetch(FETCH, {
@@ -252,6 +248,8 @@ export default class ComposeScreen extends Component {
 
       });
 
+    } else {
+      alert("Please write something to post!");
     }
 
   }
@@ -267,7 +265,7 @@ export default class ComposeScreen extends Component {
   render() {
     let images = this.state.selected.map((image, index) => {
       //  let img = "data:image/png;base64,"+image;
-      console.log(image)
+      console.log(image);
       return (
         <View>
           <Image
@@ -286,6 +284,7 @@ export default class ComposeScreen extends Component {
     const options = {
       behavior: Platform.OS === "ios" ? "padding" : "null"
     }
+
     return (
       <SafeAreaView style={{ flex: 1 }}>
         <KeyboardAvoidingView
@@ -316,6 +315,7 @@ export default class ComposeScreen extends Component {
                 borderWidth: 1
                 // backgroundColor: 'yellow'
               }}
+              disabled={this.state.disabled}
                 onPress={() => { this.postTapped() }}
               >
                 <Text
@@ -343,12 +343,12 @@ export default class ComposeScreen extends Component {
             <View style={{ flexDirection: 'row', margin: 10 }}>
               <View>
                 <Image
-                  source={this.props.data.image ?  {uri : "data:image/png;base64,"+this.props.data.image} : require('../../assets/UserSmall.png')}
+                  source={this.props.data.image ? { uri: "data:image/png;base64," + this.props.data.image } : require('../../assets/UserSmall.png')}
                   style={{ borderRadius: 30, height: 60, width: 60, margin: 10 }}
                 />
               </View>
               <View>
-                <Text style={{ paddingTop: 15, fontSize: 18 }}>{this.props.data.name ?  this.props.data.name : ""}</Text>
+                <Text style={{ paddingTop: 15, fontSize: 18 }}>{this.props.data.name ? this.props.data.name : ""}</Text>
                 <Text style={{ paddingTop: 4, fontSize: 14, fontWeight: '200' }}>
                   {this.props.data.username ? ("@" + this.props.data.username) : ""}
                 </Text>

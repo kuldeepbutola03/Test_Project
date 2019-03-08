@@ -16,13 +16,13 @@ const buttonMod = props => {
   );
   if (Platform.OS === 'android') {
     return (
-      <TouchableNativeFeedback onPress={props.onPress}>
+      <TouchableNativeFeedback onPress={props.onPress} >
         {content}
       </TouchableNativeFeedback>
     );
   }
   return (
-    <TouchableOpacity onPress={props.onPress}>
+    <TouchableOpacity onPress={props.onPress} >
       {content}
     </TouchableOpacity>
   );

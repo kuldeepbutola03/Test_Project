@@ -9,6 +9,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import ImagePicker from 'react-native-image-picker';
+// import ImagePicker from 'react-native-image-crop-picker';
 import DefaultInput from '../../components/UI/DefaultInput/DefaultInput';
 import ButtonMod from '../../components/UI/ButtonMod/ButtonMod';
 import EditButton from '../../components/UI/EditButton/EditButton';
@@ -88,6 +89,8 @@ export default class Profile extends Component {
       if (response.didCancel) {
         console.log('User cancelled image picker');
       } else if (response.error) {
+        alert(JSON.stringify(response.error))
+
         console.log('ImagePicker Error: ', response.error);
       } else if (response.customButton) {
         console.log('User tapped custom button: ', response.customButton);
@@ -102,6 +105,12 @@ export default class Profile extends Component {
         });
       }
     });
+    // ImagePicker.openCamera({
+    //   multiple: true
+    // }).then(image => {
+    //   console.log(image);
+    // });
+    
   };
 
   updateDetails = () => {

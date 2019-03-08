@@ -35,7 +35,7 @@ export default class OtpScreen extends Component {
   state = {
     name: null,
     location: null,
-    checkBocSelected: false,
+    // checkBocSelected: false,
     ...this.props
   }
 
@@ -243,22 +243,22 @@ export default class OtpScreen extends Component {
       });
   };
 
-  showTC() {
-    // if(this.state.)
-    Navigation.push(this.props.componentId, {
-      component: {
-        name: 'TcScreen',
-        // options: {
-        //   topBar: {
-        //     visible: false,
-        //     animate: false,
-        //     drawBehind: true
-        //   }
-        // }
-      },
-    });
+  // showTC() {
+  //   // if(this.state.)
+  //   Navigation.push(this.props.componentId, {
+  //     component: {
+  //       name: 'TcScreen',
+  //       // options: {
+  //       //   topBar: {
+  //       //     visible: false,
+  //       //     animate: false,
+  //       //     drawBehind: true
+  //       //   }
+  //       // }
+  //     },
+  //   });
     
-  }
+  // }
   
 
   textChanged = (sender) => {
@@ -294,7 +294,7 @@ export default class OtpScreen extends Component {
 
 
 
-          <CheckBox style = {{marginTop : 20}}
+          {/* <CheckBox style = {{marginTop : 20}}
             title='Agree to Terms and Conditions'
             checked={this.state.checkBocSelected}
             onPress = {()=> {
@@ -309,7 +309,7 @@ export default class OtpScreen extends Component {
               // },300);
               
             }}
-          />
+          /> */}
           <Loading
             ref="loading" />
         </KeyboardAvoidingView>

@@ -22,6 +22,7 @@ import Carousel, { Pagination } from 'react-native-snap-carousel';
 import _ from 'lodash';
 import { normalize } from '../../../Constant';
 import { sliderWidth, itemWidth } from './SliderEntry.style.js';
+import { withTheme } from 'react-native-elements';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -32,7 +33,7 @@ export default class TutorialScreen extends Component {
 
   state = {
     // trendImages: null,
-    imageList: [require('../../assets/Tutorial/t1.png'), require('../../assets/Tutorial/t2.png'), require('../../assets/Tutorial/t3.png')],
+    imageList: [require('../../assets/Tutorial/t_1.png'), require('../../assets/Tutorial/t_2.png'), require('../../assets/Tutorial/t_3.png')],
     activeSlide: 0,
     // loading: true,
   }
@@ -147,12 +148,14 @@ export default class TutorialScreen extends Component {
     // let data = "trendsImage"+(index+1)+".jpg";
     return (
       <View key={index + "abc"} style={styles.imageContainer}>
-        <Image
-          resizeMode='contain'
-          resizeMethod="scale"
-          style={{ height: SCREEN_HEIGHT * 0.87, width: '100%', marginTop: 0, borderRadius: 0 }}
-          source={item}
-        />
+        {/* <View style={{ width: '100%' , backgroundColor : 'yellow'}}> */}
+          <Image
+            resizeMode='contain'
+            resizeMethod="scale"
+            style={{ height: '100%', width: '100%', marginTop: 0, borderRadius: 0 }}
+            source={item}
+          />
+        {/* </View> */}
       </View>
     );
   }
@@ -161,7 +164,7 @@ export default class TutorialScreen extends Component {
     return (
       <SafeAreaView
         forceInset={{ bottom: 'always' }}
-        style={styles.safeViewContainer} backgroundColor='white'>
+        style={styles.safeViewContainer} backgroundColor={APP_GLOBAL_COLOR}>
 
         {this.renderComponent()}
         <View style={{ flex: 0.1, backgroundColor: APP_GLOBAL_COLOR, justifyContent: 'center', alignItems: 'center' }}>
@@ -184,6 +187,7 @@ const styles = StyleSheet.create({
 
   imageContainer: {
     flex: 1,
+    backgroundColor: 'transparent'
   },
 
   carouselContainer: {

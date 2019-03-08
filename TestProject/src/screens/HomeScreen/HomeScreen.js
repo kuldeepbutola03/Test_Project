@@ -8,8 +8,10 @@ import {
   SafeAreaView,
   BackHandler,
   ScrollView,
-  AsyncStorage, 
-  TouchableOpacity
+  AsyncStorage,
+  TouchableOpacity,
+  Picker,
+  PickerIOS
 } from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
 import ProfileView from '../../components/UI/ProfileView/ProfileView';
@@ -49,6 +51,7 @@ export default class HomeScreen extends Component {
       landingTopSix: null,
       lat_lon: null,
       coordinates: null,
+      language: 'English'
       // loadingFourth
     };
   }
@@ -128,7 +131,7 @@ export default class HomeScreen extends Component {
           },
         },
         passProps: {
-          coordinates : this.state.coordinates,
+          coordinates: this.state.coordinates,
           user_id: this.state.user_id,
           data: this.props.data,
         },
@@ -364,14 +367,14 @@ export default class HomeScreen extends Component {
       userId: this.state.user_id,
       latLngSeparatedByComma: this.state.lat_lon
     })
-    .then(response => {
-      let responseData = response.data;
-      // console.log(responseData)
-      this.setState({ landingTopSix: responseData})
-    })
-    .catch(error => {
-      console.log(error)
-    })
+      .then(response => {
+        let responseData = response.data;
+        // console.log(responseData)
+        this.setState({ landingTopSix: responseData })
+      })
+      .catch(error => {
+        console.log(error)
+      })
   }
 
   showDialog() {
@@ -450,7 +453,7 @@ export default class HomeScreen extends Component {
             onPress={this.toPoliceProfileScreen}
             areaType={null}
           />
-         
+
 
           <ProfileView
             style={{ marginLeft: 0.5, marginRight: 1 }}
@@ -506,11 +509,11 @@ export default class HomeScreen extends Component {
 
   renderSurveyButton = () => {
     const { currLandPageSurvey } = this.state;
-    if(currLandPageSurvey) {
+    if (currLandPageSurvey) {
       let firstKey = Object.keys(currLandPageSurvey)[0];
       // console.log(currLandPageSurvey[firstKey])
       return (
-        <Button 
+        <Button
           title={currLandPageSurvey[firstKey]}
           buttonStyle={{ backgroundColor: '#a01414' }}
           onPress={() => {
@@ -537,7 +540,7 @@ export default class HomeScreen extends Component {
       )
     } else {
       return (
-        <Button 
+        <Button
           title="No Active Survey"
           disabled />
       )
@@ -575,20 +578,20 @@ export default class HomeScreen extends Component {
     const pdmGPR2 = this.state.secondAPIresponse ? this.state.secondAPIresponse.pdmo1OrCndp1ResourceGPR : "25";
     const pdmGPR3 = this.state.secondAPIresponse ? this.state.secondAPIresponse.pdmo2OrCndp2ResourceGPR : "11";
 
-    const resourceGPR_1 = this.state.landingTopSix ?  this.state.landingTopSix.resourceGPR_1 : 40;
-    const resourceGPR_2 = this.state.landingTopSix ?  this.state.landingTopSix.resourceGPR_2 : 20;
-    const resourceGPR_3 = this.state.landingTopSix ?  this.state.landingTopSix.resourceGPR_3 : 10;
-    const resourceGPR_4 = this.state.landingTopSix ?  this.state.landingTopSix.resourceGPR_4 : 30;
-    const resourceGPR_5 = this.state.landingTopSix ?  this.state.landingTopSix.resourceGPR_5 : 55;
-    const resourceGPR_6 = this.state.landingTopSix ?  this.state.landingTopSix.resourceGPR_6 : 70;
-    
+    const resourceGPR_1 = this.state.landingTopSix ? this.state.landingTopSix.resourceGPR_1 : 40;
+    const resourceGPR_2 = this.state.landingTopSix ? this.state.landingTopSix.resourceGPR_2 : 20;
+    const resourceGPR_3 = this.state.landingTopSix ? this.state.landingTopSix.resourceGPR_3 : 10;
+    const resourceGPR_4 = this.state.landingTopSix ? this.state.landingTopSix.resourceGPR_4 : 30;
+    const resourceGPR_5 = this.state.landingTopSix ? this.state.landingTopSix.resourceGPR_5 : 55;
+    const resourceGPR_6 = this.state.landingTopSix ? this.state.landingTopSix.resourceGPR_6 : 70;
+
     const resourceImageData_1 = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceImageData_1 } : null
     const resourceImageData_2 = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceImageData_2 } : null
     const resourceImageData_3 = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceImageData_3 } : null
     const resourceImageData_4 = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceImageData_4 } : null
     const resourceImageData_5 = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceImageData_5 } : null
     const resourceImageData_6 = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceImageData_6 } : null
-    
+
     const resourceCategoryLogoData_1 = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceCategoryLogoData_1 } : null
     const resourceCategoryLogoData_2 = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceCategoryLogoData_2 } : null
     const resourceCategoryLogoData_3 = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceCategoryLogoData_3 } : null
@@ -612,7 +615,7 @@ export default class HomeScreen extends Component {
               borderRadius: normalize(40) / 2,
             }}
             // source={typeof(this.props.data.image) === 'number' ? require('../../assets/UserSmall.png') : this.props.data.image}
-            source={ this.props.data.image ?  {uri : "data:image/png;base64,"+this.props.data.image} : require('../../assets/UserSmall.png')}
+            source={this.props.data.image ? { uri: "data:image/png;base64," + this.props.data.image } : require('../../assets/UserSmall.png')}
           />
 
           <Text
@@ -626,6 +629,20 @@ export default class HomeScreen extends Component {
           >
             {this.props.data.username}
           </Text>
+
+          {/* <View style={{ height: 40, width: 100, position: 'absolute', right: 10 ,top:2}} >
+            <Picker
+              selectedValue={this.state.language}
+              style={{ height: 40, width: 100, position: 'absolute', right: 5 }}
+              itemStyle={{ color: "white" }}
+              onValueChange={(itemValue, itemIndex) =>
+                this.setState({ language: itemValue })
+              }>
+              <Picker.Item label="English" value="English" />
+              <Picker.Item label="Hindi" value="Hindi" />
+            </Picker>
+            
+          </View> */}
         </View>
 
         {/* //Second half */}
@@ -646,30 +663,30 @@ export default class HomeScreen extends Component {
             this.scroll = ref;
           }}
         >
-          {this.state.landingTopSix ? 
+          {this.state.landingTopSix ?
             <View style={{ width: wd, flex: 1, padding: normalize(8) }}>
-              <TopSix 
-                source={[resourceImageData_1, 
-                          resourceImageData_2, 
-                          resourceImageData_3, 
-                          resourceImageData_4, 
-                          resourceImageData_5, 
-                          resourceImageData_6]}
+              <TopSix
+                source={[resourceImageData_1,
+                  resourceImageData_2,
+                  resourceImageData_3,
+                  resourceImageData_4,
+                  resourceImageData_5,
+                  resourceImageData_6]}
 
-                logo={[resourceCategoryLogoData_1, 
-                      resourceCategoryLogoData_2, 
-                      resourceCategoryLogoData_3, 
-                      resourceCategoryLogoData_4, 
-                      resourceCategoryLogoData_5, 
-                      resourceCategoryLogoData_6]}
+                logo={[resourceCategoryLogoData_1,
+                  resourceCategoryLogoData_2,
+                  resourceCategoryLogoData_3,
+                  resourceCategoryLogoData_4,
+                  resourceCategoryLogoData_5,
+                  resourceCategoryLogoData_6]}
 
-                resourceGpr={[ resourceGPR_1, resourceGPR_2, resourceGPR_3, resourceGPR_4, resourceGPR_5, resourceGPR_6, ]}
+                resourceGpr={[resourceGPR_1, resourceGPR_2, resourceGPR_3, resourceGPR_4, resourceGPR_5, resourceGPR_6,]}
                 renderButton={this.renderSurveyButton}
-              /> 
-            </View> : 
-              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: wd }}>
-                <Spinner />
-              </View>
+              />
+            </View> :
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: wd }}>
+              <Spinner />
+            </View>
           }
 
         </ScrollView>

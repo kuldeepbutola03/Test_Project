@@ -22,6 +22,7 @@ import { SEND_OTP, DEBUG } from '../../../Apis';
 import { authHeaders, normalize } from '../../../Constant';
 import Spinner from '../../components/UI/Spinner/Spinner';
 import axios from 'axios';
+import { CheckBox } from 'react-native-elements'
 
 import Geolocation from 'react-native-geolocation-service';
 import { APP_GLOBAL_COLOR } from '../../../Constant';
@@ -33,6 +34,8 @@ export default class MobileNumber extends Component {
   state = {
     loading: false,
     success: false,
+    checkBocSelected: false,
+    // disabled: true
   }
 
   constructor(props) {
@@ -128,7 +131,7 @@ export default class MobileNumber extends Component {
       { title: 'Title3', data: ['item5', 'item6'] },
     ]
 
-    this.setState({ loading: true })
+    
 
     if (DEBUG == 0) {
       Navigation.push(this.props.componentId, {
@@ -143,12 +146,17 @@ export default class MobileNumber extends Component {
       });
       return;
     }
+    if (!this.state.checkBocSelected) {
+      alert('Please agree to Terms and Conditions');
+      return;
+    }
 
     if (!this.phone.isValidNumber()) {
-      this.setState({ loading: false })
+      // this.setState({ loading: false })
       alert('Please enter a valid number');
       return;
     }
+    this.setState({ loading: true })
 
     // var header = new Headers();
 
@@ -184,11 +192,29 @@ export default class MobileNumber extends Component {
           style={{ marginTop: 20 }}
           onPress={this.mobileNumberSubmit}
           color="#a01414"
+          // disabled={this.state.disabled}
         >
           Get OTP
         </ButtonMod>
       )
     }
+  }
+
+  showTC() {
+    // if(this.state.)
+    Navigation.push(this.props.componentId, {
+      component: {
+        name: 'TcScreen',
+        // options: {
+        //   topBar: {
+        //     visible: false,
+        //     animate: false,
+        //     drawBehind: true
+        //   }
+        // }
+      },
+    });
+
   }
 
   render() {
@@ -200,59 +226,67 @@ export default class MobileNumber extends Component {
       <SafeAreaView
         forceInset={{ bottom: 'always' }} style={styles.container}>
         {/* <ScrollView style={{ flex: 1 ,margin : 0, width : '100%' , height : '100%', backgroundColor : 'green' }}> */}
-          <KeyboardAvoidingView
-            style={{
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'center',
-              backgroundColor: 'clear',
-              // margin: 30,
-              width: '100%',
-            }}
-            {...options}
-            enabled
-          >
+        <KeyboardAvoidingView
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: 'clear',
+            // margin: 30,
+            width: '100%',
+          }}
+          {...options}
+          enabled
+        >
 
 
-            
-
-              {/* <View style = {{flex : 1 , margin : 5 , backgroundColor : 'green'}}/>  */}
-              {/* <View style={{ marginBottom: 20 }} alignItems='center' backgroundColor='transparent'> */}
 
 
-             
-              {/* <Text style={{ position: 'absolute', bottom: 10, fontWeight: "600", fontSize: 14, color: "#a01414" }}>AGENCY NAME</Text> */}
+          {/* <View style = {{flex : 1 , margin : 5 , backgroundColor : 'green'}}/>  */}
+          {/* <View style={{ marginBottom: 20 }} alignItems='center' backgroundColor='transparent'> */}
 
 
-            <View style={{ flex: 1 }} justifyContent='center' alignItems='center' backgroundColor='transparent'>
+
+          {/* <Text style={{ position: 'absolute', bottom: 10, fontWeight: "600", fontSize: 14, color: "#a01414" }}>AGENCY NAME</Text> */}
+
+
+          <View style={{ flex: 1 }} justifyContent='center' alignItems='center' backgroundColor='transparent'>
 
             <Image style={{ marginBottom: 10, height: normalize(100), width: normalize(100), resizeMode: 'cover' }} source={require('../../assets/icon1.png')} />
 
-              <View>
-                <HeaderText
-                  style={{
-                    marginBottom: 20,
-                  }}
-                >
-                  Mobile Number Verification
+            <View>
+              <HeaderText
+                style={{
+                  marginBottom: 20,
+                }}
+              >
+                Mobile Number Verification
           </HeaderText>
-              </View>
-
-              <PhoneInput
-                initial
-                ref={(ref) => { this.phone = ref }}
-                style={styles.phoneInput}
-                textProps={{ placeholder: 'Mobile Number', height: 25 }}
-                textStyle={{ borderBottomWidth: 1, borderColor: '#BFBFBF' }}
-              // onChangePhoneNumber={(e) => this.mobileNumberChanged(e)}
-
-              />
-
-              {this.renderButton()}
-
             </View>
 
-          </KeyboardAvoidingView>
+            <PhoneInput
+              initial
+              ref={(ref) => { this.phone = ref }}
+              style={styles.phoneInput}
+              textProps={{ placeholder: 'Mobile Number', height: 25 }}
+              textStyle={{ borderBottomWidth: 1, borderColor: '#BFBFBF' }}
+            // onChangePhoneNumber={(e) => this.mobileNumberChanged(e)}
+            />
+
+            {this.renderButton()}
+
+            <CheckBox containerStyle={{ marginTop: 20 }}
+              title='Agree to Terms and Conditions'
+              checked={this.state.checkBocSelected}
+              onPress={() => {
+                this.showTC();
+              }}
+              onIconPress={() => { this.setState({ checkBocSelected: !this.state.checkBocSelected}) }}
+            />
+          </View>
+
+
+        </KeyboardAvoidingView>
         {/* </ScrollView> */}
       </SafeAreaView>
     );

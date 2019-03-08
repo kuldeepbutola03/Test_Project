@@ -8,7 +8,9 @@ import {
   TouchableWithoutFeedback,
   ActivityIndicator,
   Alert,
-  Image
+  Image,
+  TouchableOpacity,
+
 } from 'react-native';
 import { Avatar, Divider } from 'react-native-elements';
 import CustomButton from '../ButtonMod/CustomButtom';
@@ -41,7 +43,7 @@ class menuButtons extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      starCount: 5,
+      starCount: 0,
       submitted: false,
     };
   }
@@ -204,20 +206,20 @@ class menuButtons extends React.Component {
               <View style={{}}>
                 <Text adjustsFontSizeToFit numberOfLines={1} minimumFontScale={.8} style={cardViewStyle.textView}>{this.props.data.name}</Text>
                 {/* <Text style={cardViewStyle.textView2}>{this.props.data.area === "PDM | null" ? "PDM" : this.props.data.area}</Text> */}
-                <Text style={cardViewStyle.textView2}>{this.props.data.area.includes("null") ? "" : this.props.data.area}</Text>
+                <Text style={cardViewStyle.textView2}>{this.props.data.area.includes("null") ? this.props.data.area.replace("null", "").replace("|", "") : this.props.data.area}</Text>
               </View>
 
               <View style={styles.scoreViewContainer}>
                 <ScoreView
                   style={ratingView.scoreViewStyle}
                   text={[this.props.data.score.gpr.name, this.props.resourceGPR]}
-                  backgroundColor="#279FC4"
+                  backgroundColor="#1d5270"
                   bottomText={false}
                 />
                 <ScoreView
                   style={ratingView.scoreViewStyle}
                   text={[this.props.data.score.agpr.name, this.props.rtnGprI]}
-                  backgroundColor="#FAA21B"
+                  backgroundColor="#cc6633"
                   bottomText={false}
                 />
                 <ScoreView
@@ -226,34 +228,41 @@ class menuButtons extends React.Component {
                     this.props.data.score.extraCount.name,
                     this.props.rtnGprO
                   ]}
-                  backgroundColor="#9D3995"
+                  backgroundColor="#630460"
                   bottomText={false}
                 />
               </View>
 
-              <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-                <Image  source={require("../../../assets/flagIn.png")} resizeMode="cover" style={{height:20,width:25, marginTop:6,}}/>
-                <Text
-                  style={{
+              <View style={{ flexDirection: 'row', justifyContent: 'center' , padding : 5 }}>
 
-                    marginTop: 8,
-                    marginHorizontal: 5,
-                    fontSize: normalize(11.5),
-                    fontWeight: 'bold',
+                <View style={{flexDirection: 'row'  , flex : 1}} backgroundColor="transparent" >
+                  <Image source={require("../../../assets/flagIn.png")} resizeMode="cover" style={{ height: 20, width: 25, marginTop: 6}} />
+                  <Text
+                    style={{
+                      marginTop: 8,
+                      // marginHorizontal: 20,
+                      marginRight: 30,
+                      marginLeft: 5,
+                      fontSize: normalize(11.5),
+                      fontWeight: 'bold',
+                    }}> : {this.props.totalFlagCount}
+                  </Text>
+                </View>
 
-                  }}> : {this.props.totalFlagCount}</Text>
-                  
-                  <View style={{height:1,width:10}} backgroundColor="transparent"/>
+                <View style={{flexDirection: 'row'  , flex : 1 }} backgroundColor="transparent" >
 
-                <Image source={require("../../../assets/earth.png")} resizeMode="contain" style={{height:20,width:25, marginTop: 6,}}/>
-                <Text
-                  style={{
-                    marginTop: 8  ,
-                    marginHorizontal: 5,
-                    fontSize: normalize(11.5),
-                    fontWeight: 'bold',
-                  }}> : {this.props.totalFlagUniqueCount}
-                </Text>
+                  <Image source={require("../../../assets/earth.png")} resizeMode="contain" style={{ height: 20, width: 25, marginTop: 6 }} />
+                  <Text
+                    style={{
+                      marginTop: 8,
+                      // marginHorizontal: 5,
+                      marginRight: 5,
+                      marginLeft: 5,
+                      fontSize: normalize(11.5),
+                      fontWeight: 'bold',
+                    }}> : {this.props.totalFlagUniqueCount}
+                  </Text>
+                </View>
               </View>
             </View>
 
@@ -327,6 +336,12 @@ class menuButtons extends React.Component {
             </View>
           </View>
         </View>
+        {this.props.onPressInfo && <TouchableOpacity style={{ position: 'absolute', right: 0, top: 0, height: 50, width: 50, backgroundColor: 'clear', alignItems: 'center', justifyContent: 'center' }} onPress={this.props.onPressInfo}>
+          <View style={{ alignItems: 'center', justifyContent: 'center', width: 26, height: 26, borderRadius: 13, backgroundColor: APP_GLOBAL_COLOR }}>
+            <Text style={{ fontSize: normalize(12), fontWeight: 'bold', color: 'white' }}>i</Text>
+          </View>
+        </TouchableOpacity>
+        }
       </View>
     );
   }

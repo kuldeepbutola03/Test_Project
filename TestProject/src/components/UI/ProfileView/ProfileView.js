@@ -11,9 +11,22 @@ import {
 import { normalize } from '../../../../Constant';
 import { Card } from 'react-native-elements';
 
+formattedText = (props) => {
+  if (props.infos[1] === null) {
+    return props.areaType;
+  }else if(props.areaType === null){
+    return props.infos[1];
+  }
+  else {
+    let text = props.infos[1] + " | " + props.areaType;
+    return text;
+  }
+}
+
 const profileView = props => {
   // console.log(props)
   let source = props.source;
+
   if (source == null) {
     return (
       <View style={[props.style, styles.container]}>
@@ -22,35 +35,41 @@ const profileView = props => {
     );
   } else {
     return (
-      <TouchableOpacity 
+      <TouchableOpacity
         onPress={props.onPress}
         style={{ flex: 1 }}>
-          <Card
-            containerStyle={{ flex: 1, marginHorizontal: normalize(2), padding: 0, height: '100%' }}
-            wrapperStyle={{ height: '100%'}}
-            >
-              <View style={{ flex: 4 }}>
-                <Image  
-                  source={props.source[0]}
-                  style={{ flex: 1, height: null, width: null }}
-                  resizeMode="stretch"
-                />
-              </View>
-              <View style={{ flex: 1, flexDirection: 'row', paddingHorizontal: normalize(5) }} >
-                <View style={{ flex: 4, justifyContent: 'center' }}>
-                <Text numberOfLines={1} style={{ fontWeight: '700', fontSize: 13, marginBottom: normalize(2) }}> {props.infos[1]} | {props.areaType ? props.areaType : null }  </Text>
-                  <Text> {props.infos[0]} </Text>
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Image  
-                    source={props.source[1]}
-                    style={{ flex: 1, height: null, width: null, marginVertical: normalize(4), marginHorizontal: normalize(3) }}
-                    resizeMode="stretch"
-                  />
-                </View>
-              </View>
-          </Card>
+        <Card
+          containerStyle={{ flex: 1, marginHorizontal: normalize(2), padding: 0, height: '100%' }}
+          wrapperStyle={{ height: '100%' }}
+        >
+          <View style={{ flex: 4 }}>
+            <Image
+              source={props.source[0]}
+              style={{ flex: 1, height: null, width: null }}
+              resizeMode="stretch"
+            />
+            <Image
+                source={props.source[1]}
+                style={{ position:'absolute', height: 30, width: 30,right:2,}}
+                resizeMode="stretch"
+              />
+          </View>
+          <View style={{ flex: 1, flexDirection: 'row', paddingHorizontal: normalize(5) }} >
+            <View style={{ flex: 4, justifyContent: 'center' }}>
+              <Text style={{ fontWeight: '700', fontSize: 13, marginBottom: normalize(2),textAlign:'left' }}>{this.formattedText(props)}</Text>
+              <Text style={{marginBottom:4}}>{props.infos[0]}</Text>
+            </View>
+            {/* <View style={{ flex: 1 }}> */}
+              {/* <Image
+                source={props.source[1]}
+                style={{ flex: 1, height: null, width: null, marginVertical: normalize(4), marginHorizontal: normalize(3) }}
+                resizeMode="stretch"
+              /> */}
+            {/* </View> */}
+          </View>
+        </Card>
       </TouchableOpacity>
+      
       // <TouchableOpacity
       //   style={[props.style, styles.container]}
       //   onPress={props.onPress}

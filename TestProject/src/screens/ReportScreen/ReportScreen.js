@@ -53,7 +53,7 @@ export default class ReportScreen extends Component {
     // weakRef = this;
 
     this._onRefresh();
-
+    // alert("It really did !!")
     // this.shareCard.props.getShareOption(shareOptions);
   }
 
@@ -301,6 +301,7 @@ export default class ReportScreen extends Component {
           data: data,
           user_id: this.props.user_id,
           coordinates : this.props.coordinates,
+          data2 : this.props.data
         },
         options: {
           topBar: {
@@ -311,17 +312,22 @@ export default class ReportScreen extends Component {
         }
       }
     });
+
+    
   }
 
   homeButtonTapped = () => {
     Navigation.pop(this.props.componentId);
   };
+
   likeButtonTapped = (data) => {
     this.requestForLikeDislike(data, 1);
   }
+
   disLikeButtonTapped = (data) => {
     this.requestForLikeDislike(data, -1);
   }
+
   moreButtonTapped = (data) => {
     // alert(data);
     dataTappedForMore = data;
@@ -340,8 +346,8 @@ export default class ReportScreen extends Component {
     } else {
       this.showActionSheetForIOS();
     }
-
   }
+
   onCancel() {
     console.log("CANCEL")
     this.setState({ visible: false });
@@ -354,10 +360,7 @@ export default class ReportScreen extends Component {
     // } else {
       this.requestForReport(data);
     // }
-
   }
-
-
 
   showActionSheetForIOS() {
 
@@ -371,6 +374,7 @@ export default class ReportScreen extends Component {
       'Report',
       'Cancel',
     ];
+
     ActionSheetIOS.showActionSheetWithOptions({
       options: BUTTONS,
       cancelButtonIndex: 7,
@@ -436,13 +440,9 @@ export default class ReportScreen extends Component {
             break
           case 7:
             console.log("Option 7");
-
             break
-
         }
-
       });
-
   }
 
   render() {

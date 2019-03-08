@@ -213,7 +213,7 @@ class TrendScreen extends Component {
                     flexDirection: 'row',
                     flex: 1,
                   }}
-                  source={require ('../../assets/home.png')}
+                  source={require ('../../assets/homez.png')}
                   onPress={this.homeButtonTapped}
                 />
               </View>
