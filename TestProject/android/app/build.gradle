@@ -155,6 +155,7 @@ configurations.all {
 }
 
 dependencies {
+    compile project(':react-native-image-crop-picker')
     
     compile project(':react-native-fs')
     compile project(':react-native-image-base64')

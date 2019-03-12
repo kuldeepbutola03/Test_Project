@@ -21,9 +21,10 @@ class TopSix extends Component {
 
                         <Badge
                             status="success"
-                            badgeStyle={{ height: normalize(27), width: normalize(27), borderRadius: normalize(27) }}
+                            badgeStyle={{ height: normalize(27), width: normalize(27), borderRadius: normalize(27/2) }}
                             containerStyle={{ position: 'absolute', top: 1, right: -20 }}
                             value={resourceGpr[0] ? resourceGpr[0].toFixed(1) : null}
+                            textStyle = {{fontSize : 11}}
                         />
 
                         <Avatar
@@ -51,9 +52,10 @@ class TopSix extends Component {
 
                         <Badge
                             status="success"
-                            badgeStyle={{ height: normalize(27), width: normalize(27), borderRadius: normalize(27) }}
+                            badgeStyle={{ height: normalize(27), width: normalize(27), borderRadius: normalize(27/2) }}
                             containerStyle={{ position: 'absolute', top: 1, right: -20 }}
                             value={resourceGpr[1]? resourceGpr[1].toFixed(1) : null}
+                            textStyle = {{fontSize : 11}}
                         />
 
                         <Avatar
@@ -80,9 +82,10 @@ class TopSix extends Component {
 
                         <Badge
                             status="success"
-                            badgeStyle={{ height: normalize(27), width: normalize(27), borderRadius: normalize(27) }}
+                            badgeStyle={{ height: normalize(27), width: normalize(27), borderRadius: normalize(27/2) }}
                             containerStyle={{ position: 'absolute', top: 1, right: -20 }}
                             value={resourceGpr[2]? resourceGpr[2].toFixed(1) : null}
+                            textStyle = {{fontSize : 11}}
                         />
 
                         <Avatar
@@ -117,6 +120,7 @@ class TopSix extends Component {
                             badgeStyle={{ height: normalize(27), width: normalize(27), borderRadius: normalize(27/2) }}
                             containerStyle={{ position: 'absolute', top: 1, right: -20 }}
                             value={resourceGpr[3]? resourceGpr[3].toFixed(1) : null}
+                            textStyle = {{fontSize : 11}}
                         />
 
                         <Avatar
@@ -147,6 +151,8 @@ class TopSix extends Component {
                             badgeStyle={{ height: normalize(27), width: normalize(27), borderRadius: normalize(27) }}
                             containerStyle={{ position: 'absolute', top: 1, right: -20 }}
                             value={resourceGpr[4]? resourceGpr[4].toFixed(1) : null}
+                            textStyle = {{fontSize : 11}}
+                            
                         />
 
                         <Avatar
@@ -160,6 +166,7 @@ class TopSix extends Component {
                             imageProps={{ resizeMode: 'contain' }}
                             containerStyle={{ position: 'absolute', bottom: 1, left: -20 }}
                             avatarStyle={{ }}
+                            
                         />
                     </View>
                     <View>
@@ -177,6 +184,7 @@ class TopSix extends Component {
                             badgeStyle={{ height: normalize(27), width: normalize(27), borderRadius: normalize(27) }}
                             containerStyle={{ position: 'absolute', top: 1, right: -20 }}
                             value={resourceGpr[5]? resourceGpr[5].toFixed(1) : null}
+                            textStyle = {{fontSize : 11}}
                         />
 
                         <Avatar

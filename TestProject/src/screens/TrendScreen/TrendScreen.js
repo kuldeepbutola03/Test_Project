@@ -22,6 +22,8 @@ import _ from 'lodash';
 import { normalize } from '../../../Constant';
 import { sliderWidth, itemWidth } from './SliderEntry.style.js';
 
+import Permissions from 'react-native-permissions';
+
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
@@ -40,7 +42,8 @@ class TrendScreen extends Component {
     // this.getDataFromServer(true)
     getUserID().then((userId) => {
       this.user_Id = userId;
-      this.getLocation()
+      // this.getLocation()
+      this.getDataFromServer(true);
     })
   }
 
@@ -71,6 +74,29 @@ class TrendScreen extends Component {
     });
   };
 
+  requestCheckPremission = () => {
+    Permissions.check('location').then(response => {
+      if (response === 'denied' || response === 'undetermined') {
+        this._requestPermission();
+      } else if (response === 'authorized') {
+        this.getLocation();
+      }
+    })
+  }
+
+  _requestPermission = () => {
+    Permissions.request('location').then(response => {
+      this.setState({ location: response })
+      // alert(response);
+      // this.getLocation()
+      if (response === 'denied' || response === 'undetermined') {
+        this.getDataFromServer(true);
+      }else{
+        this.getLocation();
+      }
+    })
+  }
+
   getLocation() {
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -87,12 +113,12 @@ class TrendScreen extends Component {
 
         this.locationLatLong = latlong;
         this.getDataFromServer(true)
-        },
-        (error) => {
-          // alert(error.message)
-          this.getDataFromServer(true)
-        },
-        { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+      },
+      (error) => {
+        // alert(error.message)
+        this.getDataFromServer(true)
+      },
+      { enableHighAccuracy: false, timeout: 20000, maximumAge: 1000 }
     );
   }
 
@@ -100,22 +126,24 @@ class TrendScreen extends Component {
     axios.post(TREND_IMAGE, {
       userId: this.user_Id
     })
-    .then(response => {
-      let responseData = response.data;
-    
-      this.setState({ trendImages: responseData });
+      .then(response => {
 
-      let mappedState = _.map(this.state.trendImages.imagesMap, (val, index) => {
-        return {[index] :  val} 
+        // alert(JSON.stringify(response));
+        let responseData = response.data;
+
+        this.setState({ trendImages: responseData });
+
+        let mappedState = _.map(this.state.trendImages.imagesMap, (val, index) => {
+          return { [index]: val }
+        })
+
+        this.setState({ imageList: mappedState, loading: false })
+
       })
-
-      this.setState({ imageList: mappedState, loading: false })
-
-    })
-    .catch(error => {
-      console.log(error)
-      this.setState({ loading: false })
-    })
+      .catch(error => {
+        console.log(error)
+        this.setState({ loading: false })
+      })
   }
 
   homeButtonTapped = () => {
@@ -131,119 +159,119 @@ class TrendScreen extends Component {
           <Spinner />
         </View>
       )
-    } else if(!loading) {
+    } else if (!loading) {
       return (
         <View style={styles.carouselContainer}>
-            <Carousel
-              layout={'default'} layoutCardOffset={18}
-              ref={(c) => { this._carousel = c; }}
-              data={this.state.imageList}
-              renderItem={this._renderItem}
-              sliderWidth={sliderWidth}
-              itemWidth={itemWidth}
-              shouldOptimizeUpdates
-              onSnapToItem={(index) => this.setState({ activeSlide: index }) }
-            />
-            { this.pagination }
+          <Carousel
+            layout={'default'} layoutCardOffset={18}
+            ref={(c) => { this._carousel = c; }}
+            data={this.state.imageList}
+            renderItem={this._renderItem}
+            sliderWidth={sliderWidth}
+            itemWidth={itemWidth}
+            shouldOptimizeUpdates
+            onSnapToItem={(index) => this.setState({ activeSlide: index })}
+          />
+          {this.pagination}
         </View>
       )
     }
   }
 
-  get pagination () {
+  get pagination() {
     const { activeSlide, imageList } = this.state;
     return (
-        <Pagination
-          dotsLength={imageList.length}
-          activeDotIndex={activeSlide}
-          containerStyle={{ 
-            backgroundColor: APP_GLOBAL_COLOR,
-            // backgroundColor: 'rgba(0, 0, 0, 0.75)',
-            width: SCREEN_WIDTH, 
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-around'
-         }}
-          dotStyle={{
-              width: 10,
-              height: 10,
-              borderRadius: 5,
-              backgroundColor: 'rgba(255, 255, 255, 0.92)'
-          }}
-          inactiveDotStyle={{
-              // Define styles for inactive dots here
-          }}
-          inactiveDotOpacity={0.4}
-          inactiveDotScale={0.6}
-        />
+      <Pagination
+        dotsLength={imageList.length}
+        activeDotIndex={activeSlide}
+        containerStyle={{
+          backgroundColor: APP_GLOBAL_COLOR,
+          // backgroundColor: 'rgba(0, 0, 0, 0.75)',
+          width: SCREEN_WIDTH,
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'space-around'
+        }}
+        dotStyle={{
+          width: 10,
+          height: 10,
+          borderRadius: 5,
+          backgroundColor: 'rgba(255, 255, 255, 0.92)'
+        }}
+        inactiveDotStyle={{
+          // Define styles for inactive dots here
+        }}
+        inactiveDotOpacity={0.4}
+        inactiveDotScale={0.6}
+      />
     );
   }
 
-  _renderItem ({item, index}) {
-    let data = "trendsImage"+(index+1)+".jpg";
+  _renderItem({ item, index }) {
+    let data = "trendsImage" + (index + 1) + ".jpg";
     return (
       <View key={index + "abc"} style={styles.imageContainer}>
-        { data === null ?
+        {data === null ?
           <Image
             resizeMode="stretch"
             resizeMethod="scale"
-            style={{ height: SCREEN_HEIGHT/1.5, width: '100%', marginTop: normalize(30), borderRadius: 10 }}
-            source={ require('../../assets/info.jpg')} 
-          /> : 
-          <Image 
+            style={{ height: SCREEN_HEIGHT / 1.5, width: '100%', marginTop: normalize(30), borderRadius: 10 }}
+            source={require('../../assets/info.jpg')}
+          /> :
+          <Image
             resizeMode="stretch"
             resizeMethod="scale"
-            style={{ height: SCREEN_HEIGHT/1.5, width: '100%', marginTop: normalize(30), borderRadius: 10 }}
-            source={{ uri: `data:image/jpg;base64,${item[data]}`}}
+            style={{ height: SCREEN_HEIGHT / 1.5, width: '100%', marginTop: normalize(30), borderRadius: 10 }}
+            source={{ uri: `data:image/jpg;base64,${item[data]}` }}
           />
         }
       </View>
     );
-}
+  }
 
   render() {
     return (
       <SafeAreaView
         forceInset={{ bottom: 'always' }}
         style={styles.safeViewContainer}>
-            <View style={{ flex: 1, flexDirection: 'row' }}> 
-              <View style={{flex: 1, backgroundColor: APP_GLOBAL_COLOR}}>
-                <CustomButton
-                  style={{
-                    flexDirection: 'row',
-                    flex: 1,
-                  }}
-                  source={require ('../../assets/homez.png')}
-                  onPress={this.homeButtonTapped}
-                />
-              </View>
-              <View style={{ flex: 5, backgroundColor:'rgba(255,255,255,1)', flexDirection: 'row', alignItems: 'center' }}>
-                <Image
-                  style={{
-                    backgroundColor: APP_GLOBAL_COLOR,
-                    marginLeft: normalize(10),
-                    width: normalize(30),
-                    height: normalize(30),
-                    marginTop: normalize(5),
-                    marginBottom: normalize(5),
-                    borderRadius: normalize(30) / 2,
-                  }}
-                  source={this.props.image ? {uri : "data:image/png;base64,"+this.props.image} : require('../../assets/UserSmall.png')}
-                />
+        <View style={{ flex: 1, flexDirection: 'row' }}>
+          <View style={{ flex: 1, backgroundColor: APP_GLOBAL_COLOR }}>
+            <CustomButton
+              style={{
+                flexDirection: 'row',
+                flex: 1,
+              }}
+              source={require('../../assets/homez.png')}
+              onPress={this.homeButtonTapped}
+            />
+          </View>
+          <View style={{ flex: 5, backgroundColor: 'rgba(255,255,255,1)', flexDirection: 'row', alignItems: 'center' }}>
+            <Image
+              style={{
+                backgroundColor: APP_GLOBAL_COLOR,
+                marginLeft: normalize(10),
+                width: normalize(30),
+                height: normalize(30),
+                marginTop: normalize(5),
+                marginBottom: normalize(5),
+                borderRadius: normalize(30) / 2,
+              }}
+              source={this.props.image ? { uri: "data:image/png;base64," + this.props.image } : require('../../assets/UserSmall.png')}
+            />
 
-                <Text
-                  style={{
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    marginLeft: 5,
-                    fontSize: normalize(14),
-                    color: '#000',
-                  }}>
-                  {this.props.username}
-                </Text>
-              </View>
-            </View>
-          {this.renderComponent()}
+            <Text
+              style={{
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginLeft: 5,
+                fontSize: normalize(14),
+                color: '#000',
+              }}>
+              {this.props.username}
+            </Text>
+          </View>
+        </View>
+        {this.renderComponent()}
       </SafeAreaView>
     )
   }
@@ -251,16 +279,16 @@ class TrendScreen extends Component {
 
 const styles = StyleSheet.create({
   safeViewContainer: {
-    flex: 1, 
-    backgroundColor: 'rgba(210,210,208,1)' 
+    flex: 1,
+    backgroundColor: 'rgba(210,210,208,1)'
   },
 
   imageContainer: {
-    flex: 1, 
+    flex: 1,
   },
 
   carouselContainer: {
-    flex: 12, 
+    flex: 12,
     margin: 0,
   }
 

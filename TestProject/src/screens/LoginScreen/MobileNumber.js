@@ -35,6 +35,7 @@ export default class MobileNumber extends Component {
     loading: false,
     success: false,
     checkBocSelected: false,
+
     // disabled: true
   }
 

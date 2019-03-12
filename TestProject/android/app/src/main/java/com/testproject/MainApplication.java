@@ -7,6 +7,7 @@ import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 
 import com.facebook.react.ReactApplication;
+import com.reactnative.ivpusic.imagepicker.PickerPackage;
 // import com.yonahforst.rnpermissions.RNPermissionsPackage;
 import com.rnfs.RNFSPackage;
 import fr.snapp.imagebase64.RNImgToBase64Package;
@@ -73,7 +74,8 @@ public class MainApplication extends NavigationApplication implements ShareAppli
             new FastImageViewPackage(),
             new RNFusedLocationPackage(),
             new RNImgToBase64Package(),
-            new RNSharePackage()
+            new RNSharePackage(),
+            new PickerPackage()
 
         );
     }

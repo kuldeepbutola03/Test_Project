@@ -7,6 +7,9 @@ import {
   Dimensions,
   Platform,
   SafeAreaView,
+  TouchableOpacity,
+  ScrollView,
+  Keyboard
 } from 'react-native';
 import ImagePicker from 'react-native-image-picker';
 // import ImagePicker from 'react-native-image-crop-picker';
@@ -17,7 +20,7 @@ import { Navigation } from 'react-native-navigation';
 import { PropTypes } from 'prop-types';
 import { saveUserData, defaultUser, authHeaders, getUserID } from '../../../Constant';
 import { UPDATE_USER } from '../../../Apis';
-
+import Share, { ShareSheet, Button } from 'react-native-share';
 
 
 export default class Profile extends Component {
@@ -27,26 +30,32 @@ export default class Profile extends Component {
   };
 
   constructor(props) {
-    super(props)
+    super(props);
 
-    
+    // alert(this.props.userId);
     this.state = {
-      image: this.props.image ? this.props.image : defaultUser,
+      image: this.props.image,
       name: this.props.name ? this.props.name : "",
       email: this.props.email ? this.props.email : "",
-      username: this.props.username,
+      username: this.props.username ? this.props.username : "",
+      selectedAgeGroupCode: this.props.selectedAgeGroupCode ? this.props.selectedAgeGroupCode : "",
+      gender: this.props.gender ? this.props.gender : "",
       userId: this.props.userId,
-      editable:true
+      description: this.props.description ? this.props.description : "",
+      editable: !(this.props.username && this.props.username.length > 0),
+      visible: false,
+      visibleGender: false
     }
   }
 
-  componentDidMount(){
+  componentDidMount() {
     // alert(this.props.username);
-    if(this.props.username && this.props.username.length > 0){
-      this.setState({
-        editable:false
-      });
-    }
+
+    // if (this.props.username && this.props.username.length > 0) {
+    //   this.setState({
+    //     editable: false
+    //   });
+    // }
 
 
     // getUserID((user_id) => {
@@ -83,7 +92,8 @@ export default class Profile extends Component {
    * The second arg is the callback which sends object: response (more info in the API Reference)
    */
   imagePicker = () => {
-    ImagePicker.showImagePicker({ title: 'Select an Image',quality:0.3,allowsEditing:false }, response => {
+
+    ImagePicker.showImagePicker({ title: 'Select an Image', quality: 0.3, allowsEditing: false }, response => {
       console.log('Response = ', response);
 
       if (response.didCancel) {
@@ -100,6 +110,7 @@ export default class Profile extends Component {
         // You can also display the image using data:
         // const source = { uri: 'data:image/jpeg;base64,' + response.data };
         // console.log(source)
+
         this.setState({
           image: source,
         });
@@ -110,89 +121,258 @@ export default class Profile extends Component {
     // }).then(image => {
     //   console.log(image);
     // });
-    
+
   };
 
   updateDetails = () => {
 
     let imgName = "IMG" + (+new Date());
 
-    let body = JSON.stringify({
-      userId: this.state.userId,
-      userName: this.state.username,
-      userImageData: this.state.image,
-      userImageName: imgName,
-      userFirstName: this.state.name
-    });
+    if (!this.state.editable) {
 
-    fetch(UPDATE_USER, {
-      method: 'POST',
-      headers: authHeaders(),
-      body: body,
-    }).then((response) => response.json())
-      .then((responseJson) => {
-        console.log(responseJson);
-        saveUserData(this.state);
-
-        Navigation.push(this.props.componentId, {
-          component: {
-            name: 'HomeScreen',
-            passProps: {
-              data: this.state
-            },
-            options: {
-              topBar: {
-                visible: false,
-                drawBehind: true,
-                animate: false,
-              },
-              popGesture: false
-            },
-            sideMenu: {
-              enabled: false,
-              visible: false
-            }
-          }
-        });
-      })
-      .catch((error) => {
-        console.error(error);
-        // alert("Some Error Occured !");
+      let body = JSON.stringify({
+        userId: this.state.userId,
+        userImageData: this.state.image,
+        userImageName: imgName,
+        userFirstName: this.state.name,
+        // userGender: this.state.gender,
+        // userAgeGroup: this.state.ageGroup,
+        // userDesciption: this.state.description
       });
+      // alert(body);
+      fetch(UPDATE_USER, {
+        method: 'POST',
+        headers: authHeaders(),
+        body: body,
+      }).then((response) => response.json())
+        .then((responseJson) => {
+          // console.log(responseJson);
+          // alert(JSON.stringify(responseJson));
+          saveUserData(this.state);
+
+          Navigation.push(this.props.componentId, {
+            component: {
+              name: 'HomeScreen',
+              passProps: {
+                data: this.state
+              },
+              options: {
+                topBar: {
+                  visible: false,
+                  drawBehind: true,
+                  animate: false,
+                },
+                popGesture: false
+              },
+              sideMenu: {
+                enabled: false,
+                visible: false
+              }
+            }
+          });
+        })
+        .catch((error) => {
+          console.error(error);
+          // alert("Some Error Occured !");
+        });
+    } else {
+
+      let body = JSON.stringify({
+        userId: this.state.userId,
+        userName: this.state.username,
+        userImageData: this.state.image,
+        userImageName: imgName,
+        userFirstName: this.state.name,
+        // userGender: this.state.gender,
+        // userAgeGroup: this.state.ageGroup,
+        // userDesciption: this.state.description
+      });
+
+      // alert(body);
+      fetch(UPDATE_USER, {
+        method: 'POST',
+        headers: authHeaders(),
+        body: body,
+      }).then((response) => response.json())
+        .then((responseJson) => {
+          // console.log(responseJson);
+          // alert(JSON.stringify(responseJson));
+          saveUserData(this.state);
+
+          Navigation.push(this.props.componentId, {
+            component: {
+              name: 'HomeScreen',
+              passProps: {
+                data: this.state
+              },
+              options: {
+                topBar: {
+                  visible: false,
+                  drawBehind: true,
+                  animate: false,
+                },
+                popGesture: false
+              },
+              sideMenu: {
+                enabled: false,
+                visible: false
+              }
+            }
+          });
+        })
+        .catch((error) => {
+          console.error(error);
+          // alert("Some Error Occured !");
+        });
+    }
   }
 
+  onCancel() {
+    // console.log("CANCEL")
+    this.setState({ visible: false });
+  }
+
+  onCancelGender() {
+    this.setState({ visibleGender: false })
+  }
+
+  scroller = () => {
+    // this.scroll.scrollToEnd({animated:true});
+  }
+
+  getAgeGroup = () => {
+    switch(this.state.selectedAgeGroupCode){
+      case ">60" : return 'Above 60';
+      break;
+      case "51-60" : return '51 to 60';
+      break;
+      case "41-50" : return '41 to 50';
+      break;
+      case "31-40" : return '31 to 40';
+      break;
+      case "21-30" : return '21 to 30';
+      break;
+      case "<20" : return 'Teenager';
+      break;
+      default: return "";
+    }
+  }
+
+
   render() {
+
     var { height, width } = Dimensions.get('window');
+
     const options = {
       behavior: Platform.OS === 'ios' ? 'padding' : 'null',
     };
 
+    const BUTTONS = [
+      { ageGroup: 'Above 60', ageGroupCode: '>60' },
+      { ageGroup: '51 to 60', ageGroupCode: '51-60' },
+      { ageGroup: '41 to 50', ageGroupCode: '41-50' },
+      { ageGroup: '31 to 40', ageGroupCode: '31-40' },
+      { ageGroup: '21 to 30', ageGroupCode: '21-30' },
+      { ageGroup: 'Teenager', ageGroupCode: '<20' },
+    ];
+
+    const G_BUTTONS = [
+      "Male", "Female"
+    ];
+
     return (
-      <SafeAreaView forceInset={{ bottom: 'always' }} style={{ flex: 1 , backgroundColor : "white"}} >
-        <KeyboardAvoidingView
-          style={{
-            // flex: 1,
+      <SafeAreaView forceInset={{ bottom: 'always' }} style={{ flex: 1, backgroundColor: "white" }}>
+        <ScrollView
+          contentContainerStyle={{
             justifyContent: 'center',
             alignItems: 'center',
             backgroundColor: 'clear',
             width: width,
           }}
-          behavior="padding"
-          enabled
+          ref={ref => this.scroll = ref}
+          // onContentSizeChange={this.scroller}  
+          bounces={false}
+          showsVerticalScrollIndicator={false}
         >
-          <View style={{ marginTop: 10 }}>
-            <Image source={{ uri: "data:image/png;base64," + this.state.image }} style={styles.uploadAvatar} />
-            <EditButton onPress={this.imagePicker} />
-          </View>
+          <KeyboardAvoidingView
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+              backgroundColor: 'clear',
+              width: width,
+              height: height
+            }}
+            {...options}
+            enabled
+          >
 
-          <DefaultInput placeholder="Handle" value={this.state.username} editable={this.state.editable} onChangeText={(text) => this.setState({ username: text })} />
-          <DefaultInput placeholder="Name" value={this.state.name} onChangeText={(text) => this.setState({ name: text })} />
+            <View style={{ marginTop: 10 }}>
+              <Image source={{ uri: "data:image/png;base64," + (this.state.image ? this.state.image : defaultUser) }} style={styles.uploadAvatar} />
+              <EditButton onPress={this.imagePicker} />
+            </View>
 
-          <ButtonMod onPress={this.toHomeScreen} color="#a01414">
-            Submit
+            <DefaultInput placeholder="Username" value={this.state.username} editable={this.state.editable} onChangeText={(text) => this.setState({ username: text })} />
+            <DefaultInput placeholder="Name" value={this.state.name} onChangeText={(text) => this.setState({ name: text })} />
+
+            <TouchableOpacity onPress={() => this.setState({ visibleGender: true })} style={{ width: '65%' }} >
+              <View pointerEvents='none'>
+                <DefaultInput style={{ width: '100%' }} placeholder="Gender" value={this.state.gender} editable={false} />
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => this.setState({ visible: true })} style={{ width: '65%' }} >
+              <View pointerEvents='none'>
+                <DefaultInput style={{ width: '100%' }} placeholder="Age group" value = {this.getAgeGroup()} editable={false} />
+              </View>
+            </TouchableOpacity>
+
+            <DefaultInput style={{ height: 100 }} placeholder="About me" multiline value={this.state.description} onChangeText={(text) => this.setState({ description: text })} />
+
+            <ButtonMod onPress={this.toHomeScreen} color="#a01414">
+              Submit
           </ButtonMod>
-          <View style={{ height: 100 }} />
-        </KeyboardAvoidingView>
+            <View style={{ height: 100 }} />
+
+          </KeyboardAvoidingView>
+        </ScrollView>
+
+        <ShareSheet visible={this.state.visible} onCancel={() => { this.onCancel() }} >
+
+          <Button>Select Your Age Group</Button>
+
+          {BUTTONS.map((item) => {
+            return (
+              <Button
+                onPress={() => {
+                  this.onCancel()
+                  setTimeout(() => {
+                    this.setState({  selectedAgeGroupCode : item.ageGroupCode })
+                  }, 300);
+                }}>{item.ageGroup}</Button>
+            )
+          })}
+
+        </ShareSheet>
+
+        <ShareSheet visible={this.state.visibleGender} onCancel={() => this.onCancelGender()} >
+
+          <Button>Select Your Gender</Button>
+
+          {G_BUTTONS.map((item) => {
+            return (
+              <Button
+                onPress={() => {
+                  this.onCancelGender()
+                  setTimeout(() => {
+                    this.setState({ gender: item })
+                  }, 300);
+                }}>{item}</Button>
+            )
+          })}
+
+        </ShareSheet>
+
       </SafeAreaView>
     );
   }

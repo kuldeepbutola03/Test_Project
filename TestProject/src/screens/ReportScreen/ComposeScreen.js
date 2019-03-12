@@ -28,7 +28,7 @@ export default class ComposeScreen extends Component {
       height: null,
       width: null
     },
-    disabled : false
+    disabled: false
     // isVideo: false
   };
 
@@ -41,30 +41,39 @@ export default class ComposeScreen extends Component {
   };
 
   openCamera = () => {
+
+    // alert('asdsad');
+
     ImagePicker.openCamera({
       mediaType: 'photo',
-      includeBase64: true
+      includeBase64: true,
+      maxFiles: 1
     }).then(response => {
-      let media = this.state.selected;
+      // alert(JSON.stringify(response));
+      let media = [];// this.state.selected;
 
-      for (i = 0; i < response.length; i++) {
-        media.push({ uri: "data:image/png;base64," + response[i].data });
+      // for (i = 0; i < response.length; i++) {
+      if (response.data) {
+        // alert(response.data);
+        // media.push({ uri: "data:image/png;base64," + response.data });
+        media.push({ uri: response.data });
       }
 
       this.setState({
         selected: media,
       });
     });
-  };
+  }; npm
 
   openImageGallery = () => {
     ImagePicker.openPicker({
       multiple: true,
       mediaType: 'photo',
-      includeBase64: true
+      includeBase64: true,
+      maxFiles: 1
     }).then(response => {
       console.log(response);
-      let media = this.state.selected;
+      let media = [];// this.state.selected;
 
       for (i = 0; i < 1; i++) {                //------------------ i < response.length ------------------
         media.push({ uri: response[i].data });
@@ -101,7 +110,7 @@ export default class ComposeScreen extends Component {
 
     if (this.state.selected.length > 0) {
 
-      this.setState({disabled:true});
+      this.setState({ disabled: true });
 
       const dateTime = new Date();
       const timestamp = Math.floor(dateTime / 1000) + 'IMG_0001.jpg';
@@ -202,7 +211,7 @@ export default class ComposeScreen extends Component {
 
     } else if (this.state.text.length > 0) {
 
-      this.setState({disabled:true});
+      this.setState({ disabled: true });
 
       getUserID().then((userId) => {
 
@@ -274,7 +283,7 @@ export default class ComposeScreen extends Component {
           // onError={() => {this.setState({isVideo : true})}}
           />
           <Remove
-            style={{ position: 'absolute', top: 5, right: 5 }}
+            style={{ position: 'absolute', top: 5, right: 5  , height : 50 , width : 50}}
             onPress={() => this.removeMedia(index)}
           />
         </View>
@@ -315,7 +324,7 @@ export default class ComposeScreen extends Component {
                 borderWidth: 1
                 // backgroundColor: 'yellow'
               }}
-              disabled={this.state.disabled}
+                disabled={this.state.disabled}
                 onPress={() => { this.postTapped() }}
               >
                 <Text

@@ -64,7 +64,7 @@ export default class OtpScreen extends Component {
             this.mobileNumberSubmit(null , this);
             console.log(error.code, error.message);
         },
-        { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+        { enableHighAccuracy: false, timeout: 15000, maximumAge: 10000 }
     );
   }
 

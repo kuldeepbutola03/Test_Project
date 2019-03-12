@@ -130,6 +130,6 @@ export const getCurrentLocation = (data) => {
         // alert(locationErrorMessage)
         // this.showDialog();
     },
-    { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+    { enableHighAccuracy: false, timeout: 20000, maximumAge: 1000 }
 );
 }

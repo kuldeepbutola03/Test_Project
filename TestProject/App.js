@@ -66,7 +66,7 @@ Navigation.events ().registerAppLaunchedListener (() => {
 //     root: {
 //       stack: {
 //         children: [
-//           {
+//           {x1
 //             component: {
 //               id: "Test", // Optional, Auto generated if empty
 //               name: "Test",
@@ -142,6 +142,20 @@ getUserData().then((data) => {
                         }
                       }
                     },
+                    passProps: {
+                      // email: null,
+
+                      // name: thisObject.props.name,
+                      // image: thisObject.props.image,
+                      // username: username,
+                      // mobileNumber: thisObject.props.mobileNumber,
+                      // code: thisObject.props.code,
+                      userId: data.userId,
+
+                      // selectedAgeGroupCode: thisObject.selectedAgeGroupCode,
+                      // description: thisObject.description,
+                      // gender: thisObject.gender
+                  },
                     // component: {
                     //   id: "MobileNumber", // Optional, Auto generated if empty
                     //   name: "MobileNumber",

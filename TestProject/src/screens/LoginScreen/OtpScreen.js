@@ -52,15 +52,20 @@ export default class OtpScreen extends Component {
   _requestPermission = () => {
     Permissions.request('location').then(response => {
       this.setState({ location: response })
+      // alert(response);
       // this.getLocation()
     })
   }
 
-  
+
 
   getLocation = () => {
     this.refs.loading.show();
 
+    if (this.state.location === 'denied' || this.state.location === 'undetermined') {
+      this.mobileNumberSubmit(null, this);
+      return;
+    }
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const initialPosition = JSON.stringify(position);
@@ -89,7 +94,7 @@ export default class OtpScreen extends Component {
 
 
       },
-      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+      { enableHighAccuracy: false, timeout: 20000, maximumAge: 1000 }
     );
 
     // Geolocation.getCurrentPosition(
@@ -173,12 +178,12 @@ export default class OtpScreen extends Component {
         setTimeout(function () {
           if (responseData) {
             if (responseData.userId) {
-              saveUserID(responseData.userId);
-              saveUserData(data);
+
 
 
               if (location) {
-
+                saveUserID(responseData.userId);
+                saveUserData(data);
                 Navigation.push(thisObj.props.componentId, {
                   component: {
                     id: 'Profile',
@@ -190,7 +195,11 @@ export default class OtpScreen extends Component {
                       username: responseData.userName,
                       mobileNumber: thisObj.props.mobileNumber,
                       code: thisObj.props.code,
-                      userId: responseData.userId
+                      userId: responseData.userId,
+
+                      selectedAgeGroupCode: responseData.userAgeGroup,
+                      description: responseData.userDesciption,
+                      gender: responseData.userGender
                     },
                     options: {
                       topBar: {
@@ -214,7 +223,13 @@ export default class OtpScreen extends Component {
                       username: responseData.userName,
                       name: responseData.userFirstName,
                       image: responseData.userImageData,
-                      responseData: responseData
+                      userId: responseData.userId,
+                      responseData: responseData,
+                      dataToSave: data,
+
+                      selectedAgeGroupCode: responseData.userAgeGroup,
+                      description: responseData.userDesciption,
+                      gender: responseData.userGender
                     },
                     options: {
                       topBar: {
@@ -257,9 +272,9 @@ export default class OtpScreen extends Component {
   //       // }
   //     },
   //   });
-    
+
   // }
-  
+
 
   textChanged = (sender) => {
     this.setState({ name: sender });

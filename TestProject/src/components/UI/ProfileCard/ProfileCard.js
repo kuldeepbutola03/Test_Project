@@ -414,7 +414,7 @@ const cardViewStyle = StyleSheet.create({
   textView: {
     backgroundColor: 'transparent',
     // marginLeft: normalize(13),
-    fontSize: normalize(22),
+    fontSize: normalize(18),
     // marginBottom: normalize(5)
     paddingBottom: 5,
     paddingLeft: 5

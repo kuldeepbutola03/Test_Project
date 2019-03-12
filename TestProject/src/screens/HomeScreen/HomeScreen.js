@@ -26,6 +26,7 @@ import HomeScoreView from '../../components/UI/ProfileCard/HomeScoreView';
 import Spinner from '../../components/UI/Spinner/Spinner';
 import TopSix from '../../components/UI/TopSix/TopSix';
 // import Dialog from 'react-native-dialog';
+import Permissions from 'react-native-permissions';
 
 export default class HomeScreen extends Component {
 
@@ -51,12 +52,26 @@ export default class HomeScreen extends Component {
       landingTopSix: null,
       lat_lon: null,
       coordinates: null,
-      language: 'English'
+      language: 'English',
+
+      
       // loadingFourth
     };
   }
 
   tick = () => {
+
+    // alert('aaa');
+    Permissions.check('location').then(response => {
+      if (response === 'denied' || response === 'undetermined' ) {
+        // this.setState({ isForFirstTime: true });
+        this._requestPermission();
+      } else if (response === 'authorized') {
+        // this.getLocation()
+        this.fetchCurrentLocation();
+      }
+    })
+
     // let counter = this.state.counter + 1;
     // this.setState({
     //   counter: counter >= 2 ? 0 : counter,
@@ -218,7 +233,7 @@ export default class HomeScreen extends Component {
         // alert(locationErrorMessage)
         // this.showDialog();
       },
-      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+      { enableHighAccuracy: false, timeout: 20000, maximumAge: 1000 }
     );
 
     // this.watchID = navigator.geolocation.watchPosition((position) => {
@@ -228,11 +243,45 @@ export default class HomeScreen extends Component {
     // });
   }
 
+  checkPermission = () => {
+    Permissions.check('location').then(response => {
+      if (response === 'denied' || response === 'undetermined') {
+        this._requestPermission();
+      } else if (response === 'authorized') {
+        // this.getLocation()
+        this.fetchCurrentLocation();
+      }
+    })
+  }
+
+  _requestPermission = () => {
+    Permissions.request('location').then(response => {
+      // this.setState({ location: response })
+      if (response === 'denied' || response === 'undetermined') {
+        // this._requestPermission();
+        this.requestToServer();
+        this.serverHitForFourthResponse();
+      } else if (response === 'authorized') {
+        // this.getLocation()
+        this.fetchCurrentLocation();
+      }
+    })
+  }
+
   componentWillUnmount() {
     clearInterval(this.state.timer);
+    this.backHandler.remove();
+  }
 
+  goBack = () => {
+    if (this.props.componentId === "HomeScreen") {
+      BackHandler.exitApp();
+      return true;
 
-
+    } else {
+      Navigation.pop(this.props.componentId);
+      return true;
+    }
   }
 
   componentDidMount() {
@@ -244,12 +293,11 @@ export default class HomeScreen extends Component {
       // alert(userID);
       this.setState({ user_id: userID })
     })
-    this.fetchCurrentLocation();
+    this.checkPermission()
     // alert(getUserID());
 
-    BackHandler.addEventListener('hardwareBackPress', () => {
-      return true;
-    });
+    this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.goBack);
+    this.startTimer();
 
   }
 
@@ -275,7 +323,8 @@ export default class HomeScreen extends Component {
 
       });
     }
-
+    // alert()
+    // alert(body);
     fetch(LANDING_RESOURCES, {
       method: 'POST',
       headers: authHeaders(),
@@ -283,7 +332,7 @@ export default class HomeScreen extends Component {
     }).then((response) => response.json())
       .then((responseJson) => {
         this.setState({ isLoading: false, firstAPIresponse: responseJson, currLandPageSurvey: responseJson.currLandPageSurvey });
-        this.serverHitForSecondResponse();
+        // this.serverHitForSecondResponse();
       })
       .catch((error) => {
         console.error(error);
@@ -352,7 +401,7 @@ export default class HomeScreen extends Component {
         // console.log(response)
         // alert(JSON.stringify(responseJson));
         this.setState({ thirdAPIresponse: responseJson });
-        this.startTimer();
+        // this.startTimer();
         // this.serverHitForFourthResponse();
         // return responseJson;
       })
@@ -388,7 +437,7 @@ export default class HomeScreen extends Component {
 
 
   startTimer() {
-    let timer = setInterval(this.tick, 5 * 1000);
+    let timer = setInterval(this.tick, 60 * 1000);
     this.setState({ timer: timer });
   }
 
