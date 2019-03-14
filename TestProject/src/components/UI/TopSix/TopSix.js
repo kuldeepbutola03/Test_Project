@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Avatar, Badge, Button } from 'react-native-elements';
-import { normalize } from '../../../../Constant';
+import { normalize, APP_GLOBAL_COLOR } from '../../../../Constant';
 
 class TopSix extends Component {
     render() {
@@ -16,15 +16,16 @@ class TopSix extends Component {
                             //     uri: 'https://randomuser.me/api/portraits/men/41.jpg',
                             // }}
                             source={source[0]}
-                            size="large"
+                            size={normalize(60)}//"large"
+                            avatarStyle={{ borderColor: APP_GLOBAL_COLOR, borderWidth: 2, borderRadius: normalize(30) }}
                         />
 
                         <Badge
                             status="success"
-                            badgeStyle={{ height: normalize(27), width: normalize(27), borderRadius: normalize(27/2) }}
+                            badgeStyle={{ height: normalize(27), width: normalize(27), borderRadius: normalize(27 / 2) }}
                             containerStyle={{ position: 'absolute', top: 1, right: -20 }}
                             value={resourceGpr[0] ? resourceGpr[0].toFixed(1) : null}
-                            textStyle = {{fontSize : 11}}
+                            textStyle={{ fontSize: 11 }}
                         />
 
                         <Avatar
@@ -37,7 +38,7 @@ class TopSix extends Component {
                             overlayContainerStyle={{ backgroundColor: '#fff' }}
                             imageProps={{ resizeMode: 'contain' }}
                             containerStyle={{ position: 'absolute', bottom: 1, left: -20 }}
-                            avatarStyle={{ }}
+                            avatarStyle={{}}
                         />
                     </View>
                     <View>
@@ -47,15 +48,16 @@ class TopSix extends Component {
                             //     uri: 'https://randomuser.me/api/portraits/men/41.jpg',
                             // }}
                             source={source[1]}
-                            size="large"
+                            size={normalize(60)}//"large"
+                            avatarStyle={{ borderColor: APP_GLOBAL_COLOR, borderWidth: 2, borderRadius: normalize(30) }}
                         />
 
                         <Badge
                             status="success"
-                            badgeStyle={{ height: normalize(27), width: normalize(27), borderRadius: normalize(27/2) }}
+                            badgeStyle={{ height: normalize(27), width: normalize(27), borderRadius: normalize(27 / 2) }}
                             containerStyle={{ position: 'absolute', top: 1, right: -20 }}
-                            value={resourceGpr[1]? resourceGpr[1].toFixed(1) : null}
-                            textStyle = {{fontSize : 11}}
+                            value={resourceGpr[1] ? resourceGpr[1].toFixed(1) : null}
+                            textStyle={{ fontSize: 11 }}
                         />
 
                         <Avatar
@@ -77,15 +79,16 @@ class TopSix extends Component {
                             //     uri: 'https://randomuser.me/api/portraits/men/41.jpg',
                             // }}
                             source={source[2]}
-                            size="large"
+                            size={normalize(60)}//"large"
+                            avatarStyle={{ borderColor: APP_GLOBAL_COLOR, borderWidth: 2, borderRadius: normalize(30) }}
                         />
 
                         <Badge
                             status="success"
-                            badgeStyle={{ height: normalize(27), width: normalize(27), borderRadius: normalize(27/2) }}
+                            badgeStyle={{ height: normalize(27), width: normalize(27), borderRadius: normalize(27 / 2) }}
                             containerStyle={{ position: 'absolute', top: 1, right: -20 }}
-                            value={resourceGpr[2]? resourceGpr[2].toFixed(1) : null}
-                            textStyle = {{fontSize : 11}}
+                            value={resourceGpr[2] ? resourceGpr[2].toFixed(1) : null}
+                            textStyle={{ fontSize: 11 }}
                         />
 
                         <Avatar
@@ -112,22 +115,23 @@ class TopSix extends Component {
                             //     uri: 'https://randomuser.me/api/portraits/men/41.jpg',
                             // }}
                             source={source[3]}
-                            size="large"
+                            size={normalize(60)}//"large"
+                            avatarStyle={{ borderColor: APP_GLOBAL_COLOR, borderWidth: 2, borderRadius: normalize(30) }}
                         />
 
                         <Badge
                             status="success"
-                            badgeStyle={{ height: normalize(27), width: normalize(27), borderRadius: normalize(27/2) }}
+                            badgeStyle={{ height: normalize(27), width: normalize(27), borderRadius: normalize(27 / 2) }}
                             containerStyle={{ position: 'absolute', top: 1, right: -20 }}
-                            value={resourceGpr[3]? resourceGpr[3].toFixed(1) : null}
-                            textStyle = {{fontSize : 11}}
+                            value={resourceGpr[3] ? resourceGpr[3].toFixed(1) : null}
+                            textStyle={{ fontSize: 11 }}
                         />
 
                         <Avatar
                             // source={{
                             //     uri: 'https://randomuser.me/api/portraits/men/41.jpg',
                             // }}
-                            
+
                             rounded
                             size={normalize(25)}
                             overlayContainerStyle={{ backgroundColor: '#fff' }}
@@ -143,16 +147,17 @@ class TopSix extends Component {
                             //     uri: 'https://randomuser.me/api/portraits/men/41.jpg',
                             // }}
                             source={source[4]}
-                            size="large"
+                            size={normalize(60)}//"large"
+                            avatarStyle={{ borderColor: APP_GLOBAL_COLOR, borderWidth: 2, borderRadius: normalize(30) }}
                         />
 
                         <Badge
                             status="success"
                             badgeStyle={{ height: normalize(27), width: normalize(27), borderRadius: normalize(27) }}
                             containerStyle={{ position: 'absolute', top: 1, right: -20 }}
-                            value={resourceGpr[4]? resourceGpr[4].toFixed(1) : null}
-                            textStyle = {{fontSize : 11}}
-                            
+                            value={resourceGpr[4] ? resourceGpr[4].toFixed(1) : null}
+                            textStyle={{ fontSize: 11 }}
+
                         />
 
                         <Avatar
@@ -165,8 +170,8 @@ class TopSix extends Component {
                             overlayContainerStyle={{ backgroundColor: '#fff' }}
                             imageProps={{ resizeMode: 'contain' }}
                             containerStyle={{ position: 'absolute', bottom: 1, left: -20 }}
-                            avatarStyle={{ }}
-                            
+                            avatarStyle={{}}
+
                         />
                     </View>
                     <View>
@@ -176,15 +181,16 @@ class TopSix extends Component {
                             //     uri: 'https://randomuser.me/api/portraits/men/41.jpg',
                             // }}
                             source={source[5]}
-                            size="large"
+                            size={normalize(60)}//"large"
+                            avatarStyle={{ borderColor: APP_GLOBAL_COLOR, borderWidth: 2, borderRadius: normalize(30) }}
                         />
 
                         <Badge
                             status="success"
                             badgeStyle={{ height: normalize(27), width: normalize(27), borderRadius: normalize(27) }}
                             containerStyle={{ position: 'absolute', top: 1, right: -20 }}
-                            value={resourceGpr[5]? resourceGpr[5].toFixed(1) : null}
-                            textStyle = {{fontSize : 11}}
+                            value={resourceGpr[5] ? resourceGpr[5].toFixed(1) : null}
+                            textStyle={{ fontSize: 11 }}
                         />
 
                         <Avatar
@@ -217,7 +223,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-around',
         alignItems: 'center'
-    }, 
+    },
 
     buttonContainer: {
         marginVertical: normalize(20),

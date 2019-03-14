@@ -28,6 +28,8 @@ import TopSix from '../../components/UI/TopSix/TopSix';
 // import Dialog from 'react-native-dialog';
 import Permissions from 'react-native-permissions';
 
+import firebase from 'react-native-firebase';
+
 export default class HomeScreen extends Component {
 
   areaCode = null;
@@ -271,17 +273,19 @@ export default class HomeScreen extends Component {
   componentWillUnmount() {
     clearInterval(this.state.timer);
     this.backHandler.remove();
+
+    firebase.analytics().setCurrentScreen("Home_Screen");
+//firebase.analytics().logEvent("Home_Screen");
+firebase.analytics().setUserProperty("Screen","Home_Screen");
+firebase.analytics().logEvent("Content",{"Screen":"Home_Screen"});
   }
 
   goBack = () => {
-    if (this.props.componentId === "HomeScreen") {
+    if (this.props.componentId === "HomeScreen" ||  this.props.componentId === "Component10") {
       BackHandler.exitApp();
       return true;
 
-    } else {
-      Navigation.pop(this.props.componentId);
-      return true;
-    }
+    } 
   }
 
   componentDidMount() {

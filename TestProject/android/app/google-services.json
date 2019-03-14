@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "183631864593",
+    "firebase_url": "https://raajneeti-38539.firebaseio.com",
+    "project_id": "raajneeti-38539",
+    "storage_bucket": "raajneeti-38539.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:183631864593:android:23e5612f8719b535",
+        "android_client_info": {
+          "package_name": "com.aureans.raajneeti"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "183631864593-mubdkhlocuac9aq47g96203ovp5btroo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB4hcXclF88ehbmjxZ_LtomK5FeTNu9SOk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

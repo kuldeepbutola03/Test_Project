@@ -23,10 +23,21 @@ import HeaderText from '../../components/UI/HeaderText/HeaderText'
 import { EMAIL_REGISTRATION, DEBUG } from '../../../Apis';
 import { validateEmail, saveUserID, authHeaders } from '../../../Constant';
 
+import firebase from 'react-native-firebase';
+
 export default class TcScreen extends Component {
     static propTypes = {
         componentId: PropTypes.string,
     };
+
+    componentDidMount() {
+        // this.getDataFromServer(true)
+        firebase.analytics().setCurrentScreen("Screen", "Terms_And_Conditions_Screen");
+        //firebase.analytics().logEvent("Trends_Screen");
+        firebase.analytics().setUserProperty("Screen", "Terms_And_Conditions_Screen");
+        firebase.analytics().logEvent("Content", { "Screen": "Terms_And_Conditions_Screen" });
+    }
+
 
     render() {
         var { height, width } = Dimensions.get('window');

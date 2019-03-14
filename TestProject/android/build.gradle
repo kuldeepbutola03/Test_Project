@@ -3,7 +3,7 @@
 buildscript {
     ext {
         buildToolsVersion = "27.0.3"
-        minSdkVersion = 19
+        minSdkVersion = 21
         compileSdkVersion = 27
         targetSdkVersion = 27
         supportLibVersion = "27.1.1"
@@ -17,6 +17,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.1.4'
+        classpath 'com.google.gms:google-services:4.0.1'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -41,6 +42,32 @@ allprojects {
     }
 }
 
+subprojects {
+    afterEvaluate {project ->
+        if (project.hasProperty("android")) {
+            android {
+                compileSdkVersion 27
+                buildToolsVersion "27.0.2"
+            }
+        }
+    }
+}
+
+subprojects { subproject ->
+    afterEvaluate {
+        
+        if ((subproject.plugins.hasPlugin('android') || subproject.plugins.hasPlugin('android-library'))) {
+            android {
+                variantFilter { variant ->
+                    def names = variant.flavors*.name
+                    if (names.contains("reactNative51") || names.contains("reactNative55") || names.contains("reactNative56") || names.contains("reactNative57WixFork")) {
+                        setIgnore(true)
+                    }
+                }
+            }
+        }
+    }
+}
 
 task wrapper(type: Wrapper) {
     gradleVersion = '4.4'

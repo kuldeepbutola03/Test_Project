@@ -8,7 +8,8 @@ import {
     Platform,
     Image,
     SafeAreaView,
-    TouchableOpacity
+    TouchableOpacity,
+    AsyncStorage
 
 } from 'react-native';
 import SplashScreen from 'react-native-splash-screen'
@@ -23,6 +24,7 @@ import Spinner from '../../components/UI/Spinner/Spinner';
 import axios from 'axios';
 
 import { APP_GLOBAL_COLOR } from '../../../Constant';
+import firebase from 'react-native-firebase';
 export default class AboutAppScreen extends Component {
     static propTypes = {
         componentId: PropTypes.string,
@@ -36,12 +38,12 @@ export default class AboutAppScreen extends Component {
     }
 
     componentDidMount() {
-
-        // SplashScreen.hide()
-
-
+        // this.getDataFromServer(true)
+        firebase.analytics().setCurrentScreen("Screen", "About_App_Screen");
+        //firebase.analytics().logEvent("Trends_Screen");
+        firebase.analytics().setUserProperty("Screen", "About_App_Screen");
+        firebase.analytics().logEvent("Content", { "Screen": "About_App_Screen" });
     }
-
 
 
     handleTap = () => {

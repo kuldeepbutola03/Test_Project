@@ -26,6 +26,9 @@ import { CheckBox } from 'react-native-elements'
 
 import Geolocation from 'react-native-geolocation-service';
 import { APP_GLOBAL_COLOR } from '../../../Constant';
+
+import firebase from 'react-native-firebase';
+
 export default class MobileNumber extends Component {
   static propTypes = {
     componentId: PropTypes.string,
@@ -46,68 +49,14 @@ export default class MobileNumber extends Component {
 
   componentDidMount() {
     this.phone.selectCountry('in')
-    // SplashScreen.hide()
 
-    // navigator.geolocation.getCurrentPosition(
-    //   (position) => {
-    //     const initialPosition = JSON.stringify(position);
 
-    //     // let latlong = position.coords.latitude.toString() +  "," + position.coords.longitude.toString()
-    //     let latlong = position.coords.latitude.toString() + "," + position.coords.longitude.toString()
-    //     if (position.mocked) {
-    //       if (position.mocked == true) {
-    //         alert("you are using fake location");
-    //         return;
-    //       }
-    //     }
-    //     alert(latlong);
-    //     // this.setState({ lat_lon: "28.722,77.125" });
-    //     // this.setState({ lat_lon: latlong });
-    //     // this.setState({ coordinates: position.coords });
-    //     // // alert(latlong);
-    //     // this.requestToServer()
-    //     // this.serverHitForFourthResponse()
-    //   },
-    //   (error) => {
-    //     console.log(error)
-    //     // this.requestToServer();
-    //     // this.serverHitForFourthResponse()
-    //     alert(error.message)
-    //     // this.locationErrorMessage = error.message;
-    //     // alert(locationErrorMessage)
-    //     // this.showDialog();
-    //   },
-    //   { enableHighAccuracy: false, timeout: 20000, maximumAge: 1000 }
-    // );
+    // this.getDataFromServer(true)
+    firebase.analytics().setCurrentScreen("Screen", "Mobile_Number_Screen");
+    //firebase.analytics().logEvent("Trends_Screen");
+    firebase.analytics().setUserProperty("Screen", "Mobile_Number_Screen");
+    firebase.analytics().logEvent("Content", { "Screen": "Mobile_Number_Screen" });
 
-    // Geolocation.getCurrentPosition(
-    //     (position) => {
-    //       const initialPosition = JSON.stringify(position);
-    //       // let latlong = position.coords.latitude.toString() +  "," + position.coords.longitude.toString()
-    //       let lat_lon = position.coords.latitude.toString() + "," + position.coords.longitude.toString();
-    //       // alert(lat_lon);
-    //       if (position.mocked) {
-    //         if (position.mocked == true) {
-    //           this.refs.loading.close();
-    //           setTimeout(function () {
-    //             alert("You are using fake location");
-    //           }, 1000)
-    //           return;
-    //         }
-    //       }
-    //        alert(lat_lon);
-    //       // this.setState({ lat_lon: latlong });
-    //       // this.mobileNumberSubmit(lat_lon, this);
-    //     },
-    //     (error) => {
-    //       alert(error.message);
-    //       // this.locationErrorMessage = error.message;
-    //       // alert(locationErrorMessage)
-    //       // this.showDialog();
-    //       // this.mobileNumberSubmit(null, this);
-    //     },
-    //     { enableHighAccuracy: false, timeout: 20000, maximumAge: 1000 }
-    //   );
 
   }
 
@@ -132,7 +81,7 @@ export default class MobileNumber extends Component {
       { title: 'Title3', data: ['item5', 'item6'] },
     ]
 
-    
+
 
     if (DEBUG == 0) {
       Navigation.push(this.props.componentId, {
@@ -193,7 +142,7 @@ export default class MobileNumber extends Component {
           style={{ marginTop: 20 }}
           onPress={this.mobileNumberSubmit}
           color="#a01414"
-          // disabled={this.state.disabled}
+        // disabled={this.state.disabled}
         >
           Get OTP
         </ButtonMod>
@@ -282,7 +231,7 @@ export default class MobileNumber extends Component {
               onPress={() => {
                 this.showTC();
               }}
-              onIconPress={() => { this.setState({ checkBocSelected: !this.state.checkBocSelected}) }}
+              onIconPress={() => { this.setState({ checkBocSelected: !this.state.checkBocSelected }) }}
             />
           </View>
 

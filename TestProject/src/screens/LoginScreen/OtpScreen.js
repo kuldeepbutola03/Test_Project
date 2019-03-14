@@ -20,7 +20,10 @@ import axios from 'axios';
 import Geolocation from 'react-native-geolocation-service';
 import Loading from 'react-native-whc-loading';
 import Permissions from 'react-native-permissions';
-import { CheckBox } from 'react-native-elements'
+import { CheckBox } from 'react-native-elements';
+
+import firebase from 'react-native-firebase';
+
 export default class OtpScreen extends Component {
 
   static propTypes = {
@@ -47,6 +50,13 @@ export default class OtpScreen extends Component {
         // this.getLocation()
       }
     })
+
+    // this.getDataFromServer(true)
+    firebase.analytics().setCurrentScreen("Screen", "OTP_Screen");
+    //firebase.analytics().logEvent("Trends_Screen");
+    firebase.analytics().setUserProperty("Screen", "OTP_Screen");
+    firebase.analytics().logEvent("Content", { "Screen": "OTP_Screen" });
+
   }
 
   _requestPermission = () => {

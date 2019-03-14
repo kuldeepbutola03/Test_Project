@@ -41,6 +41,10 @@ target 'TestProject' do
   pod 'FBSDKShareKit','~> 4.38.0'
   pod 'FBSDKLoginKit','~> 4.38.0'
 
+  
+  pod 'Firebase/Core','~> 5.15.0'
+   pod 'Firebase/Messaging'
+
   pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
 
   pod 'RNFS', :path => '../node_modules/react-native-fs'

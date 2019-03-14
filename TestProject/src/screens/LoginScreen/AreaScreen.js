@@ -18,6 +18,9 @@ import { PropTypes } from 'prop-types';
 // import ButtonMod from '../../components/UI/ButtonMod/ButtonMod';
 // import PhoneInput from 'react-native-phone-input';
 // import HeaderText from '../../components/UI/HeaderText/HeaderText';
+
+import firebase from 'react-native-firebase';
+
 import { SEND_OTP, DEBUG, UPDATE_USER_AREA } from '../../../Apis';
 import { authHeaders, normalize, getUserID, saveUserData, APP_GLOBAL_COLOR, saveUserID } from '../../../Constant';
 import Accordion from 'react-native-collapsible/Accordion';
@@ -41,18 +44,25 @@ export default class AreaScreen extends Component {
         search: ''
 
     }
-    user_id = 1;
+    // user_id = 1;
     sectionSelected = -1;
     constructor(props) {
         super(props);
         // this.pushScreen = this.pushScreen.bind (this);
     }
     componentDidMount() {
+        // this.getDataFromServer(true)
+        firebase.analytics().setCurrentScreen("Screen", "Area_Selection_Screen");
+        //firebase.analytics().logEvent("Trends_Screen");
+        firebase.analytics().setUserProperty("Screen", "Area_Selection_Screen");
+        firebase.analytics().logEvent("Content", { "Screen": "Area_Selection_Screen" });
+    
 
-        getUserID().then((value) => {
-            this.user_id = value;
-            // alert(value);
-        })
+
+        // getUserID().then((value) => {
+        //     this.user_id = value;
+        //     // alert(value);
+        // })
 
         var dict = this.props.data;
         var arr = [];
@@ -161,7 +171,7 @@ export default class AreaScreen extends Component {
         // let area = section["code"];
 
         let body = JSON.stringify({
-            userId: this.user_id,
+            userId: this.props.userId,
             userState: code,
             userPolArea: area
 

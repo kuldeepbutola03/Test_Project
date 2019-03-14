@@ -14,6 +14,7 @@ import { Platform } from 'react-native';
 import Share, { ShareSheet, Button } from 'react-native-share';
 import { Data } from 'victory-native';
 
+import firebase from 'react-native-firebase';
 
 // import SharingCard from '../../components/UI/Sharing/SharingCard';
 export default class ReportScreen extends Component {
@@ -53,22 +54,25 @@ export default class ReportScreen extends Component {
     // weakRef = this;
 
     this._onRefresh();
-    // alert("It really did !!")
-    // this.shareCard.props.getShareOption(shareOptions);
+
+    firebase.analytics().setCurrentScreen("Screen", "Arena_Screen");
+    //firebase.analytics().logEvent("Trends_Screen");
+    firebase.analytics().setUserProperty("Screen", "Arena_Screen");
+    firebase.analytics().logEvent("Content", { "Screen": "Arena_Screen" });
   }
 
   showCompose = () => {
     // getUserData().then((data) => {
-      Navigation.showModal({
-        component: {
-          name: 'ComposeScreen',
-          passProps: {
-            selfObj: this._onRefresh,
-            data: this.props.data,
-            coordinates : this.props.coordinates
-          }
-        },
-      });
+    Navigation.showModal({
+      component: {
+        name: 'ComposeScreen',
+        passProps: {
+          selfObj: this._onRefresh,
+          data: this.props.data,
+          coordinates: this.props.coordinates
+        }
+      },
+    });
 
     // });
 
@@ -94,8 +98,8 @@ export default class ReportScreen extends Component {
   }
 
   fetchTimeLineData(user_id, location) {
-// alert(user_id);
-// return;
+    // alert(user_id);
+    // return;
     var timeStamp = Math.floor(Date.now() / 1000);
 
     let body = JSON.stringify({
@@ -136,56 +140,56 @@ export default class ReportScreen extends Component {
     let userId = this.props.user_id;
     // getUserID().then((userId) => {
 
-      let body = JSON.stringify({
+    let body = JSON.stringify({
 
-        "message":
-        {
-          "messageId": data.messageId
-        },
-        "userMaster":
-        {
-          "userId": userId
-        },
-       
-        "isLiked": isLiked
+      "message":
+      {
+        "messageId": data.messageId
+      },
+      "userMaster":
+      {
+        "userId": userId
+      },
+
+      "isLiked": isLiked
+    });
+
+
+
+
+
+
+    // alert(body);
+    // return;
+    // µ
+    fetch(LIKDISLIKE_POST, {
+      method: 'POST',
+      headers: authHeaders(),
+      body: body,
+    }).then((response) => response.json())
+
+      .then((responseJson) => {
+
+        this._onRefresh();
+        // alert(JSON.stringify(responseJson));
+
+        // var dataObj = this.state.case;
+        // var index = dataObj.indexOf(data);
+        // data.Is_Liked = isLiked;
+        // data.LikingCount = data.LikingCount + ((isLiked == 1) ? 1 : -1);
+        // data.LikingCount = (data.LikingCount < 0) ? 0 : data.LikingCount;
+
+
+        // dataObj[index] = dataObj;
+        // this.setState({case : [...dataObj] });
+
+        //  alert(JSON.stringify(responseJson));
+        // this.filterData(responseJson.result);
+      })
+      .catch((error) => {
+        this.setState({ refreshing: false });
+        console.error(error);
       });
-
-
-
-
-
-
-      // alert(body);
-      // return;
-      // µ
-      fetch(LIKDISLIKE_POST, {
-        method: 'POST',
-        headers: authHeaders(),
-        body: body,
-      }).then((response) => response.json())
-
-        .then((responseJson) => {
-
-          this._onRefresh();
-          // alert(JSON.stringify(responseJson));
-
-          // var dataObj = this.state.case;
-          // var index = dataObj.indexOf(data);
-          // data.Is_Liked = isLiked;
-          // data.LikingCount = data.LikingCount + ((isLiked == 1) ? 1 : -1);
-          // data.LikingCount = (data.LikingCount < 0) ? 0 : data.LikingCount;
-
-
-          // dataObj[index] = dataObj;
-          // this.setState({case : [...dataObj] });
-
-          //  alert(JSON.stringify(responseJson));
-          // this.filterData(responseJson.result);
-        })
-        .catch((error) => {
-          this.setState({ refreshing: false });
-          console.error(error);
-        });
 
 
     // });
@@ -199,60 +203,60 @@ export default class ReportScreen extends Component {
     // alert(JSON.stringify(data));
     // return;
     // getUserID((userID) => {
-      // getCurrentLocation((location) => {
-        // if (location) {
-          let body = JSON.stringify({
+    // getCurrentLocation((location) => {
+    // if (location) {
+    let body = JSON.stringify({
 
-            "message" :
-            {
-              "messageId": data.messageId
-            },
-            "userMaster":
-            {
-              "userId": userID
-            },
-            "displayMessage": "N",
-            "reportReason": "",
-            "reportCustomReason": "",
-            "latitude":  0,
-            "longitude":  0
-            
-          });
+      "message":
+      {
+        "messageId": data.messageId
+      },
+      "userMaster":
+      {
+        "userId": userID
+      },
+      "displayMessage": "N",
+      "reportReason": "",
+      "reportCustomReason": "",
+      "latitude": 0,
+      "longitude": 0
 
-          // alert(body);
-          // return;
-          // µ
-          fetch(REPORT_POST, {
-            method: 'POST',
-            headers: authHeaders(),
-            body: body,
-          }).then((response) => response.json())
+    });
 
-            .then((responseJson) => {
+    // alert(body);
+    // return;
+    // µ
+    fetch(REPORT_POST, {
+      method: 'POST',
+      headers: authHeaders(),
+      body: body,
+    }).then((response) => response.json())
 
-
-              // alert(JSON.stringify(responseJson));
-              this._onRefresh();
-
-              // var dataObj = this.state.case;
-              // var index = dataObj.indexOf(data);
-              // data.Is_Liked = isLiked;
-              // data.LikingCount = data.LikingCount + ((isLiked == 1) ? 1 : -1);
-              // data.LikingCount = (data.LikingCount < 0) ? 0 : data.LikingCount;
+      .then((responseJson) => {
 
 
-              // dataObj[index] = dataObj;
-              // this.setState({case : [...dataObj] });
+        // alert(JSON.stringify(responseJson));
+        this._onRefresh();
 
-              //  alert(JSON.stringify(responseJson));
-              // this.filterData(responseJson.result);
-            })
-            .catch((error) => {
-              this.setState({ refreshing: false });
-              console.error(error);
-            });
-        // }
-      // });
+        // var dataObj = this.state.case;
+        // var index = dataObj.indexOf(data);
+        // data.Is_Liked = isLiked;
+        // data.LikingCount = data.LikingCount + ((isLiked == 1) ? 1 : -1);
+        // data.LikingCount = (data.LikingCount < 0) ? 0 : data.LikingCount;
+
+
+        // dataObj[index] = dataObj;
+        // this.setState({case : [...dataObj] });
+
+        //  alert(JSON.stringify(responseJson));
+        // this.filterData(responseJson.result);
+      })
+      .catch((error) => {
+        this.setState({ refreshing: false });
+        console.error(error);
+      });
+    // }
+    // });
 
     // })
 
@@ -297,11 +301,11 @@ export default class ReportScreen extends Component {
       component: {
         name: 'ReportReplyScreen',
         passProps: {
-          userData : this.props.data,
+          userData: this.props.data,
           data: data,
           user_id: this.props.user_id,
-          coordinates : this.props.coordinates,
-          data2 : this.props.data
+          coordinates: this.props.coordinates,
+          data2: this.props.data
         },
         options: {
           topBar: {
@@ -313,7 +317,7 @@ export default class ReportScreen extends Component {
       }
     });
 
-    
+
   }
 
   homeButtonTapped = () => {
@@ -358,7 +362,7 @@ export default class ReportScreen extends Component {
     // if (MOBILE_NUMBER_ === data.Mobile_Number) {
     //   alert("You can not report your own post");
     // } else {
-      this.requestForReport(data);
+    this.requestForReport(data);
     // }
   }
 
@@ -470,31 +474,31 @@ export default class ReportScreen extends Component {
               onPress={this.homeButtonTapped}
             />
           </View>
-          <View style={{ flex: 2.5, backgroundColor:'clear', flexDirection: 'row', alignItems: 'center' }}>
-                <Image
-                  style={{
-                    backgroundColor: APP_GLOBAL_COLOR,
-                    marginLeft: normalize(10),
-                    width: normalize(30),
-                    height: normalize(30),
-                    marginTop: normalize(5),
-                    marginBottom: normalize(5),
-                    borderRadius: normalize(30) / 2,
-                  }}
-                  source={this.props.data.image ? {uri : "data:image/png;base64,"+this.props.data.image} : require('../../assets/UserSmall.png')}
-                />
+          <View style={{ flex: 2.5, backgroundColor: 'clear', flexDirection: 'row', alignItems: 'center' }}>
+            <Image
+              style={{
+                backgroundColor: APP_GLOBAL_COLOR,
+                marginLeft: normalize(10),
+                width: normalize(30),
+                height: normalize(30),
+                marginTop: normalize(5),
+                marginBottom: normalize(5),
+                borderRadius: normalize(30) / 2,
+              }}
+              source={this.props.data.image ? { uri: "data:image/png;base64," + this.props.data.image } : require('../../assets/UserSmall.png')}
+            />
 
-                <Text
-                  style={{
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    marginLeft: 5,
-                    fontSize: normalize(14),
-                    color: 'white',
-                  }}>
-                  {this.props.data.username}
-                </Text>
-              </View>
+            <Text
+              style={{
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginLeft: 5,
+                fontSize: normalize(14),
+                color: 'white',
+              }}>
+              {this.props.data.username}
+            </Text>
+          </View>
           <View style={styles.textheaderView}>
             <Text style={styles.textView}>Arena</Text>
           </View>

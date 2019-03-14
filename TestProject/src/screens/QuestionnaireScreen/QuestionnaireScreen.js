@@ -20,6 +20,8 @@ import { GET_CURRENT_ACTIVE_SURVEY, SUBMIT_USER_SURVEY_QUESTION } from '../../..
 import Loading from 'react-native-whc-loading';
 import _ from 'lodash';
 
+import firebase from 'react-native-firebase';
+
 export default class QuestionnireScreen extends Component {
     state = {
         loading: true,
@@ -258,6 +260,11 @@ export default class QuestionnireScreen extends Component {
         if(this.props.surveyTitle) {
             this.setState({ surveyTitle: `SURVEY - ${surveyTitle.toUpperCase()}`})
         }
+
+        firebase.analytics().setCurrentScreen("Screen", "Questionnaire_Screen");
+        //firebase.analytics().logEvent("Trends_Screen");
+        firebase.analytics().setUserProperty("Screen", "Questionnaire_Screen");
+        firebase.analytics().logEvent("Content", { "Screen": "Questionnaire_Screen" });
     }
 
     homeButtonTapped = () => {

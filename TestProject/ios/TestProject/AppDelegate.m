@@ -12,18 +12,29 @@
 #import <ReactNativeNavigation/ReactNativeNavigation.h>
 #import "RNSplashScreen.h"
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
+// @import Firebase;
 @import GoogleMaps;
+#import <Firebase/Firebase.h>
+
+#import "RNFirebaseNotifications.h"
+#import "RNFirebaseMessaging.h"
+
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   [GMSServices provideAPIKey:@"AIzaSyDkXfhEk0aypBfrqKNZj9M02vaHVC46Esk"];
-
+  [FIRApp configure];
+  
+  [[UNUserNotificationCenter currentNotificationCenter] setDelegate:self];
+  [RNFirebaseNotifications configure];
+  
   [[FBSDKApplicationDelegate sharedInstance] application:application
     didFinishLaunchingWithOptions:launchOptions];
 
   NSURL *jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
+  
   [ReactNativeNavigation bootstrap:jsCodeLocation launchOptions:launchOptions];
   [RNSplashScreen show];  
   return YES;
@@ -55,19 +66,20 @@
 }
 
 
-// - (BOOL)application:(UIApplication *)application
-//             openURL:(NSURL *)url
-//   sourceApplication:(NSString *)sourceApplication
-//          annotation:(id)annotation {
-//
-//   BOOL handled = [[FBSDKApplicationDelegate sharedInstance] application:application
-//     openURL:url
-//     sourceApplication:sourceApplication
-//     annotation:annotation
-//   ];
-//   // Add any custom logic here.
-//   return handled;
-// }
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(nonnull NSDictionary *)userInfo
+fetchCompletionHandler:(nonnull void (^)(UIBackgroundFetchResult))completionHandler{
+  [[RNFirebaseNotifications instance] didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
+}
+  
+- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
+  [[RNFirebaseMessaging instance] didRegisterUserNotificationSettings:notificationSettings];
+}
+  
+-(void) userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler {
+  
+  [[RNFirebaseMessaging instance] didReceiveRemoteNotification:response.notification.request.content.userInfo];
+  completionHandler();
+}
 
 
 @end

@@ -24,6 +24,8 @@ import { sliderWidth, itemWidth } from './SliderEntry.style.js';
 
 import Permissions from 'react-native-permissions';
 
+import firebase from 'react-native-firebase';
+
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
@@ -40,10 +42,17 @@ class TrendScreen extends Component {
 
   componentDidMount() {
     // this.getDataFromServer(true)
+    firebase.analytics().setCurrentScreen("Screen", "Trends_Screen");
+    //firebase.analytics().logEvent("Trends_Screen");
+    firebase.analytics().setUserProperty("Screen", "Trends_Screen");
+    firebase.analytics().logEvent("Content", { "Screen": "Trends_Screen" });
+
     getUserID().then((userId) => {
       this.user_Id = userId;
       // this.getLocation()
       this.getDataFromServer(true);
+
+
     })
   }
 
@@ -91,7 +100,7 @@ class TrendScreen extends Component {
       // this.getLocation()
       if (response === 'denied' || response === 'undetermined') {
         this.getDataFromServer(true);
-      }else{
+      } else {
         this.getLocation();
       }
     })

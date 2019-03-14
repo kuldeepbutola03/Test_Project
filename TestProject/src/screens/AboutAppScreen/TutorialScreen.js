@@ -6,7 +6,9 @@ import {
   Dimensions,
   SafeAreaView,
   Image,
-  TouchableOpacity
+  TouchableOpacity,
+  AsyncStorage,
+  Alert
 } from 'react-native';
 
 
@@ -16,13 +18,15 @@ import CustomButton from '../../components/UI/ButtonMod/CustomButtom';
 import { PropTypes } from 'prop-types';
 import TrendProfile from '../../components/UI/TrendProfile/TrendProfile';
 import { TREND_, TREND_PDM, TREND_CDM, TREND_IMAGE } from '../../../Apis';
-import { authHeaders, getUserID, APP_GLOBAL_COLOR } from '../../../Constant';
+import { authHeaders, getUserID, APP_GLOBAL_COLOR, FCM_TOKEN } from '../../../Constant';
 import axios from 'axios';
 import Carousel, { Pagination } from 'react-native-snap-carousel';
 import _ from 'lodash';
 import { normalize } from '../../../Constant';
 import { sliderWidth, itemWidth } from './SliderEntry.style.js';
 import { withTheme } from 'react-native-elements';
+
+import firebase from 'react-native-firebase';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -38,21 +42,111 @@ export default class TutorialScreen extends Component {
     // loading: true,
   }
 
+  constructor(props){
+    super(props);
+    // alert("saf")
+  }
+
   componentDidMount() {
+    this.checkPermission();
     // this.getDataFromServer(true)
-    // getUserID().then((userId) => {
-    //   this.user_Id = userId;
-    //   this.getLocation()
-    // })
+    firebase.analytics().setCurrentScreen("Screen", "Tutorial_Screen");
+    //firebase.analytics().logEvent("Trends_Screen");
+    firebase.analytics().setUserProperty("Screen", "Tutorial_Screen");
+    firebase.analytics().logEvent("Content", { "Screen": "Tutorial_Screen" });
+
+    this.createNotificationListeners();
+  }
+
+
+
+
+  //1
+  async checkPermission() {
+    const enabled = await firebase.messaging().hasPermission();
+    if (enabled) {
+      this.getToken();
+    } else {
+      this.requestPermission();
+    }
+  }
+
+  //3
+  async getToken() {
+    let fcmToken = await AsyncStorage.getItem(FCM_TOKEN);
+    if (!fcmToken) {
+        fcmToken = await firebase.messaging().getToken();
+        if (fcmToken) {
+            // user has a device token
+            await AsyncStorage.setItem(FCM_TOKEN, fcmToken);
+        }
+    }
+    // alert(fcmToken);
+    console.log(fcmToken);
+  }
+
+  //2
+  async requestPermission() {
+    try {
+      await firebase.messaging().requestPermission();
+      // User has authorised
+      this.getToken();
+    } catch (error) {
+      // User has rejected permissions
+      alert('permission rejected');
+      console.log('permission rejected');
+    }
+  }
+
+  //////
+  async createNotificationListeners() {
+    /*
+    * Triggered when a particular notification has been received in foreground
+    * */
+    this.notificationListener = firebase.notifications().onNotification((notification) => {
+        const { title, body } = notification;
+        this.showAlert(title, body);
+    });
+  
+    /*
+    * If your app is in background, you can listen for when a notification is clicked / tapped / opened as follows:
+    * */
+    this.notificationOpenedListener = firebase.notifications().onNotificationOpened((notificationOpen) => {
+        const { title, body } = notificationOpen.notification;
+        this.showAlert(title, body);
+    });
+  
+    /*
+    * If your app is closed, you can check if it was opened by a notification being clicked / tapped / opened as follows:
+    * */
+    const notificationOpen = await firebase.notifications().getInitialNotification();
+    if (notificationOpen) {
+        const { title, body } = notificationOpen.notification;
+        this.showAlert(title, body);
+    }
+    /*
+    * Triggered for data only payload in foreground
+    * */
+    this.messageListener = firebase.messaging().onMessage((message) => {
+      //process data message
+      // alert(JSON.stringify(message));
+      console.log(JSON.stringify(message));
+    });
+  }
+  
+  showAlert(title, body) {
+    Alert.alert(
+      title, body,
+      [
+          { text: 'OK', onPress: () => console.log('OK Pressed') },
+      ],
+      { cancelable: false },
+    );
   }
 
   static propTypes = {
     componentId: PropTypes.string,
   };
-
-  constructor(props) {
-    super(props);
-  }
 
   homeButtonTapped = () => {
     Navigation.pop(this.props.componentId);
@@ -83,9 +177,6 @@ export default class TutorialScreen extends Component {
 
 
   renderComponent = () => {
-
-
-
     return (
       <View style={styles.carouselContainer}>
         <Carousel
@@ -149,12 +240,12 @@ export default class TutorialScreen extends Component {
     return (
       <View key={index + "abc"} style={styles.imageContainer}>
         {/* <View style={{ width: '100%' , backgroundColor : 'yellow'}}> */}
-          <Image
-            resizeMode='contain'
-            resizeMethod="scale"
-            style={{ height: '100%', width: '100%', marginTop: 0, borderRadius: 0 }}
-            source={item}
-          />
+        <Image
+          resizeMode='contain'
+          resizeMethod="scale"
+          style={{ height: '100%', width: '100%', marginTop: 0, borderRadius: 0 }}
+          source={item}
+        />
         {/* </View> */}
       </View>
     );

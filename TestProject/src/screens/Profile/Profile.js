@@ -21,7 +21,7 @@ import { PropTypes } from 'prop-types';
 import { saveUserData, defaultUser, authHeaders, getUserID } from '../../../Constant';
 import { UPDATE_USER } from '../../../Apis';
 import Share, { ShareSheet, Button } from 'react-native-share';
-
+import Loading from 'react-native-whc-loading';
 
 export default class Profile extends Component {
 
@@ -126,11 +126,15 @@ export default class Profile extends Component {
 
   updateDetails = () => {
 
+    this.refs.loading.show();
+
     let imgName = "IMG" + (+new Date());
+
+    let body = {};
 
     if (!this.state.editable) {
 
-      let body = JSON.stringify({
+      body = JSON.stringify({
         userId: this.state.userId,
         userImageData: this.state.image,
         userImageName: imgName,
@@ -140,44 +144,10 @@ export default class Profile extends Component {
         // userDesciption: this.state.description
       });
       // alert(body);
-      fetch(UPDATE_USER, {
-        method: 'POST',
-        headers: authHeaders(),
-        body: body,
-      }).then((response) => response.json())
-        .then((responseJson) => {
-          // console.log(responseJson);
-          // alert(JSON.stringify(responseJson));
-          saveUserData(this.state);
 
-          Navigation.push(this.props.componentId, {
-            component: {
-              name: 'HomeScreen',
-              passProps: {
-                data: this.state
-              },
-              options: {
-                topBar: {
-                  visible: false,
-                  drawBehind: true,
-                  animate: false,
-                },
-                popGesture: false
-              },
-              sideMenu: {
-                enabled: false,
-                visible: false
-              }
-            }
-          });
-        })
-        .catch((error) => {
-          console.error(error);
-          // alert("Some Error Occured !");
-        });
     } else {
 
-      let body = JSON.stringify({
+      body = JSON.stringify({
         userId: this.state.userId,
         userName: this.state.username,
         userImageData: this.state.image,
@@ -187,44 +157,83 @@ export default class Profile extends Component {
         // userAgeGroup: this.state.ageGroup,
         // userDesciption: this.state.description
       });
-
-      // alert(body);
-      fetch(UPDATE_USER, {
-        method: 'POST',
-        headers: authHeaders(),
-        body: body,
-      }).then((response) => response.json())
-        .then((responseJson) => {
-          // console.log(responseJson);
-          // alert(JSON.stringify(responseJson));
-          saveUserData(this.state);
-
-          Navigation.push(this.props.componentId, {
-            component: {
-              name: 'HomeScreen',
-              passProps: {
-                data: this.state
-              },
-              options: {
-                topBar: {
-                  visible: false,
-                  drawBehind: true,
-                  animate: false,
-                },
-                popGesture: false
-              },
-              sideMenu: {
-                enabled: false,
-                visible: false
-              }
-            }
-          });
-        })
-        .catch((error) => {
-          console.error(error);
-          // alert("Some Error Occured !");
-        });
     }
+    // alert(body);
+
+    fetch(UPDATE_USER, {
+      method: 'POST',
+      headers: authHeaders(),
+      body: body,
+    }).then((response) => response.json())
+      .then((responseJson) => {
+        // console.log(responseJson);
+        // alert(JSON.stringify(responseJson));
+        saveUserData(this.state);
+
+        this.refs.loading.close();
+
+        // Navigation.push(this.props.componentId, {
+        //   component: {
+        //     id: "HomeScreen",
+        //     name: 'HomeScreen',
+        //     passProps: {
+        //       data: this.state
+        //     },
+        //     options: {
+        //       topBar: {
+        //         visible: false,
+        //         drawBehind: true,
+        //         animate: false,
+        //       },
+        //       popGesture: false
+        //     },
+        //     sideMenu: {
+        //       enabled: false,
+        //       visible: false
+        //     }
+        //   }
+        // });
+
+        Navigation.setRoot ({
+          root: {
+            stack: {
+              children: [
+                {
+                  component: {
+                    id: "HomeScreen", // Optional, Auto generated if empty
+                    name: "HomeScreen",
+                    options: {
+                      topBar: {
+                        visible:false,
+                          drawBehind:true,
+                          animate:false
+                      },
+                      popGesture:false
+                    },
+                    passProps:{
+                      data : this.state
+                    },
+                    
+                    sideMenu:{
+                      enabled : false,
+                      visible: false
+                    }
+                    
+                  },
+                },
+              ],
+            },
+          },
+        });
+
+      })
+      .catch((error) => {
+        console.error(error);
+        // alert("Please try again !");
+        this.refs.loading.close();
+        // alert("Some Error Occured !");
+      });
+
   }
 
   onCancel() {
@@ -241,19 +250,19 @@ export default class Profile extends Component {
   }
 
   getAgeGroup = () => {
-    switch(this.state.selectedAgeGroupCode){
-      case ">60" : return 'Above 60';
-      break;
-      case "51-60" : return '51 to 60';
-      break;
-      case "41-50" : return '41 to 50';
-      break;
-      case "31-40" : return '31 to 40';
-      break;
-      case "21-30" : return '21 to 30';
-      break;
-      case "<20" : return 'Teenager';
-      break;
+    switch (this.state.selectedAgeGroupCode) {
+      case ">60": return 'Above 60';
+        break;
+      case "51-60": return '51 to 60';
+        break;
+      case "41-50": return '41 to 50';
+        break;
+      case "31-40": return '31 to 40';
+        break;
+      case "21-30": return '21 to 30';
+        break;
+      case "<20": return 'Teenager';
+        break;
       default: return "";
     }
   }
@@ -301,7 +310,7 @@ export default class Profile extends Component {
               alignItems: 'center',
               backgroundColor: 'clear',
               width: width,
-              height: height
+              // height: height
             }}
             {...options}
             enabled
@@ -323,7 +332,7 @@ export default class Profile extends Component {
 
             <TouchableOpacity onPress={() => this.setState({ visible: true })} style={{ width: '65%' }} >
               <View pointerEvents='none'>
-                <DefaultInput style={{ width: '100%' }} placeholder="Age group" value = {this.getAgeGroup()} editable={false} />
+                <DefaultInput style={{ width: '100%' }} placeholder="Age group" value={this.getAgeGroup()} editable={false} />
               </View>
             </TouchableOpacity>
 
@@ -332,7 +341,7 @@ export default class Profile extends Component {
             <ButtonMod onPress={this.toHomeScreen} color="#a01414">
               Submit
           </ButtonMod>
-            <View style={{ height: 100 }} />
+            {/* <View style={{ height: 100 }} /> */}
 
           </KeyboardAvoidingView>
         </ScrollView>
@@ -347,7 +356,7 @@ export default class Profile extends Component {
                 onPress={() => {
                   this.onCancel()
                   setTimeout(() => {
-                    this.setState({  selectedAgeGroupCode : item.ageGroupCode })
+                    this.setState({ selectedAgeGroupCode: item.ageGroupCode })
                   }, 300);
                 }}>{item.ageGroup}</Button>
             )
@@ -373,6 +382,8 @@ export default class Profile extends Component {
 
         </ShareSheet>
 
+        <Loading ref="loading" />
+        
       </SafeAreaView>
     );
   }

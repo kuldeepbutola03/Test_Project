@@ -18,6 +18,7 @@ import { AREA_PDM, DEBUG, GPR_FLAG, AREA_CDM } from '../../../Apis';
 import Spinner from '../../components/UI/Spinner/Spinner';
 import CustomButton from '../../components/UI/ButtonMod/CustomButtom';
 // import HomeButton from '../../components/UI/HomeButton/HomeButton';
+import firebase from 'react-native-firebase';
 
 export default class PoliceProfileScreen extends Component {
   static propTypes = {
@@ -100,6 +101,13 @@ export default class PoliceProfileScreen extends Component {
 
   componentDidMount() {
     this.serverHitForDetail();
+
+    let screenName = this.props.isPolice ? 'MLA_Screen' : 'MP_Screen';
+    firebase.analytics().setCurrentScreen("Screen", screenName);
+    //firebase.analytics().logEvent("Trends_Screen");
+    firebase.analytics().setUserProperty("Screen", screenName);
+    firebase.analytics().logEvent("Content", { "Screen": screenName });
+
   }
 
   hitServerForLikeDislike(resourceId, isLiked) {

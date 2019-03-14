@@ -10,6 +10,8 @@ import { authHeaders, getUserID } from '../../../Constant';
 import { FETCH_REPLY_POST, MOBILE_NUMBER_, LIKDISLIKE_POST, REPORT_POST, MESSAGE_REPLY, MEDIA_MESSAGE_REPLY } from '../../../Apis';
 import Share, { ShareSheet, Button } from 'react-native-share';
 
+import firebase from 'react-native-firebase';
+
 export default class ReportReplyScreen extends Component {
   dataTappedForMore = null;
   shareOptions = null;
@@ -22,10 +24,10 @@ export default class ReportReplyScreen extends Component {
     console.log(this.props.data);
     this._onRefresh();
 
-    // getUserID((usrid) => {
-    //   currentUserId = usrid
-    //   alert(currentUserId);
-    // });
+    firebase.analytics().setCurrentScreen("Screen", "Arena_Reply_Screen");
+    //firebase.analytics().logEvent("Trends_Screen");
+    firebase.analytics().setUserProperty("Screen", "Arena_Reply_Screen");
+    firebase.analytics().logEvent("Content", { "Screen": "Arena_Reply_Screen" });
   }
 
   state = {

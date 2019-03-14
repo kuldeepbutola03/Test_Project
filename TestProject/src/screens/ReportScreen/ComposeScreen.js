@@ -18,6 +18,8 @@ import ImagePicker from 'react-native-image-crop-picker';
 import { MOBILE_NUMBER_, MESSAGE_COMPOSE, MEDIA_COMPOSE, MEDIA_MESSAGE_REPLY, MESSAGE_REPLY } from '../../../Apis';
 import { normalize, getUserID, DEFAULT_USER_ID, authHeaders, getUserData, authHeadersMedia } from '../../../Constant';
 
+import firebase from 'react-native-firebase';
+
 export default class ComposeScreen extends Component {
 
   state = {
@@ -35,6 +37,15 @@ export default class ComposeScreen extends Component {
   static propTypes = {
     componentId: PropTypes.string,
   };
+
+  componentDidMount() {
+    // this.getDataFromServer(true)
+    firebase.analytics().setCurrentScreen("Screen", "Compose_Screen");
+    //firebase.analytics().logEvent("Trends_Screen");
+    firebase.analytics().setUserProperty("Screen", "Compose_Screen");
+    firebase.analytics().logEvent("Content", { "Screen": "Compose_Screen" });
+}
+
 
   cancel = () => {
     Navigation.dismissModal(this.props.componentId);
