@@ -56,9 +56,10 @@ Navigation.registerComponent('TcScreen', () => TcScreen);
 
 // Start App
 import { AsyncStorage } from "react-native"
-import { DEFAULT_USER_ID, getUserData, saveUserData } from './Constant';
+import { DEFAULT_USER_ID, getUserData, saveUserData, saveUserID } from './Constant';
 
-saveUserData(null);
+// saveUserData(null);
+// saveUserID(null);
 
 Navigation.events ().registerAppLaunchedListener (() => {
 //   SplashScreen.hide()

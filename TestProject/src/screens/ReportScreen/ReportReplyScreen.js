@@ -133,7 +133,10 @@ export default class ReportReplyScreen extends Component {
           "userId": userId
         },
 
-        "isLiked": isLiked
+        "isLiked": isLiked,
+
+        "latitude" : this.props.coordinates ? this.props.coordinates.latitude : 0,
+      "longitude": this.props.coordinates ? this.props.coordinates.longitude : 0,
 
       });
 
@@ -199,8 +202,8 @@ export default class ReportReplyScreen extends Component {
       "displayMessage": "N",
       "reportReason": "",
       "reportCustomReason": "",
-      "latitude": 0,
-      "longitude": 0
+      "latitude" : this.props.coordinates ? this.props.coordinates.latitude : 0,
+      "longitude": this.props.coordinates ? this.props.coordinates.longitude : 0,
 
 
 
@@ -290,15 +293,15 @@ export default class ReportReplyScreen extends Component {
 
       }
 
-      console.log(JSON.stringify(innerData));
+      console.log(JSON.stringify( ));
       console.log(innerData);
       array.push(innerData);
     });
     that = this;
     this.setState({ refreshing: false, replies: array })
-    setTimeout(function () {
-      that.scroll.scrollToEnd({ animated: true });
-    }, 300);
+    // setTimeout(function () {
+    //   that.scroll.scrollToEnd({ animated: true });
+    // }, 300);
 
   }
 
@@ -587,6 +590,7 @@ export default class ReportReplyScreen extends Component {
                     onPressDisLike={(data2) => this.disLikeButtonTapped(data2)}
                     data={data}
                     onPressReply={(data2) => { }}
+                    // backgroundColor = 'red'
                   />
                 )
               }
@@ -612,13 +616,15 @@ export default class ReportReplyScreen extends Component {
               if (data.isOP === "N") {
                 return (
 
-                  <CaseCard
+                  
+                  <CaseCard 
                     moreButtonTapped={this.moreButtonTapped}
                     onPressLike={(data2) => this.likeButtonTapped(data2)}
                     onPressDisLike={(data2) => this.disLikeButtonTapped(data2)}
                     data={data}
                     onPressReply={(data2) => { }}
                   />
+                  
                 )
               }
 

@@ -151,7 +151,10 @@ export default class ReportScreen extends Component {
         "userId": userId
       },
 
-      "isLiked": isLiked
+      "isLiked": isLiked,
+      "latitude" : this.props.coordinates ? this.props.coordinates.latitude : 0,
+      "longitude": this.props.coordinates ? this.props.coordinates.longitude : 0,
+
     });
 
 
@@ -218,8 +221,8 @@ export default class ReportScreen extends Component {
       "displayMessage": "N",
       "reportReason": "",
       "reportCustomReason": "",
-      "latitude": 0,
-      "longitude": 0
+      "latitude" : this.props.coordinates ? this.props.coordinates.latitude : 0,
+      "longitude": this.props.coordinates ? this.props.coordinates.longitude : 0,
 
     });
 

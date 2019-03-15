@@ -117,7 +117,7 @@ export default class QuestionnireScreen extends Component {
                 
             } else {
                 axios.post(GET_CURRENT_ACTIVE_SURVEY, {
-                    isNationalLevel : this.state.state ? 'N' : 'Y',
+                    isNationalLevel : !this.state.state ? 'N' : 'Y',
                     userId : this.props.user_id,
                     userCurrentCoord: this.props.lat_lon
                 })
@@ -213,7 +213,7 @@ export default class QuestionnireScreen extends Component {
                 
             } else {
                 axios.post(GET_CURRENT_ACTIVE_SURVEY, {
-                    isNationalLevel : this.state.state ? 'N' : 'Y',
+                    isNationalLevel : !this.state.state ? 'N' : 'Y',
                     userId : this.props.user_id,
                     userCurrentCoord: this.props.lat_lon,
                     
@@ -275,10 +275,10 @@ export default class QuestionnireScreen extends Component {
         const { questionnaire1 } = this.state;
 
         this.setState({
-            state: true
+            state: false
         })
 
-        this.refs.scrollview.scrollTo({ x: 0, animate: true });
+        this.refs.scrollview.scrollTo({ x: Dimensions.get('window').width , animate: true });
         if(questionnaire1) {
             this.setState({ surveyTitle: questionnaire1.surveyDesc })
         }
@@ -309,9 +309,9 @@ export default class QuestionnireScreen extends Component {
         const { questionnaire2 } = this.state;
 
         this.setState({
-            state: false
+            state: true
         })
-        this.refs.scrollview.scrollTo({ x: Dimensions.get('window').width, animate: true });
+        this.refs.scrollview.scrollTo({ x: 0, animate: true });
 
         if(this.props.surveyTitle) {
             this.setState({ surveyTitle: `SURVEY - ${surveyTitle.toUpperCase()}`})
@@ -533,14 +533,15 @@ export default class QuestionnireScreen extends Component {
                     
                     {/* secondViewStyle */}
                     <View style={secondViewStyle.secondView}>
+                        
+                        <CustomTextButton onPress={this.nationalBttnTapped} style={{ flex: 1 }} textColor = {this.state.state ? "white" : "black"} bgColor={this.state.state ? APP_GLOBAL_COLOR : "transparent"} >NATIONAL</CustomTextButton>
                         <CustomTextButton 
                             onPress={this.stateBttnTapped} 
                             style={{ flex: 1 }} 
-                            textColor = {this.state.state ? "white" : "black"} 
-                            bgColor={this.state.state ? APP_GLOBAL_COLOR : "transparent"} > 
+                            textColor = {!this.state.state ? "white" : "black"} 
+                            bgColor={!this.state.state ? APP_GLOBAL_COLOR : "transparent"} > 
                                 {this.state.questionnaire1.userCurrentState ? this.state.questionnaire1.userCurrentState.toUpperCase() : "STATE" } 
                         </CustomTextButton>
-                        <CustomTextButton onPress={this.nationalBttnTapped} style={{ flex: 1 }} textColor = {!this.state.state ? "white" : "black"} bgColor={!this.state.state ? APP_GLOBAL_COLOR : "transparent"} >NATIONAL</CustomTextButton>
                     </View>
 
                     <View style={{ width: "100%", height: 1 }} backgroundColor="white" />
@@ -551,25 +552,6 @@ export default class QuestionnireScreen extends Component {
                             ref="scrollview"
                         >
 
-                            <View style={thirdViewStyle.innerViewSecond}>
-                                <QuestionniareListView 
-                                    data={this.state.questionniareData1} 
-                                    updateQuestionaire={this.updateQuestionaire}
-                                    isSurveyTaken={this.state.isSurveyTaken1}
-                                    survey={"N"}
-                                    onChangeData={(data, index) => {
-                                        var d = [];
-                                        this.state.questionniareData1.map ((object,indexIn ) => {
-                                            if (index === indexIn){
-                                                d.push(data)
-                                            }else{
-                                                d.push(object)
-                                            } 
-                                        })
-                                        this.setState({questionniareData1 : d});
-                                    }}>
-                                </QuestionniareListView>
-                            </View>
                             <View style={thirdViewStyle.innerViewSecond}>
                                 <QuestionniareListView 
                                     data={this.state.questionniareData2} 
@@ -588,6 +570,26 @@ export default class QuestionnireScreen extends Component {
                                         this.setState({questionniareData2 : d});
                                     }}>
                                 </QuestionniareListView>
+                            </View>
+                            <View style={thirdViewStyle.innerViewSecond}>
+                            <QuestionniareListView 
+                                    data={this.state.questionniareData1} 
+                                    updateQuestionaire={this.updateQuestionaire}
+                                    isSurveyTaken={this.state.isSurveyTaken1}
+                                    survey={"N"}
+                                    onChangeData={(data, index) => {
+                                        var d = [];
+                                        this.state.questionniareData1.map ((object,indexIn ) => {
+                                            if (index === indexIn){
+                                                d.push(data)
+                                            }else{
+                                                d.push(object)
+                                            } 
+                                        })
+                                        this.setState({questionniareData1 : d});
+                                    }}>
+                                </QuestionniareListView>
+                                
                             </View>
                         </ScrollView>
                     </View>

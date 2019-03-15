@@ -67,7 +67,7 @@ export default class ComposeScreen extends Component {
       if (response.data) {
         // alert(response.data);
         // media.push({ uri: "data:image/png;base64," + response.data });
-        media.push({ uri: response.data });
+        media.push({ uri: response.data , width : response[i].width , height : response[i].height });
       }
 
       this.setState({
@@ -87,7 +87,7 @@ export default class ComposeScreen extends Component {
       let media = [];// this.state.selected;
 
       for (i = 0; i < 1; i++) {                //------------------ i < response.length ------------------
-        media.push({ uri: response[i].data });
+        media.push({ uri: response[i].data , width : response[i].width , height : response[i].height });
       }
       // alert(JSON.stringify(media));
       this.setState({
@@ -141,8 +141,8 @@ export default class ComposeScreen extends Component {
           },
 
           "message": this.state.text,
-          "height": "100",
-          "width": "200",
+          "height": this.state.selected[0].height,
+          "width": this.state.selected[0].width,
           "messageType": this.state.mimeType === "image/jpeg" || this.state.mimeType === "image/png" ? "Image" : "Gif",
 
           "mediaContentData": this.state.selected[0].uri,

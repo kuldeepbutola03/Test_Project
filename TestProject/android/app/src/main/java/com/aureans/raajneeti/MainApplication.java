@@ -94,4 +94,7 @@ public class MainApplication extends NavigationApplication implements ShareAppli
         return BuildConfig.APPLICATION_ID + ".provider";
     }
 
+   
+        
+
 }

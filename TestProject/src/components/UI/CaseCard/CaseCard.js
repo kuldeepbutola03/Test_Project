@@ -31,7 +31,8 @@ const caseCard = props => {
   imageheight = imageheight ? (imageheight > 0 ? imageheight : 1) : 1;
   imagewidth = imagewidth ? (imagewidth > 0 ? imagewidth : 1) : 1
 
-  var height = (SCREEN_WIDTH * imageheight) / imagewidth;
+  let isOp = (data.isOP === 'Y');
+  var height = ((SCREEN_WIDTH + (isOp ? 0 : normalize(80))) * imageheight) / imagewidth;
 
   var imageLike = (data.Is_Liked === 1) ? require('../../../assets/ReportImages/likeSelected.png') : require('../../../assets/ReportImages/likeUnSelected.png');
 
@@ -39,29 +40,32 @@ const caseCard = props => {
   var ReplyCount = data.ReplyCount ? data.ReplyCount : 0;
 
   let picture = data.picture ? { ...data.picture, priority: FastImage.priority.normal } : require('../../../assets/Profile/Guest_.png');
+  let userPicture = data.userThumbnailImageData ? {  uri: "data:image/png;base64," + dict.userThumbnailImageData , priority: FastImage.priority.normal } : require('../../../assets/Profile/Guest_.png');
 
+  
+  // data.userThumbnailImageData
   return (
     <View style={style.container}>
 
       {/* header */}
       <View style={{ flexDirection: 'row' }}>
 
-        <View style={{ width: normalize(80), alignItems: 'center' }}>
+        <View style={{ marginLeft : (isOp ? 0 : 40) , width: normalize((isOp ? 80 : 60)), alignItems: 'center' }}>
           <FastImage
             style={{
               // marginRight: normalize(10),
-              width: normalize(70),
-              height: normalize(70),
+              width: normalize((isOp ? 70 : 50)),
+              height: normalize((isOp ? 70 : 50)),
               marginTop: normalize(5),
               marginBottom: normalize(0),
               // borderRadius: normalize(40) / 2,
             }}
-            source={picture}
+            source={userPicture}
           // source={require('../../../assets/user.png')}
           />
           <View style={{ width: '100%', height: normalize(35), flexDirection: 'row' }}>
 
-            <TouchableOpacity style={{ justifyContent: 'flex-start', alignItems: 'center', width: "50%", flexDirection: 'row' }} onPress={() => {
+            <TouchableOpacity style={{ justifyContent: 'flex-start', alignItems: 'center', width: "50%", flexDirection: 'row' , marginLeft :  0 }} onPress={() => {
               if (MOBILE_NUMBER_ === data.Mobile_Number) {
                 alert("You can not like your own post");
               } else {
@@ -81,7 +85,7 @@ const caseCard = props => {
 
             </TouchableOpacity>
 
-            {data.isOP === 'Y' && <TouchableOpacity style={{ justifyContent: 'flex-start', alignItems: 'center', width: "50%", flexDirection: 'row' }} onPress={() => props.onPressReply(data)}>
+            {isOp && <TouchableOpacity style={{ justifyContent: 'flex-start', alignItems: 'center', width: "50%", flexDirection: 'row' }} onPress={() => props.onPressReply(data)}>
               <Image
                 resizeMode="contain"
                 style={{ width: 15, height: 15, marginRight: 3, marginLeft: 4 }}
@@ -152,7 +156,7 @@ const caseCard = props => {
             resizeMode='stretch' //"contain"
             // source={require ('../../../assets/1.png')}
             source={{ ...data.picture, priority: FastImage.priority.normal }}
-            style={{ flex: 1, height: height, width: '100%' }}
+            style={{ flex: 1, height: height, width: '100%' ,  marginLeft : (isOp ? 0 :normalize(80))}}
           />}
       </View>
 
