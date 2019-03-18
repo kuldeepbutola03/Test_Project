@@ -253,16 +253,19 @@ export default class AreaScreen extends Component {
                             passProps: {
                                 email: null,
 
-                                name: thisObject.props.name,
+                                firstName: thisObject.props.firstName,
+                                lastName: thisObject.props.lastName,
                                 image: thisObject.props.image,
                                 username: username,
                                 mobileNumber: thisObject.props.mobileNumber,
                                 code: thisObject.props.code,
                                 userId: thisObject.props.userId,
 
-                                selectedAgeGroupCode: thisObject.selectedAgeGroupCode,
-                                description: thisObject.description,
-                                gender: thisObject.gender
+                                selectedAgeGroupCode: thisObject.props.selectedAgeGroupCode,
+                                description: thisObject.props.description,
+                                userDesignation : thisObject.props.designation,
+                                gender: thisObject.props.gender,
+                                userLanguage : thisObject.props.userLanguage
                             },
                             options: {
                                 topBar: {

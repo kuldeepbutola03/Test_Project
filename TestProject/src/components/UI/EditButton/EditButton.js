@@ -37,15 +37,15 @@ const styles = StyleSheet.create ({
     // position: 'absolute',
     // bottom: 20,
     // left: 45,
-    height: normalize(35),
-    width: normalize(35),
+    height: normalize(20),
+    width: normalize(20),
     // backgroundColor:'rgba(0,0,0,.5)',
-    borderRadius:20,
+    borderRadius:10,
   },
   touch : {
     position: 'absolute',
-    bottom: 15,
-    right: 50,
+    bottom: 45,
+    right: 20,
     // backgroundColor:'transparent'
   }
 });

@@ -201,15 +201,17 @@ export default class OtpScreen extends Component {
                     passProps: {
                       email: responseData.userEmail,
                       image: responseData.userImageData,
-                      name: responseData.userFirstName,
+                      firstName: responseData.userFirstName,
+                      lastName: responseData.userLastName,
                       username: responseData.userName,
                       mobileNumber: thisObj.props.mobileNumber,
                       code: thisObj.props.code,
                       userId: responseData.userId,
-
+                      userDesignation : responseData.userDesignation,
                       selectedAgeGroupCode: responseData.userAgeGroup,
-                      description: responseData.userDesciption,
-                      gender: responseData.userGender
+                      description: responseData.userDescription,
+                      gender: responseData.userGender,
+                      userLanguage: responseData.userLanguage
                     },
                     options: {
                       topBar: {
@@ -231,15 +233,17 @@ export default class OtpScreen extends Component {
                       mobileNumber: thisObj.props.mobileNumber,
                       code: thisObj.props.code,
                       username: responseData.userName,
-                      name: responseData.userFirstName,
+                      firstName: responseData.userFirstName,
+                      lastName: responseData.userLastName,
                       image: responseData.userImageData,
                       userId: responseData.userId,
                       responseData: responseData,
                       dataToSave: data,
-
+                      userDesignation : responseData.userDesignation,
                       selectedAgeGroupCode: responseData.userAgeGroup,
-                      description: responseData.userDesciption,
-                      gender: responseData.userGender
+                      description: responseData.userDescription,
+                      gender: responseData.userGender,
+                      userLanguage: responseData.userLanguage
                     },
                     options: {
                       topBar: {

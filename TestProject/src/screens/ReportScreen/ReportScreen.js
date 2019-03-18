@@ -1,5 +1,14 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, SafeAreaView, Text, ScrollView, RefreshControl, Dimensions, ActionSheetIOS, FlatList, Image, TouchableOpacity } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  SafeAreaView, Text, ScrollView, RefreshControl, Dimensions, ActionSheetIOS, FlatList, Image, TouchableOpacity,
+  ListView,
+  ActivityIndicator,
+  ProgressBarAndroid,
+  ActivityIndicatorIOS,
+  Platform
+} from 'react-native';
 import { Navigation } from 'react-native-navigation';
 import { PropTypes } from 'prop-types';
 import CustomButton from '../../components/UI/ButtonMod/CustomButtom';
@@ -9,12 +18,14 @@ import Draggable from 'react-native-draggable';
 import { TIMELINE_DATA, MOBILE_NUMBER_, LIKDISLIKE_POST, REPORT_POST } from '../../../Apis';
 import { authHeaders } from '../../../Constant';
 
-import { Platform } from 'react-native';
+// import { Platform } from 'react-native';
 
 import Share, { ShareSheet, Button } from 'react-native-share';
 import { Data } from 'victory-native';
 
 import firebase from 'react-native-firebase';
+
+import PullToRefreshListView from 'react-native-smart-pull-to-refresh-listview'
 
 // import SharingCard from '../../components/UI/Sharing/SharingCard';
 export default class ReportScreen extends Component {
@@ -42,7 +53,8 @@ export default class ReportScreen extends Component {
     ],
     iconSrc: require('../../assets/Profile/compose_.png'),
     refreshing: false,
-    visible: false
+    visible: false,
+    menuName: this.getLanguageCode(this.props.data.userLanguage)
   };
 
   static propTypes = {
@@ -59,6 +71,65 @@ export default class ReportScreen extends Component {
     //firebase.analytics().logEvent("Trends_Screen");
     firebase.analytics().setUserProperty("Screen", "Arena_Screen");
     firebase.analytics().logEvent("Content", { "Screen": "Arena_Screen" });
+  }
+
+  refreshUI = (data) => {
+    // getUserData().then((data) => {
+
+    this.props.refreshUI(data);
+    if (data.userLanguage === 'hi') {
+      let menu = "अखाड़ा";
+      this.setState({ menuName: menu, data: data });
+      return;
+    }
+
+    let menu = "Arena";
+    this.setState({ menuName: menu, data: data });
+
+
+    // })
+  }
+
+  getLanguageCode(language) {
+    if (language === 'hi') {
+      let menu = "अखाड़ा"
+      return menu;
+
+    }
+
+    return "Arena"
+
+  }
+  gotoProfile = () => {
+    Navigation.push(this.props.componentId, {
+      component: {
+        name: 'Profile',
+        passProps: {
+          image: this.props.data.image,
+          firstName: this.props.data.firstName,
+          lastName: this.props.data.lastName,
+          // email: this.props.email ? this.props.email : "",
+          username: this.props.data.username,
+          selectedAgeGroupCode: this.props.data.selectedAgeGroupCode,
+          gender: this.props.data.gender,
+          userId: this.props.data.userId,
+          description: this.props.data.description,
+          userDesignation: this.props.data.userDesignation,
+          userLanguage: this.props.data.userLanguage,
+
+          refreshUI: this.refreshUI,
+
+          languageCode: this.props.languageCode
+        },
+        options: {
+          topBar: {
+            visible: false,
+            drawBehind: true,
+            animate: false,
+          },
+        }
+      }
+    });
   }
 
   showCompose = () => {
@@ -152,7 +223,7 @@ export default class ReportScreen extends Component {
       },
 
       "isLiked": isLiked,
-      "latitude" : this.props.coordinates ? this.props.coordinates.latitude : 0,
+      "latitude": this.props.coordinates ? this.props.coordinates.latitude : 0,
       "longitude": this.props.coordinates ? this.props.coordinates.longitude : 0,
 
     });
@@ -221,7 +292,7 @@ export default class ReportScreen extends Component {
       "displayMessage": "N",
       "reportReason": "",
       "reportCustomReason": "",
-      "latitude" : this.props.coordinates ? this.props.coordinates.latitude : 0,
+      "latitude": this.props.coordinates ? this.props.coordinates.latitude : 0,
       "longitude": this.props.coordinates ? this.props.coordinates.longitude : 0,
 
     });
@@ -452,6 +523,178 @@ export default class ReportScreen extends Component {
       });
   }
 
+  ////////////
+  _renderRow = (rowData, sectionID, rowID) => {
+
+    return (
+
+      <TouchableOpacity onPress={() => this.replyButtonTapped()}>
+        <View style={{ flex: 1, height: 50 }}></View>
+        {/* <CaseCard
+          moreButtonTapped={this.moreButtonTapped}
+          onPressLike={(data2) => this.likeButtonTapped(data2)}
+          onPressDisLike={(data2) => this.disLikeButtonTapped(data2)}
+          data={rowData}
+          onPressReply={(data2) => this.replyButtonTapped(data2)}
+        /> */}
+      </TouchableOpacity>
+    )
+  }
+
+  _renderHeader = (viewState) => {
+    let { pullState, pullDistancePercent } = viewState
+    let { refresh_none, refresh_idle, will_refresh, refreshing, } = PullToRefreshListView.constants.viewState
+    pullDistancePercent = Math.round(pullDistancePercent * 100)
+    switch (pullState) {
+      case refresh_none:
+        return (
+          <View style={{ height: 35, justifyContent: 'center', alignItems: 'center', backgroundColor: 'pink', }}>
+            <Text>pull down to refresh</Text>
+          </View>
+        )
+      case refresh_idle:
+        return (
+          <View style={{ height: 35, justifyContent: 'center', alignItems: 'center', backgroundColor: 'pink', }}>
+            <Text>pull down to refresh{pullDistancePercent}%</Text>
+          </View>
+        )
+      case will_refresh:
+        return (
+          <View style={{ height: 35, justifyContent: 'center', alignItems: 'center', backgroundColor: 'pink', }}>
+            <Text>release to refresh{pullDistancePercent > 100 ? 100 : pullDistancePercent}%</Text>
+          </View>
+        )
+      case refreshing:
+        return (
+          <View style={{ flexDirection: 'row', height: 35, justifyContent: 'center', alignItems: 'center', backgroundColor: 'pink', }}>
+            {this._renderActivityIndicator()}<Text>refreshing</Text>
+          </View>
+        )
+    }
+  }
+
+  _renderFooter = (viewState) => {
+    let { pullState, pullDistancePercent } = viewState
+    let { load_more_none, load_more_idle, will_load_more, loading_more, loaded_all, } = PullToRefreshListView.constants.viewState
+    pullDistancePercent = Math.round(pullDistancePercent * 100)
+    switch (pullState) {
+      case load_more_none:
+        return (
+          <View style={{ height: 35, justifyContent: 'center', alignItems: 'center', backgroundColor: 'pink', }}>
+            <Text>pull up to load more</Text>
+          </View>
+        )
+      case load_more_idle:
+        return (
+          <View style={{ height: 35, justifyContent: 'center', alignItems: 'center', backgroundColor: 'pink', }}>
+            <Text>pull up to load more{pullDistancePercent}%</Text>
+          </View>
+        )
+      case will_load_more:
+        return (
+          <View style={{ height: 35, justifyContent: 'center', alignItems: 'center', backgroundColor: 'pink', }}>
+            <Text>release to load more{pullDistancePercent > 100 ? 100 : pullDistancePercent}%</Text>
+          </View>
+        )
+      case loading_more:
+        return (
+          <View style={{ flexDirection: 'row', height: 35, justifyContent: 'center', alignItems: 'center', backgroundColor: 'pink', }}>
+            {this._renderActivityIndicator()}<Text>loading</Text>
+          </View>
+        )
+      case loaded_all:
+        return (
+          <View style={{ height: 35, justifyContent: 'center', alignItems: 'center', backgroundColor: 'pink', }}>
+            <Text>no more</Text>
+          </View>
+        )
+    }
+  }
+
+  _onRefresh2 = () => {
+    //console.log('outside _onRefresh start...')
+
+    //simulate request data
+    this.setTimeout(() => {
+
+      //console.log('outside _onRefresh end...')
+      // let addNum = 20
+      // let refreshedDataList = []
+      // for (let i = 0; i < addNum; i++) {
+      //   refreshedDataList.push({
+      //     text: `item-${i}`
+      //   })
+      // }
+
+      // this.setState({
+      //   dataList: refreshedDataList,
+      //   dataSource: this._dataSource.cloneWithRows(refreshedDataList),
+      // })
+      this._pullToRefreshListView.endRefresh()
+
+    }, 3000)
+  }
+
+  _onLoadMore = () => {
+    //console.log('outside _onLoadMore start...')
+
+    this.setTimeout(() => {
+
+      //console.log('outside _onLoadMore end...')
+
+      // let length = this.state.dataList.length
+      // let addNum = 20
+      // let addedDataList = []
+      // if (length >= 100) {
+      //   addNum = 3
+      // }
+      // for (let i = length; i < length + addNum; i++) {
+      //   addedDataList.push({
+      //     text: `item-${i}`
+      //   })
+      // }
+      // let newDataList = this.state.dataList.concat(addedDataList)
+      // this.setState({
+      //   dataList: newDataList,
+      //   dataSource: this._dataSource.cloneWithRows(newDataList),
+      // })
+
+      // let loadedAll
+      // if (length >= 100) {
+      //   loadedAll = true
+      //   this._pullToRefreshListView.endLoadMore(loadedAll)
+      // }
+      // else {
+      //   loadedAll = false
+      this._pullToRefreshListView.endLoadMore(loadedAll)
+      // }
+
+    }, 3000)
+  }
+
+  _renderActivityIndicator() {
+    return ActivityIndicator ? (
+      <ActivityIndicator
+        style={{ marginRight: 10, }}
+        animating={true}
+        color={'#ff0000'}
+        size={'small'} />
+    ) : Platform.OS == 'android' ?
+        (
+          <ProgressBarAndroid
+            style={{ marginRight: 10, }}
+            color={'#ff0000'}
+            styleAttr={'Small'} />
+
+        ) : (
+          <ActivityIndicatorIOS
+            style={{ marginRight: 10, }}
+            animating={true}
+            color={'#ff0000'}
+            size={'small'} />
+        )
+  }
+
   render() {
     const {
       width: SCREEN_WIDTH,
@@ -477,41 +720,68 @@ export default class ReportScreen extends Component {
               onPress={this.homeButtonTapped}
             />
           </View>
-          <View style={{ flex: 2.5, backgroundColor: 'clear', flexDirection: 'row', alignItems: 'center' }}>
-            <Image
-              style={{
-                backgroundColor: APP_GLOBAL_COLOR,
-                marginLeft: normalize(10),
-                width: normalize(30),
-                height: normalize(30),
-                marginTop: normalize(5),
-                marginBottom: normalize(5),
-                borderRadius: normalize(30) / 2,
-              }}
-              source={this.props.data.image ? { uri: "data:image/png;base64," + this.props.data.image } : require('../../assets/UserSmall.png')}
-            />
+          <TouchableOpacity onPress={this.gotoProfile} style={{ flex: 2.5 }}>
+            <View style={{ flex: 1, backgroundColor: 'clear', flexDirection: 'row', alignItems: 'center' }}>
+              <Image
+                style={{
+                  backgroundColor: APP_GLOBAL_COLOR,
+                  marginLeft: normalize(10),
+                  width: normalize(30),
+                  height: normalize(30),
+                  marginTop: normalize(5),
+                  marginBottom: normalize(5),
+                  borderRadius: normalize(30) / 2,
+                }}
+                source={this.props.data.image ? { uri: "data:image/png;base64," + this.props.data.image } : require('../../assets/UserSmall.png')}
+              />
 
-            <Text
-              style={{
-                justifyContent: 'center',
-                alignItems: 'center',
-                marginLeft: 5,
-                fontSize: normalize(14),
-                color: 'white',
-              }}>
-              {this.props.data.username}
-            </Text>
-          </View>
+              <Text
+                style={{
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginLeft: 5,
+                  fontSize: normalize(14),
+                  color: 'white',
+                }}>
+                {this.props.data.username}
+              </Text>
+            </View>
+          </TouchableOpacity>
           <View style={styles.textheaderView}>
-            <Text style={styles.textView}>Arena</Text>
+            <Text style={styles.textView}>{this.state.menuName}</Text>
           </View>
 
         </View>
+        {/* <PullToRefreshListView
+          style={styles.bottomView}
+          ref={(component) => this._pullToRefreshListView = component}
+          viewType={PullToRefreshListView.constants.viewType.listView}
+          contentContainerStyle={{ backgroundColor: 'yellow', }}
+          style={{ marginTop: Platform.OS == 'ios' ? 64 : 56, }}
+          initialListSize={1}
+          enableEmptySections={true}
+          dataSource={[{
+            text: 'item-0'
+        },{text: 'item-1'}]}
+          pageSize={1}
+          renderRow={this._renderRow}
+          renderHeader={this._renderHeader}
+          renderFooter={this._renderFooter}
+          //renderSeparator={(sectionID, rowID) => <View style={styles.separator} />}
+          onRefresh={this._onRefresh2}
+          onLoadMore={this._onLoadMore}
+          pullUpDistance={35}
+          pullUpStayDistance={50}
+          pullDownDistance={35}
+          pullDownStayDistance={50}
+        /> */}
         <FlatList
           style={styles.bottomView}
           onRefresh={this._onRefresh}
           refreshing={this.state.refreshing}
           data={this.state.case}
+
+          scrollEventThrottle={400}
           renderItem={({ item }) =>
             <TouchableOpacity onPress={() => this.replyButtonTapped(item)}>
               <CaseCard
@@ -526,26 +796,7 @@ export default class ReportScreen extends Component {
         >
         </FlatList>
 
-        {/* <ScrollView style={styles.bottomView}
-          refreshControl={
-            <RefreshControl
-              refreshing={this.state.refreshing}
 
-              onRefresh={this._onRefresh}
-            />
-          }
-        >
-
-          {this.state.case.map(data => (
-
-            <CaseCard
-              moreButtonTapped={this.moreButtonTapped}
-              onPressLike={(data) => this.likeButtonTapped(data)}
-              data={data}
-            />
-          ))}
-
-        </ScrollView> */}
 
 
         <ShareSheet visible={this.state.visible} onCancel={() => { this.onCancel() }}>

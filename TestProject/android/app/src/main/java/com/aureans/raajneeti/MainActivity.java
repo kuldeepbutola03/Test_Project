@@ -6,7 +6,7 @@ import com.facebook.react.modules.core.PermissionListener; // <- add this import
 import android.content.Intent;
 import org.devio.rn.splashscreen.SplashScreen; 
 
-// import com.joshblour.reactnativepermissions.ReactNativePermissionsPackage;
+   //import package
 
 public class MainActivity extends NavigationActivity implements OnImagePickerPermissionsCallback {
   private PermissionListener listener; //imagepicker

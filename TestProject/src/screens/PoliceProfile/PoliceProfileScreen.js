@@ -40,9 +40,21 @@ export default class PoliceProfileScreen extends Component {
       totalFlagCount_2: null,
       totalFlagUniqueCount_1: null,
       totalFlagUniqueCount_2: null,
-      showInfo: false
+      showInfo: false,
+      menuName : this.getLanguageCode(this.props.userLanguage)
     }
   };
+
+  getLanguageCode(language) {
+    if (language === 'hi') {
+      let menu = "रेट करें";
+      return menu;
+    }
+    
+    return "Rate Now";
+    
+  }
+
 
   showInfoScreen(show) {
     this.setState({ showInfo: show });
@@ -365,7 +377,7 @@ export default class PoliceProfileScreen extends Component {
               fontWeight: 'bold',
               color: 'white'
             }}>
-              {"Every Opinion Counts. Rate Now !"}</Text>
+              {this.state.menuName}</Text>
             {/* {this.props.isPolice ? "Every Opinion Counts. Rate Now !" : "Rate Your MP | PM"}</Text> */}
             {/* <Text adjustsFontSizeToFit numberOfLines={1} minimumFontScale={.8} style={cardViewStyle.textView}>{this.props.name}</Text> */}
             {/* <Text style={cardViewStyle.textView2}>{this.props.area === "PDM | null" ? "PDM" : this.props.area}</Text> */}

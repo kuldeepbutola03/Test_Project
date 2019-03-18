@@ -33,6 +33,7 @@ import io.invertase.firebase.analytics.RNFirebaseAnalyticsPackage;
 import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;                      
 import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
 
+import com.reactnativecomponent.swiperefreshlayout.RCTSwipeRefreshLayoutPackage; 
 
 public class MainApplication extends NavigationApplication implements ShareApplication, ReactApplication {
 
@@ -78,7 +79,8 @@ public class MainApplication extends NavigationApplication implements ShareAppli
                 new RNFirebaseAuthPackage(),
                 new PickerPackage(),
                 new RNFirebaseMessagingPackage(),
-                new RNFirebaseNotificationsPackage()
+                new RNFirebaseNotificationsPackage(),
+                new RCTSwipeRefreshLayoutPackage() 
                 
 
         );

@@ -56,16 +56,44 @@ export default class HomeScreen extends Component {
       coordinates: null,
       language: 'English',
 
-      
+      data: this.props.data,
+      menuName: this.getLanguageCode(this.props.data.userLanguage)
       // loadingFourth
     };
+  }
+  // this.props.updateUser
+  refreshUI = (data) => {
+    // getUserData().then((data) => {
+
+    if (data.userLanguage === 'hi') {
+      let menu = ['रुझान', 'सर्वे', 'अखाड़ा'];
+      this.setState({ menuName: menu, data: data });
+      return;
+    }
+
+    let menu = ['Trends', 'Survey', 'Arena'];
+    this.setState({ menuName: menu, data: data });
+
+
+    // })
+  }
+
+  getLanguageCode(language) {
+    if (language === 'hi') {
+      let menu = ['रुझान', 'सर्वे', 'अखाड़ा']
+      this.setState({ menuName: menu });
+      return menu;
+    }
+
+    return ['Trends', 'Survey', 'Arena']
+
   }
 
   tick = () => {
 
     // alert('aaa');
     Permissions.check('location').then(response => {
-      if (response === 'denied' || response === 'undetermined' ) {
+      if (response === 'denied' || response === 'undetermined') {
         // this.setState({ isForFirstTime: true });
         this._requestPermission();
       } else if (response === 'authorized') {
@@ -99,7 +127,9 @@ export default class HomeScreen extends Component {
         passProps: {
           user_id: this.state.user_id,
           lat_long: this.state.lat_lon,
-          isPolice: false
+          isPolice: false,
+          userLanguage: this.state.data.userLanguage,
+          languageCode: this.state.firstAPIresponse ? this.state.firstAPIresponse.languageCodes : null
         }
 
       },
@@ -121,7 +151,9 @@ export default class HomeScreen extends Component {
         passProps: {
           user_id: this.state.user_id,
           lat_long: this.state.lat_lon,
-          isPolice: true
+          isPolice: true,
+          userLanguage: this.state.data.userLanguage,
+          languageCode: this.state.firstAPIresponse ? this.state.firstAPIresponse.languageCodes : null
         }
 
       },
@@ -150,7 +182,10 @@ export default class HomeScreen extends Component {
         passProps: {
           coordinates: this.state.coordinates,
           user_id: this.state.user_id,
-          data: this.props.data,
+          data: this.state.data,
+          refreshUI: this.refreshUI,
+          userLanguage: this.state.data.userLanguage,
+          languageCode: this.state.firstAPIresponse ? this.state.firstAPIresponse.languageCodes : null
         },
       },
     });
@@ -170,6 +205,7 @@ export default class HomeScreen extends Component {
         passProps: {
           user_id: this.state.user_id,
           lat_lon: this.state.lat_lon,
+          userLanguage: this.state.data.userLanguage,
         }
       },
     });
@@ -189,8 +225,12 @@ export default class HomeScreen extends Component {
         passProps: {
           resourceIdPDM: this.state.firstAPIresponse ? this.state.firstAPIresponse.firResourceId : 1,
           resourceIdCDM: this.state.firstAPIresponse ? this.state.firstAPIresponse.polResourceId : 1,
-          image: this.props.data.image,
-          username: this.props.data.username
+          image: this.state.data.image,
+          username: this.state.data.username,
+          data: this.state.data,
+          refreshUI: this.refreshUI,
+          userLanguage: this.state.data.userLanguage,
+          languageCode: this.state.firstAPIresponse ? this.state.firstAPIresponse.languageCodes : null
         }
       },
     });
@@ -275,17 +315,17 @@ export default class HomeScreen extends Component {
     this.backHandler.remove();
 
     firebase.analytics().setCurrentScreen("Home_Screen");
-//firebase.analytics().logEvent("Home_Screen");
-firebase.analytics().setUserProperty("Screen","Home_Screen");
-firebase.analytics().logEvent("Content",{"Screen":"Home_Screen"});
+    //firebase.analytics().logEvent("Home_Screen");
+    firebase.analytics().setUserProperty("Screen", "Home_Screen");
+    firebase.analytics().logEvent("Content", { "Screen": "Home_Screen" });
   }
 
   goBack = () => {
-    if (this.props.componentId === "HomeScreen" ||  this.props.componentId === "Component10") {
+    if (this.props.componentId === "HomeScreen" || this.props.componentId === "Component10") {
       BackHandler.exitApp();
       return true;
 
-    } 
+    }
   }
 
   componentDidMount() {
@@ -416,10 +456,16 @@ firebase.analytics().logEvent("Content",{"Screen":"Home_Screen"});
 
   serverHitForFourthResponse = () => {
     // console.log('called')
-    axios.post(LANDING_TOP_SIX, {
+    var body = {
       userId: this.state.user_id,
-      latLngSeparatedByComma: this.state.lat_lon
-    })
+      // latLngSeparatedByComma: "27.5,77.5",
+      // languageCode: this.state.data.userLanguage ? this.state.data.userLanguage : 'en'
+    };
+    if (this.state.lat_lon) {
+      body.push({ latLngSeparatedByComma: this.state.lat_lon });
+    }
+
+    axios.post(LANDING_TOP_SIX, body)
       .then(response => {
         let responseData = response.data;
         // console.log(responseData)
@@ -600,8 +646,46 @@ firebase.analytics().logEvent("Content",{"Screen":"Home_Screen"});
     }
   }
 
+  gotoProfile = () => {
+
+
+    let labguageCode = this.state.firstAPIresponse ? this.state.firstAPIresponse.languageCodes : null;
+
+    let body = {
+      image: this.state.data.image,
+      firstName: this.state.data.firstName,
+      lastName: this.state.data.lastName,
+      // email: this.props.email ? this.props.email : "",
+      username: this.state.data.username,
+      selectedAgeGroupCode: this.state.data.selectedAgeGroupCode,
+      gender: this.state.data.gender,
+      userId: this.state.data.userId,
+      description: this.state.data.description,
+      userDesignation: this.state.data.userDesignation,
+      userLanguage: this.state.data.userLanguage,
+
+      refreshUI: this.refreshUI,
+
+      languageCode: labguageCode
+    };
+
+    Navigation.push(this.props.componentId, {
+      component: {
+        name: 'Profile',
+        passProps: body,
+        options: {
+          topBar: {
+            visible: false,
+            drawBehind: true,
+            animate: false,
+          },
+        }
+      }
+    });
+  }
+
   render() {
-    let menuName = ['Trends', 'Survey', 'Arena'];
+    let menuName = this.state.menuName;
     let menuImageName = [
       require('../../assets/trends.png'),
       require('../../assets/survey.png'),
@@ -613,23 +697,14 @@ firebase.analytics().logEvent("Content",{"Screen":"Home_Screen"});
     swipe = () => {
       this.scroll.scrollTo({ x: wd, y: 0, animated: true });
     };
+    // if (this.state.landingTopSix) {
+    //   let keys = this.state.landingTopSix.keys;
+    //   if (!keys.contains("areaTopSixResources2")) {
+    //     return (<View></View>);
+    //   }
+    // }
+    
 
-    const cdmImage1 = this.state.thirdAPIresponse ? { uri: 'data:image/png;base64,' + this.state.thirdAPIresponse.cdmResourceImageData } : require('../../assets/Extra/people1.png');
-    const cdmImage2 = this.state.thirdAPIresponse ? { uri: 'data:image/png;base64,' + this.state.thirdAPIresponse.cdmo1OrCnd1ResourceImageData } : require('../../assets/Extra/people2.png');
-    const cdmImage3 = this.state.thirdAPIresponse ? { uri: 'data:image/png;base64,' + this.state.thirdAPIresponse.cdmo2OrCnd2ResourceImageData } : require('../../assets/Extra/people3.png');
-    const cdmGPR1 = this.state.thirdAPIresponse ? this.state.thirdAPIresponse.cdmResourceGPR : "25";
-    const cdmGPR2 = this.state.thirdAPIresponse ? this.state.thirdAPIresponse.cdmo1OrCnd1ResourceGPR : "10";
-    const cdmGPR3 = this.state.thirdAPIresponse ? this.state.thirdAPIresponse.cdmo2OrCnd2ResourceGPR : "9";
-
-
-    const pdmImage1 = this.state.secondAPIresponse ? { uri: 'data:image/png;base64,' + this.state.secondAPIresponse.pdmResourceImageData } : require('../../assets/Extra/people1.png');
-    const pdmImage2 = this.state.secondAPIresponse ? { uri: 'data:image/png;base64,' + this.state.secondAPIresponse.pdmo1OrCndp1ResourceImageData } : require('../../assets/Extra/people3.png');
-    const pdmImage3 = this.state.secondAPIresponse ? { uri: 'data:image/png;base64,' + this.state.secondAPIresponse.pdmo2OrCndp2ResourceImageData } : require('../../assets/Extra/people2.png');
-
-
-    const pdmGPR1 = this.state.secondAPIresponse ? this.state.secondAPIresponse.pdmResourceGPR : "30";
-    const pdmGPR2 = this.state.secondAPIresponse ? this.state.secondAPIresponse.pdmo1OrCndp1ResourceGPR : "25";
-    const pdmGPR3 = this.state.secondAPIresponse ? this.state.secondAPIresponse.pdmo2OrCndp2ResourceGPR : "11";
 
     const resourceGPR_1 = this.state.landingTopSix ? this.state.landingTopSix.resourceGPR_1 : 40;
     const resourceGPR_2 = this.state.landingTopSix ? this.state.landingTopSix.resourceGPR_2 : 20;
@@ -638,6 +713,26 @@ firebase.analytics().logEvent("Content",{"Screen":"Home_Screen"});
     const resourceGPR_5 = this.state.landingTopSix ? this.state.landingTopSix.resourceGPR_5 : 55;
     const resourceGPR_6 = this.state.landingTopSix ? this.state.landingTopSix.resourceGPR_6 : 70;
 
+    const resourceGPR_1_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceGPR_1 : 40;
+    const resourceGPR_2_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceGPR_2 : 20;
+    const resourceGPR_3_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceGPR_3 : 10;
+    const resourceGPR_4_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceGPR_4 : 30;
+    const resourceGPR_5_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceGPR_5 : 55;
+    const resourceGPR_6_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceGPR_6 : 70;
+
+    const resourceGPR_A_1 = [resourceGPR_1,
+      resourceGPR_2,
+      resourceGPR_3,
+      resourceGPR_4,
+      resourceGPR_5,
+      resourceGPR_6];
+    const resourceGPR_A_2 = [resourceGPR_1_,
+      resourceGPR_2_,
+      resourceGPR_3_,
+      resourceGPR_4_,
+      resourceGPR_5_,
+      resourceGPR_6_,];
+
     const resourceImageData_1 = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceImageData_1 } : null
     const resourceImageData_2 = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceImageData_2 } : null
     const resourceImageData_3 = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceImageData_3 } : null
@@ -645,32 +740,141 @@ firebase.analytics().logEvent("Content",{"Screen":"Home_Screen"});
     const resourceImageData_5 = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceImageData_5 } : null
     const resourceImageData_6 = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceImageData_6 } : null
 
+    const resourceImageData_1_ = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.areaTopSixResources2.resourceImageData_1 } : null
+    const resourceImageData_2_ = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.areaTopSixResources2.resourceImageData_2 } : null
+    const resourceImageData_3_ = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.areaTopSixResources2.resourceImageData_3 } : null
+    const resourceImageData_4_ = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.areaTopSixResources2.resourceImageData_4 } : null
+    const resourceImageData_5_ = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.areaTopSixResources2.resourceImageData_5 } : null
+    const resourceImageData_6_ = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.areaTopSixResources2.resourceImageData_6 } : null
+
+    const resourceImageData_A = [
+      resourceImageData_1,
+      resourceImageData_2,
+      resourceImageData_3,
+      resourceImageData_4,
+      resourceImageData_5,
+      resourceImageData_6];
+
+    const resourceImageData_A_2 = [
+      resourceImageData_1_,
+      resourceImageData_2_,
+      resourceImageData_3_,
+      resourceImageData_4_,
+      resourceImageData_5_,
+      resourceImageData_6_];
+
     const resourceCategoryLogoData_1 = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceCategoryLogoData_1 } : null
     const resourceCategoryLogoData_2 = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceCategoryLogoData_2 } : null
     const resourceCategoryLogoData_3 = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceCategoryLogoData_3 } : null
     const resourceCategoryLogoData_4 = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceCategoryLogoData_4 } : null
     const resourceCategoryLogoData_5 = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceCategoryLogoData_5 } : null
     const resourceCategoryLogoData_6 = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceCategoryLogoData_6 } : null
+
+    const resourceCategoryLogoData_1_ = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.areaTopSixResources2.resourceCategoryLogoData_1 } : null
+    const resourceCategoryLogoData_2_ = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.areaTopSixResources2.resourceCategoryLogoData_2 } : null
+    const resourceCategoryLogoData_3_ = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.areaTopSixResources2.resourceCategoryLogoData_3 } : null
+    const resourceCategoryLogoData_4_ = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.areaTopSixResources2.resourceCategoryLogoData_4 } : null
+    const resourceCategoryLogoData_5_ = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.areaTopSixResources2.resourceCategoryLogoData_5 } : null
+    const resourceCategoryLogoData_6_ = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.areaTopSixResources2.resourceCategoryLogoData_6 } : null
+
+
+    const esourceCategoryLogoData_A = [
+      resourceCategoryLogoData_1,
+      resourceCategoryLogoData_2,
+      resourceCategoryLogoData_3,
+      resourceCategoryLogoData_4,
+      resourceCategoryLogoData_5,
+      resourceCategoryLogoData_6];
+    const esourceCategoryLogoData_A_2 = [
+      resourceCategoryLogoData_1_,
+      resourceCategoryLogoData_2_,
+      resourceCategoryLogoData_3_,
+      resourceCategoryLogoData_4_,
+      resourceCategoryLogoData_5_,
+      resourceCategoryLogoData_6_];
+
+    const resourceName_1 = this.state.landingTopSix ? this.state.landingTopSix.resourceName_1 : "";
+    const resourceName_2 = this.state.landingTopSix ? this.state.landingTopSix.resourceName_2 : "";
+    const resourceName_3 = this.state.landingTopSix ? this.state.landingTopSix.resourceName_3 : "";
+    const resourceName_4 = this.state.landingTopSix ? this.state.landingTopSix.resourceName_4 : "";
+    const resourceName_5 = this.state.landingTopSix ? this.state.landingTopSix.resourceName_5 : "";
+    const resourceName_6 = this.state.landingTopSix ? this.state.landingTopSix.resourceName_6 : "";
+
+    const resourceName_1_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceName_1 : "";
+    const resourceName_2_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceName_2 : "";
+    const resourceName_3_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceName_3 : "";
+    const resourceName_4_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceName_4 : "";
+    const resourceName_5_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceName_5 : "";
+    const resourceName_6_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceName_6 : "";
+
+    const resourceName_A = [resourceName_1,
+      resourceName_2,
+      resourceName_3,
+      resourceName_4,
+      resourceName_5,
+      resourceName_6];
+
+    const resourceName_A_2 = [resourceName_1_,
+      resourceName_2_,
+      resourceName_3_,
+      resourceName_4_,
+      resourceName_5_,
+      resourceName_6_];
+
+
+    const resourceCategoryName_1 = this.state.landingTopSix ? this.state.landingTopSix.resourceCategoryName_1 : "";
+    const resourceCategoryName_2 = this.state.landingTopSix ? this.state.landingTopSix.resourceCategoryName_2 : "";
+    const resourceCategoryName_3 = this.state.landingTopSix ? this.state.landingTopSix.resourceCategoryName_3 : "";
+    const resourceCategoryName_4 = this.state.landingTopSix ? this.state.landingTopSix.resourceCategoryName_4 : "";
+    const resourceCategoryName_5 = this.state.landingTopSix ? this.state.landingTopSix.resourceCategoryName_5 : "";
+    const resourceCategoryName_6 = this.state.landingTopSix ? this.state.landingTopSix.resourceCategoryName_6 : "";
+
+    const resourceCategoryName_1_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceCategoryName_1 : "";
+    const resourceCategoryName_2_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceCategoryName_2 : "";
+    const resourceCategoryName_3_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceCategoryName_3 : "";
+    const resourceCategoryName_4_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceCategoryName_4 : "";
+    const resourceCategoryName_5_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceCategoryName_5 : "";
+    const resourceCategoryName_6_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceCategoryName_6 : "";
+
+
+    const resourceCategoryName_A = [resourceCategoryName_1,
+      resourceCategoryName_2,
+      resourceCategoryName_3,
+      resourceCategoryName_4,
+      resourceCategoryName_5,
+      resourceCategoryName_6];
+
+    const resourceCategoryName_A_2 = [resourceCategoryName_1_,
+      resourceCategoryName_2_,
+      resourceCategoryName_3_,
+      resourceCategoryName_4_,
+      resourceCategoryName_5_,
+      resourceCategoryName_6_];
+
+
     console.log(this.state)
+
+
     return (
       <SafeAreaView
         forceInset={{ bottom: 'always' }}
         style={{ flex: 1, backgroundColor: 'rgba(210,210,208,1)' }}
       >
         <View style={stylesTopView.container}>
-          <Image
-            style={{
-              marginLeft: normalize(10),
-              width: normalize(40),
-              height: normalize(40),
-              marginTop: normalize(5),
-              marginBottom: normalize(5),
-              borderRadius: normalize(40) / 2,
-            }}
-            // source={typeof(this.props.data.image) === 'number' ? require('../../assets/UserSmall.png') : this.props.data.image}
-            source={this.props.data.image ? { uri: "data:image/png;base64," + this.props.data.image } : require('../../assets/UserSmall.png')}
-          />
-
+          <TouchableOpacity onPress={this.gotoProfile}>
+            <Image
+              style={{
+                marginLeft: normalize(10),
+                width: normalize(40),
+                height: normalize(40),
+                marginTop: normalize(5),
+                marginBottom: normalize(5),
+                borderRadius: normalize(40) / 2,
+              }}
+              // source={typeof(this.props.data.image) === 'number' ? require('../../assets/UserSmall.png') : this.props.data.image}
+              source={this.state.data.image ? { uri: "data:image/png;base64," + this.state.data.image } : require('../../assets/UserSmall.png')}
+            />
+          </TouchableOpacity>
           <Text
             style={{
               justifyContent: 'center',
@@ -680,7 +884,7 @@ firebase.analytics().logEvent("Content",{"Screen":"Home_Screen"});
               color: 'white',
             }}
           >
-            {this.props.data.username}
+            {this.state.data.username}
           </Text>
 
           {/* <View style={{ height: 40, width: 100, position: 'absolute', right: 10 ,top:2}} >
@@ -717,26 +921,35 @@ firebase.analytics().logEvent("Content",{"Screen":"Home_Screen"});
           }}
         >
           {this.state.landingTopSix ?
-            <View style={{ width: wd, flex: 1, padding: normalize(8) }}>
-              <TopSix
-                source={[resourceImageData_1,
-                  resourceImageData_2,
-                  resourceImageData_3,
-                  resourceImageData_4,
-                  resourceImageData_5,
-                  resourceImageData_6]}
+            (<View style={{ flexDirection: 'row' }}>
+              <View style={{ width: wd, flex: 1, padding: normalize(8) }}>
+                <TopSix
+                  source={resourceImageData_A}
 
-                logo={[resourceCategoryLogoData_1,
-                  resourceCategoryLogoData_2,
-                  resourceCategoryLogoData_3,
-                  resourceCategoryLogoData_4,
-                  resourceCategoryLogoData_5,
-                  resourceCategoryLogoData_6]}
+                  logo={esourceCategoryLogoData_A}
+                  logoName={resourceName_A}
 
-                resourceGpr={[resourceGPR_1, resourceGPR_2, resourceGPR_3, resourceGPR_4, resourceGPR_5, resourceGPR_6,]}
-                renderButton={this.renderSurveyButton}
-              />
-            </View> :
+                  logoCatName={resourceCategoryName_A}
+
+                  resourceGpr={resourceGPR_A_1}
+                  renderButton={this.renderSurveyButton}
+                />
+              </View>
+              <View style={{ width: wd, flex: 1, padding: normalize(8) }}>
+                <TopSix
+                  source={resourceImageData_A_2}
+
+                  logo={esourceCategoryLogoData_A_2}
+
+                  logoName={resourceName_A_2}
+                  logoCatName={resourceCategoryName_A_2}
+
+                  resourceGpr={resourceGPR_A_2}
+                  renderButton={this.renderSurveyButton}
+                />
+              </View>
+            </View>
+            ) :
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: wd }}>
               <Spinner />
             </View>

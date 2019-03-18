@@ -161,19 +161,54 @@ class menuButtons extends React.Component {
       )
     }
   }
+  renderItem3 = ({ item, index }) => {
+    if (index === 0) {
+      return null;
+    } else {
+      return (
+        <View
+          style={{
+            flex: 1,
+            padding: 5,
+            marginHorizontal: normalize(13),
+            width: '100%',
+            flexDirection : 'row'
+          }}>
+          <View style={{ flex: 1, width: '50%', marginRight: normalize(4) }}>
+            <Text
+              style={
+                index == 0 ? listTitleStyle.headerView : listTitleStyle.view
+              }
+            >
+              {item.attributeName}
+            </Text>
+          </View>
+          <View style={{ flex: 1, width: '50%', marginRight: normalize(4), justifyContent: 'flex-end' }}>
+            <Text
+              style={
+                index == 0 ? listTitleStyle.headerView : listTitleStyle.view
+              }
+            > 
+              {item.attributeValue}
+            </Text>
+          </View>
+        </View>
+      )
+    }
+  }
 
   renderSubmitIcon = () => {
     const { isFlagEnabled } = this.props;
     if (isFlagEnabled === 'Y' && this.state.submitted === false) {
       return (
         <TouchableHighlight onPress={() => this.submitRating()}>
-          <FontAwesome name="check-circle" size={20} color="green" />
+          <FontAwesome name="check-circle" size={25} color="green" />
         </TouchableHighlight>
       )
     } else {
       return (
         <TouchableWithoutFeedback onPress={() => { }}>
-          <FontAwesome name="check-circle" size={20} color="#999" />
+          <FontAwesome name="check-circle" size={25} color="#999" />
         </TouchableWithoutFeedback>
       )
     }
@@ -181,6 +216,8 @@ class menuButtons extends React.Component {
 
   render() {
     console.log(this.props)
+
+    // alert(JSON.stringify(this.props.data.data));
     let flag = this.props.showHome;
     const { loading } = this.state;
     return (
@@ -233,10 +270,10 @@ class menuButtons extends React.Component {
                 />
               </View>
 
-              <View style={{ flexDirection: 'row', justifyContent: 'center' , padding : 5 }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'center', padding: 5 }}>
 
-                <View style={{flexDirection: 'row'  , flex : 1}} backgroundColor="transparent" >
-                  <Image source={require("../../../assets/flagIn.png")} resizeMode="cover" style={{ height: 20, width: 25, marginTop: 6}} />
+                <View style={{ flexDirection: 'row', flex: 1 }} backgroundColor="transparent" >
+                  <Image source={require("../../../assets/flagIn.png")} resizeMode="cover" style={{ height: 20, width: 25, marginTop: 6 }} />
                   <Text
                     style={{
                       marginTop: 8,
@@ -249,7 +286,7 @@ class menuButtons extends React.Component {
                   </Text>
                 </View>
 
-                <View style={{flexDirection: 'row'  , flex : 1 }} backgroundColor="transparent" >
+                <View style={{ flexDirection: 'row', flex: 1 }} backgroundColor="transparent" >
 
                   <Image source={require("../../../assets/earth.png")} resizeMode="contain" style={{ height: 20, width: 25, marginTop: 6 }} />
                   <Text
@@ -298,7 +335,7 @@ class menuButtons extends React.Component {
                   maxStars={5}
                   rating={this.state.starCount}
                   fullStarColor={'#FAA21B'}
-                  starSize={20}
+                  starSize={25}
                   selectedStar={(rating) => this.onStarRatingPress(rating)}
                 />
                 {loading ?
@@ -317,19 +354,27 @@ class menuButtons extends React.Component {
           <View style={[styles.row, styles.thirdRow]}>
             <View style={{ flex: 1, flexDirection: 'row' }}>
               <View style={{ flex: 1, width: '50%', marginRight: normalize(4) }}>
-                <FlatList
+                {/* <FlatList
                   data={this.props.data.data}
                   keyExtractor={this._keyExtractor}
                   renderItem={this.renderItem}
                   showsVerticalScrollIndicator={false}
-                />
+                /> */}
               </View>
               <View style={{ height: '100%', width: 1, backgroundColor: '#ddd' }} />
               <View style={{ flex: 1, width: '50%', marginRight: normalize(4), justifyContent: 'flex-end' }}>
-                <FlatList
+                {/* <FlatList
                   data={this.props.data.data}
                   keyExtractor={this._keyExtractor}
                   renderItem={this.renderItem2}
+                  showsVerticalScrollIndicator={false}  
+                /> */}  
+              </View>
+              <View style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }}>
+                <FlatList
+                  data={this.props.data.data}
+                  keyExtractor={this._keyExtractor}
+                  renderItem={this.renderItem3}
                   showsVerticalScrollIndicator={false}
                 />
               </View>

@@ -11,14 +11,14 @@ import Sliders from './SliderQuestion/Slider';
 import { APP_GLOBAL_COLOR, normalize } from '../../../../Constant';
 
 
-viewWithQuestionType = (props, item , index) => {
+viewWithQuestionType = (props, item , index , userLanguage) => {
     let i = index+1
     if (item.questionType === 'MOQ'){
-        return (<MultipleQuestionView isSurveyTaken={props.isSurveyTaken} onChangeData = {props.onChangeData} i={i} data={item} index = {index}/>)
+        return (<MultipleQuestionView isSurveyTaken={props.isSurveyTaken} onChangeData = {props.onChangeData} i={i} data={item} index = {index} userLanguage = {userLanguage}/>)
     }else if (item.questionType === 'LSQ'){
-        return (<Sliders isSurveyTaken={props.isSurveyTaken} onChangeData = {props.onChangeData} i={i} index={index}  data = {item}/>)
+        return (<Sliders isSurveyTaken={props.isSurveyTaken} onChangeData = {props.onChangeData} i={i} index={index}  data = {item} userLanguage = {userLanguage}/>)
     }else if (item.questionType === 'YNQ') {
-        return (<OptionalQuestion isSurveyTaken={props.isSurveyTaken} onChangeData = {props.onChangeData} i={i} data ={item} index = {index}/>)
+        return (<OptionalQuestion isSurveyTaken={props.isSurveyTaken} onChangeData = {props.onChangeData} i={i} data ={item} index = {index} userLanguage = {userLanguage}/>)
     }
     return null;
 }
@@ -43,7 +43,7 @@ export default questionniareListView = props => {
                 )
             }}
             renderItem={({ item , index }) => 
-                <View>{viewWithQuestionType(props,item,index)}
+                <View>{viewWithQuestionType(props,item,index,props.userLanguage)}
                     <View style = {{ height : 10}}></View>
                 <View style = {{ height : 1 , backgroundColor : '#ddd', marginLeft : 10, marginRight : 10}}>
                 </View>

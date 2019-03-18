@@ -9,6 +9,7 @@ export const DEFAULT_USER_ID = "userIdInTheAppTest3";
 export const DEFAULT_USER_DATA = "userDataInTheAppTest3";
 
 export const FCM_TOKEN = "fcmToken";
+export const USER_AREA_DATA = "userAreaData";
 
 const {
   width: SCREEN_WIDTH,
@@ -90,6 +91,35 @@ export const getUserData = async () => {
 
   try {
     const retrievedItem =  await AsyncStorage.getItem(DEFAULT_USER_DATA);
+    const item = JSON.parse(retrievedItem);
+    // console.log('true')
+    return item;
+  } catch (error) {
+    console.log(error.message);
+  }
+  return
+}
+
+
+export const saveAreaList = async (data) => {
+  
+  try {
+    let dataString = JSON.stringify(data);
+    await AsyncStorage.setItem(USER_AREA_DATA, dataString);
+
+    // var jsonOfItem = await AsyncStorage.setItem(key, JSON.stringify(item));
+      // return jsonOfItem;
+  } catch (error) {
+    alert(error);
+    console.log(error.message);
+  }
+
+}
+
+export const getAreaList = async () => {
+
+  try {
+    const retrievedItem =  await AsyncStorage.getItem(USER_AREA_DATA);
     const item = JSON.parse(retrievedItem);
     // console.log('true')
     return item;

@@ -34,8 +34,20 @@ export default class optionalQuestionView extends Component  {
         } else return null;
     }
 
+    getLanguageCode = (language) => {
+        if (language === 'hi') {
+          let menu = ['हाँ', 'नहीं']
+        
+          return menu;
+        }
+    
+        return ['YES', 'NO'];
+    
+      }
+    
     renderOptions = () => {
-        const { data } = this.props;
+        const { data , userLanguage } = this.props;
+        const dataO = this.getLanguageCode(userLanguage);
             return (
                 <View style={{ flex: 1, height: 30, flexDirection: 'row' }} >
                     <View style={{ flex: 1.5, justifyContent: 'center', alignContent: 'center' }} >
@@ -51,7 +63,7 @@ export default class optionalQuestionView extends Component  {
                                     this.props.onChangeData(data, this.props.index);
                                 }
                             }
-                        }> YES </CustomTextButton>
+                        }>{dataO[0]}</CustomTextButton>
                         <CustomTextButton  
                             style={data.userAnswerId == 2 ? buttonViewStyle.selectedStyle : buttonViewStyle.unSelectedStyle} 
                             textColor={data.userAnswerId == 2 ? "#fff" :  '#000'}
@@ -61,7 +73,7 @@ export default class optionalQuestionView extends Component  {
                                     this.props.onChangeData(data, this.props.index);
                                 }
                             }
-                        }> NO</CustomTextButton>
+                        }>{dataO[1]}</CustomTextButton>
                     </View>
                 </View>
             )

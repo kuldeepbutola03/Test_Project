@@ -5,11 +5,12 @@ import { normalize, APP_GLOBAL_COLOR } from '../../../../Constant';
 
 class TopSix extends Component {
     render() {
-        const { source, logo, resourceGpr } = this.props;
+        const { source, logo, resourceGpr, logoName , logoCatName} = this.props;
         return (
             <View style={styles.container}>
                 <View style={styles.row}>
-                    <View>
+                    <View style = {{justifyContent : 'center' , alignItems : 'center'}}>
+                        
                         <Avatar
                             rounded
                             // source={{
@@ -40,10 +41,12 @@ class TopSix extends Component {
                             containerStyle={{ position: 'absolute', bottom: 1, left: -20 }}
                             avatarStyle={{}}
                         />
+                        <Text style = {{position: 'absolute',  top : normalize(70) , fontSize : normalize(8) }}>{logoName[0]}</Text>
+                        <Text style={{position: 'absolute',  bottom : normalize(70), fontSize : normalize(8 ) }}>{logoCatName[0]}</Text>
                     </View>
                     <View>
                         <Avatar
-                            rounded
+                            rounded 
                             // source={{
                             //     uri: 'https://randomuser.me/api/portraits/men/41.jpg',
                             // }}
@@ -71,6 +74,8 @@ class TopSix extends Component {
                             imageProps={{ resizeMode: 'contain' }}
                             containerStyle={{ position: 'absolute', bottom: 1, left: -20 }}
                         />
+                        <Text style = {{position: 'absolute',  top : normalize(70) , fontSize : normalize(8) }}>{logoName[1]}</Text>
+                        <Text style={{position: 'absolute',  bottom : normalize(70), fontSize : normalize(8 ) }}>{logoCatName[1]}</Text>
                     </View>
                     <View>
                         <Avatar
@@ -102,6 +107,8 @@ class TopSix extends Component {
                             imageProps={{ resizeMode: 'contain' }}
                             containerStyle={{ position: 'absolute', bottom: 1, left: -20 }}
                         />
+                        <Text style = {{position: 'absolute',  top : normalize(70) , fontSize : normalize(8) }}>{logoName[2]}</Text>
+                        <Text style={{position: 'absolute',  bottom : normalize(70), fontSize : normalize(8 ) }}>{logoCatName[2]}</Text>
                     </View>
                 </View>
                 <View style={styles.buttonContainer}>
@@ -139,6 +146,8 @@ class TopSix extends Component {
                             containerStyle={{ position: 'absolute', bottom: 1, left: -20 }}
                             source={logo[3]}
                         />
+                        <Text style = {{position: 'absolute',  top : normalize(70) , fontSize : normalize(8) }}>{logoName[3]}</Text>
+                        <Text style={{position: 'absolute',  bottom : normalize(70), fontSize : normalize(8 ) }}>{logoCatName[3]}</Text>
                     </View>
                     <View>
                         <Avatar
@@ -173,6 +182,8 @@ class TopSix extends Component {
                             avatarStyle={{}}
 
                         />
+                        <Text style = {{position: 'absolute',  top : normalize(70) , fontSize : normalize(8) }}>{logoName[4]}</Text>
+                        <Text style={{position: 'absolute',  bottom : normalize(70), fontSize : normalize(8 ) }}>{logoCatName[4]}</Text>
                     </View>
                     <View>
                         <Avatar
@@ -204,6 +215,8 @@ class TopSix extends Component {
                             imageProps={{ resizeMode: 'contain' }}
                             containerStyle={{ position: 'absolute', bottom: 1, left: -20 }}
                         />
+                        <Text style = {{position: 'absolute',  top : normalize(70) , fontSize : normalize(8) }}>{logoName[5]}</Text>
+                        <Text style={{position: 'absolute',  bottom : normalize(70), fontSize : normalize(8 ) }}>{logoCatName[5]}</Text>
                     </View>
                 </View>
             </View>

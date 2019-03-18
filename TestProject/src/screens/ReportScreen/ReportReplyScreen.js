@@ -36,7 +36,20 @@ export default class ReportReplyScreen extends Component {
     text: '',
     refreshing: false,
     visible: false,
-    disabled : false
+    disabled : false,
+    menuName: this.getLanguageCode(this.props.data.userLanguage)
+  }
+
+
+  getLanguageCode(language) {
+    if (language === 'hi') {
+      let menu = "अखाड़ा"
+      return menu;
+
+    }
+
+    return "Arena"
+
   }
 
   attachment = () => {
@@ -549,7 +562,7 @@ export default class ReportReplyScreen extends Component {
               </Text>
             </View>
             <View style={styles.textheaderView}>
-              <Text style={styles.textView}>Arena</Text>
+              <Text style={styles.textView}>{this.state.menuName}</Text>
             </View>
 
           </View>

@@ -6,6 +6,7 @@ import {
   Dimensions,
   SafeAreaView,
   Image,
+  TouchableOpacity
 } from 'react-native';
 
 
@@ -15,7 +16,7 @@ import CustomButton from '../../components/UI/ButtonMod/CustomButtom';
 import { PropTypes } from 'prop-types';
 import TrendProfile from '../../components/UI/TrendProfile/TrendProfile';
 import { TREND_, TREND_PDM, TREND_CDM, TREND_IMAGE } from '../../../Apis';
-import { authHeaders, getUserID, APP_GLOBAL_COLOR } from '../../../Constant';
+import { authHeaders, getUserID, APP_GLOBAL_COLOR, getUserData } from '../../../Constant';
 import axios from 'axios';
 import Carousel, { Pagination } from 'react-native-snap-carousel';
 import _ from 'lodash';
@@ -38,6 +39,8 @@ class TrendScreen extends Component {
     imageList: [],
     activeSlide: 0,
     loading: true,
+    data: this.props.data,
+    // refreshUI : this.props.refreshUI
   }
 
   componentDidMount() {
@@ -62,6 +65,60 @@ class TrendScreen extends Component {
 
   constructor(props) {
     super(props);
+  }
+  refreshUI = (data) => {
+    // that = this;
+    // getUserData().then((data) => {
+
+      
+      // setTimeout(()=> {
+        this.props.refreshUI(data);
+      // },300);
+      
+
+      if (data.userLanguage === 'hi') {
+        // let menu = ['रुझान', 'सर्वे', 'अखाड़ा']
+        this.setState({ data: data });
+        return;
+      }
+
+      // let menu = ['Trends', 'Survey', 'Arena']
+      this.setState({ data: data });
+
+
+    // })
+  }
+
+  gotoProfile = () => {
+    Navigation.push(this.props.componentId, {
+      component: {
+        name: 'Profile',
+        passProps: {
+          image: this.props.data.image,
+          firstName: this.props.data.firstName,
+          lastName: this.props.data.lastName,
+          // email: this.props.email ? this.props.email : "",
+          username: this.props.data.username,
+          selectedAgeGroupCode: this.props.data.selectedAgeGroupCode,
+          gender: this.props.data.gender,
+          userId: this.props.data.userId,
+          description: this.props.data.description,
+          userDesignation: this.props.data.userDesignation,
+          userLanguage: this.props.data.userLanguage,
+
+          refreshUI: this.refreshUI,
+
+          languageCode: this.props.languageCode
+        },
+        options: {
+          topBar: {
+            visible: false,
+            drawBehind: true,
+            animate: false,
+          },
+        }
+      }
+    });
   }
 
   homeButtonTapped = () => {
@@ -244,6 +301,7 @@ class TrendScreen extends Component {
         forceInset={{ bottom: 'always' }}
         style={styles.safeViewContainer}>
         <View style={{ flex: 1, flexDirection: 'row' }}>
+
           <View style={{ flex: 1, backgroundColor: APP_GLOBAL_COLOR }}>
             <CustomButton
               style={{
@@ -254,31 +312,33 @@ class TrendScreen extends Component {
               onPress={this.homeButtonTapped}
             />
           </View>
-          <View style={{ flex: 5, backgroundColor: 'rgba(255,255,255,1)', flexDirection: 'row', alignItems: 'center' }}>
-            <Image
-              style={{
-                backgroundColor: APP_GLOBAL_COLOR,
-                marginLeft: normalize(10),
-                width: normalize(30),
-                height: normalize(30),
-                marginTop: normalize(5),
-                marginBottom: normalize(5),
-                borderRadius: normalize(30) / 2,
-              }}
-              source={this.props.image ? { uri: "data:image/png;base64," + this.props.image } : require('../../assets/UserSmall.png')}
-            />
+          <TouchableOpacity style={{ flex: 5 }} onPress={this.gotoProfile}>
+            <View style={{ flex: 1, backgroundColor: 'rgba(255,255,255,1)', flexDirection: 'row', alignItems: 'center' }}>
+              <Image
+                style={{
+                  backgroundColor: APP_GLOBAL_COLOR,
+                  marginLeft: normalize(10),
+                  width: normalize(30),
+                  height: normalize(30),
+                  marginTop: normalize(5),
+                  marginBottom: normalize(5),
+                  borderRadius: normalize(30) / 2,
+                }}
+                source={this.state.data.image ? { uri: "data:image/png;base64," + this.state.data.image } : require('../../assets/UserSmall.png')}
+              />
 
-            <Text
-              style={{
-                justifyContent: 'center',
-                alignItems: 'center',
-                marginLeft: 5,
-                fontSize: normalize(14),
-                color: '#000',
-              }}>
-              {this.props.username}
-            </Text>
-          </View>
+              <Text
+                style={{
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginLeft: 5,
+                  fontSize: normalize(14),
+                  color: '#000',
+                }}>
+                {this.state.data.username}
+              </Text>
+            </View>
+          </TouchableOpacity>
         </View>
         {this.renderComponent()}
       </SafeAreaView>
