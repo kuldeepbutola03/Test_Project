@@ -55,4 +55,7 @@ export const MEDIA_COMPOSE = BASE_URL + 'mediaCompose';//Do not have the api
 export const MESSAGE_REPLY = BASE_URL + 'message/messageReply';
 export const MEDIA_MESSAGE_REPLY = "http://holygrailwar.babbles.zone/" + 'mediaMessageReply';//Do not have the api
 
+export const GET_USER_NOTIFICATIONS = BASE_URL + 'notification/getUserNotification';
+export const UPDATE_USER_NOTIFICATIONS = BASE_URL + '/notification/updateUserNotificationStatus';
+
 // http://localhost/customMapAPIs/message/messageCompose

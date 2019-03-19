@@ -13,15 +13,18 @@ import {
   Picker,
   PickerIOS
 } from 'react-native';
-import SplashScreen from 'react-native-splash-screen';
+
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
+// import SplashScreen from 'react-native-splash-screen';
 import ProfileView from '../../components/UI/ProfileView/ProfileView';
 import MenuButtons from '../../components/UI/ProfileView/MenuButtons';
 import { Navigation } from 'react-native-navigation/';
 import { PropTypes } from 'prop-types';
-import { normalize, getUserID, DEFAULT_USER_ID, authHeaders, getUserData } from '../../../Constant';
-import { LANDING_RESOURCES, LANDING_CDM, DEBUG, LANDING_PDM, LANDING_TOP_SIX } from '../../../Apis';
+import { normalize, getUserID, DEFAULT_USER_ID, authHeaders, getUserData, APP_GLOBAL_COLOR } from '../../../Constant';
+import { LANDING_RESOURCES, LANDING_CDM, DEBUG, LANDING_PDM, LANDING_TOP_SIX, GET_USER_NOTIFICATIONS, UPDATE_USER_NOTIFICATIONS } from '../../../Apis';
 import axios from 'axios';
-import { Button } from 'react-native-elements';
+import { Button, withBadge, Icon } from 'react-native-elements';
 import HomeScoreView from '../../components/UI/ProfileCard/HomeScoreView';
 import Spinner from '../../components/UI/Spinner/Spinner';
 import TopSix from '../../components/UI/TopSix/TopSix';
@@ -29,6 +32,10 @@ import TopSix from '../../components/UI/TopSix/TopSix';
 import Permissions from 'react-native-permissions';
 
 import firebase from 'react-native-firebase';
+import moment from 'moment';
+
+// const { notifications } = this.state;
+const BadgedIcon = withBadge(24)(Icon)
 
 export default class HomeScreen extends Component {
 
@@ -57,9 +64,171 @@ export default class HomeScreen extends Component {
       language: 'English',
 
       data: this.props.data,
-      menuName: this.getLanguageCode(this.props.data.userLanguage)
+      menuName: this.getLanguageCode(this.props.data.userLanguage),
       // loadingFourth
+
+      notifications: {
+        count: 12,
+        data: this.props.data,
+        menuName: this.getLanguageCode(this.props.data.userLanguage),
+        notification: [
+          {
+            read: false,
+            notificationLogId: '12',
+            title: 'Survey Update',
+            notificationFor: 'survey',
+            subtitle: 'A new survey has been added, please take your time and check it out',
+            notificationDateTime: moment().format(),
+
+          },
+          {
+            read: true,
+            notificationLogId: '11',
+            title: 'Survey Update',
+            notificationFor: 'survey',
+            subtitle: 'A new survey has been added, please take your time and check it out',
+            notificationDateTime: moment().format(),
+          },
+          {
+            read: false,
+            notificationLogId: '14',
+            title: 'Timeline Update',
+            notificationFor: 'timeline',
+            subtitle: 'Someone liked your comment',
+            notificationDateTime: moment().format(),
+          },
+          {
+            read: false,
+            notificationLogId: '743',
+            title: 'Survey Update',
+            notificationFor: 'survey',
+            subtitle: 'A new survey has been added, please take your time and check it out',
+            notificationDateTime: moment().format(),
+          },
+          {
+            read: false,
+            notificationLogId: '9483',
+            title: 'Survey',
+            notificationFor: 'survey',
+            subtitle: 'A new survey has been added, please take your time and check it out',
+            notificationDateTime: moment().format(),
+          },
+          {
+            read: false,
+            notificationLogId: '0293',
+            title: 'Timeline Update',
+            notificationFor: 'timeline',
+            subtitle: 'Ben just commented on your update',
+            notificationDateTime: moment().format(),
+          },
+          {
+            read: false,
+            notificationLogId: '837484',
+            title: 'Timeline Update',
+            notificationFor: 'timeline',
+            subtitle: 'Chuks commented on your post',
+            notificationDateTime: moment().format(),
+          },
+          {
+            read: false,
+            notificationLogId: '838494',
+            title: 'Survey',
+            notificationFor: 'survey',
+            subtitle: 'A new survey has been added, please take your time and check it out',
+            notificationDateTime: moment().format(),
+          },
+          {
+            read: true,
+            notificationLogId: '938292933',
+            title: 'Survey',
+            notificationFor: 'survey',
+            subtitle: 'A new survey has been added, please take your time and check it out',
+            notificationDateTime: moment().format(),
+          },
+          {
+            read: false,
+            notificationLogId: '027842',
+            title: 'Survey',
+            notificationFor: 'survey',
+            subtitle: 'A new survey has been added, please take your time and check it out',
+            notificationDateTime: moment().format(),
+          },
+          {
+            read: true,
+            notificationLogId: '948392',
+            title: 'Survey',
+            notificationFor: 'survey',
+            subtitle: 'A new survey has been added, please take your time and check it out',
+            notificationDateTime: moment().format(),
+          },
+        ]
+      }
     };
+  }
+
+  readNotification = (index, notifications, screen) => {
+    // const { notification } = this.state.notifications;
+
+    let newNotifications = notifications;
+
+    newNotifications.notification[index].read = true;
+    let updatedNotification = Object.assign(newNotifications, {})
+    this.setState({
+      notificationsnotification: updatedNotification
+    })
+
+    if (screen === 'survey') {
+      this.toQuesScreen()
+    } else if (screen === 'trends') {
+      this.toTrendScreen()
+    } else if (screen === 'timeline') {
+      this.toReportScreen()
+    }
+  }
+
+  updateNotifications = (notificationLogId, isRead) => {
+    axios.post(UPDATE_USER_NOTIFICATIONS, {
+      notificationLogId: notificationLogId,
+      isRead: 'Y'
+    }).then((response) => {
+      let responseData = response.data;
+
+    }).catch(error => {
+
+    })
+  }
+
+  showNotificationScreen = () => {
+    Navigation.push(this.props.componentId, {
+      component: {
+        name: 'NotificationScreen',
+        options: {
+          topBar: {
+            visible: true,
+            drawBehind: true,
+            animate: true,
+            buttonColor: '#fff',
+            background: {
+              color: APP_GLOBAL_COLOR,
+            },
+            title: {
+              text: 'Notifications',
+              fontSize: hp('2.5%'),
+              color: '#fff',
+            },
+            backButton: {
+              color: '#fff'
+            }
+          },
+        },
+        passProps: {
+          notifications: this.state.notifications,
+          readNotification: this.readNotification,
+          updateNotifications: this.updateNotifications,
+        }
+
+      },
+    });
   }
   // this.props.updateUser
   refreshUI = (data) => {
@@ -343,6 +512,20 @@ export default class HomeScreen extends Component {
     this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.goBack);
     this.startTimer();
 
+    this.getNotifications();
+  }
+
+  getNotifications = () => {
+    axios.post(GET_USER_NOTIFICATIONS, {
+      userId: this.state.user_id
+    }).then((response) => {
+      let responseData = response.data;
+      this.setState({
+        notifications: responseData
+      })
+    }).catch(error => {
+      console.log(error)
+    })
   }
 
   requestToServer() {
@@ -703,7 +886,7 @@ export default class HomeScreen extends Component {
     //     return (<View></View>);
     //   }
     // }
-    
+
 
 
     const resourceGPR_1 = this.state.landingTopSix ? this.state.landingTopSix.resourceGPR_1 : 40;
@@ -887,19 +1070,13 @@ export default class HomeScreen extends Component {
             {this.state.data.username}
           </Text>
 
-          {/* <View style={{ height: 40, width: 100, position: 'absolute', right: 10 ,top:2}} >
-            <Picker
-              selectedValue={this.state.language}
-              style={{ height: 40, width: 100, position: 'absolute', right: 5 }}
-              itemStyle={{ color: "white" }}
-              onValueChange={(itemValue, itemIndex) =>
-                this.setState({ language: itemValue })
-              }>
-              <Picker.Item label="English" value="English" />
-              <Picker.Item label="Hindi" value="Hindi" />
-            </Picker>
-            
-          </View> */}
+          <View style={{ marginRight: hp('4%') }}>
+            <BadgedIcon
+              color="#fff"
+              type="font-awesome"
+              onPress={() => this.showNotificationScreen()}
+              name="bell-o" />
+          </View>
         </View>
 
         {/* //Second half */}
@@ -915,6 +1092,7 @@ export default class HomeScreen extends Component {
             width: '100%',
             backgroundColor: 'white',
             borderTopColor: 'grey',
+            height: hp('46%')
           }}
           ref={ref => {
             this.scroll = ref;
@@ -998,15 +1176,17 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   bottomContainer: {
-    height: normalize(60),
+    // height: normalize(60),
     flexDirection: 'row',
+    height: hp('9%'),
   },
   profileContainer: {
     alignItems: 'center',
     // width: '100%',
-    height: '31%',
+    // height: '31%',
     flexDirection: 'row',
     backgroundColor: 'white',
+    height: hp('37%'),
     // flex: 1,
   },
 });
@@ -1017,5 +1197,9 @@ const stylesTopView = StyleSheet.create({
     backgroundColor: '#a01414',
     width: '100%',
     flexDirection: 'row',
+
+    justifyContent: 'space-between',
+    height: hp('8%'),
+	  display: 'flex'
   },
 });

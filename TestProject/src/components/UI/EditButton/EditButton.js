@@ -44,7 +44,7 @@ const styles = StyleSheet.create ({
   },
   touch : {
     position: 'absolute',
-    bottom: 45,
+    bottom: 75,
     right: 20,
     // backgroundColor:'transparent'
   }

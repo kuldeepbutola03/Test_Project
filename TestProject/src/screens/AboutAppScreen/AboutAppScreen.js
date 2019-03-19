@@ -25,6 +25,7 @@ import axios from 'axios';
 
 import { APP_GLOBAL_COLOR } from '../../../Constant';
 import firebase from 'react-native-firebase';
+import Orientation from 'react-native-orientation';
 export default class AboutAppScreen extends Component {
     static propTypes = {
         componentId: PropTypes.string,
@@ -38,6 +39,7 @@ export default class AboutAppScreen extends Component {
     }
 
     componentDidMount() {
+        
         // this.getDataFromServer(true)
         firebase.analytics().setCurrentScreen("Screen", "About_App_Screen");
         //firebase.analytics().logEvent("Trends_Screen");
@@ -56,6 +58,9 @@ export default class AboutAppScreen extends Component {
                   drawBehind: true,
                   animate: false,
                 },
+                layout : {
+                    orientation: ['portrait']
+                  }
               },
               passProps: {
                 

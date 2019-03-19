@@ -486,7 +486,7 @@ export default class Profile extends Component {
                     // marginTop: 8,
                     // marginBottom: 8,
                     borderBottomWidth: 1,
-                    height: 30,
+                    height: 40,
                     borderRadius: 20,
                     textAlign: 'center'
                   }}
@@ -505,7 +505,7 @@ export default class Profile extends Component {
                     borderBottomWidth: 1,
                     // marginTop: 8,
                     // marginBottom: 8,
-                    height: 30,
+                    height: 40,
                     borderRadius: 20,
                     textAlign: 'center'
                   }}
@@ -526,7 +526,7 @@ export default class Profile extends Component {
                     // padding: 2,
                     // marginTop: 8,
                     // marginBottom: 8,
-                    height: 30,
+                    height: 40,
                     borderRadius: 20,
                     textAlign: 'center'
                   }}

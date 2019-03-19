@@ -243,7 +243,8 @@ class menuButtons extends React.Component {
               <View style={{}}>
                 <Text adjustsFontSizeToFit numberOfLines={1} minimumFontScale={.8} style={cardViewStyle.textView}>{this.props.data.name}</Text>
                 {/* <Text style={cardViewStyle.textView2}>{this.props.data.area === "PDM | null" ? "PDM" : this.props.data.area}</Text> */}
-                <Text style={cardViewStyle.textView2}>{this.props.data.area.includes("null") ? this.props.data.area.replace("null", "").replace("|", "") : this.props.data.area}</Text>
+                <Text style={cardViewStyle.textView2}>{this.props.data.area.includes("null") ? this.props.data.area.replace(/null/g, "").replace("|", "") : this.props.data.area}</Text>
+                {/* <Text style={cardViewStyle.textView2}>{"null | null".replace ("null", "").replace("|", "")}</Text> */}
               </View>
 
               <View style={styles.scoreViewContainer}>

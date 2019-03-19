@@ -1,12 +1,19 @@
 import React, { Component } from 'react';
-import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { APP_GLOBAL_COLOR } from '../../../../Constant';
+import { heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import SpinKit from 'react-native-spinkit';
 
 class Spinner extends Component {
     render() {
         return (
             <View style={styles.containerStyle}>
-                <ActivityIndicator color={APP_GLOBAL_COLOR} size="small" />
+                <SpinKit 
+                    isVisible 
+                    size={hp('3%')}
+                    type={'ChasingDots'} 
+                    color={APP_GLOBAL_COLOR}
+                />
             </View>
         )
     }

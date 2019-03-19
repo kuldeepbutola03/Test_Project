@@ -164,6 +164,9 @@ export default class TutorialScreen extends Component {
             animate: false,
             drawBehind: true,
           },
+          layout : {
+            orientation: ['portrait']
+          }
         },
       },
     });

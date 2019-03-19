@@ -60,15 +60,15 @@
 	<key>NSCameraUsageDescription</key>
 	<string>Allow to use camera</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string></string>
+	<string/>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string/>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Allow to use microphone</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>$(PRODUCT_NAME) wants to save photos</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string></string>
+	<string/>
 	<key>UIAppFonts</key>
 	<array>
 		<string>AntDesign.ttf</string>
