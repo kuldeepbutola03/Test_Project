@@ -462,7 +462,7 @@ export default class HomeScreen extends Component {
       // languageCode: this.state.data.userLanguage ? this.state.data.userLanguage : 'en'
     };
     if (this.state.lat_lon) {
-      body.push({ latLngSeparatedByComma: this.state.lat_lon });
+      body["latLngSeparatedByComma"] = this.state.lat_lon;
     }
 
     axios.post(LANDING_TOP_SIX, body)
