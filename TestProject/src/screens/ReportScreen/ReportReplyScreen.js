@@ -106,16 +106,21 @@ export default class ReportReplyScreen extends Component {
   fetchUserMessage() {
 
     let body = JSON.stringify({
-      "threadId": this.props.data.threadId
+      "threadId": this.props.data.threadId,
+      "userMaster":{
+        "userId":this.props.user_id
+      }
       // "mobileNumber": MOBILE_NUMBER_
     });
 
+    // alert(JSON.stringify(body));
     fetch(FETCH_REPLY_POST, {
       method: 'POST',
       headers: authHeaders(),
       body: body
     }).then(resp => resp.json()).then(respJson => {
       // this.setState({ refreshing: false });
+      // alert(JSON.stringify(respJson));
       console.log(respJson);
       if (Array.isArray(respJson)) {
         this.filterData2(respJson)
@@ -123,8 +128,12 @@ export default class ReportReplyScreen extends Component {
         alert(respJson.response);
       }
 
-    }).catch(err => { alert(error) })
+    }).catch(err => { 
+      alert(err);
+    });
+
     console.log("asdahjdfb");
+    // alert(error);
     this.setState({ refreshing: false });
 
 

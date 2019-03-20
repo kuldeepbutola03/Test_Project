@@ -1,6 +1,6 @@
 export const DEBUG = 1; //put 1 -- api will work
-// export const BASE_URL = "http://custommap-staging-env.pwpwggb6pg.ap-south-1.elasticbeanstalk.com/"
-export const BASE_URL = "http://www.eccfl.co.uk/customMapAPIs/"; //Base url
+export const BASE_URL = "http://custommap-staging-env.pwpwggb6pg.ap-south-1.elasticbeanstalk.com/"
+// export const BASE_URL = "http://www.eccfl.co.uk/customMapAPIs/"; //Base url
 export const SEND_OTP = BASE_URL + "user/sendMobileOtp";
 export const VALIDATE_OTP = BASE_URL + "user/validateMobileOtp";
 export const EMAIL_REGISTRATION = BASE_URL + "user/sendEmailRegistrationLink";

@@ -25,9 +25,10 @@ import { Data } from 'victory-native';
 
 import firebase from 'react-native-firebase';
 
-import PullToRefreshListView from 'react-native-smart-pull-to-refresh-listview'
+import PullToRefreshListView from 'react-native-smart-pull-to-refresh-listview';
 
 // import SharingCard from '../../components/UI/Sharing/SharingCard';
+
 export default class ReportScreen extends Component {
   dataTappedForMore = null;
   shareOptions = null;
@@ -357,7 +358,7 @@ export default class ReportScreen extends Component {
         Thread_Id: dict.threadId,
         LikingCount: dict.likingCount,
         ReplyCount: dict.replyCount,
-
+        userId : dict.userId,
         ...dict
 
       }
