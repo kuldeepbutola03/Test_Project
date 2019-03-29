@@ -9,7 +9,7 @@ import { Platform } from 'react-native';
 import { authHeaders, getUserID } from '../../../Constant';
 import { FETCH_REPLY_POST, MOBILE_NUMBER_, LIKDISLIKE_POST, REPORT_POST, MESSAGE_REPLY, MEDIA_MESSAGE_REPLY } from '../../../Apis';
 import Share, { ShareSheet, Button } from 'react-native-share';
-
+import axios from 'axios';
 import firebase from 'react-native-firebase';
 
 export default class ReportReplyScreen extends Component {
@@ -36,8 +36,9 @@ export default class ReportReplyScreen extends Component {
     text: '',
     refreshing: false,
     visible: false,
-    disabled : false,
-    menuName: this.getLanguageCode(this.props.data.userLanguage)
+    disabled: false,
+    menuName: this.getLanguageCode(this.props.data.userLanguage),
+    likeLoading: false,
   }
 
 
@@ -105,103 +106,141 @@ export default class ReportReplyScreen extends Component {
 
   fetchUserMessage() {
 
+    // let body = JSON.stringify({
+    //   "threadId": this.props.data.threadId,
+
+    //   "mobileNumber": MOBILE_NUMBER
+    // });
+
+
     let body = JSON.stringify({
       "threadId": this.props.data.threadId,
-      "userMaster":{
-        "userId":this.props.user_id
+      "userMaster": {
+        "userId": this.props.user_id
       }
       // "mobileNumber": MOBILE_NUMBER_
     });
 
-    // alert(JSON.stringify(body));
-    fetch(FETCH_REPLY_POST, {
-      method: 'POST',
-      headers: authHeaders(),
-      body: body
-    }).then(resp => resp.json()).then(respJson => {
-      // this.setState({ refreshing: false });
-      // alert(JSON.stringify(respJson));
-      console.log(respJson);
-      if (Array.isArray(respJson)) {
-        this.filterData2(respJson)
-      } else {
-        alert(respJson.response);
+    // fetch(FETCH_REPLY_POST, {
+    //   method: 'POST',
+    //   headers: authHeaders(),
+    //   body: body
+    // }).then(resp => resp.json()).then(respJson => {
+    //   // this.setState({ refreshing: false });
+    //   console.log(respJson);
+    //   if (Array.isArray(respJson)) {
+    //     this.filterData2(respJson)
+    //   } else {
+    //     console.log(respJson.response)
+    //     alert(respJson.response);
+    //   }
+
+    // })
+    // .catch(error => {
+    //   console.log(error);
+    //   alert(error)
+    //   this.setState({ refreshing: false });
+    // })
+    axios.post(FETCH_REPLY_POST, {
+      threadId: this.props.data.threadId,
+      userMaster: {
+        userId: this.props.user_id
       }
-
-    }).catch(err => { 
-      alert(err);
-    });
-
-    console.log("asdahjdfb");
-    // alert(error);
-    this.setState({ refreshing: false });
-
-
+    })
+      .then(response => {
+        let responseData = response.data;
+        this.setState({ refreshing: false });
+        if (Array.isArray(responseData)) {
+          this.filterData2(responseData)
+        } else {
+          console.log(responseData.response)
+          alert(responseData.response);
+        }
+      })
+      .catch(error => {
+        console.log(error);
+        alert(error)
+        this.setState({ refreshing: false });
+      })
   }
-
 
   requestForLikeDislike(data, isLiked) {
-
     getUserID().then((userId) => {
 
-      let body = JSON.stringify({
+      // let body = JSON.stringify({
 
-        "message":
-        {
-          "messageId": data.messageId
+      //   "message":
+      //   {
+      //     "messageId": data.messageId
+      //   },
+      //   "userMaster":
+      //   {
+      //     "userId": userId
+      //   },
+
+      //   "isLiked": isLiked,
+
+      //   "latitude" : this.props.coordinates ? this.props.coordinates.latitude : 0,
+      //   "longitude": this.props.coordinates ? this.props.coordinates.longitude : 0,
+
+      // });
+
+      this.setState({ likeLoading: true })
+
+      axios.post(LIKDISLIKE_POST, {
+        message: {
+          messageId: data.messageId
         },
-        "userMaster":
-        {
-          "userId": userId
+        userMaster: {
+          userId: userId
         },
+        isLiked: isLiked,
+        latitude: this.props.coordinates ? this.props.coordinates.latitude : 0,
+        longitude: this.props.coordinates ? this.props.coordinates.longitude : 0,
 
-        "isLiked": isLiked,
-
-        "latitude" : this.props.coordinates ? this.props.coordinates.latitude : 0,
-      "longitude": this.props.coordinates ? this.props.coordinates.longitude : 0,
-
-      });
-
-
-
-      fetch(LIKDISLIKE_POST, {
-        method: 'POST',
-        headers: authHeaders(),
-        body: body,
-      }).then((response) => response.json())
-
-        .then((responseJson) => {
-
+      })
+        .then(response => {
+          let responseData = response.data;
+          console.log(responseData)
+          this.setState({ likeLoading: false })
           this._onRefresh();
-          // alert(JSON.stringify(responseJson));
-
-          // var dataObj = this.state.case;
-          // var index = dataObj.indexOf(data);
-          // data.Is_Liked = isLiked;
-          // data.LikingCount = data.LikingCount + ((isLiked == 1) ? 1 : -1);
-          // data.LikingCount = (data.LikingCount < 0) ? 0 : data.LikingCount;
-
-
-          // dataObj[index] = dataObj;
-          // this.setState({case : [...dataObj] });
-
-          //  alert(JSON.stringify(responseJson));
-          // this.filterData(responseJson.result);
         })
-        .catch((error) => {
-          this.setState({ refreshing: false });
+        .catch(error => {
+          this.setState({ refreshing: false, likeLoading: false });
           console.error(error);
-        });
+        })
+      //   fetch(LIKDISLIKE_POST, {
+      //     method: 'POST',
+      //     headers: authHeaders(),
+      //     body: body,
+      //   }).then((response) => response.json())
+
+      //     .then((responseJson) => {
+      //       console.log(responseJson)
+      //       this.setState({ likeLoading: false })
+      //       this._onRefresh();
+      //       // alert(JSON.stringify(responseJson));
+
+      //       // var dataObj = this.state.case;
+      //       // var index = dataObj.indexOf(data);
+      //       // data.Is_Liked = isLiked;
+      //       // data.LikingCount = data.LikingCount + ((isLiked == 1) ? 1 : -1);
+      //       // data.LikingCount = (data.LikingCount < 0) ? 0 : data.LikingCount;
+
+
+      //       // dataObj[index] = dataObj;
+      //       // this.setState({case : [...dataObj] });
+
+      //       //  alert(JSON.stringify(responseJson));
+      //       // this.filterData(responseJson.result);
+      //     })
+      //     .catch((error) => {
+      //       this.setState({ refreshing: false, likeLoading: false });
+      //       console.error(error);
+      //     });
     });
-
-
-
-
-    // alert(body);
-    // return;
-    // µ
-
   }
+
   requestForReport(data) {
     // alert(currentUserId);
 
@@ -224,7 +263,7 @@ export default class ReportReplyScreen extends Component {
       "displayMessage": "N",
       "reportReason": "",
       "reportCustomReason": "",
-      "latitude" : this.props.coordinates ? this.props.coordinates.latitude : 0,
+      "latitude": this.props.coordinates ? this.props.coordinates.latitude : 0,
       "longitude": this.props.coordinates ? this.props.coordinates.longitude : 0,
 
 
@@ -272,6 +311,7 @@ export default class ReportReplyScreen extends Component {
 
 
   }
+
   filterData2(data) {
 
     // alert(JSON.stringify(data));
@@ -315,12 +355,12 @@ export default class ReportReplyScreen extends Component {
 
       }
 
-      console.log(JSON.stringify( ));
+      //    console.log(JSON.stringify( ));
       console.log(innerData);
       array.push(innerData);
     });
     that = this;
-    this.setState({ refreshing: false, replies: array })
+    this.setState({ refreshing: false, replies: array.reverse() })
     // setTimeout(function () {
     //   that.scroll.scrollToEnd({ animated: true });
     // }, 300);
@@ -328,11 +368,19 @@ export default class ReportReplyScreen extends Component {
   }
 
   likeButtonTapped = (data) => {
-    this.requestForLikeDislike(data, 1);
+    const { likeLoading } = this.state;
+    if (!likeLoading) {
+      this.requestForLikeDislike(data, 1);
+    }
   }
+
   disLikeButtonTapped = (data) => {
-    this.requestForLikeDislike(data, -1);
+    const { likeLoading } = this.state;
+    if (!likeLoading) {
+      this.requestForLikeDislike(data, -1);
+    }
   }
+
   moreButtonTapped = (data) => {
     // alert(data);
     dataTappedForMore = data;
@@ -467,7 +515,7 @@ export default class ReportReplyScreen extends Component {
     // getUserID().then((userId) => {
     if (this.state.text.length > 0) {
 
-      this.setState({disabled:true});
+      this.setState({ disabled: true });
 
       let body = JSON.stringify({
 
@@ -490,7 +538,7 @@ export default class ReportReplyScreen extends Component {
       }).then((response) => response.json())
 
         .then((responseJson) => {
-          this.setState({ text: "",disabled:false });
+          this.setState({ text: "", disabled: false });
           this.fetchUserMessage();
           // alert(JSON.stringify(responseJson));
           // this.filterData(responseJson.result);
@@ -498,9 +546,10 @@ export default class ReportReplyScreen extends Component {
         .catch((error) => {
           // this.setState({ refreshing: false });
           // console.error(error);
+          console.log(error)
           alert(error);
         });
-    }else {
+    } else {
       alert("Please write something to post!");
     }
     // });
@@ -576,7 +625,7 @@ export default class ReportReplyScreen extends Component {
 
           </View>
 
-          <ScrollView style={styles.bottomView}
+          {/* <ScrollView style={styles.bottomView}
             ref={ref => {
               this.scroll = ref;
             }}
@@ -653,7 +702,29 @@ export default class ReportReplyScreen extends Component {
 
             })}
 
-          </ScrollView >
+          </ScrollView > */}
+
+          <FlatList
+            // style={styles.bottomView}
+            onRefresh={this._onRefresh}
+            refreshing={this.state.refreshing}
+            data={this.state.replies}
+
+            scrollEventThrottle={400}
+            renderItem={({ item }) =>
+              
+                <CaseCard
+                  moreButtonTapped={this.moreButtonTapped}
+                  onPressLike={(data2) => this.likeButtonTapped(data2)}
+                  onPressDisLike={(data2) => this.disLikeButtonTapped(data2)}
+                  data={item}
+                  onPressReply={(data2) => {}}
+                />
+
+            }
+          >
+          </FlatList>
+
           <View style={{ flexDirection: 'row' }}>
 
 

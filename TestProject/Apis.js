@@ -33,8 +33,6 @@ export const SUBMIT_USER_SURVEY_QUESTION = BASE_URL + 'survey/postSurveyAnswers'
 
 export const UPDATE_USER_AREA = BASE_URL + 'user/insertBaseAreaDetails';
 
-
-
 // Api 1 - Error in sending sms
 // Api 2 = Not validating api
 

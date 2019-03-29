@@ -7,6 +7,7 @@ import {
 import { Button } from 'react-native-elements';
 import MultipleQuestionView from './MultipleQuestion/MultipleQuestionView';
 import OptionalQuestion from './OptionalQuestion/OptionalQuestion';
+import PictureQuestion from './PictureQuestion/PictureQuestion';
 import Sliders from './SliderQuestion/Slider';
 import { APP_GLOBAL_COLOR, normalize } from '../../../../Constant';
 
@@ -19,6 +20,8 @@ viewWithQuestionType = (props, item , index , userLanguage) => {
         return (<Sliders isSurveyTaken={props.isSurveyTaken} onChangeData = {props.onChangeData} i={i} index={index}  data = {item} userLanguage = {userLanguage}/>)
     }else if (item.questionType === 'YNQ') {
         return (<OptionalQuestion isSurveyTaken={props.isSurveyTaken} onChangeData = {props.onChangeData} i={i} data ={item} index = {index} userLanguage = {userLanguage}/>)
+    } else if (item.questionType === 'PQ') {
+        return (<PictureQuestion isSurveyTaken={props.isSurveyTaken} onChangeData = {props.onChangeData} i={i} data ={item} index = {index} userLanguage = {userLanguage}/>)
     }
     return null;
 }

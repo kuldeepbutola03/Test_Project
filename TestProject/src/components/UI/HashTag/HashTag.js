@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ParsedText from 'react-native-parsed-text';
 
-import { View, Text, TouchableOpacity , StyleSheet} from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Linking } from 'react-native';
 import { normalize } from '../../../../Constant';
 
 
@@ -11,7 +11,7 @@ export default class HashTag extends React.Component {
 
 
   handleUrlPress(url, matchIndex /*: number*/) {
-    // LinkingIOS.openURL(url);
+    Linking.openURL(url);
   }
 
   handlePhonePress(phone, matchIndex /*: number*/) {
@@ -30,7 +30,7 @@ export default class HashTag extends React.Component {
     // AlertIOS.alert(`send email to ${email}`);
     // alert(hashTag);
   }
-  
+
 
   renderText(matchingString, matches) {
     // matches => ["[@michel:5455345]", "@michel", "5455345"]
@@ -40,25 +40,25 @@ export default class HashTag extends React.Component {
   }
 
   render() {
-    
+
     // let textStyle = this.props.textSize ? {...styles.text, fontSize : this.props.textSize} : {...styles.text, fontSize : normalize(10)};
     return (
-      <View style={{...styles.container, ...this.props.style}}>
+      <View style={{ ...styles.container, ...this.props.style }}>
         <ParsedText
-          style={{...styles.text , fontSize : this.props.style.fontSize ? this.props.style.fontSize : 13}}
+          style={{ ...styles.text, fontSize: this.props.style.fontSize ? this.props.style.fontSize : 13 }}
           parse={
             [
-            //   {type: 'url',                       style: styles.url, onPress: this.handleUrlPress},
-            //   {type: 'phone',                     style: styles.phone, onPress: this.handlePhonePress},
-              {type: 'email',                     style: styles.email, onPress: this.handleEmailPress},
-            //   {pattern: /Bob|David/,              style: styles.name, onPress: this.handleNamePress},
-            //   {pattern: /\[(@[^:]+):([^\]]+)\]/i, style: styles.username, onPress: this.handleNamePress, renderText: this.renderText},
-            //   {pattern: /42/,                     style: styles.magicNumber},
-              {pattern: /#(\w+)/,                 style: styles.hashTag, onPress : this.handleHashTagPress },
-              {pattern: /@(\w+)/,                 style: styles.username, onPress : this.handleNamePress },
+              { type: 'url', style: styles.url, onPress: this.handleUrlPress },
+              //   {type: 'phone',                     style: styles.phone, onPress: this.handlePhonePress},
+              { type: 'email', style: styles.email, onPress: this.handleEmailPress },
+              //   {pattern: /Bob|David/,              style: styles.name, onPress: this.handleNamePress},
+              //   {pattern: /\[(@[^:]+):([^\]]+)\]/i, style: styles.username, onPress: this.handleNamePress, renderText: this.renderText},
+              //   {pattern: /42/,                     style: styles.magicNumber},
+              { pattern: /#(\w+)/, style: styles.hashTag, onPress: this.handleHashTagPress },
+              { pattern: /@(\w+)/, style: styles.username, onPress: this.handleNamePress },
             ]
           }
-          childrenProps={{allowFontScaling: false}}
+          childrenProps={{ allowFontScaling: false }}
         >
           {this.props.children}
         </ParsedText>

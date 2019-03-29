@@ -6,23 +6,25 @@ import {
   Dimensions,
   SafeAreaView,
   Image,
-  TouchableOpacity
+  TouchableOpacity,
+  TouchableWithoutFeedback
 } from 'react-native';
-
-
 import { Navigation } from 'react-native-navigation';
 import Spinner from '../../components/UI/Spinner/Spinner';
 import CustomButton from '../../components/UI/ButtonMod/CustomButtom';
 import { PropTypes } from 'prop-types';
 import TrendProfile from '../../components/UI/TrendProfile/TrendProfile';
-import { TREND_, TREND_PDM, TREND_CDM, TREND_IMAGE } from '../../../Apis';
+import { TREND_, TREND_PDM, TREND_CDM, TREND_IMAGE, GET_USER_NOTIFICATIONS, UPDATE_USER_NOTIFICATIONS } from '../../../Apis';
 import { authHeaders, getUserID, APP_GLOBAL_COLOR, getUserData } from '../../../Constant';
 import axios from 'axios';
 import Carousel, { Pagination } from 'react-native-snap-carousel';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import { withBadge, Icon } from 'react-native-elements';
 import _ from 'lodash';
 import { normalize } from '../../../Constant';
 import { sliderWidth, itemWidth } from './SliderEntry.style.js';
-
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import moment from 'moment';
 import Permissions from 'react-native-permissions';
 
 import firebase from 'react-native-firebase';
@@ -40,6 +42,102 @@ class TrendScreen extends Component {
     activeSlide: 0,
     loading: true,
     data: this.props.data,
+    notifications: {
+      count: 12,
+      data: this.props.data,
+      menuName: this.getLanguageCode(this.props.userLanguage),
+      notification: [
+        {
+          read: false,
+          notificationLogId: '12',
+          title: 'Survey Update',
+          notificationFor: 'survey',
+          subtitle: 'A new survey has been added, please take your time and check it out',
+          notificationDateTime: moment().format(),
+
+        },
+        {
+          read: true,
+          notificationLogId: '11',
+          title: 'Survey Update',
+          notificationFor: 'survey',
+          subtitle: 'A new survey has been added, please take your time and check it out',
+          notificationDateTime: moment().format(),
+        },
+        {
+          read: false,
+          notificationLogId: '14',
+          title: 'Timeline Update',
+          notificationFor: 'timeline',
+          subtitle: 'Someone liked your comment',
+          notificationDateTime: moment().format(),
+        },
+        {
+          read: false,
+          notificationLogId: '743',
+          title: 'Survey Update',
+          notificationFor: 'survey',
+          subtitle: 'A new survey has been added, please take your time and check it out',
+          notificationDateTime: moment().format(),
+        },
+        {
+          read: false,
+          notificationLogId: '9483',
+          title: 'Survey',
+          notificationFor: 'survey',
+          subtitle: 'A new survey has been added, please take your time and check it out',
+          notificationDateTime: moment().format(),
+        },
+        {
+          read: false,
+          notificationLogId: '0293',
+          title: 'Timeline Update',
+          notificationFor: 'timeline',
+          subtitle: 'Ben just commented on your update',
+          notificationDateTime: moment().format(),
+        },
+        {
+          read: false,
+          notificationLogId: '837484',
+          title: 'Timeline Update',
+          notificationFor: 'timeline',
+          subtitle: 'Chuks commented on your post',
+          notificationDateTime: moment().format(),
+        },
+        {
+          read: false,
+          notificationLogId: '838494',
+          title: 'Survey',
+          notificationFor: 'survey',
+          subtitle: 'A new survey has been added, please take your time and check it out',
+          notificationDateTime: moment().format(),
+        },
+        {
+          read: true,
+          notificationLogId: '938292933',
+          title: 'Survey',
+          notificationFor: 'survey',
+          subtitle: 'A new survey has been added, please take your time and check it out',
+          notificationDateTime: moment().format(),
+        },
+        {
+          read: false,
+          notificationLogId: '027842',
+          title: 'Survey',
+          notificationFor: 'survey',
+          subtitle: 'A new survey has been added, please take your time and check it out',
+          notificationDateTime: moment().format(),
+        },
+        {
+          read: true,
+          notificationLogId: '948392',
+          title: 'Survey',
+          notificationFor: 'survey',
+          subtitle: 'A new survey has been added, please take your time and check it out',
+          notificationDateTime: moment().format(),
+        },
+      ]
+  }
     // refreshUI : this.props.refreshUI
   }
 
@@ -54,7 +152,7 @@ class TrendScreen extends Component {
       this.user_Id = userId;
       // this.getLocation()
       this.getDataFromServer(true);
-
+      this.getNotifications()
 
     })
   }
@@ -66,6 +164,7 @@ class TrendScreen extends Component {
   constructor(props) {
     super(props);
   }
+
   refreshUI = (data) => {
     // that = this;
     // getUserData().then((data) => {
@@ -76,11 +175,11 @@ class TrendScreen extends Component {
       // },300);
       
 
-      if (data.userLanguage === 'hi') {
-        // let menu = ['रुझान', 'सर्वे', 'अखाड़ा']
-        this.setState({ data: data });
-        return;
-      }
+      // if (data.userLanguage === 'hi') {
+      //   // let menu = ['रुझान', 'सर्वे', 'अखाड़ा']
+      //   this.setState({ data: data });
+      //   return;
+      // }
 
       // let menu = ['Trends', 'Survey', 'Arena']
       this.setState({ data: data });
@@ -295,14 +394,149 @@ class TrendScreen extends Component {
     );
   }
 
+  getNotifications = () => {
+    console.log(this.props.user_id)
+    axios.post(GET_USER_NOTIFICATIONS, {
+      userId: this.props.user_id
+    }).then((response) => {
+      let responseData = response.data;
+      console.log(responseData)
+      this.setState({
+        notifications: responseData
+      })
+    }).catch(error => {
+      console.log(error)
+    })
+  }
+
+  readNotification = (index, notifications, screen) => {
+    const { count } = this.state.notifications;
+    let counted;
+    let newNotifications =  notifications;
+
+    if(count > 0 ) {
+        counted = count-1;
+    } else {
+        counted = count;
+    }
+
+    newNotifications.notificationList[index].read = true;
+    newNotifications.count = counted;
+
+    let updatedNotification = Object.assign(newNotifications, {});
+    console.log(updatedNotification)
+    this.setState({
+        notificationsnotification : updatedNotification
+    })
+
+    if(screen === 'survey' || screen === 'Survey') {
+        this.toQuesScreen(notifications)
+    } else if(screen === 'trends' || screen === 'Survey') {
+        // this.toTrendScreen()
+    } else if (screen === 'timeline' || screen === 'Survey') {
+        // this.toReportScreen()
+    }
+  }
+
+  updateNotifications = (notificationLogId) => {
+    console.log('called')
+    axios.post(UPDATE_USER_NOTIFICATIONS, {
+        notificationLogId: notificationLogId.toString(),
+        read: "Y",
+        userId: this.props.user_id
+        // notificationLogId: notificationLogId.toString(),
+        // read: 'Y',
+        // userId: this.state.user_id
+    }).then((response) => {
+        let responseData = response.data;
+        console.log('_________')
+        console.log(responseData)
+        console.log('_________')
+        this.getNotifications()
+
+    }).catch(error => {
+        console.log(error)
+    })
+  }
+
+  showNotificationScreen = () => {
+    const { menuName } = this.props;
+    Navigation.push(this.props.componentId, {
+        component: {
+        name: 'NotificationScreen',
+          options: {
+              topBar: {
+              visible: true,
+              drawBehind: true,
+              animate: true,
+              buttonColor: '#fff',
+              background: {
+                  color: APP_GLOBAL_COLOR,
+              },
+              title: {
+                  text: menuName ? menuName[3] : null,
+                  // text: 'Hello',
+                  fontSize: hp('2.5%'),
+                  color: '#fff',
+              },
+              backButton: {
+                  color: '#fff'
+              }            
+            },
+        },
+        passProps: {
+            notifications: this.state.notifications,
+            readNotification: this.readNotification,
+            updateNotifications: this.updateNotifications,
+        }
+
+        },
+    });
+  }
+
+  toQuesScreen = () => {
+    Navigation.push(this.props.componentId, {
+        component: {
+        name: 'QuestionnaireScreen',
+        options: {
+            topBar: {
+            visible: false,
+            drawBehind: true,
+            animate: false,
+            },
+        },
+        passProps: {
+            user_id: this.props.user_id,
+            lat_lon: this.props.lat_lon,
+            userLanguage: this.props.userLanguage,
+        }
+        },
+    });
+  };
+
+  getLanguageCode(language) {
+    if (language === 'hi') {
+        let menu = "सर्वे"
+        return menu;
+
+    }
+
+    return "SURVEY"
+
+  }
+
   render() {
+    console.log(this.state)
+    console.log(this.props)
+    const { notifications } = this.state;
+    const BadgedIcon = withBadge(notifications.count)(Icon);
     return (
       <SafeAreaView
         forceInset={{ bottom: 'always' }}
         style={styles.safeViewContainer}>
-        <View style={{ flex: 1, flexDirection: 'row' }}>
+        <View style={{ flex: 1, flexDirection: 'row', backgroundColor: 'rgba(255,255,255,1)' }}>
 
-          <View style={{ flex: 1, backgroundColor: APP_GLOBAL_COLOR }}>
+          <View style={{ flex: 2, backgroundColor: APP_GLOBAL_COLOR }}>
             <CustomButton
               style={{
                 flexDirection: 'row',
@@ -339,6 +573,31 @@ class TrendScreen extends Component {
               </Text>
             </View>
           </TouchableOpacity>
+          <View 
+            style={{ 
+              flex: 5, 
+              justifyContent: 'flex-end', 
+              alignItems: 'center', 
+              flexDirection: 'row', 
+              marginRight: hp('4%'),
+              backgroundColor: 'rgba(255,255,255,1)',
+            }}>
+            <TouchableWithoutFeedback onPress={() => this.showNotificationScreen()}>
+                {notifications.count <= 0 ? 
+                  <FontAwesome 
+                      size={hp('3%')}
+                      // onPress={() => this.showNotificationScreen()}
+                      name="bell-o" 
+                      color={APP_GLOBAL_COLOR}
+                  /> : 
+                  <BadgedIcon
+                      color={APP_GLOBAL_COLOR}
+                      type="font-awesome"
+                      // onPress={() => this.showNotificationScreen()}
+                      name="bell-o" />
+                }
+            </TouchableWithoutFeedback>
+          </View>
         </View>
         {this.renderComponent()}
       </SafeAreaView>

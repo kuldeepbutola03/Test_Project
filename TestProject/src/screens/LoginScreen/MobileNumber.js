@@ -67,7 +67,8 @@ export default class MobileNumber extends Component {
         name: 'OtpScreen',
         passProps: {
           code: code,
-          mobileNumber: phoneN
+          mobileNumber: phoneN,
+          pushNotificationToken: this.props.pushNotificationToken,
         },
       },
     });
@@ -88,7 +89,7 @@ export default class MobileNumber extends Component {
         component: {
           name: 'OtpScreen',
           passProps: {
-
+            pushNotificationToken: this.props.pushNotificationToken,
             code: this.phone.getCountryCode(),
             mobileNumber: this.phone.getValue(),
           },

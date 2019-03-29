@@ -20,6 +20,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import StarRating from 'react-native-star-rating';
 import axios from 'axios';
 import { GPR_FLAG } from '../../../../Apis';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 homeButton = props => {
   if (props.showHome) {
@@ -202,40 +203,25 @@ class menuButtons extends React.Component {
     if (isFlagEnabled === 'Y' && this.state.submitted === false) {
       return (
         <TouchableHighlight onPress={() => this.submitRating()}>
-          <FontAwesome name="check-circle" size={25} color="green" />
+          <FontAwesome style={{ marginLeft: hp('1%')}} name="check-circle" size={27} color="green" />
         </TouchableHighlight>
       )
     } else {
       return (
         <TouchableWithoutFeedback onPress={() => { }}>
-          <FontAwesome name="check-circle" size={25} color="#999" />
+          <FontAwesome style={{ marginLeft: hp('1%')}} name="check-circle" size={27} color="#999" />
         </TouchableWithoutFeedback>
       )
     }
   }
 
   render() {
-    console.log(this.props)
-
     // alert(JSON.stringify(this.props.data.data));
     let flag = this.props.showHome;
     const { loading } = this.state;
     return (
       <View style={this.props.style} backgroundColor={this.props.backgroundColor}>
         {/* //TopView */}
-        {/* <View
-            // style={cardViewStyle.headerView}
-            backgroundColor="rgba(242,241,244,1)"
-          >
-            {flag && <View style={{flex: 1, backgroundColor: APP_GLOBAL_COLOR}}>
-              {homeButton (this.props)}
-          </View> */}
-        {/* } */}
-        {/* <View style={cardViewStyle.textheaderView}> */}
-        {/* <Text adjustsFontSizeToFit numberOfLines={1} minimumFontScale={.8} style={cardViewStyle.textView}>{this.props.data.name}</Text> */}
-        {/* <Text style={cardViewStyle.textView2}>{this.props.data.area === "PDM | null" ? "PDM" : this.props.data.area}</Text> */}
-        {/* </View> */}
-        {/* </View> */}
         <View style={{ flex: 1 }}>
           <View style={[styles.row, styles.firstRow]}>
             <View style={styles.scoreRatingContainer}>
@@ -319,13 +305,13 @@ class menuButtons extends React.Component {
                   rounded
                   containerStyle={{
                     position: 'absolute',
-                    bottom: 15,
+                    top: 15,
                     left: 0,
                   }}
                   overlayContainerStyle={{
                     backgroundColor: '#fff'
                   }}
-                  size={normalize(25)}
+                  size={normalize(23)}
                   source={this.props.data.profileCompPic}
                   imageProps={{ resizeMode: 'contain' }}
                 />
@@ -336,14 +322,14 @@ class menuButtons extends React.Component {
                   maxStars={5}
                   rating={this.state.starCount}
                   fullStarColor={'#FAA21B'}
-                  starSize={25}
+                  starSize={20}
                   selectedStar={(rating) => this.onStarRatingPress(rating)}
                 />
                 {loading ?
                   <View style={{ marginTop: normalize(3) }}>
                     <ActivityIndicator size="small" color={APP_GLOBAL_COLOR} />
                   </View> :
-                  <View>
+                  <View style={{ marginTop: hp('-.5%')}}>
                     {this.renderSubmitIcon()}
                   </View>
                 }

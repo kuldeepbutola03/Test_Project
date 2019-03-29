@@ -7,8 +7,8 @@ import {
 } from 'react-native';
 import { normalize } from '../../../../Constant';
 
-const menuButtons = props => (
- 
+const menuButtons = props => {
+  return (
     <TouchableOpacity
       style={[styles.container,props.style]}
       onPress={props.onPress}
@@ -19,7 +19,8 @@ const menuButtons = props => (
         </Text>
     </TouchableOpacity>
 
-);
+  );
+}
 
 const styles = StyleSheet.create ({
   container: {

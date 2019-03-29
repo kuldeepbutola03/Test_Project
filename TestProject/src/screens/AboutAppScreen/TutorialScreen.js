@@ -39,6 +39,7 @@ export default class TutorialScreen extends Component {
     // trendImages: null,
     imageList: [require('../../assets/Tutorial/t_1.png'), require('../../assets/Tutorial/t_2.png'), require('../../assets/Tutorial/t_3.png')],
     activeSlide: 0,
+    pushNotificationToken: null,
     // loading: true,
   }
 
@@ -82,6 +83,7 @@ export default class TutorialScreen extends Component {
         }
     }
     // alert(fcmToken);
+    this.setState({ pushNotificationToken: fcmToken })
     console.log(fcmToken);
   }
 
@@ -166,8 +168,11 @@ export default class TutorialScreen extends Component {
           },
           layout : {
             orientation: ['portrait']
-          }
+          },
         },
+        passProps: {
+          pushNotificationToken: this.state.pushNotificationToken
+        }
       },
     });
   };

@@ -3,7 +3,9 @@ import { SafeAreaView, Text, FlatList, StyleSheet, View } from 'react-native';
 import { ListItem, Divider } from 'react-native-elements';
 import { APP_GLOBAL_COLOR } from '../../../Constant';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import axios from 'axios';
 import moment from 'moment';
+import { GET_CURRENT_ACTIVE_SURVEY, GET_SURVEY_BY_ID } from '../../../Apis';
 
 class NotificationScreen extends Component {
     state = {
@@ -16,7 +18,7 @@ class NotificationScreen extends Component {
         })
     }
 
-    _keyExtractor = (item, index) => item.notificationLogId;
+    _keyExtractor = (item, index) => item.notificationLogId.toString();
 
     _renderItem = ({item, index}) => {
 
@@ -31,11 +33,11 @@ class NotificationScreen extends Component {
         const checkType = () => {
             let source;
 
-            if(item.notificationFor === 'survey') {
+            if(item.type === 'survey' || item.type === 'Survey') {
                 source = Icons[1];
-            } else if(item.notificationFor === 'trends') {
+            } else if(item.type === 'trends' || item.type === 'Trends') {
                 source = Icons[0];
-            } else if (item.notificationFor === 'timeline') {
+            } else if (item.type === 'timeline' || item.type === 'Timeline') {
                 source = Icons[2]
             }
 
@@ -63,13 +65,13 @@ class NotificationScreen extends Component {
                     containerStyle={{ backgroundColor: item.read ? '#fff' : '#eee'}}
                     onPress={() => {
                         let newNotifications =  notifications;
-                        newNotifications.notification[index].read = true;
+                        newNotifications.notificationList[index].read = true;
                         let updatedNotification = Object.assign(newNotifications, {})
+                        readNotification(index, notifications, item.type);
+                        updateNotifications(item.notificationLogId)
                         this.setState({
                             notifications: updatedNotification
                         })
-                        readNotification(index, notifications, item.notificationFor);
-                        updateNotifications(item.notificationLogId)
                     }}
                 />
                 <Text 
@@ -90,11 +92,11 @@ class NotificationScreen extends Component {
 
     render() {  
         const { notifications } = this.state;
-        // console.log(this.state.notifications)
+        console.log(this.state.notifications)
         return (
             <SafeAreaView style={styles.containerStyle}>
                 <FlatList 
-                    data={notifications.notification}
+                    data={notifications.notificationList}
                     extraData={this.state}
                     keyExtractor={this._keyExtractor}
                     renderItem={this._renderItem}

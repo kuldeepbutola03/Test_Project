@@ -19,7 +19,7 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 // import SplashScreen from 'react-native-splash-screen';
 import ProfileView from '../../components/UI/ProfileView/ProfileView';
 import MenuButtons from '../../components/UI/ProfileView/MenuButtons';
-import { Navigation } from 'react-native-navigation/';
+import { Navigation } from 'react-native-navigation';
 import { PropTypes } from 'prop-types';
 import { normalize, getUserID, DEFAULT_USER_ID, authHeaders, getUserData, APP_GLOBAL_COLOR } from '../../../Constant';
 import { LANDING_RESOURCES, LANDING_CDM, DEBUG, LANDING_PDM, LANDING_TOP_SIX, GET_USER_NOTIFICATIONS, UPDATE_USER_NOTIFICATIONS } from '../../../Apis';
@@ -28,14 +28,15 @@ import { Button, withBadge, Icon } from 'react-native-elements';
 import HomeScoreView from '../../components/UI/ProfileCard/HomeScoreView';
 import Spinner from '../../components/UI/Spinner/Spinner';
 import TopSix from '../../components/UI/TopSix/TopSix';
+import TopSix_2 from '../../components/UI/TopSix/TopSix_2';
 // import Dialog from 'react-native-dialog';
 import Permissions from 'react-native-permissions';
 
 import firebase from 'react-native-firebase';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import moment from 'moment';
 
-// const { notifications } = this.state;
-const BadgedIcon = withBadge(24)(Icon)
+// const { notifications } = this.state
 
 export default class HomeScreen extends Component {
 
@@ -54,7 +55,7 @@ export default class HomeScreen extends Component {
       isLoading: true,
       timer: null,
       counter: 0,
-      user_id: '1',
+      // user_id: '1',
       firstAPIresponse: null,
       secondAPIresponse: null,
       thirdAPIresponse: null,
@@ -64,7 +65,8 @@ export default class HomeScreen extends Component {
       language: 'English',
 
       data: this.props.data,
-      menuName: this.getLanguageCode(this.props.data.userLanguage),
+      // menuName: this.getLanguageCode(this.props.data.userLanguage),
+      menuName: null,
       // loadingFourth
 
       notifications: {
@@ -167,38 +169,58 @@ export default class HomeScreen extends Component {
   }
 
   readNotification = (index, notifications, screen) => {
-    // const { notification } = this.state.notifications;
-
+    const { count } = this.state.notifications;
+    let counted;
     let newNotifications = notifications;
 
-    newNotifications.notification[index].read = true;
-    let updatedNotification = Object.assign(newNotifications, {})
+    if (count > 0) {
+      counted = count - 1;
+    } else {
+      counted = count;
+    }
+
+    newNotifications.notificationList[index].read = true;
+    newNotifications.count = counted;
+
+    let updatedNotification = Object.assign(newNotifications, {});
+    console.log(updatedNotification)
     this.setState({
       notificationsnotification: updatedNotification
     })
 
-    if (screen === 'survey') {
-      this.toQuesScreen()
-    } else if (screen === 'trends') {
+    if (screen === 'survey' || screen === 'Survey') {
+      this.toQuesScreen(notifications)
+    } else if (screen === 'trends' || screen === 'Survey') {
       this.toTrendScreen()
-    } else if (screen === 'timeline') {
+    } else if (screen === 'timeline' || screen === 'Survey') {
       this.toReportScreen()
     }
   }
 
-  updateNotifications = (notificationLogId, isRead) => {
+  updateNotifications = (notificationLogId) => {
+    console.log('called')
     axios.post(UPDATE_USER_NOTIFICATIONS, {
-      notificationLogId: notificationLogId,
-      isRead: 'Y'
+      notificationLogId: notificationLogId.toString(),
+      read: "Y",
+      userId: this.state.user_id
+      // notificationLogId: notificationLogId.toString(),
+      // read: 'Y',
+      // userId: this.state.user_id
     }).then((response) => {
       let responseData = response.data;
+      console.log('_________')
+      console.log(responseData)
+      console.log('_________')
+      this.getNotifications()
 
     }).catch(error => {
-
+      console.log(error)
     })
   }
 
   showNotificationScreen = () => {
+    const { menuName } = this.state;
+
     Navigation.push(this.props.componentId, {
       component: {
         name: 'NotificationScreen',
@@ -212,7 +234,7 @@ export default class HomeScreen extends Component {
               color: APP_GLOBAL_COLOR,
             },
             title: {
-              text: 'Notifications',
+              text: menuName ? menuName[3] : null,
               fontSize: hp('2.5%'),
               color: '#fff',
             },
@@ -234,14 +256,14 @@ export default class HomeScreen extends Component {
   refreshUI = (data) => {
     // getUserData().then((data) => {
 
-    if (data.userLanguage === 'hi') {
-      let menu = ['रुझान', 'सर्वे', 'अखाड़ा'];
-      this.setState({ menuName: menu, data: data });
-      return;
-    }
+    // if (data.userLanguage === 'hi') {
+    //   let menu = ['रुझान', 'सर्वे', 'अखाड़ा'];
+    //   this.setState({ menuName: menu, data: data });
+    //   return;
+    // }
 
-    let menu = ['Trends', 'Survey', 'Arena'];
-    this.setState({ menuName: menu, data: data });
+    // let menu = ['Trends', 'Survey', 'Arena'];
+    this.setState({data: data });
 
 
     // })
@@ -306,6 +328,8 @@ export default class HomeScreen extends Component {
   };
 
   toPoliceProfileScreen = () => {
+    const { menuName } = this.state;
+
     Navigation.push(this.props.componentId, {
       component: {
         name: 'PoliceProfileScreen',
@@ -322,7 +346,8 @@ export default class HomeScreen extends Component {
           lat_long: this.state.lat_lon,
           isPolice: true,
           userLanguage: this.state.data.userLanguage,
-          languageCode: this.state.firstAPIresponse ? this.state.firstAPIresponse.languageCodes : null
+          languageCode: this.state.firstAPIresponse ? this.state.firstAPIresponse.languageCodes : null,
+          language: menuName ? menuName[4] : null,
         }
 
       },
@@ -338,6 +363,8 @@ export default class HomeScreen extends Component {
   };
 
   toReportScreen = () => {
+    const { menuName } = this.state;
+
     Navigation.push(this.props.componentId, {
       component: {
         name: 'ReportScreen',
@@ -350,17 +377,22 @@ export default class HomeScreen extends Component {
         },
         passProps: {
           coordinates: this.state.coordinates,
-          user_id: this.state.user_id,
           data: this.state.data,
           refreshUI: this.refreshUI,
           userLanguage: this.state.data.userLanguage,
-          languageCode: this.state.firstAPIresponse ? this.state.firstAPIresponse.languageCodes : null
+          languageCode: this.state.firstAPIresponse ? this.state.firstAPIresponse.languageCodes : null,
+          user_id: this.state.user_id,
+          lat_lon: this.state.lat_lon,
+          // languageCode: this.state.firstAPIresponse ? this.state.firstAPIresponse.languageCodes : null,
+          menuName: menuName
         },
       },
     });
   };
 
   toQuesScreen = () => {
+    const { menuName } = this.state;
+
     Navigation.push(this.props.componentId, {
       component: {
         name: 'QuestionnaireScreen',
@@ -375,12 +407,16 @@ export default class HomeScreen extends Component {
           user_id: this.state.user_id,
           lat_lon: this.state.lat_lon,
           userLanguage: this.state.data.userLanguage,
+          // languageCode: this.state.firstAPIresponse ? this.state.firstAPIresponse.languageCodes : null,
+          menuName: menuName
         }
       },
     });
   };
 
   toTrendScreen = () => {
+    const { menuName } = this.state;
+
     Navigation.push(this.props.componentId, {
       component: {
         name: 'TrendScreen',
@@ -399,7 +435,9 @@ export default class HomeScreen extends Component {
           data: this.state.data,
           refreshUI: this.refreshUI,
           userLanguage: this.state.data.userLanguage,
-          languageCode: this.state.firstAPIresponse ? this.state.firstAPIresponse.languageCodes : null
+          languageCode: this.state.firstAPIresponse ? this.state.firstAPIresponse.languageCodes : null,
+          user_id: this.state.user_id,
+          menuName: menuName
         }
       },
     });
@@ -432,13 +470,15 @@ export default class HomeScreen extends Component {
         this.setState({ lat_lon: latlong });
         this.setState({ coordinates: position.coords });
         // alert(latlong);
-        this.requestToServer()
-        this.serverHitForFourthResponse()
+        this.serverHitForFourthResponse();
+        this.requestToServer();
+        
       },
       (error) => {
         console.log(error)
+        this.serverHitForFourthResponse();
         this.requestToServer();
-        this.serverHitForFourthResponse()
+        
         // alert(error.message)
         // this.locationErrorMessage = error.message;
         // alert(locationErrorMessage)
@@ -470,8 +510,9 @@ export default class HomeScreen extends Component {
       // this.setState({ location: response })
       if (response === 'denied' || response === 'undetermined') {
         // this._requestPermission();
-        this.requestToServer();
         this.serverHitForFourthResponse();
+        this.requestToServer();
+        
       } else if (response === 'authorized') {
         // this.getLocation()
         this.fetchCurrentLocation();
@@ -505,6 +546,7 @@ export default class HomeScreen extends Component {
       let userID = value ? value : 1;
       // alert(userID);
       this.setState({ user_id: userID })
+      this.getNotifications();
     })
     this.checkPermission()
     // alert(getUserID());
@@ -512,10 +554,132 @@ export default class HomeScreen extends Component {
     this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.goBack);
     this.startTimer();
 
-    this.getNotifications();
+    if (this.props.refresh) {
+      this.setState({
+        showDialog: false,
+        currLandPageSurvey: null,
+        isLoading: true,
+        timer: null,
+        counter: 0,
+        user_id: '1',
+        firstAPIresponse: null,
+        secondAPIresponse: null,
+        thirdAPIresponse: null,
+        landingTopSix: null,
+        lat_lon: null,
+        coordinates: null,
+        language: 'English',
+
+        data: this.props.data,
+        // menuName: this.getLanguageCode(this.props.data.userLanguage),
+        menuName: null,
+        // loadingFourth
+
+        notifications: {
+          count: 12,
+          data: this.props.data,
+          menuName: this.getLanguageCode(this.props.data.userLanguage),
+          notification: [
+            {
+              read: false,
+              notificationLogId: '12',
+              title: 'Survey Update',
+              notificationFor: 'survey',
+              subtitle: 'A new survey has been added, please take your time and check it out',
+              notificationDateTime: moment().format(),
+
+            },
+            {
+              read: true,
+              notificationLogId: '11',
+              title: 'Survey Update',
+              notificationFor: 'survey',
+              subtitle: 'A new survey has been added, please take your time and check it out',
+              notificationDateTime: moment().format(),
+            },
+            {
+              read: false,
+              notificationLogId: '14',
+              title: 'Timeline Update',
+              notificationFor: 'timeline',
+              subtitle: 'Someone liked your comment',
+              notificationDateTime: moment().format(),
+            },
+            {
+              read: false,
+              notificationLogId: '743',
+              title: 'Survey Update',
+              notificationFor: 'survey',
+              subtitle: 'A new survey has been added, please take your time and check it out',
+              notificationDateTime: moment().format(),
+            },
+            {
+              read: false,
+              notificationLogId: '9483',
+              title: 'Survey',
+              notificationFor: 'survey',
+              subtitle: 'A new survey has been added, please take your time and check it out',
+              notificationDateTime: moment().format(),
+            },
+            {
+              read: false,
+              notificationLogId: '0293',
+              title: 'Timeline Update',
+              notificationFor: 'timeline',
+              subtitle: 'Ben just commented on your update',
+              notificationDateTime: moment().format(),
+            },
+            {
+              read: false,
+              notificationLogId: '837484',
+              title: 'Timeline Update',
+              notificationFor: 'timeline',
+              subtitle: 'Chuks commented on your post',
+              notificationDateTime: moment().format(),
+            },
+            {
+              read: false,
+              notificationLogId: '838494',
+              title: 'Survey',
+              notificationFor: 'survey',
+              subtitle: 'A new survey has been added, please take your time and check it out',
+              notificationDateTime: moment().format(),
+            },
+            {
+              read: true,
+              notificationLogId: '938292933',
+              title: 'Survey',
+              notificationFor: 'survey',
+              subtitle: 'A new survey has been added, please take your time and check it out',
+              notificationDateTime: moment().format(),
+            },
+            {
+              read: false,
+              notificationLogId: '027842',
+              title: 'Survey',
+              notificationFor: 'survey',
+              subtitle: 'A new survey has been added, please take your time and check it out',
+              notificationDateTime: moment().format(),
+            },
+            {
+              read: true,
+              notificationLogId: '948392',
+              title: 'Survey',
+              notificationFor: 'survey',
+              subtitle: 'A new survey has been added, please take your time and check it out',
+              notificationDateTime: moment().format(),
+            },
+          ]
+        }
+      });
+    }
+  }
+
+  componentDidUpdate() {
   }
 
   getNotifications = () => {
+    console.log(this.state.user_id)
     axios.post(GET_USER_NOTIFICATIONS, {
       userId: this.state.user_id
     }).then((response) => {
@@ -640,21 +804,24 @@ export default class HomeScreen extends Component {
   serverHitForFourthResponse = () => {
     // console.log('called')
     var body = {
-      userId: this.state.user_id,
-      // latLngSeparatedByComma: "27.5,77.5",
-      // languageCode: this.state.data.userLanguage ? this.state.data.userLanguage : 'en'
+      userId: this.state.user_id
     };
     if (this.state.lat_lon) {
       body["latLngSeparatedByComma"] = this.state.lat_lon;
     }
-
+    //alert(JSON.stringify(body));
     axios.post(LANDING_TOP_SIX, body)
       .then(response => {
         let responseData = response.data;
         // console.log(responseData)
-        this.setState({ landingTopSix: responseData })
+        //alert(JSON.stringify(responseData));
+        let extraImage = responseData.extraImageFile3 ? responseData.extraImageFile3 : "Trends,Survey,Arena,Notifications,Rate Now, Profile, Male,Female, Select Your Profession,Student,Salaried,Entrepreneur, Retired, Housewife,Other, Select Your Age group, Teenager,Twenties,Thirties,Forties,Fifties,Sixty+";
+        let menuArr = extraImage.split(',');
+        this.setState({ landingTopSix: responseData, menuName: menuArr })
+
       })
       .catch(error => {
+        // alert('bbb');
         console.log(error)
       })
   }
@@ -725,7 +892,6 @@ export default class HomeScreen extends Component {
         </View>
       );
     } else if (this.state.isLoading) {
-
       return (
         <View style={styles.profileContainer}>
           <ProfileView
@@ -790,49 +956,54 @@ export default class HomeScreen extends Component {
   };
 
   renderSurveyButton = () => {
-    const { currLandPageSurvey } = this.state;
-    if (currLandPageSurvey) {
-      let firstKey = Object.keys(currLandPageSurvey)[0];
-      // console.log(currLandPageSurvey[firstKey])
-      return (
-        <Button
-          title={currLandPageSurvey[firstKey]}
-          buttonStyle={{ backgroundColor: '#a01414' }}
-          onPress={() => {
-            Navigation.push(this.props.componentId, {
-              component: {
-                name: 'QuestionnaireScreen',
-                options: {
-                  topBar: {
-                    visible: false,
-                    drawBehind: true,
-                    animate: false,
+    const { currLandPageSurvey, menuName, landingTopSix } = this.state;
+    if (landingTopSix) {
+      if (currLandPageSurvey) {
+        let firstKey = Object.keys(currLandPageSurvey)[0];
+        // console.log(currLandPageSurvey[firstKey])
+        return (
+          <Button
+            title={currLandPageSurvey[firstKey]}
+            buttonStyle={{ backgroundColor: '#a01414' }}
+            onPress={() => {
+              Navigation.push(this.props.componentId, {
+                component: {
+                  name: 'QuestionnaireScreen',
+                  options: {
+                    topBar: {
+                      visible: false,
+                      drawBehind: true,
+                      animate: false,
+                    },
                   },
+                  passProps: {
+                    user_id: this.state.user_id,
+                    lat_lon: this.state.lat_lon,
+                    surveyType: 'L',
+                    surveyTitle: currLandPageSurvey[firstKey],
+                    componentId: this.props.componentId,
+                    menuName: menuName ? menuName[3] : null,
+                  }
                 },
-                passProps: {
-                  user_id: this.state.user_id,
-                  lat_lon: this.state.lat_lon,
-                  surveyType: 'L',
-                  surveyTitle: currLandPageSurvey[firstKey],
-                }
-              },
-            });
-          }}
-        />
-      )
-    } else {
-      return (
-        <Button
-          title="No Active Survey"
-          disabled />
-      )
-    }
+              });
+            }}
+          />
+        )
+      } else {
+        return (
+          <Button
+            title="No Active Survey"
+            disabled />
+        )
+      }
+    } else return null;
   }
 
   gotoProfile = () => {
 
+    const { menuName } = this.state;
 
-    let labguageCode = this.state.firstAPIresponse ? this.state.firstAPIresponse.languageCodes : null;
+    let languageCode = this.state.firstAPIresponse ? this.state.firstAPIresponse.languageCodes : null;
 
     let body = {
       image: this.state.data.image,
@@ -849,7 +1020,24 @@ export default class HomeScreen extends Component {
 
       refreshUI: this.refreshUI,
 
-      languageCode: labguageCode
+      languageCode: languageCode,
+      language: menuName ? menuName[5] : null,
+      male: menuName ? menuName[6] : null,
+      female: menuName ? menuName[7] : null,
+      selProfession: menuName ? menuName[8] : null,
+      student: menuName ? menuName[9] : null,
+      salaried: menuName ? menuName[10] : null,
+      entrepreneur: menuName ? menuName[11] : null,
+      retired: menuName ? menuName[12] : null,
+      housewife: menuName ? menuName[13] : null,
+      other: menuName ? menuName[14] : null,
+      selAgeGroup: menuName ? menuName[15] : null,
+      teenager: menuName ? menuName[16] : null,
+      twenties: menuName ? menuName[17] : null,
+      thirties: menuName ? menuName[18] : null,
+      fourties: menuName ? menuName[19] : null,
+      fifties: menuName ? menuName[20] : null,
+      aboveSixty: menuName ? menuName[21] : null,
     };
 
     Navigation.push(this.props.componentId, {
@@ -868,7 +1056,6 @@ export default class HomeScreen extends Component {
   }
 
   render() {
-    let menuName = this.state.menuName;
     let menuImageName = [
       require('../../assets/trends.png'),
       require('../../assets/survey.png'),
@@ -1034,6 +1221,9 @@ export default class HomeScreen extends Component {
       resourceCategoryName_5_,
       resourceCategoryName_6_];
 
+    const { notifications, menuName } = this.state;
+
+    const BadgedIcon = withBadge(notifications.count)(Icon);
 
     console.log(this.state)
 
@@ -1071,11 +1261,24 @@ export default class HomeScreen extends Component {
           </Text>
 
           <View style={{ marginRight: hp('4%') }}>
-            <BadgedIcon
+            {notifications.count <= 0 ?
+              <FontAwesome
+                size={hp('3%')}
+                onPress={() => this.showNotificationScreen()}
+                name="bell-o"
+                color="#fff"
+              /> :
+              <BadgedIcon
+                color="#fff"
+                type="font-awesome"
+                onPress={() => this.showNotificationScreen()}
+                name="bell-o" />
+            }
+            {/* <BadgedIcon
               color="#fff"
               type="font-awesome"
               onPress={() => this.showNotificationScreen()}
-              name="bell-o" />
+              name="bell-o" /> */}
           </View>
         </View>
 
@@ -1083,64 +1286,138 @@ export default class HomeScreen extends Component {
         {this.profileViewAfterLoading(this.state)}
 
         {/* //Third half */}
-        <ScrollView
-          pagingEnabled
-          horizontal
-          showsHorizontalScrollIndicator={false}
+        <View
           style={{
             flex: 1,
             width: '100%',
             backgroundColor: 'white',
             borderTopColor: 'grey',
-            height: hp('46%')
-          }}
-          ref={ref => {
-            this.scroll = ref;
-          }}
-        >
+            height: hp('50%'),
+            flexDirection: 'column'
+          }}>
           {this.state.landingTopSix ?
-            (<View style={{ flexDirection: 'row' }}>
-              <View style={{ width: wd, flex: 1, padding: normalize(8) }}>
-                <TopSix
-                  source={resourceImageData_A}
-
-                  logo={esourceCategoryLogoData_A}
-                  logoName={resourceName_A}
-
-                  logoCatName={resourceCategoryName_A}
-
-                  resourceGpr={resourceGPR_A_1}
-                  renderButton={this.renderSurveyButton}
-                />
-              </View>
-              <View style={{ width: wd, flex: 1, padding: normalize(8) }}>
-                <TopSix
-                  source={resourceImageData_A_2}
-
-                  logo={esourceCategoryLogoData_A_2}
-
-                  logoName={resourceName_A_2}
-                  logoCatName={resourceCategoryName_A_2}
-
-                  resourceGpr={resourceGPR_A_2}
-                  renderButton={this.renderSurveyButton}
-                />
-              </View>
-            </View>
-            ) :
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: wd }}>
-              <Spinner />
-            </View>
+            <Text style={styles.landingTopSixHeader}> {this.state.landingTopSix.extraImageFile1} </Text> :
+            null
           }
+          <ScrollView
+            pagingEnabled
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={{
+              flex: 1,
+              width: '100%',
+              backgroundColor: 'white',
+              borderTopColor: 'grey',
+              height: hp('25%'),
+              flexDirection: 'row'
+            }}
+            ref={ref => {
+              this.scroll = ref;
+            }}
+          >
+            {this.state.landingTopSix ?
+              (<View style={{ flexDirection: 'row' }}>
+                <View style={{ width: wd, flex: 1, padding: normalize(8) }}>
+                  <TopSix
+                    source={resourceImageData_A}
 
-        </ScrollView>
+                    logo={esourceCategoryLogoData_A}
+                    logoName={resourceName_A}
+
+                    logoCatName={resourceCategoryName_A}
+
+                    resourceGpr={resourceGPR_A_1}
+                    renderButton={this.renderSurveyButton}
+                  />
+                </View>
+                <View style={{ width: wd, flex: 1, padding: normalize(8) }}>
+                  <TopSix_2
+                    source={resourceImageData_A}
+
+                    logo={esourceCategoryLogoData_A}
+                    logoName={resourceName_A}
+
+                    logoCatName={resourceCategoryName_A}
+
+                    resourceGpr={resourceGPR_A_1}
+                    renderButton={this.renderSurveyButton}
+                  />
+                </View>
+              </View>
+              ) :
+              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: wd }}>
+                <Spinner />
+              </View>
+            }
+
+          </ScrollView>
+          <View style={styles.buttonContainer}>
+            {this.renderSurveyButton()}
+          </View>
+          {this.state.landingTopSix ?
+            <Text style={styles.landingTopSixHeader}> {this.state.landingTopSix.areaTopSixResources2.extraImageFile1} </Text> :
+            null
+          }
+          <ScrollView
+            pagingEnabled
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={{
+              flex: 1,
+              width: '100%',
+              backgroundColor: 'white',
+              borderTopColor: 'grey',
+              height: hp('25%'),
+              flexDirection: 'row'
+            }}
+            ref={ref => {
+              this.scroll = ref;
+            }}
+          >
+            {this.state.landingTopSix ?
+              (<View style={{ flexDirection: 'row' }}>
+                <View style={{ width: wd, flex: 1, padding: normalize(8) }}>
+                  <TopSix
+                    source={resourceImageData_A_2}
+
+                    logo={esourceCategoryLogoData_A_2}
+
+                    logoName={resourceName_A_2}
+                    logoCatName={resourceCategoryName_A_2}
+
+                    resourceGpr={resourceGPR_A_2}
+                    renderButton={this.renderSurveyButton}
+                  />
+                </View>
+                <View style={{ width: wd, flex: 1, padding: normalize(8) }}>
+                  <TopSix_2
+                    source={resourceImageData_A_2}
+
+                    logo={esourceCategoryLogoData_A_2}
+
+                    logoName={resourceName_A_2}
+                    logoCatName={resourceCategoryName_A_2}
+
+                    resourceGpr={resourceGPR_A_2}
+                    renderButton={this.renderSurveyButton}
+                  />
+                </View>
+              </View>
+              ) :
+              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: wd }}>
+                <Spinner />
+              </View>
+            }
+
+          </ScrollView>
+        </View>
 
         {/* //Forth half */}
         <View style={styles.bottomContainer}>
 
           <MenuButtons
             onPress={this.toTrendScreen}
-            info={menuName[0]}
+            info={menuName ? menuName[0] : null}
             source={menuImageName[0]}
           />
 
@@ -1148,7 +1425,8 @@ export default class HomeScreen extends Component {
 
           <MenuButtons
             onPress={this.toQuesScreen}
-            info={menuName[1]}
+            // info={menuName[1]}
+            info={menuName ? menuName[1] : null}
             source={menuImageName[1]}
           />
 
@@ -1156,7 +1434,8 @@ export default class HomeScreen extends Component {
 
           <MenuButtons
             onPress={this.toReportScreen}
-            info={menuName[2]}
+            // info={menuName[2]}
+            info={menuName ? menuName[2] : null}
             source={menuImageName[2]}
           />
 
@@ -1180,15 +1459,27 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     height: hp('9%'),
   },
+
   profileContainer: {
     alignItems: 'center',
-    // width: '100%',
-    // height: '31%',
+    paddingTop: 0,
     flexDirection: 'row',
-    backgroundColor: 'white',
-    height: hp('37%'),
-    // flex: 1,
+    backgroundColor: '#fff',
+    height: hp('24%'),
+    flex: 1,
   },
+
+  buttonContainer: {
+    marginHorizontal: hp('2%'),
+    marginVertical: hp('1%')
+  },
+
+  landingTopSixHeader: {
+    textAlign: 'center',
+    fontSize: hp('1.5%'),
+    fontWeight: '700',
+    marginVertical: hp('1.8%')
+  }
 });
 
 const stylesTopView = StyleSheet.create({
@@ -1200,6 +1491,6 @@ const stylesTopView = StyleSheet.create({
 
     justifyContent: 'space-between',
     height: hp('8%'),
-	  display: 'flex'
+    display: 'flex'
   },
 });

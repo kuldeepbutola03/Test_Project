@@ -12,23 +12,16 @@ import {
     SafeAreaView,
     Image
 } from 'react-native';
-// import DefaultInput from '../../components/UI/DefaultInput/DefaultInput';
 import { Navigation } from 'react-native-navigation';
 import { PropTypes } from 'prop-types';
-// import ButtonMod from '../../components/UI/ButtonMod/ButtonMod';
-// import PhoneInput from 'react-native-phone-input';
-// import HeaderText from '../../components/UI/HeaderText/HeaderText';
-
 import firebase from 'react-native-firebase';
-
-import { SEND_OTP, DEBUG, UPDATE_USER_AREA } from '../../../Apis';
+import { SEND_OTP, DEBUG, UPDATE_USER_AREA, LANDING_TOP_SIX } from '../../../Apis';
 import { authHeaders, normalize, getUserID, saveUserData, APP_GLOBAL_COLOR, saveUserID } from '../../../Constant';
 import Accordion from 'react-native-collapsible/Accordion';
-
 import Loading from 'react-native-whc-loading';
 import CustomButton from "../../components/UI/ButtonMod/CustomButtom";
-
 import { SearchBar } from 'react-native-elements';
+import axios from 'axios';
 
 export default class AreaScreen extends Component {
     static propTypes = {
@@ -50,6 +43,7 @@ export default class AreaScreen extends Component {
         super(props);
         // this.pushScreen = this.pushScreen.bind (this);
     }
+
     componentDidMount() {
         // this.getDataFromServer(true)
         firebase.analytics().setCurrentScreen("Screen", "Area_Selection_Screen");
@@ -116,6 +110,7 @@ export default class AreaScreen extends Component {
         this.setState({ data: data, search: '' });
 
     }
+
     updateSearch = searchText => {
         var search = searchText;
         // this.setState({ search });
@@ -178,12 +173,6 @@ export default class AreaScreen extends Component {
         })
 
         this.refs.loading.show();
-        // alert(body);
-        // {
-        //     "userId": "14",
-        //         "userPolArea": "POLICE AREA",
-        //             "userState": "Al"
-        // }
 
         fetch(UPDATE_USER_AREA, {
             method: 'POST',
@@ -191,17 +180,8 @@ export default class AreaScreen extends Component {
             body: body,
         }).then((response) => response.json())
             .then((responseJson) => {
-                // alert(JSON.stringify(responseJson));
-                // return;
                 let username = this.props.username;
                 let responseData = this.props.responseData;
-                // let data = {
-                //     image: this.props.responseData.userImage ? this.props.responseData.userImage : require('../../assets/UserSmall.png'),
-                //     name: this.props.responseData.userFirstName,
-                //     email: this.props.responseData.userEmail,
-                //     username : this.props.responseData.userLastName
-
-                // }
                 let data = {
                     email: responseData.userEmail,
                     image: responseData.userImageData,
@@ -211,74 +191,67 @@ export default class AreaScreen extends Component {
                     code: this.props.code
                 }
 
-                saveUserID(this.props.userId);
-                saveUserData(this.props.dataToSave);
-                // data: responseData.areaStateMap,
-                // mobileNumber : thisObj.props.mobileNumber,
-                // code : thisObj.props.code,
-                // username: responseData.userName,
-                // name: responseData.userFirstName,
-                // responseData: responseData
-                thisObject.refs.loading.close();
-                setTimeout(function () {
-                    // if (username) {
-                    //     Navigation.push(thisObject.props.componentId, {
-                    //         component: {
-                    //             name: 'HomeScreen',
-                    //             passProps: {
-                    //                 data: data
-                    //             },
-                    //             options: {
-                    //                 topBar: {
-                    //                     visible: false,
-                    //                     drawBehind: true,
-                    //                     animate: false,
-                    //                 },
-                    //                 popGesture: false
-                    //             },
-                    //             sideMenu: {
-                    //                 enabled: false,
-                    //                 visible: false
-                    //             }
-                    //         }
-                    //     });
-                    //     saveUserData(data)
-                    // } else if (!username) {
+                axios.post(LANDING_TOP_SIX, {
+                    userId: responseData.userId,
+                })
+                .then(response_2 => {
+                    let responseData_2 = response_2.data;
+                    let menuArr = responseData_2.extraImageFile3.split(',');
+                    saveUserID(this.props.userId);
+                    saveUserData(this.props.dataToSave);
 
-
-                    Navigation.push(thisObject.props.componentId, {
-                        component: {
-                            id: 'Profile',
-                            name: 'Profile',
-                            passProps: {
-                                email: null,
-
-                                firstName: thisObject.props.firstName,
-                                lastName: thisObject.props.lastName,
-                                image: thisObject.props.image,
-                                username: username,
-                                mobileNumber: thisObject.props.mobileNumber,
-                                code: thisObject.props.code,
-                                userId: thisObject.props.userId,
-
-                                selectedAgeGroupCode: thisObject.props.selectedAgeGroupCode,
-                                description: thisObject.props.description,
-                                userDesignation : thisObject.props.designation,
-                                gender: thisObject.props.gender,
-                                userLanguage : thisObject.props.userLanguage
-                            },
-                            options: {
-                                topBar: {
-                                    visible: false,
-                                    animate: false,
-                                    drawBehind: true
+                    thisObject.refs.loading.close();
+                    setTimeout(function () {
+                        Navigation.push(thisObject.props.componentId, {
+                            component: {
+                                id: 'Profile',
+                                name: 'Profile',
+                                passProps: {
+                                    email: null,
+                                    firstName: thisObject.props.firstName,
+                                    lastName: thisObject.props.lastName,
+                                    image: thisObject.props.image,
+                                    username: username,
+                                    mobileNumber: thisObject.props.mobileNumber,
+                                    code: thisObject.props.code,
+                                    userId: thisObject.props.userId,
+                                    selectedAgeGroupCode: thisObject.props.selectedAgeGroupCode,
+                                    description: thisObject.props.description,
+                                    userDesignation : thisObject.props.designation,
+                                    gender: thisObject.props.gender,
+                                    userLanguage : thisObject.props.userLanguage,
+                                    language: menuArr ? menuArr[5] : null,
+                                    male: menuArr ? menuArr[6] : null,
+                                    female: menuArr ? menuArr[7] : null,
+                                    selProfession: menuArr ? menuArr[8] : null,
+                                    student: menuArr ? menuArr[9] : null,
+                                    salaried: menuArr ? menuArr[10] : null,
+                                    entrepreneur: menuArr ? menuArr[11] : null,
+                                    retired: menuArr ? menuArr[12] : null,
+                                    housewife: menuArr ? menuArr[13] : null,
+                                    other: menuArr ? menuArr[14] : null,
+                                    selAgeGroup: menuArr ? menuArr[15] : null,
+                                    teenager: menuArr ? menuArr[16] : null,
+                                    twenties: menuArr ? menuArr[17] : null,
+                                    thirties: menuArr ? menuArr[18] : null,
+                                    fourties: menuArr ? menuArr[19] : null,
+                                    fifties: menuArr ? menuArr[20] : null,
+                                    aboveSixty: menuArr ? menuArr[21] : null,
+                                },
+                                options: {
+                                    topBar: {
+                                        visible: false,
+                                        animate: false,
+                                        drawBehind: true
+                                    }
                                 }
-                            }
-                        },
-                    });
-                    // }
-                }, 1000);
-
+                            },
+                        });
+                    }, 500);
+                })
+                .catch(error => {
+                    console.log(error)
+                })
             })
             .catch((error) => {
                 this.refs.loading.close();
@@ -291,6 +264,7 @@ export default class AreaScreen extends Component {
     goHome = () => {
 
     }
+
     homeButtonTapped = () => {
         Navigation.pop(this.props.componentId);
     };
@@ -298,11 +272,6 @@ export default class AreaScreen extends Component {
 
 
     render() {
-        // let data = [];
-
-
-
-
         var { height, width } = Dimensions.get('window');
 
         let heightOfImage = (285 * width) / 640;
@@ -310,6 +279,7 @@ export default class AreaScreen extends Component {
         const options = {
             behavior: Platform.OS === "ios" ? "padding" : "null"
         }
+
         return (
             <SafeAreaView
                 forceInset={{ bottom: 'always' }}
@@ -467,16 +437,13 @@ class SectionHeader extends Component {
     render() {
         return <TouchableOpacity style={{ flex: 1, height: 50, width: null, justifyContent: "center", backgroundColor: "white" }} onPress={() => {
             // alert(this.props.index);
-
             this.props.sectionTapped(this.props.section);
             // if (this.state.sectionSelected == section) {
             //     this.setState({ sectionSelected: -1 });
             // } else {
             //     this.setState({ sectionSelected: section });
             // }
-
-        }
-
+            }
         }>
 
             <Text style={{ fontWeight: '600', fontSize: 15, marginLeft: 20, marginRight: 10 }}>{this.props.section.title}</Text>

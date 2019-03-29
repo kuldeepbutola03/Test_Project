@@ -14,7 +14,7 @@ import { Navigation } from 'react-native-navigation';
 import { PropTypes } from 'prop-types';
 import ButtonMod from '../../components/UI/ButtonMod/ButtonMod';
 import HeaderText from '../../components/UI/HeaderText/HeaderText';
-import { VALIDATE_OTP, DEBUG, GET_USER_DETAILS_EMAIL } from '../../../Apis';
+import { VALIDATE_OTP, DEBUG, GET_USER_DETAILS_EMAIL, LANDING_TOP_SIX } from '../../../Apis';
 import { saveUserID, authHeaders, saveUserData, getCurrentLocation, defaultUser } from '../../../Constant';
 import axios from 'axios';
 import Geolocation from 'react-native-geolocation-service';
@@ -138,7 +138,7 @@ export default class OtpScreen extends Component {
   }
 
   mobileNumberSubmit = (locationStr, thisObj) => {
-    // let thisObj = this;
+    let thatObj = thisObj;
     let location = locationStr;
     if (DEBUG == 0) {
       this.refs.loading.close();
@@ -158,24 +158,26 @@ export default class OtpScreen extends Component {
     }
 
     let body = null;
+
     if (locationStr) {
       body = {
         userMobile: this.props.mobileNumber,
         userCountryCode: this.props.code,
         userOtp: this.state.name,
-        userInitCoord: locationStr
+        userInitCoord: locationStr,
+        pushNotificationToken: this.props.pushNotificationToken,
       }
     } else {
       body = {
         userMobile: this.props.mobileNumber,
         userCountryCode: this.props.code,
-        userOtp: this.state.name
+        userOtp: this.state.name,
+        pushNotificationToken: this.props.pushNotificationToken,
       }
     }
     axios.post(VALIDATE_OTP, body)
       .then(response => {
         let responseData = response.data;
-        this.refs.loading.close();
         console.log(responseData)
 
         let data = {
@@ -185,44 +187,76 @@ export default class OtpScreen extends Component {
           username: responseData.userName
         }
 
-        setTimeout(function () {
+        // setTimeout(function () {
           if (responseData) {
             if (responseData.userId) {
+              if (responseData.userPolArea) {
+                  axios.post(LANDING_TOP_SIX, {
+                    userId: responseData.userId,
+                  })
+                  .then(response_2 => {
 
-
-
-              if (location) {
-                saveUserID(responseData.userId);
-                saveUserData(data);
-                Navigation.push(thisObj.props.componentId, {
-                  component: {
-                    id: 'Profile',
-                    name: 'Profile',
-                    passProps: {
-                      email: responseData.userEmail,
-                      image: responseData.userImageData,
-                      firstName: responseData.userFirstName,
-                      lastName: responseData.userLastName,
-                      username: responseData.userName,
-                      mobileNumber: thisObj.props.mobileNumber,
-                      code: thisObj.props.code,
-                      userId: responseData.userId,
-                      userDesignation : responseData.userDesignation,
-                      selectedAgeGroupCode: responseData.userAgeGroup,
-                      description: responseData.userDescription,
-                      gender: responseData.userGender,
-                      userLanguage: responseData.userLanguage
-                    },
-                    options: {
-                      topBar: {
-                        visible: false,
-                        animate: false,
-                        drawBehind: true
-                      }
-                    }
-                  },
-                });
-                // }
+                    // alert(JSON.stringify(response_2.data));
+                    // console.log('kkkkkkkk');
+                    let responseData_2 = response_2.data;
+                    let languageArry = responseData_2.extraImageFile3 ? responseData_2.extraImageFile3 : "Trends,Survey,Arena,Notifications,Rate Now, Profile, Male,Female, Select Your Profession,Student,Salaried,Entrepreneur, Retired, Housewife,Other, Select Your Age group, Teenager,Twenties,Thirties,Forties,Fifties,Sixty+";
+                    // console.log(response_2.data);
+                   
+                    // let menuArr = responseData_2.extraImageFile3.split(',');
+                    let menuArr = languageArry.split(',');
+                    
+                    thatObj.refs.loading.close();
+                    saveUserID(responseData.userId);
+                    saveUserData(data);
+                    Navigation.push(thatObj.props.componentId, {
+                      component: {
+                        id: 'Profile',
+                        name: 'Profile',
+                        passProps: {
+                          email: responseData.userEmail,
+                          image: responseData.userImageData,
+                          firstName: responseData.userFirstName,
+                          lastName: responseData.userLastName,
+                          username: responseData.userName,
+                          mobileNumber: thatObj.props.mobileNumber,
+                          code: thatObj.props.code,
+                          userId: responseData.userId,
+                          userDesignation : responseData.userDesignation,
+                          selectedAgeGroupCode: responseData.userAgeGroup,
+                          description: responseData.userDescription,
+                          gender: responseData.userGender,
+                          userLanguage: responseData.userLanguage,
+                          language: menuArr ? menuArr[5] : null,
+                          male: menuArr ? menuArr[6] : null,
+                          female: menuArr ? menuArr[7] : null,
+                          selProfession: menuArr ? menuArr[8] : null,
+                          student: menuArr ? menuArr[9] : null,
+                          salaried: menuArr ? menuArr[10] : null,
+                          entrepreneur: menuArr ? menuArr[11] : null,
+                          retired: menuArr ? menuArr[12] : null,
+                          housewife: menuArr ? menuArr[13] : null,
+                          other: menuArr ? menuArr[14] : null,
+                          selAgeGroup: menuArr ? menuArr[15] : null,
+                          teenager: menuArr ? menuArr[16] : null,
+                          twenties: menuArr ? menuArr[17] : null,
+                          thirties: menuArr ? menuArr[18] : null,
+                          fourties: menuArr ? menuArr[19] : null,
+                          fifties: menuArr ? menuArr[20] : null,
+                          aboveSixty: menuArr ? menuArr[21] : null,
+                        },
+                        options: {
+                          topBar: {
+                            visible: false,
+                            animate: false,
+                            drawBehind: true
+                          }
+                        }
+                      },
+                    });
+                  })
+                  .catch(error => {
+                    console.log(error)
+                  })
               } else {
                 // console.log('no location')
                 Navigation.push(thisObj.props.componentId, {
@@ -261,10 +295,11 @@ export default class OtpScreen extends Component {
 
 
             } else {
+              this.refs.loading.close();
               alert("Invalid OTP");
             }
           }
-        }, 1000)
+        // }, 200)
       })
       .catch((error) => {
         this.refs.loading.close();

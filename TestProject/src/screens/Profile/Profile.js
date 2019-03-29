@@ -24,6 +24,7 @@ import { Navigation } from 'react-native-navigation';
 import { PropTypes } from 'prop-types';
 import { saveUserData, defaultUser, authHeaders, getUserID, APP_GLOBAL_COLOR, normalize } from '../../../Constant';
 import { UPDATE_USER } from '../../../Apis';
+import axios from 'axios';
 import Share, { ShareSheet, Button } from 'react-native-share';
 import Loading from 'react-native-whc-loading';
 import { CheckBox } from 'react-native-elements';
@@ -50,34 +51,18 @@ export default class Profile extends Component {
       userId: this.props.userId,
       description: this.props.description ? this.props.description : "",
       userDesignation: this.props.userDesignation ? this.props.userDesignation : "",
-
       userLanguage: this.props.userLanguage ? this.props.userLanguage : "en",
       languageCode: this.props.languageCode,
-
       editable: !(this.props.username && this.props.username.length > 0),
       visible: false,
       visibleGender: false,
       visibleProfession: false,
       warningVisible: false,
-      maleChecked: this.props.gender === "Male"
-      // femaleChecked : this.props.gender === "Female" ? true : false
+      maleChecked: this.props.gender === "Male",
     }
   }
 
   componentDidMount() {
-    // alert(this.props.username);
-
-    // if (this.props.username && this.props.username.length > 0) {
-    //   this.setState({
-    //     editable: false
-    //   });
-    // }
-
-
-    // getUserID((user_id) => {
-    //   alert(user_id);
-    // })
-    // alert(JSON.stringify(this.props))
   }
 
   backTapped = () => {
@@ -92,18 +77,23 @@ export default class Profile extends Component {
 
     let validUsername = username.match(usernameRegex);
 
-    if (firstName.length < 1) {
-      alert('Please fill in your name');
-      return;
-    } else if (username.length < 1) {
+    if(username.length < 1) {
       alert('Please fill in your username');
-      return
-    } else if (!validUsername) {
-      alert('Your handle can only contain alphabets and numbers');
     } else {
-      // saveUserData(this.state);
       this.updateDetails();
     }
+    // if (firstName.length < 1) {
+    //   alert('Please fill in your name');
+    //   return;
+    // } else if (username.length < 1) {
+    //   alert('Please fill in your username');
+    //   return
+    // } else if (!validUsername) {
+    //   alert('Your handle can only contain alphabets and numbers');
+    // } else {
+    //   // saveUserData(this.state);
+    //   this.updateDetails();
+    // }
   }
 
   /**
@@ -147,7 +137,7 @@ export default class Profile extends Component {
 
     this.refs.loading.show();
 
-    let imgName = "IMG" + (+new Date());
+    let imgName = "IMG" + (+new Date()) + '.JPG';
 
     let body = {};
 
@@ -199,28 +189,6 @@ export default class Profile extends Component {
 
         this.refs.loading.close();
 
-        // Navigation.push(this.props.componentId, {
-        //   component: {
-        //     id: "HomeScreen",
-        //     name: 'HomeScreen',
-        //     passProps: {
-        //       data: this.state
-        //     },
-        //     options: {
-        //       topBar: {
-        //         visible: false,
-        //         drawBehind: true,
-        //         animate: false,
-        //       },
-        //       popGesture: false
-        //     },
-        //     sideMenu: {
-        //       enabled: false,
-        //       visible: false
-        //     }
-        //   }
-        // });
-
         if (this.props.refreshUI) {
           // setTimeout(() => {
           // var data = this.state;
@@ -249,7 +217,8 @@ export default class Profile extends Component {
                       popGesture: false
                     },
                     passProps: {
-                      data: this.state
+                      data: this.state,
+                      refresh: true
                     },
 
 
@@ -290,14 +259,6 @@ export default class Profile extends Component {
 
   getAgeGroup = () => {
 
-    // let selected = this.state.selectedAgeGroupCode;
-    // return this.BUTTONS[selected].ageGroup;
-    // { ageGroup: 'Teenager', ageGroupCode: '<20' },
-    // { ageGroup: 'Twenties', ageGroupCode: '21-30' },
-    // { ageGroup: 'Thirties', ageGroupCode: '31-40' },
-    // { ageGroup: 'Fourties', ageGroupCode: '41-50' },
-    // { ageGroup: 'Fifties', ageGroupCode: '51-60' },
-    // { ageGroup: 'Above Sixties', ageGroupCode: '>60' },
     switch (this.state.selectedAgeGroupCode) {
 
       case "<20": return 'Teenager';
@@ -322,18 +283,6 @@ export default class Profile extends Component {
     }
   }
 
-  // showMessage = () => {
-  //   this.setState({ warningVisible: true });
-  // }
-
-  // hideMessage = () => {
-  //   this.setState({ warningVisible: false });
-  // }
-
-  // toggleProfession = (userDesignation) => {
-  //   this.setState({ modalVisible: false,userDesignation:userDesignation });
-  // }
-
   getLanguages = () => {
     // let values = Object.values(this.state.languageCode);
 
@@ -357,12 +306,12 @@ export default class Profile extends Component {
   }
 
   BUTTONS = [
-    { ageGroup: 'Teenager', ageGroupCode: '<20' },
-    { ageGroup: 'Twenties', ageGroupCode: '21-30' },
-    { ageGroup: 'Thirties', ageGroupCode: '31-40' },
-    { ageGroup: 'Fourties', ageGroupCode: '41-50' },
-    { ageGroup: 'Fifties', ageGroupCode: '51-60' },
-    { ageGroup: 'Above Sixties', ageGroupCode: '>60' },
+    { ageGroup: this.props.teenager, ageGroupCode: '<20' },
+    { ageGroup: this.props.twenties, ageGroupCode: '21-30' },
+    { ageGroup: this.props.thirties, ageGroupCode: '31-40' },
+    { ageGroup: this.props.fourties, ageGroupCode: '41-50' },
+    { ageGroup: this.props.fifties, ageGroupCode: '51-60' },
+    { ageGroup: this.props.aboveSixty, ageGroupCode: '>60' },
   ];
 
   render() {
@@ -376,17 +325,23 @@ export default class Profile extends Component {
 
 
     const G_BUTTONS = [
-      "Male", "Female"
+      this.props.male, this.props.female
     ];
 
     const P_BUTTONS = [
       // "Student","Salaried", "Doctor", "Engineer", "Teacher", "Others"
-      "Student",
-"Salaried" ,
-"Entrepreneur",
-"Retired",
-"Housewife",
-"Other"
+      this.props.student,
+      this.props.salaried,
+      this.props.entrepreneur,
+      this.props.retired,
+      this.props.housewife,
+      this.props.other,
+      // "Student",
+      // "Salaried" ,
+      // "Entrepreneur",
+      // "Retired",
+      // "Housewife",
+      // "Other"
     ]
 
     const { languageCodes } = this.state;
@@ -408,32 +363,10 @@ export default class Profile extends Component {
             />}
           </View>
           <View style={{ flex: 2.5, backgroundColor: 'clear', flexDirection: 'row', alignItems: 'center' }}>
-            {/* <Image
-    style={{
-      backgroundColor: APP_GLOBAL_COLOR,
-      marginLeft: normalize(10),
-      width: normalize(30),
-      height: normalize(30),
-      marginTop: normalize(5),
-      marginBottom: normalize(5),
-      borderRadius: normalize(30) / 2,
-    }}
-    source={this.props.userData.image ? { uri: "data:image/png;base64," + this.props.userData.image } : require('../../assets/UserSmall.png')}
-  /> */}
-
-            {/* <Text
-    style={{
-      justifyContent: 'center',
-      alignItems: 'center',
-      marginLeft: 5,
-      fontSize: normalize(14),
-      color: 'white',
-    }}>
-    {this.props.userData.username}
-  </Text> */}
+            
           </View>
           <View style={styles.textheaderView}>
-            <Text style={styles.textView}>Profile</Text>
+            <Text style={styles.textView}>{this.props.language}</Text>
           </View>
 
         </View>
@@ -537,7 +470,7 @@ export default class Profile extends Component {
                 <View style={{ flexDirection: 'row' }}>
                   <CheckBox
                     center
-                    title='Male'
+                    title={this.props.male}
                     checkedIcon='dot-circle-o'
                     uncheckedIcon='circle-o'
                     onPress={() => this.setState(prevState => ({
@@ -551,7 +484,7 @@ export default class Profile extends Component {
                   />
                   <CheckBox
                     center
-                    title='Female'
+                    title={this.props.female}
                     checkedIcon='dot-circle-o'
                     uncheckedIcon='circle-o'
                     onPress={() => this.setState(prevState => ({
@@ -653,7 +586,7 @@ export default class Profile extends Component {
 
         <ShareSheet visible={this.state.visible} onCancel={() => { this.onCancel() }} >
           <View style={{ backgroundColor: 'white', height: 50, alignItems: 'center', justifyContent: 'center' }}>
-            <Text style={{ fontSize: 16, fontWeight: 'bold', color: APP_GLOBAL_COLOR }}>Select Your Age Group</Text>
+            <Text style={{ fontSize: 16, fontWeight: 'bold', color: APP_GLOBAL_COLOR }}>{this.props.selAgeGroup}</Text>
           </View>
 
           {this.BUTTONS.map((item) => {
@@ -707,7 +640,7 @@ export default class Profile extends Component {
         <ShareSheet visible={this.state.visibleProfession} onCancel={() => { this.onCancelProfession() }} >
 
           <View style={{ backgroundColor: 'white', height: 50, alignItems: 'center', justifyContent: 'center' }}>
-            <Text style={{ fontSize: 16, fontWeight: 'bold', color: APP_GLOBAL_COLOR }}>Select Your Profession</Text>
+            <Text style={{ fontSize: 16, fontWeight: 'bold', color: APP_GLOBAL_COLOR }}>{this.props.selProfession}</Text>
           </View>
 
           {P_BUTTONS.map((item) => {

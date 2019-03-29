@@ -2,7 +2,16 @@ import React, { Component } from 'react';
 import {
   View,
   StyleSheet,
-  SafeAreaView, Text, ScrollView, RefreshControl, Dimensions, ActionSheetIOS, FlatList, Image, TouchableOpacity,
+  SafeAreaView,
+  Text,
+  ScrollView,
+  RefreshControl,
+  Dimensions,
+  ActionSheetIOS,
+  FlatList,
+  Image,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
   ListView,
   ActivityIndicator,
   ProgressBarAndroid,
@@ -15,20 +24,26 @@ import CustomButton from '../../components/UI/ButtonMod/CustomButtom';
 import { normalize, getUserID, getCurrentLocation, APP_GLOBAL_COLOR, getUserData } from '../../../Constant';
 import CaseCard from '../../components/UI/CaseCard/CaseCard';
 import Draggable from 'react-native-draggable';
-import { TIMELINE_DATA, MOBILE_NUMBER_, LIKDISLIKE_POST, REPORT_POST } from '../../../Apis';
+import { TIMELINE_DATA, MOBILE_NUMBER_, LIKDISLIKE_POST, REPORT_POST, GET_USER_NOTIFICATIONS, UPDATE_USER_NOTIFICATIONS } from '../../../Apis';
 import { authHeaders } from '../../../Constant';
-
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { withBadge, Icon } from 'react-native-elements';
 // import { Platform } from 'react-native';
 
 import Share, { ShareSheet, Button } from 'react-native-share';
+import SpinKit from 'react-native-spinkit';
+import moment from 'moment';
 import { Data } from 'victory-native';
+import axios from 'axios';
+
 
 import firebase from 'react-native-firebase';
 
-import PullToRefreshListView from 'react-native-smart-pull-to-refresh-listview';
+import PullToRefreshListView from 'react-native-smart-pull-to-refresh-listview'
 
 // import SharingCard from '../../components/UI/Sharing/SharingCard';
-
 export default class ReportScreen extends Component {
   dataTappedForMore = null;
   shareOptions = null;
@@ -52,10 +67,114 @@ export default class ReportScreen extends Component {
       //   video: null //"http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
       // },
     ],
+
+    image : this.props.data.image,
+
     iconSrc: require('../../assets/Profile/compose_.png'),
     refreshing: false,
     visible: false,
-    menuName: this.getLanguageCode(this.props.data.userLanguage)
+    fetchRecords: 0,
+    selectedSort: 'popular',
+    loading: true,
+    sortMethod: 3,
+    fetchRecords: 0,
+    likeLoading: false,
+    notifications: {
+      count: 12,
+      data: this.props.data,
+      menuName: this.getLanguageCode(this.props.data.userLanguage),
+      notification: [
+        {
+          read: false,
+          notificationLogId: '12',
+          title: 'Survey Update',
+          notificationFor: 'survey',
+          subtitle: 'A new survey has been added, please take your time and check it out',
+          notificationDateTime: moment().format(),
+
+        },
+        {
+          read: true,
+          notificationLogId: '11',
+          title: 'Survey Update',
+          notificationFor: 'survey',
+          subtitle: 'A new survey has been added, please take your time and check it out',
+          notificationDateTime: moment().format(),
+        },
+        {
+          read: false,
+          notificationLogId: '14',
+          title: 'Timeline Update',
+          notificationFor: 'timeline',
+          subtitle: 'Someone liked your comment',
+          notificationDateTime: moment().format(),
+        },
+        {
+          read: false,
+          notificationLogId: '743',
+          title: 'Survey Update',
+          notificationFor: 'survey',
+          subtitle: 'A new survey has been added, please take your time and check it out',
+          notificationDateTime: moment().format(),
+        },
+        {
+          read: false,
+          notificationLogId: '9483',
+          title: 'Survey',
+          notificationFor: 'survey',
+          subtitle: 'A new survey has been added, please take your time and check it out',
+          notificationDateTime: moment().format(),
+        },
+        {
+          read: false,
+          notificationLogId: '0293',
+          title: 'Timeline Update',
+          notificationFor: 'timeline',
+          subtitle: 'Ben just commented on your update',
+          notificationDateTime: moment().format(),
+        },
+        {
+          read: false,
+          notificationLogId: '837484',
+          title: 'Timeline Update',
+          notificationFor: 'timeline',
+          subtitle: 'Chuks commented on your post',
+          notificationDateTime: moment().format(),
+        },
+        {
+          read: false,
+          notificationLogId: '838494',
+          title: 'Survey',
+          notificationFor: 'survey',
+          subtitle: 'A new survey has been added, please take your time and check it out',
+          notificationDateTime: moment().format(),
+        },
+        {
+          read: true,
+          notificationLogId: '938292933',
+          title: 'Survey',
+          notificationFor: 'survey',
+          subtitle: 'A new survey has been added, please take your time and check it out',
+          notificationDateTime: moment().format(),
+        },
+        {
+          read: false,
+          notificationLogId: '027842',
+          title: 'Survey',
+          notificationFor: 'survey',
+          subtitle: 'A new survey has been added, please take your time and check it out',
+          notificationDateTime: moment().format(),
+        },
+        {
+          read: true,
+          notificationLogId: '948392',
+          title: 'Survey',
+          notificationFor: 'survey',
+          subtitle: 'A new survey has been added, please take your time and check it out',
+          notificationDateTime: moment().format(),
+        },
+      ]
+    }
   };
 
   static propTypes = {
@@ -67,25 +186,25 @@ export default class ReportScreen extends Component {
     // weakRef = this;
 
     this._onRefresh();
-
     firebase.analytics().setCurrentScreen("Screen", "Arena_Screen");
     //firebase.analytics().logEvent("Trends_Screen");
     firebase.analytics().setUserProperty("Screen", "Arena_Screen");
     firebase.analytics().logEvent("Content", { "Screen": "Arena_Screen" });
+    console.log(this.props.menuName)
   }
 
   refreshUI = (data) => {
     // getUserData().then((data) => {
 
     this.props.refreshUI(data);
-    if (data.userLanguage === 'hi') {
-      let menu = "अखाड़ा";
-      this.setState({ menuName: menu, data: data });
-      return;
-    }
+    // if (data.userLanguage === 'hi') {
+    //   let menu = "अखाड़ा";
+      this.setState({  image : data.image });
+    //   return;
+    // }
 
-    let menu = "Arena";
-    this.setState({ menuName: menu, data: data });
+    // let menu = "Arena";
+    // this.setState({ data: data });
 
 
     // })
@@ -101,6 +220,7 @@ export default class ReportScreen extends Component {
     return "Arena"
 
   }
+
   gotoProfile = () => {
     Navigation.push(this.props.componentId, {
       component: {
@@ -152,7 +272,8 @@ export default class ReportScreen extends Component {
 
   _onRefresh = () => {
     // alert("asd");
-    this.setState({ refreshing: true });
+    this.getNotifications()
+    this.setState({ refreshing: true, likeLoading: true });
 
     getUserID().then((userId) => {
       this.fetchTimeLineData(userId, null);
@@ -176,8 +297,9 @@ export default class ReportScreen extends Component {
 
     let body = JSON.stringify({
 
-      "userId": user_id
-
+      "userId": user_id,
+      "fetchRecords": this.state.fetchRecords,
+      // "sortMethod": this.state.sortMethod,
     });
     // alert(body);
     // return;
@@ -189,19 +311,20 @@ export default class ReportScreen extends Component {
     }).then((response) => response.json())
 
       .then((responseJson) => {
-
+        this.setState({ loading: false, likeLoading: false })
         //  alert(JSON.stringify(responseJson));
         if (Array.isArray(responseJson)) {
           // console.log(responseJson)
           this.filterData(responseJson);
         } else {
           alert(responseJson.response);
-          this.setState({ refreshing: false });
+          console.log(responseJson.response)
+          this.setState({ refreshing: false, loading: false, likeLoading: false });
         }
 
       })
       .catch((error) => {
-        this.setState({ refreshing: false });
+        this.setState({ refreshing: false, loading: false, likeLoading: false });
         console.error(error);
       });
   }
@@ -229,14 +352,10 @@ export default class ReportScreen extends Component {
 
     });
 
-
-
-
-
-
     // alert(body);
     // return;
     // µ
+    this.setState({ likeLoading: true })
     fetch(LIKDISLIKE_POST, {
       method: 'POST',
       headers: authHeaders(),
@@ -260,9 +379,10 @@ export default class ReportScreen extends Component {
 
         //  alert(JSON.stringify(responseJson));
         // this.filterData(responseJson.result);
+        this.setState({ likeLoading: false })
       })
       .catch((error) => {
-        this.setState({ refreshing: false });
+        this.setState({ refreshing: false, loading: false, likeLoading: false });
         console.error(error);
       });
 
@@ -270,8 +390,6 @@ export default class ReportScreen extends Component {
     // });
 
   }
-
-
 
   requestForReport(data) {
     let userID = this.props.user_id;
@@ -327,7 +445,7 @@ export default class ReportScreen extends Component {
         // this.filterData(responseJson.result);
       })
       .catch((error) => {
-        this.setState({ refreshing: false });
+        this.setState({ refreshing: false, loading: false });
         console.error(error);
       });
     // }
@@ -358,7 +476,7 @@ export default class ReportScreen extends Component {
         Thread_Id: dict.threadId,
         LikingCount: dict.likingCount,
         ReplyCount: dict.replyCount,
-        userId : dict.userId,
+
         ...dict
 
       }
@@ -368,7 +486,7 @@ export default class ReportScreen extends Component {
       key = key + 1;
     });
 
-    this.setState({ refreshing: false, case: array })
+    this.setState({ refreshing: false, case: array, loading: false })
   }
 
   replyButtonTapped = (data) => {
@@ -400,11 +518,17 @@ export default class ReportScreen extends Component {
   };
 
   likeButtonTapped = (data) => {
-    this.requestForLikeDislike(data, 1);
+    const { likeLoading } = this.state;
+    if (!likeLoading) {
+      this.requestForLikeDislike(data, 1);
+    }
   }
 
   disLikeButtonTapped = (data) => {
-    this.requestForLikeDislike(data, -1);
+    const { likeLoading } = this.state;
+    if (!likeLoading) {
+      this.requestForLikeDislike(data, -1);
+    }
   }
 
   moreButtonTapped = (data) => {
@@ -696,12 +820,145 @@ export default class ReportScreen extends Component {
         )
   }
 
+  getNotifications = () => {
+    axios.post(GET_USER_NOTIFICATIONS, {
+      userId: this.props.user_id
+    }).then((response) => {
+      let responseData = response.data;
+      console.log(responseData)
+      this.setState({
+        notifications: responseData
+      })
+    }).catch(error => {
+      console.log(error)
+    })
+  }
+
+  readNotification = (index, notifications, screen) => {
+    const { count } = this.state.notifications;
+    let counted;
+    let newNotifications = notifications;
+
+    if (count > 0) {
+      counted = count - 1;
+    } else {
+      counted = count;
+    }
+
+    newNotifications.notificationList[index].read = true;
+    newNotifications.count = counted;
+
+    let updatedNotification = Object.assign(newNotifications, {});
+    console.log(updatedNotification)
+    this.setState({
+      notificationsnotification: updatedNotification
+    })
+
+    if (screen === 'survey' || screen === 'Survey') {
+      this.toQuesScreen(notifications)
+    } else if (screen === 'trends' || screen === 'Survey') {
+      // this.toTrendScreen()
+    } else if (screen === 'timeline' || screen === 'Survey') {
+      // this.toReportScreen()
+    }
+  }
+
+  updateNotifications = (notificationLogId) => {
+    console.log('called')
+    axios.post(UPDATE_USER_NOTIFICATIONS, {
+      notificationLogId: notificationLogId.toString(),
+      read: "Y",
+      userId: this.props.user_id
+      // notificationLogId: notificationLogId.toString(),
+      // read: 'Y',
+      // userId: this.state.user_id
+    }).then((response) => {
+      let responseData = response.data;
+      console.log('_________')
+      console.log(responseData)
+      console.log('_________')
+      this.getNotifications()
+
+    }).catch(error => {
+      console.log(error)
+    })
+  }
+
+  showNotificationScreen = () => {
+    const { menuName } = this.props;
+    Navigation.push(this.props.componentId, {
+      component: {
+        name: 'NotificationScreen',
+        options: {
+          topBar: {
+            visible: true,
+            drawBehind: true,
+            animate: true,
+            buttonColor: '#fff',
+            background: {
+              color: APP_GLOBAL_COLOR,
+            },
+            title: {
+              text: menuName ? menuName[3] : null,
+              // text: 'Hello',
+              fontSize: hp('2.5%'),
+              color: '#fff',
+            },
+            backButton: {
+              color: '#fff'
+            }
+          },
+        },
+        passProps: {
+          notifications: this.state.notifications,
+          readNotification: this.readNotification,
+          updateNotifications: this.updateNotifications,
+        }
+
+      },
+    });
+  }
+
+  toQuesScreen = () => {
+    Navigation.push(this.props.componentId, {
+      component: {
+        name: 'QuestionnaireScreen',
+        options: {
+          topBar: {
+            visible: false,
+            drawBehind: true,
+            animate: false,
+          },
+        },
+        passProps: {
+          user_id: this.props.user_id,
+          lat_lon: this.props.lat_lon,
+          userLanguage: this.props.userLanguage,
+        }
+      },
+    });
+  };
+
+  sortTimeline = (type, values) => {
+    this.setState({
+      selectedSort: type,
+      sortMethod: values,
+      loading: true,
+    })
+
+    this._onRefresh()
+  }
+
   render() {
     const {
       width: SCREEN_WIDTH,
       height: SCREEN_HEIGHT,
     } = Dimensions.get('window');
-    // alert(JSON.stringify(this.props.data));
+
+    const { loading, selectedSort, notifications } = this.state;
+    const BadgedIcon = withBadge(notifications.count)(Icon);
+    // const BadgedIcon = withBadge(10)(Icon);
+
     return (
       <SafeAreaView
         forceInset={{ bottom: 'always' }}
@@ -716,7 +973,7 @@ export default class ReportScreen extends Component {
               style={{
                 flexDirection: 'row',
                 flex: 1,
-                // margin: normalize(5)
+                margin: normalize(.5)
               }}
               onPress={this.homeButtonTapped}
             />
@@ -733,7 +990,7 @@ export default class ReportScreen extends Component {
                   marginBottom: normalize(5),
                   borderRadius: normalize(30) / 2,
                 }}
-                source={this.props.data.image ? { uri: "data:image/png;base64," + this.props.data.image } : require('../../assets/UserSmall.png')}
+                source={this.state.image ? { uri: "data:image/png;base64," + this.state.image } : require('../../assets/UserSmall.png')}
               />
 
               <Text
@@ -748,148 +1005,184 @@ export default class ReportScreen extends Component {
               </Text>
             </View>
           </TouchableOpacity>
-          <View style={styles.textheaderView}>
-            <Text style={styles.textView}>{this.state.menuName}</Text>
-          </View>
-
-        </View>
-        {/* <PullToRefreshListView
-          style={styles.bottomView}
-          ref={(component) => this._pullToRefreshListView = component}
-          viewType={PullToRefreshListView.constants.viewType.listView}
-          contentContainerStyle={{ backgroundColor: 'yellow', }}
-          style={{ marginTop: Platform.OS == 'ios' ? 64 : 56, }}
-          initialListSize={1}
-          enableEmptySections={true}
-          dataSource={[{
-            text: 'item-0'
-        },{text: 'item-1'}]}
-          pageSize={1}
-          renderRow={this._renderRow}
-          renderHeader={this._renderHeader}
-          renderFooter={this._renderFooter}
-          //renderSeparator={(sectionID, rowID) => <View style={styles.separator} />}
-          onRefresh={this._onRefresh2}
-          onLoadMore={this._onLoadMore}
-          pullUpDistance={35}
-          pullUpStayDistance={50}
-          pullDownDistance={35}
-          pullDownStayDistance={50}
-        /> */}
-        <FlatList
-          style={styles.bottomView}
-          onRefresh={this._onRefresh}
-          refreshing={this.state.refreshing}
-          data={this.state.case}
-
-          scrollEventThrottle={400}
-          renderItem={({ item }) =>
-            <TouchableOpacity onPress={() => this.replyButtonTapped(item)}>
-              <CaseCard
-                moreButtonTapped={this.moreButtonTapped}
-                onPressLike={(data2) => this.likeButtonTapped(data2)}
-                onPressDisLike={(data2) => this.disLikeButtonTapped(data2)}
-                data={item}
-                onPressReply={(data2) => this.replyButtonTapped(data2)}
+          <View style={styles.topIcons}>
+            <TouchableWithoutFeedback onPress={() => this.sortTimeline('popular', 3)}>
+              <MaterialCommunityIcons
+                size={hp('3.9%')}
+                color={selectedSort === 'popular' ? '#fff' : '#999'}
+                name="fire"
+                style={{ marginTop: hp('.5%'), marginRight: hp('.8%') }}
               />
-            </TouchableOpacity>
-          }
-        >
-        </FlatList>
+            </TouchableWithoutFeedback>
+            <TouchableWithoutFeedback onPress={() => this.sortTimeline('distance', 1)}>
+              <MaterialCommunityIcons
+                size={hp('3.5%')}
+                // color='#999'
+                color={selectedSort === 'distance' ? '#fff' : '#999'}
+                name="run"
+                style={{ marginTop: hp('.9%'), marginRight: hp('.8%') }}
+              />
+            </TouchableWithoutFeedback>
+            <TouchableWithoutFeedback onPress={() => this.sortTimeline('time', 2)}>
+              <MaterialCommunityIcons
+                size={hp('3.5%')}
+                // color='#999'
+                color={selectedSort === 'time' ? '#fff' : '#999'}
+                name="clock-outline"
+                style={{ marginTop: hp('.5%'), marginRight: hp('.8%') }}
+              />
+            </TouchableWithoutFeedback>
+            <TouchableWithoutFeedback onPress={() => this.showNotificationScreen()}>
+              {/* <BadgedIcon
+                color="#fff"
+                type="font-awesome"
+                onPress={() => { }}
+                name="bell-o" /> */}
+              {notifications.count <= 0 ?
+                <FontAwesome
+                  size={hp('3%')}
+                  style={{ marginRight: hp('.8%') }}
+                  // onPress={() => this.showNotificationScreen()}
+                  name="bell-o"
+                  color="#fff"
+                /> :
+                <BadgedIcon
+                  color="#fff"
+                  type="font-awesome"
+                  style={{ marginRight: hp('.8%') }}
+                  // onPress={() => this.showNotificationScreen()}
+                  name="bell-o" />
+              }
+            </TouchableWithoutFeedback>
+          </View>
+        </View>
 
 
+        {loading ?
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <SpinKit
+              isVisible
+              size={hp('4%')}
+              type={'ChasingDots'}
+              color={APP_GLOBAL_COLOR}
+            />
+          </View> :
+          <View style={{ flex: 1 }}>
+            <FlatList
+              style={styles.bottomView}
+              onRefresh={this._onRefresh}
+              refreshing={this.state.refreshing}
+              data={this.state.case}
+
+              scrollEventThrottle={400}
+              renderItem={({ item }) =>
+                <TouchableOpacity onPress={() => this.replyButtonTapped(item)}>
+                  <CaseCard
+                    moreButtonTapped={this.moreButtonTapped}
+                    onPressLike={(data2) => this.likeButtonTapped(data2)}
+                    onPressDisLike={(data2) => this.disLikeButtonTapped(data2)}
+                    data={item}
+                    onPressReply={(data2) => this.replyButtonTapped(data2)}
+                  />
+                </TouchableOpacity>
+              }
+            >
+            </FlatList>
+            <ShareSheet visible={this.state.visible} onCancel={() => { this.onCancel() }}>
+              <Button iconSrc={{ uri: TWITTER_ICON }}
+                onPress={() => {
+                  this.onCancel();
+                  setTimeout(() => {
+
+                    Share.shareSingle(Object.assign(shareOptions, {
+                      "social": "twitter"
+                    }));
+
+                  }, 300);
+                }}>Twitter</Button>
+              <Button iconSrc={{ uri: FACEBOOK_ICON }}
+                onPress={() => {
+                  this.onCancel();
+                  setTimeout(() => {
+                    Share.shareSingle(Object.assign(shareOptions, {
+                      "social": "facebook"
+                    }));
+                  }, 300);
+                }}>Facebook</Button>
+              <Button iconSrc={{ uri: WHATSAPP_ICON }}
+                onPress={() => {
+                  this.onCancel();
+                  setTimeout(() => {
+                    Share.shareSingle(Object.assign(shareOptions, {
+                      "social": "whatsapp"
+                    }));
+                  }, 300);
+                }}>Whatsapp</Button>
+              <Button iconSrc={{ uri: GOOGLE_PLUS_ICON }}
+                onPress={() => {
+                  this.props.onCancel();
+                  setTimeout(() => {
+                    Share.shareSingle(Object.assign(shareOptions, {
+                      "social": "googleplus"
+                    }));
+                  }, 300);
+                }}>Google +</Button>
+              <Button iconSrc={{ uri: EMAIL_ICON }}
+                onPress={() => {
+                  this.onCancel();
+                  setTimeout(() => {
+                    Share.shareSingle(Object.assign(shareOptions, {
+                      "social": "email"
+                    }));
+                  }, 300);
+                }}>Email</Button>
 
 
-        <ShareSheet visible={this.state.visible} onCancel={() => { this.onCancel() }}>
-          <Button iconSrc={{ uri: TWITTER_ICON }}
-            onPress={() => {
-              this.onCancel();
-              setTimeout(() => {
+              <Button iconSrc={{ uri: MORE_ICON }}
+                onPress={() => {
+                  this.onCancel();
+                  setTimeout(() => {
 
-                Share.shareSingle(Object.assign(shareOptions, {
-                  "social": "twitter"
-                }));
+                    Share.open(shareOptions);
+                    // Share.shareSingle(Object.assign(shareOptions, {
+                    //   "social": "twitter"
+                    // }));
+                  }, 300);
+                }}>More</Button>
+              <Button iconSrc={null}
+                onPress={() => {
+                  this.onCancel();
 
-              }, 300);
-            }}>Twitter</Button>
-          <Button iconSrc={{ uri: FACEBOOK_ICON }}
-            onPress={() => {
-              this.onCancel();
-              setTimeout(() => {
-                Share.shareSingle(Object.assign(shareOptions, {
-                  "social": "facebook"
-                }));
-              }, 300);
-            }}>Facebook</Button>
-          <Button iconSrc={{ uri: WHATSAPP_ICON }}
-            onPress={() => {
-              this.onCancel();
-              setTimeout(() => {
-                Share.shareSingle(Object.assign(shareOptions, {
-                  "social": "whatsapp"
-                }));
-              }, 300);
-            }}>Whatsapp</Button>
-          <Button iconSrc={{ uri: GOOGLE_PLUS_ICON }}
-            onPress={() => {
-              this.props.onCancel();
-              setTimeout(() => {
-                Share.shareSingle(Object.assign(shareOptions, {
-                  "social": "googleplus"
-                }));
-              }, 300);
-            }}>Google +</Button>
-          <Button iconSrc={{ uri: EMAIL_ICON }}
-            onPress={() => {
-              this.onCancel();
-              setTimeout(() => {
-                Share.shareSingle(Object.assign(shareOptions, {
-                  "social": "email"
-                }));
-              }, 300);
-            }}>Email</Button>
+                  setTimeout(() => {
+                    // Share.shareSingle(Object.assign(shareOptions, {
+                    //   "social": "twitter"
+                    // }));
+                    this.reportTapped(dataTappedForMore);
+
+                  }, 300);
+                }}>Report</Button>
+            </ShareSheet>
 
 
-          <Button iconSrc={{ uri: MORE_ICON }}
-            onPress={() => {
-              this.onCancel();
-              setTimeout(() => {
+          </View>
+        }
 
-                Share.open(shareOptions);
-                // Share.shareSingle(Object.assign(shareOptions, {
-                //   "social": "twitter"
-                // }));
-              }, 300);
-            }}>More</Button>
-          <Button iconSrc={null}
-            onPress={() => {
-              this.onCancel();
-
-              setTimeout(() => {
-                // Share.shareSingle(Object.assign(shareOptions, {
-                //   "social": "twitter"
-                // }));
-                this.reportTapped(dataTappedForMore);
-
-              }, 300);
-            }}>Report</Button>
-        </ShareSheet>
-
-        <Draggable
-          reverse={false}
-          renderShape='image'
-          backgroundColor={APP_GLOBAL_COLOR}
-          offsetX={SCREEN_WIDTH / 2 - 10}
-          offsetY={SCREEN_HEIGHT / 2 - 50}
-          imageSource={this.state.iconSrc}
-          renderSize={50}
-          // pressDrag={() => console.log('called here')}
-          pressInDrag={() => this.showCompose()}
-        // pressOutDrag={()=>console.log('out press')}
-        >
-          {/* <Image source = {require('../../assets/1.png')} styles = {{flex : 1}} /> */}
-        </Draggable>
-
+        {loading ? null :
+          <Draggable
+            reverse={false}
+            renderShape='image'
+            backgroundColor={APP_GLOBAL_COLOR}
+            offsetX={SCREEN_WIDTH / 2 - 10}
+            offsetY={SCREEN_HEIGHT / 2 - 50}
+            imageSource={this.state.iconSrc}
+            renderSize={50}
+            // pressDrag={() => console.log('called here')}
+            pressInDrag={() => this.showCompose()}
+          // pressOutDrag={()=>console.log('out press')}
+          >
+            {/* <Image source = {require('../../assets/1.png')} styles = {{flex : 1}} /> */}
+          </Draggable>
+        }
       </SafeAreaView>
     );
   }
@@ -904,10 +1197,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     height: Dimensions.get('window').height * 0.07
   },
-  textheaderView: {
-    flex: 2.5,
-    backgroundColor: 'transparent',
-    justifyContent: 'center',
+  topIcons: {
+    flex: 5,
+    marginRight: hp('2%'),
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
   },
   textView: {
     position: 'absolute',

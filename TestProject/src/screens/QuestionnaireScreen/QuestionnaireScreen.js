@@ -7,6 +7,7 @@ import {
     SafeAreaView,
     ScrollView,
     ActivityIndicator,
+    TouchableWithoutFeedback,
     Alert,
 } from 'react-native';
 import { PropTypes } from 'prop-types';
@@ -16,10 +17,14 @@ import { Navigation } from 'react-native-navigation';
 import CustomTextButton from '../../components/UI/ButtonMod/CustomTextButton';
 import axios from 'axios';
 import QuestionniareListView from '../../components/UI/QuestionView/QuestionniareListView'
-import { GET_CURRENT_ACTIVE_SURVEY, SUBMIT_USER_SURVEY_QUESTION } from '../../../Apis';
+import { GET_CURRENT_ACTIVE_SURVEY, SUBMIT_USER_SURVEY_QUESTION, GET_SURVEY_BY_ID, GET_USER_NOTIFICATIONS, UPDATE_USER_NOTIFICATIONS } from '../../../Apis';
 import Loading from 'react-native-whc-loading';
 import _ from 'lodash';
-
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import { withBadge, Icon } from 'react-native-elements';
+import SpinKit from 'react-native-spinkit';
+import moment from 'moment';
 import firebase from 'react-native-firebase';
 
 export default class QuestionnireScreen extends Component {
@@ -46,7 +51,103 @@ export default class QuestionnireScreen extends Component {
         questionnaire2: {},
         isSurveyTaken1: 'N',
         isSurveyTaken2: 'N',
-        surveyTitle: 'SURVEY'
+        surveyTitle: 'SURVEY',
+        notifications: {
+            count: 12,
+            data: this.props.data,
+            menuName: this.getLanguageCode(this.props.userLanguage),
+            notification: [
+              {
+                read: false,
+                notificationLogId: '12',
+                title: 'Survey Update',
+                notificationFor: 'survey',
+                subtitle: 'A new survey has been added, please take your time and check it out',
+                notificationDateTime: moment().format(),
+      
+              },
+              {
+                read: true,
+                notificationLogId: '11',
+                title: 'Survey Update',
+                notificationFor: 'survey',
+                subtitle: 'A new survey has been added, please take your time and check it out',
+                notificationDateTime: moment().format(),
+              },
+              {
+                read: false,
+                notificationLogId: '14',
+                title: 'Timeline Update',
+                notificationFor: 'timeline',
+                subtitle: 'Someone liked your comment',
+                notificationDateTime: moment().format(),
+              },
+              {
+                read: false,
+                notificationLogId: '743',
+                title: 'Survey Update',
+                notificationFor: 'survey',
+                subtitle: 'A new survey has been added, please take your time and check it out',
+                notificationDateTime: moment().format(),
+              },
+              {
+                read: false,
+                notificationLogId: '9483',
+                title: 'Survey',
+                notificationFor: 'survey',
+                subtitle: 'A new survey has been added, please take your time and check it out',
+                notificationDateTime: moment().format(),
+              },
+              {
+                read: false,
+                notificationLogId: '0293',
+                title: 'Timeline Update',
+                notificationFor: 'timeline',
+                subtitle: 'Ben just commented on your update',
+                notificationDateTime: moment().format(),
+              },
+              {
+                read: false,
+                notificationLogId: '837484',
+                title: 'Timeline Update',
+                notificationFor: 'timeline',
+                subtitle: 'Chuks commented on your post',
+                notificationDateTime: moment().format(),
+              },
+              {
+                read: false,
+                notificationLogId: '838494',
+                title: 'Survey',
+                notificationFor: 'survey',
+                subtitle: 'A new survey has been added, please take your time and check it out',
+                notificationDateTime: moment().format(),
+              },
+              {
+                read: true,
+                notificationLogId: '938292933',
+                title: 'Survey',
+                notificationFor: 'survey',
+                subtitle: 'A new survey has been added, please take your time and check it out',
+                notificationDateTime: moment().format(),
+              },
+              {
+                read: false,
+                notificationLogId: '027842',
+                title: 'Survey',
+                notificationFor: 'survey',
+                subtitle: 'A new survey has been added, please take your time and check it out',
+                notificationDateTime: moment().format(),
+              },
+              {
+                read: true,
+                notificationLogId: '948392',
+                title: 'Survey',
+                notificationFor: 'survey',
+                subtitle: 'A new survey has been added, please take your time and check it out',
+                notificationDateTime: moment().format(),
+              },
+            ]
+        }
     }
 
     static propTypes = {
@@ -59,69 +160,153 @@ export default class QuestionnireScreen extends Component {
 
 
     getSurvey = (mount) => {
-        const { surveyType } = this.props;
-        if (mount) {
-            if (surveyType) {
-                axios.post(GET_CURRENT_ACTIVE_SURVEY, {
-                    isNationalLevel: surveyType,
-                    userId: this.props.user_id,
-                    userCurrentCoord: this.props.lat_lon
-                })
+        const { surveyType, notification } = this.props;
+
+        if(notification) {
+            axios.post(GET_SURVEY_BY_ID, {
+                surveyId : "5",
+                userId : "15",
+                userCurrentCoord : "48.92100020832678,-112.2370634060909"
+            }).then(response => {
+                let responseData = response.data;
+                if(responseData.isNationalLevel === 'N') {
+                    this.setState({
+                        questionniareData1: responseData.surveyQuestionList,
+                        questionnaire1: responseData,
+                        isSurveyTaken1: responseData.isSurveyTaken,
+                        state: true
+                    })
+
+                    axios.post(GET_CURRENT_ACTIVE_SURVEY, {
+                        isNationalLevel: !this.state.state ? 'N' : 'Y',
+                        userId: this.props.user_id,
+                        userCurrentCoord: this.props.lat_lon,
+    
+                    })
                     .then(response => {
-                        let responseData = response.data;
+                        let responseData_2 = response.data;
+                        // this.setState({
+                        //     questionniareData1: responseData.surveyQuestionList,
+                        //     // loading: false, 
+                        //     questionnaire1: responseData,
+                        //     isSurveyTaken1: responseData.isSurveyTaken,
+                        //     surveyTitle: responseData.surveyDesc ? (responseData.surveyDesc === '' ? responseData.surveyDesc : this.state.surveyTitle) : this.state.surveyTitle
+                        // })
 
                         this.setState({
-                            questionniareData2: responseData.surveyQuestionList,
-                            questionnaire2: responseData,
-                            isSurveyTaken2: responseData.isSurveyTaken
+                            questionniareData2: responseData_2.surveyQuestionList,
+                            loading: false,
+                            questionnaire2: responseData_2,
+                            isSurveyTaken2: responseData_2.isSurveyTaken,
                         })
+                        this.refs.scrollview.scrollTo({ x: 1, animate: true });
 
-                        axios.post(GET_CURRENT_ACTIVE_SURVEY, {
-                            isNationalLevel: 'N',
-                            userId: this.props.user_id,
-                            userCurrentCoord: this.props.lat_lon
-                        })
-                            .then(response_2 => {
-                                let responseData_2 = response_2.data;
-                                this.setState({
-                                    questionniareData1: responseData_2.surveyQuestionList,
-                                    loading: false,
-                                    questionnaire1: responseData_2,
-                                    isSurveyTaken1: responseData_2.isSurveyTaken,
-                                    surveyTitle: responseData_2.surveyDesc ? (responseData_2.surveyDesc === '' ? responseData_2.surveyDesc : this.state.surveyTitle) : this.state.surveyTitle
-                                })
-                                this.refs.scrollview.scrollTo({ x: 0, animate: true });
-                                // console.log(this.state)
-                                this.refs.loading.close();
-                                setTimeout(() => {
-                                    Alert.alert(
-                                        APP_ALERT_MESSAGE,
-                                        'Your feedback has been sent successfully!',
-                                        [
-                                            { text: 'OK', onPress: () => { } },
-                                        ],
-                                        { cancelable: false },
-                                    );
-                                }, 200)
-                            })
-                            .catch(error => {
-                                console.error(error)
-                            })
                     })
                     .catch(error => {
                         console.error(error)
                     })
-                this.setState({
-                    state: true
-                })
+                    
+                } else {
+                    this.setState({
+                        questionniareData2: responseData.surveyQuestionList,
+                        questionnaire2: responseData,
+                        isSurveyTaken2: responseData.isSurveyTaken
+                    })
 
-            } else {
-                axios.post(GET_CURRENT_ACTIVE_SURVEY, {
-                    isNationalLevel: !this.state.state ? 'N' : 'Y',
-                    userId: this.props.user_id,
-                    userCurrentCoord: this.props.lat_lon
-                })
+                    axios.post(GET_CURRENT_ACTIVE_SURVEY, {
+                        isNationalLevel: 'Y',
+                        userId: this.props.user_id,
+                        userCurrentCoord: this.props.lat_lon,
+    
+                    })
+                    .then(response => {
+                        let responseData_2 = response.data;
+                        this.setState({
+                            questionniareData2: responseData.surveyQuestionList,
+                            // loading: false, 
+                            questionnaire2: responseData,
+                            isSurveyTaken2: responseData.isSurveyTaken,
+                            surveyTitle: responseData.surveyDesc ? (responseData.surveyDesc === '' ? responseData.surveyDesc : this.state.surveyTitle) : this.state.surveyTitle
+                        })
 
+                        this.setState({
+                            state: false,
+                            questionniareData2: responseData_2.surveyQuestionList,
+                            loading: false,
+                            questionnaire2: responseData_2,
+                            isSurveyTaken2: responseData_2.isSurveyTaken,
+                            surveyTitle: responseData_2.surveyDesc ? (responseData_2.surveyDesc === '' ? responseData_2.surveyDesc : this.state.surveyTitle) : this.state.surveyTitle
+                        })
+                        this.refs.scrollview.scrollTo({ x: 0, animate: true });
+                    })
+                    .catch(error => {
+                        console.error(error)
+                    })
+                }
+            })
+        } else {
+            if (mount) {
+                if (surveyType) {
+                    axios.post(GET_CURRENT_ACTIVE_SURVEY, {
+                        isNationalLevel: surveyType,
+                        userId: this.props.user_id,
+                        userCurrentCoord: this.props.lat_lon
+                    })
+                        .then(response => {
+                            let responseData = response.data;
+    
+                            this.setState({
+                                questionniareData2: responseData.surveyQuestionList,
+                                questionnaire2: responseData,
+                                isSurveyTaken2: responseData.isSurveyTaken
+                            })
+    
+                            axios.post(GET_CURRENT_ACTIVE_SURVEY, {
+                                isNationalLevel: 'N',
+                                userId: this.props.user_id,
+                                userCurrentCoord: this.props.lat_lon
+                            })
+                                .then(response_2 => {
+                                    let responseData_2 = response_2.data;
+                                    this.setState({
+                                        questionniareData1: responseData_2.surveyQuestionList,
+                                        loading: false,
+                                        questionnaire1: responseData_2,
+                                        isSurveyTaken1: responseData_2.isSurveyTaken,
+                                        surveyTitle: responseData_2.surveyDesc ? (responseData_2.surveyDesc === '' ? responseData_2.surveyDesc : this.state.surveyTitle) : this.state.surveyTitle
+                                    })
+                                    this.refs.scrollview.scrollTo({ x: 0, animate: true });
+                                    // console.log(this.state)
+                                    this.refs.loading.close();
+                                    setTimeout(() => {
+                                        Alert.alert(
+                                            APP_ALERT_MESSAGE,
+                                            'Thanks for submitting the survey. Please visit the Trends section to see the detailed results.',
+                                            [
+                                                { text: 'OK', onPress: () => { } },
+                                            ],
+                                            { cancelable: false },
+                                        );
+                                    }, 200)
+                                })
+                                .catch(error => {
+                                    console.error(error)
+                                })
+                        })
+                        .catch(error => {
+                            console.error(error)
+                        })
+                    this.setState({
+                        state: true
+                    })
+    
+                } else {
+                    axios.post(GET_CURRENT_ACTIVE_SURVEY, {
+                        isNationalLevel: !this.state.state ? 'N' : 'Y',
+                        userId: this.props.user_id,
+                        userCurrentCoord: this.props.lat_lon
+                    })
+    
                     .then(response => {
                         let responseData = response.data;
                         this.setState({
@@ -165,15 +350,15 @@ export default class QuestionnireScreen extends Component {
                     .catch(error => {
                         console.error(error)
                     })
-            }
-        } else {
-            if (surveyType) {
-                axios.post(GET_CURRENT_ACTIVE_SURVEY, {
-                    isNationalLevel: surveyType,
-                    userId: this.props.user_id,
-                    userCurrentCoord: this.props.lat_lon,
-
-                })
+                }
+            } else {
+                if (surveyType) {
+                    axios.post(GET_CURRENT_ACTIVE_SURVEY, {
+                        isNationalLevel: surveyType,
+                        userId: this.props.user_id,
+                        userCurrentCoord: this.props.lat_lon,
+    
+                    })
                     .then(response => {
                         let responseData = response.data;
                         this.setState({
@@ -207,17 +392,17 @@ export default class QuestionnireScreen extends Component {
                     .catch(error => {
                         console.error(error)
                     })
-                this.setState({
-                    state: true
-                })
-
-            } else {
-                axios.post(GET_CURRENT_ACTIVE_SURVEY, {
-                    isNationalLevel: !this.state.state ? 'N' : 'Y',
-                    userId: this.props.user_id,
-                    userCurrentCoord: this.props.lat_lon,
-
-                })
+                    this.setState({
+                        state: true
+                    })
+    
+                } else {
+                    axios.post(GET_CURRENT_ACTIVE_SURVEY, {
+                        isNationalLevel: !this.state.state ? 'N' : 'Y',
+                        userId: this.props.user_id,
+                        userCurrentCoord: this.props.lat_lon,
+    
+                    })
                     .then(response => {
                         let responseData = response.data;
                         this.setState({
@@ -251,6 +436,7 @@ export default class QuestionnireScreen extends Component {
                     .catch(error => {
                         console.error(error)
                     })
+                }
             }
         }
     }
@@ -268,6 +454,7 @@ export default class QuestionnireScreen extends Component {
 
     componentDidMount() {
         this.getSurvey();
+        this.getNotifications();
         const { surveyTitle } = this.props;
 
         if (this.props.surveyTitle) {
@@ -285,7 +472,7 @@ export default class QuestionnireScreen extends Component {
     };
 
     stateBttnTapped = () => {
-        const { questionnaire1 } = this.state;
+        const { questionnaire1, questionniareData1, questionniareData2, questionnaire2 } = this.state;
 
         this.setState({
             state: false
@@ -294,6 +481,17 @@ export default class QuestionnireScreen extends Component {
         this.refs.scrollview.scrollTo({ x: Dimensions.get('window').width, animate: true });
         if (questionnaire1) {
             this.setState({ surveyTitle: questionnaire1.surveyDesc })
+        }
+
+        if(!questionniareData1) {
+            Alert.alert(
+                APP_ALERT_MESSAGE,
+                `There are currently no active surveys for ${questionnaire2.userCurrentState}`,
+                [
+                    { text: 'OK', onPress: () => { } },
+                ],
+                { cancelable: false },
+            );
         }
 
         // this.setState({ loading: true })
@@ -492,8 +690,129 @@ export default class QuestionnireScreen extends Component {
         )
     }
 
+    getNotifications = () => {
+        axios.post(GET_USER_NOTIFICATIONS, {
+          userId: this.props.user_id
+        }).then((response) => {
+          let responseData = response.data;
+          console.log(responseData)
+          this.setState({
+            notifications: responseData
+          })
+        }).catch(error => {
+          console.log(error)
+        })
+    }
+    
+    readNotification = (index, notifications, screen) => {
+    const { count } = this.state.notifications;
+    let counted;
+    let newNotifications =  notifications;
+
+    if(count > 0 ) {
+        counted = count-1;
+    } else {
+        counted = count;
+    }
+
+    newNotifications.notificationList[index].read = true;
+    newNotifications.count = counted;
+    
+    let updatedNotification = Object.assign(newNotifications, {});
+    console.log(updatedNotification)
+    this.setState({
+        notificationsnotification : updatedNotification
+    })
+    
+    if(screen === 'survey' || screen === 'Survey') {
+        this.toQuesScreen(notifications)
+    } else if(screen === 'trends' || screen === 'Survey') {
+        // this.toTrendScreen()
+    } else if (screen === 'timeline' || screen === 'Survey') {
+        // this.toReportScreen()
+    }
+    }
+
+    updateNotifications = (notificationLogId) => {
+    console.log('called')
+    axios.post(UPDATE_USER_NOTIFICATIONS, {
+        notificationLogId: notificationLogId.toString(),
+        read: "Y",
+        userId: this.props.user_id
+        // notificationLogId: notificationLogId.toString(),
+        // read: 'Y',
+        // userId: this.state.user_id
+    }).then((response) => {
+        let responseData = response.data;
+        console.log('_________')
+        console.log(responseData)
+        console.log('_________')
+        this.getNotifications()
+
+    }).catch(error => {
+        console.log(error)
+    })
+    }
+
+    showNotificationScreen = () => {
+    const { menuName } = this.props;
+    Navigation.push(this.props.componentId, {
+        component: {
+        name: 'NotificationScreen',
+        options: {
+            topBar: {
+            visible: true,
+            drawBehind: true,
+            animate: true,
+            buttonColor: '#fff',
+            background: {
+                color: APP_GLOBAL_COLOR,
+            },
+            title: {
+                text: menuName ? menuName[3] : null,
+                // text: 'Hello',
+                fontSize: hp('2.5%'),
+                color: '#fff',
+            },
+            backButton: {
+                color: '#fff'
+            }            
+            },
+        },
+        passProps: {
+            notifications: this.state.notifications,
+            readNotification: this.readNotification,
+            updateNotifications: this.updateNotifications,
+        }
+
+        },
+    });
+    }
+
+    toQuesScreen = () => {
+    Navigation.push(this.props.componentId, {
+        component: {
+        name: 'QuestionnaireScreen',
+        options: {
+            topBar: {
+            visible: false,
+            drawBehind: true,
+            animate: false,
+            },
+        },
+        passProps: {
+            user_id: this.props.user_id,
+            lat_lon: this.props.lat_lon,
+            userLanguage: this.props.userLanguage,
+        }
+        },
+    });
+    };
+    
+
     renderComponent = () => {
-        const { loading } = this.state;
+        const { loading,notifications } = this.state;
+        const BadgedIcon = withBadge(notifications.count)(Icon);
         if (loading) {
             return (
                 <SafeAreaView
@@ -516,7 +835,12 @@ export default class QuestionnireScreen extends Component {
                     </View>
                     <View style={{ width: "100%", height: 1 }} backgroundColor="gray" />
                     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' }}>
-                        <ActivityIndicator color={APP_GLOBAL_COLOR} size="small" />
+                        <SpinKit 
+                            isVisible 
+                            size={hp('4%')}
+                            type={'ChasingDots'} 
+                            color={APP_GLOBAL_COLOR}
+                        />
                     </View>
                 </SafeAreaView>
             )
@@ -530,7 +854,7 @@ export default class QuestionnireScreen extends Component {
                     <View
                         style={topViewStyle.headerView}
                         backgroundColor="rgba(242,241,244,1)">
-                        <View style={{ flex: 1, backgroundColor: APP_GLOBAL_COLOR }}>
+                        <View style={{ flex: 2, backgroundColor: APP_GLOBAL_COLOR }}>
                             <CustomButton
                                 style={{
                                     flexDirection: 'row',
@@ -541,19 +865,43 @@ export default class QuestionnireScreen extends Component {
                             />
                         </View>
                         {this.renderTitle()}
+                        <View style={{ flex: 5, justifyContent: 'flex-end', alignItems: 'center', flexDirection: 'row', marginRight: hp('4%')}}>
+                            <TouchableWithoutFeedback onPress={() => this.showNotificationScreen()}>
+                                {notifications.count <= 0 ? 
+                                    <FontAwesome 
+                                        size={hp('3%')}
+                                        // onPress={() => this.showNotificationScreen()}
+                                        name="bell-o" 
+                                        color={APP_GLOBAL_COLOR}
+                                    /> : 
+                                    <BadgedIcon
+                                        color={APP_GLOBAL_COLOR}
+                                        type="font-awesome"
+                                        // onPress={() => this.showNotificationScreen()}
+                                        name="bell-o" />
+                                }
+                            </TouchableWithoutFeedback>
+                        </View>
                     </View>
                     <View style={{ width: "100%", height: 1 }} backgroundColor="gray" />
 
                     {/* secondViewStyle */}
                     <View style={secondViewStyle.secondView}>
 
-                        <CustomTextButton onPress={this.nationalBttnTapped} style={{ flex: 1 }} textColor={this.state.state ? "white" : "black"} bgColor={this.state.state ? APP_GLOBAL_COLOR : "transparent"} >NATIONAL</CustomTextButton>
+                        <CustomTextButton 
+                            onPress={this.nationalBttnTapped} 
+                            style={{ flex: 1 }} 
+                            textColor={this.state.state ? "white" : "black"} 
+                            bgColor={this.state.state ? APP_GLOBAL_COLOR : "transparent"} > 
+                                {"NATIONAL"}
+                                {/* {this.state.questionnaire2 ? this.state.questionnaire2.userCurrentState.toUpperCase() : "NATIONAL"} */}
+                            </CustomTextButton>
                         <CustomTextButton
                             onPress={this.stateBttnTapped}
                             style={{ flex: 1 }}
                             textColor={!this.state.state ? "white" : "black"}
                             bgColor={!this.state.state ? APP_GLOBAL_COLOR : "transparent"} >
-                            {this.state.questionnaire1.userCurrentState ? this.state.questionnaire1.userCurrentState.toUpperCase() : "STATE"}
+                            {this.state.questionnaire1  ? this.state.questionnaire2.userCurrentState.toUpperCase() : "STATE"}
                         </CustomTextButton>
                     </View>
 
@@ -614,6 +962,8 @@ export default class QuestionnireScreen extends Component {
     }
 
     render() {
+        console.log(this.state)
+        console.log(this.props)
         return this.renderComponent()
     }
 }

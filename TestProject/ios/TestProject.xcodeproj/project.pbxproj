@@ -942,6 +942,7 @@
 						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
 					13B07F861A680F5B00A75B9A = {
+						DevelopmentTeam = Q79W9BJDU3;
 						ProvisioningStyle = Manual;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
@@ -1673,7 +1674,7 @@
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = Q79W9BJDU3;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../node_modules/react-native-navigation/lib/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
@@ -1692,9 +1693,9 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = raajneeti;
+				PRODUCT_BUNDLE_IDENTIFIER = com.Daemon;
 				PRODUCT_NAME = TestProject;
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = Daemon_6_Feb_2019;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -1708,7 +1709,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = Q79W9BJDU3;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../node_modules/react-native-navigation/lib/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
@@ -1727,9 +1728,9 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = raajneeti;
+				PRODUCT_BUNDLE_IDENTIFIER = com.Daemon;
 				PRODUCT_NAME = TestProject;
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = Daemon_6_Feb_2019;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;

@@ -41,19 +41,19 @@ export default class PoliceProfileScreen extends Component {
       totalFlagUniqueCount_1: null,
       totalFlagUniqueCount_2: null,
       showInfo: false,
-      menuName : this.getLanguageCode(this.props.userLanguage)
+      menuName : this.props.language
     }
   };
 
-  getLanguageCode(language) {
-    if (language === 'hi') {
-      let menu = "रेट करें";
-      return menu;
-    }
+  // getLanguageCode(language) {
+  //   if (language === 'hi') {
+  //     let menu = "रेट करें";
+  //     return menu;
+  //   }
     
-    return "Rate Now";
+  //   return "Rate Now";
     
-  }
+  // }
 
 
   showInfoScreen(show) {

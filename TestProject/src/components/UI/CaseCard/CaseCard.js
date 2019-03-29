@@ -18,29 +18,29 @@ const caseCard = props => {
   //             height_Image = {data.height_Image}
   //             width_Image = {data.width_Image}
   //             Is_Liked = {data.Is_Liked}
-  let data = props.data;
-  const {
-    width: SCREEN_WIDTH,
-    height: SCREEN_HEIGHT,
-  } = Dimensions.get('window');
-  var imageheight = data.height_Image ? data.height_Image : 1;
-  var imagewidth = data.width_Image ? data.width_Image : 1;
+    let data = props.data;
+    const {
+      width: SCREEN_WIDTH,
+      height: SCREEN_HEIGHT,
+    } = Dimensions.get('window');
+    var imageheight = data.height_Image ? data.height_Image : 1;
+    var imagewidth = data.width_Image ? data.width_Image : 1;
 
-  // "height_Image": 200,
-  //           "width_Image": 157,
-  imageheight = imageheight ? (imageheight > 0 ? imageheight : 1) : 1;
-  imagewidth = imagewidth ? (imagewidth > 0 ? imagewidth : 1) : 1
+    // "height_Image": 200,
+    //           "width_Image": 157,
+    imageheight = imageheight ? (imageheight > 0 ? imageheight : 1) : 1;
+    imagewidth = imagewidth ? (imagewidth > 0 ? imagewidth : 1) : 1
 
-  let isOp = (data.isOP === 'Y');
-  var height = ((SCREEN_WIDTH + (isOp ? 0 : normalize(80))) * imageheight) / imagewidth;
+    let isOp = (data.isOP === 'Y');
+    var height = ((SCREEN_WIDTH + (isOp ? 0 : normalize(80))) * imageheight) / imagewidth;
 
-  var imageLike = (data.Is_Liked === 1) ? require('../../../assets/ReportImages/likeSelected.png') : require('../../../assets/ReportImages/likeUnSelected.png');
+    var imageLike = (data.Is_Liked === 1) ? require('../../../assets/ReportImages/likeSelected.png') : require('../../../assets/ReportImages/likeUnSelected.png');
 
-  var LikingCount = data.LikingCount ? data.LikingCount : 0;
-  var ReplyCount = data.ReplyCount ? data.ReplyCount : 0;
+    var LikingCount = data.LikingCount ? data.LikingCount : 0;
+    var ReplyCount = data.ReplyCount ? data.ReplyCount : 0;
 
-  let picture = data.picture ? { ...data.picture, priority: FastImage.priority.normal } : require('../../../assets/Profile/Guest_.png');
-  let userPicture = data.userThumbnailImageData ? {  uri: "data:image/png;base64," + dict.userThumbnailImageData , priority: FastImage.priority.normal } : require('../../../assets/Profile/Guest_.png');
+    let picture = data.picture ? { ...data.picture, priority: FastImage.priority.normal } : require('../../../assets/Profile/Guest_.png');
+    let userPicture = data.userThumbnailImageData ? {  uri: "data:image/png;base64," + data.userThumbnailImageData , priority: FastImage.priority.normal } : require('../../../assets/Profile/Guest_.png');
 
   
   // data.userThumbnailImageData
@@ -66,14 +66,19 @@ const caseCard = props => {
           <View style={{ width: '100%', height: normalize(35), flexDirection: 'row' }}>
 
             <TouchableOpacity style={{ justifyContent: 'flex-start', alignItems: 'center', width: "50%", flexDirection: 'row' , marginLeft :  0 }} onPress={() => {
-              if (MOBILE_NUMBER_ === data.Mobile_Number) {
-                alert("You can not like your own post");
+              // if (MOBILE_NUMBER_ === data.Mobile_Number) {
+              //   alert("You can not like your own post");
+              // } else {
+              //   if (data.Is_Liked === 1) {
+              //     props.onPressDisLike(data);
+              //   } else {
+              //     props.onPressLike(data);
+              //   }
+              // }
+              if (data.Is_Liked === 1) {
+                props.onPressDisLike(data);
               } else {
-                if (data.Is_Liked === 1) {
-                  props.onPressDisLike(data);
-                } else {
-                  props.onPressLike(data);
-                }
+                props.onPressLike(data);
               }
             }}>
               <Image
