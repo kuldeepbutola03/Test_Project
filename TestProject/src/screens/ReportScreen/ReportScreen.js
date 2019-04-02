@@ -41,7 +41,7 @@ import axios from 'axios';
 
 import firebase from 'react-native-firebase';
 
-import PullToRefreshListView from 'react-native-smart-pull-to-refresh-listview'
+import PullToRefreshListView from 'react-native-smart-pull-to-refresh-listview';
 
 // import SharingCard from '../../components/UI/Sharing/SharingCard';
 export default class ReportScreen extends Component {
@@ -49,35 +49,16 @@ export default class ReportScreen extends Component {
   shareOptions = null;
 
   state = {
-    case: [
-      // {
-      //   picture: require('../../assets/1.png'),
-      //   name: 'Ron Burgundy',
-      //   place: 'Las Vegas',
-      //   details: 'News Room Reporter : A chauvinistic host of a top-rated American news programme is threatened with the arrival of an ambitious female reporter which starts a bitter battle of the sexes.',
-      //   caseId: 'HB345',
-      //   video: null // "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-      // },
-      // {
-      //   picture: require('../../assets/2.png'),
-      //   name: 'Bo Burnaham',
-      //   place: 'Washington DC',
-      //   details: null,
-      //   caseId: null,
-      //   video: null //"http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
-      // },
-    ],
-
-    image : this.props.data.image,
-
+    case: [],
+    image: this.props.data.image,
     iconSrc: require('../../assets/Profile/compose_.png'),
     refreshing: false,
     visible: false,
     fetchRecords: 0,
+    animating: false,
     selectedSort: 'popular',
     loading: true,
     sortMethod: 3,
-    fetchRecords: 0,
     likeLoading: false,
     notifications: {
       count: 12,
@@ -182,31 +163,24 @@ export default class ReportScreen extends Component {
   };
 
   componentDidMount() {
-
-    // weakRef = this;
-
     this._onRefresh();
     firebase.analytics().setCurrentScreen("Screen", "Arena_Screen");
     //firebase.analytics().logEvent("Trends_Screen");
     firebase.analytics().setUserProperty("Screen", "Arena_Screen");
     firebase.analytics().logEvent("Content", { "Screen": "Arena_Screen" });
-    console.log(this.props.menuName)
+    // console.log(this.props.menuName)
   }
 
   refreshUI = (data) => {
     // getUserData().then((data) => {
-
     this.props.refreshUI(data);
     // if (data.userLanguage === 'hi') {
     //   let menu = "अखाड़ा";
-      this.setState({  image : data.image });
+    this.setState({ image: data.image });
     //   return;
     // }
-
     // let menu = "Arena";
     // this.setState({ data: data });
-
-
     // })
   }
 
@@ -214,11 +188,8 @@ export default class ReportScreen extends Component {
     if (language === 'hi') {
       let menu = "अखाड़ा"
       return menu;
-
     }
-
     return "Arena"
-
   }
 
   gotoProfile = () => {
@@ -265,45 +236,38 @@ export default class ReportScreen extends Component {
         }
       },
     });
-
     // });
-
   }
 
   _onRefresh = () => {
-    // alert("asd");
     this.getNotifications()
-    this.setState({ refreshing: true, likeLoading: true });
+    this.setState({ refreshing: true, likeLoading: true, fetchRecords: 0, });
 
     getUserID().then((userId) => {
       this.fetchTimeLineData(userId, null);
-      //   getCurrentLocation((location) => {
-      //     if (location) {
-      //       if (typeof (location) === 'string') {
-      //         alert(location);
-      //         this.setState({ refreshing: false });
-      //       } else {
-      //         this.fetchTimeLineData(userId, location);
-      //       }
-      //     }
-      //   })
+    })
+  }
+
+  _onEndReached = () => {
+    getUserID().then((userId) => {
+      this.setState({
+        fetchRecords: this.state.fetchRecords + 1,
+        animating: true
+      });
+
+      this.fetchTimeLineData(userId, null);
     })
   }
 
   fetchTimeLineData(user_id, location) {
-    // alert(user_id);
-    // return;
-    var timeStamp = Math.floor(Date.now() / 1000);
+
+    // var timeStamp = Math.floor(Date.now() / 1000);
 
     let body = JSON.stringify({
-
       "userId": user_id,
       "fetchRecords": this.state.fetchRecords,
-      // "sortMethod": this.state.sortMethod,
     });
-    // alert(body);
-    // return;
-    // µ
+
     fetch(TIMELINE_DATA, {
       method: 'POST',
       headers: authHeaders(),
@@ -317,14 +281,13 @@ export default class ReportScreen extends Component {
           // console.log(responseJson)
           this.filterData(responseJson);
         } else {
-          alert(responseJson.response);
-          console.log(responseJson.response)
-          this.setState({ refreshing: false, loading: false, likeLoading: false });
+          // alert(responseJson.response);
+          // console.log(responseJson.response)
+          this.setState({ refreshing: false, loading: false, likeLoading: false, animating: false });
         }
-
       })
       .catch((error) => {
-        this.setState({ refreshing: false, loading: false, likeLoading: false });
+        this.setState({ refreshing: false, loading: false, likeLoading: false, animating: false });
         console.error(error);
       });
   }
@@ -345,7 +308,6 @@ export default class ReportScreen extends Component {
       {
         "userId": userId
       },
-
       "isLiked": isLiked,
       "latitude": this.props.coordinates ? this.props.coordinates.latitude : 0,
       "longitude": this.props.coordinates ? this.props.coordinates.longitude : 0,
@@ -354,29 +316,23 @@ export default class ReportScreen extends Component {
 
     // alert(body);
     // return;
-    // µ
+
     this.setState({ likeLoading: true })
     fetch(LIKDISLIKE_POST, {
       method: 'POST',
       headers: authHeaders(),
       body: body,
     }).then((response) => response.json())
-
       .then((responseJson) => {
-
         this._onRefresh();
         // alert(JSON.stringify(responseJson));
-
         // var dataObj = this.state.case;
         // var index = dataObj.indexOf(data);
         // data.Is_Liked = isLiked;
         // data.LikingCount = data.LikingCount + ((isLiked == 1) ? 1 : -1);
         // data.LikingCount = (data.LikingCount < 0) ? 0 : data.LikingCount;
-
-
         // dataObj[index] = dataObj;
         // this.setState({case : [...dataObj] });
-
         //  alert(JSON.stringify(responseJson));
         // this.filterData(responseJson.result);
         this.setState({ likeLoading: false })
@@ -385,10 +341,7 @@ export default class ReportScreen extends Component {
         this.setState({ refreshing: false, loading: false, likeLoading: false });
         console.error(error);
       });
-
-
     // });
-
   }
 
   requestForReport(data) {
@@ -427,7 +380,6 @@ export default class ReportScreen extends Component {
 
       .then((responseJson) => {
 
-
         // alert(JSON.stringify(responseJson));
         this._onRefresh();
 
@@ -463,7 +415,7 @@ export default class ReportScreen extends Component {
     data.map(dict => {
       videoURL = null; // ((dict.thumbnailUrl && dict.messageType === 'Video') ? { uri: dict.thumbnailUrl} : null)
       let innerData = {
-        key: key,
+        // key: key,
         picture: (dict.mediaContentData && (dict.messageType === 'Image' || dict.messageType === 'Gif')) ? { uri: "data:image/png;base64," + dict.mediaContentData } : videoURL, // ++
         name: dict.userName ? ("@" + dict.userName) : "Anonymous",
         place: dict.locationName,
@@ -483,10 +435,13 @@ export default class ReportScreen extends Component {
       // console.log(innerData);
       // console.log(JSON.stringify(innerData));
       array.push(innerData);
-      key = key + 1;
+      // key = key + 1;
     });
 
-    this.setState({ refreshing: false, case: array, loading: false })
+    this.setState(state => {
+      const asd = state.fetchRecords === 0 ? array : state.case.concat(array);
+      return { refreshing: false, case: asd, loading: false, animating: false }
+    });
   }
 
   replyButtonTapped = (data) => {
@@ -509,8 +464,6 @@ export default class ReportScreen extends Component {
         }
       }
     });
-
-
   }
 
   homeButtonTapped = () => {
@@ -656,12 +609,12 @@ export default class ReportScreen extends Component {
       <TouchableOpacity onPress={() => this.replyButtonTapped()}>
         <View style={{ flex: 1, height: 50 }}></View>
         {/* <CaseCard
-          moreButtonTapped={this.moreButtonTapped}
-          onPressLike={(data2) => this.likeButtonTapped(data2)}
-          onPressDisLike={(data2) => this.disLikeButtonTapped(data2)}
-          data={rowData}
-          onPressReply={(data2) => this.replyButtonTapped(data2)}
-        /> */}
+            moreButtonTapped={this.moreButtonTapped}
+            onPressLike={(data2) => this.likeButtonTapped(data2)}
+            onPressDisLike={(data2) => this.disLikeButtonTapped(data2)}
+            data={rowData}
+            onPressReply={(data2) => this.replyButtonTapped(data2)}
+          /> */}
       </TouchableOpacity>
     )
   }
@@ -864,7 +817,7 @@ export default class ReportScreen extends Component {
   }
 
   updateNotifications = (notificationLogId) => {
-    console.log('called')
+    // console.log('called');
     axios.post(UPDATE_USER_NOTIFICATIONS, {
       notificationLogId: notificationLogId.toString(),
       read: "Y",
@@ -947,6 +900,12 @@ export default class ReportScreen extends Component {
     })
 
     this._onRefresh()
+  }
+
+  footer = () => {
+    return (
+      <ActivityIndicator style={{ backgroundColor: 'transparent', margin: 5 }} animating={this.state.animating} />
+    )
   }
 
   render() {
@@ -1034,10 +993,10 @@ export default class ReportScreen extends Component {
             </TouchableWithoutFeedback>
             <TouchableWithoutFeedback onPress={() => this.showNotificationScreen()}>
               {/* <BadgedIcon
-                color="#fff"
-                type="font-awesome"
-                onPress={() => { }}
-                name="bell-o" /> */}
+                  color="#fff"
+                  type="font-awesome"
+                  onPress={() => { }}
+                  name="bell-o" /> */}
               {notifications.count <= 0 ?
                 <FontAwesome
                   size={hp('3%')}
@@ -1073,8 +1032,10 @@ export default class ReportScreen extends Component {
               onRefresh={this._onRefresh}
               refreshing={this.state.refreshing}
               data={this.state.case}
-
+              onEndReached={this._onEndReached}
+              onEndReachedThreshold={0.1}
               scrollEventThrottle={400}
+              ListFooterComponent={() => this.footer()}
               renderItem={({ item }) =>
                 <TouchableOpacity onPress={() => this.replyButtonTapped(item)}>
                   <CaseCard

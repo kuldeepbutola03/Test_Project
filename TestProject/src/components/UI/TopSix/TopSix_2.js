@@ -28,8 +28,8 @@ class TopSix_2 extends Component {
                         <Avatar
                             rounded
                             source={source[3]}
-                            size={normalize(60)}//"large"
-                            avatarStyle={{ borderColor: APP_GLOBAL_COLOR, borderWidth: 2, borderRadius: normalize(30) }}
+                            size={normalize(54)}//"large"
+                            avatarStyle={{ borderColor: APP_GLOBAL_COLOR, borderWidth: 2, borderRadius: normalize(27) }}
                         />
 
                         <Badge
@@ -55,8 +55,8 @@ class TopSix_2 extends Component {
                         <Avatar
                             rounded
                             source={source[4]}
-                            size={normalize(60)}//"large"
-                            avatarStyle={{ borderColor: APP_GLOBAL_COLOR, borderWidth: 2, borderRadius: normalize(30) }}
+                            size={normalize(54)}//"large"
+                            avatarStyle={{ borderColor: APP_GLOBAL_COLOR, borderWidth: 2, borderRadius: normalize(27) }}
                         />
 
                         <Badge
@@ -85,8 +85,8 @@ class TopSix_2 extends Component {
                         <Avatar
                             rounded
                             source={source[5]}
-                            size={normalize(60)}//"large"
-                            avatarStyle={{ borderColor: APP_GLOBAL_COLOR, borderWidth: 2, borderRadius: normalize(30) }}
+                            size={normalize(54)}//"large"
+                            avatarStyle={{ borderColor: APP_GLOBAL_COLOR, borderWidth: 2, borderRadius: normalize(27) }}
                         />
 
                         <Badge

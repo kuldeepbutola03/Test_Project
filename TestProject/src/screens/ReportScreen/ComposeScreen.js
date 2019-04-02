@@ -44,7 +44,7 @@ export default class ComposeScreen extends Component {
     //firebase.analytics().logEvent("Trends_Screen");
     firebase.analytics().setUserProperty("Screen", "Compose_Screen");
     firebase.analytics().logEvent("Content", { "Screen": "Compose_Screen" });
-}
+  }
 
 
   cancel = () => {
@@ -63,15 +63,18 @@ export default class ComposeScreen extends Component {
       // alert(JSON.stringify(response));
       let media = [];// this.state.selected;
 
+      var mimeType = '';
       // for (i = 0; i < response.length; i++) {
       if (response.data) {
         // alert(response.data);
         // media.push({ uri: "data:image/png;base64," + response.data });
-        media.push({ uri: response.data , width : response[i].width , height : response[i].height });
+        media.push({ uri: response.data, width: response[i].width, height: response[i].height });
+        mimeType = response[i].mime;
       }
 
       this.setState({
         selected: media,
+        mimeType:mimeType
       });
     });
   }; npm
@@ -85,13 +88,16 @@ export default class ComposeScreen extends Component {
     }).then(response => {
       console.log(response);
       let media = [];// this.state.selected;
-
+      var mimeType = '';
       for (i = 0; i < 1; i++) {                //------------------ i < response.length ------------------
-        media.push({ uri: response[i].data , width : response[i].width , height : response[i].height });
+
+        media.push({ uri: response[i].data, width: response[i].width, height: response[i].height });
+        mimeType = response[i].mime;
       }
       // alert(JSON.stringify(media));
       this.setState({
         selected: media,
+        mimeType : mimeType
       });
 
     });
@@ -143,7 +149,7 @@ export default class ComposeScreen extends Component {
           "message": this.state.text,
           "height": this.state.selected[0].height,
           "width": this.state.selected[0].width,
-          "messageType": this.state.mimeType === "image/jpeg" || this.state.mimeType === "image/png" ? "Image" : "Gif",
+          "messageType": (this.state.mimeType === "image/jpeg" || this.state.mimeType === "image/png" || this.state.mimeType === "image/jpg") ? "Image" : "Gif",
 
           "mediaContentData": this.state.selected[0].uri,
 
@@ -192,6 +198,7 @@ export default class ComposeScreen extends Component {
 
         body = JSON.stringify(body);
         console.log(body);
+        
 
         let FETCH = this.props.reply ? MESSAGE_REPLY : MESSAGE_COMPOSE; // +_+
 
@@ -294,7 +301,7 @@ export default class ComposeScreen extends Component {
           // onError={() => {this.setState({isVideo : true})}}
           />
           <Remove
-            style={{ position: 'absolute', top: 5, right: 5  , height : 50 , width : 50}}
+            style={{ position: 'absolute', top: 5, right: 5, height: 50, width: 50 }}
             onPress={() => this.removeMedia(index)}
           />
         </View>

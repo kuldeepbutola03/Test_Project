@@ -227,7 +227,7 @@ export default class HomeScreen extends Component {
         options: {
           topBar: {
             visible: true,
-            drawBehind: true,
+            // drawBehind: true,
             animate: true,
             buttonColor: '#fff',
             background: {
@@ -263,9 +263,9 @@ export default class HomeScreen extends Component {
     // }
 
     // let menu = ['Trends', 'Survey', 'Arena'];
-    this.setState({data: data });
+    this.setState({ data: data });
 
-
+    this.tick();
     // })
   }
 
@@ -412,6 +412,31 @@ export default class HomeScreen extends Component {
         }
       },
     });
+
+    // Navigation.push(this.props.componentId, {
+    //   component: {
+    //     name: 'QuestionnaireScreen',
+    //     options: {
+    //       topBar: {
+    //         visible: false,
+    //         drawBehind: true,
+    //         animate: false,
+    //       },
+    //     },
+    //     passProps: {
+    //       surveyId : '1',
+    //       notification : 'Y',
+    //       user_id: this.state.user_id,
+    //       lat_lon: this.state.lat_lon,
+    //       userLanguage: this.state.data.userLanguage,
+    //       // languageCode: this.state.firstAPIresponse ? this.state.firstAPIresponse.languageCodes : null,
+    //       menuName: menuName
+    //     }
+    //   },
+    // });
+
+
+    
   };
 
   toTrendScreen = () => {
@@ -472,13 +497,13 @@ export default class HomeScreen extends Component {
         // alert(latlong);
         this.serverHitForFourthResponse();
         this.requestToServer();
-        
+
       },
       (error) => {
         console.log(error)
         this.serverHitForFourthResponse();
         this.requestToServer();
-        
+
         // alert(error.message)
         // this.locationErrorMessage = error.message;
         // alert(locationErrorMessage)
@@ -512,7 +537,7 @@ export default class HomeScreen extends Component {
         // this._requestPermission();
         this.serverHitForFourthResponse();
         this.requestToServer();
-        
+
       } else if (response === 'authorized') {
         // this.getLocation()
         this.fetchCurrentLocation();
@@ -1292,7 +1317,7 @@ export default class HomeScreen extends Component {
             width: '100%',
             backgroundColor: 'white',
             borderTopColor: 'grey',
-            height: hp('50%'),
+            // height: hp('50%'),
             flexDirection: 'column'
           }}>
           {this.state.landingTopSix ?

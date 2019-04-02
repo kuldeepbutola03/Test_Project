@@ -59,6 +59,8 @@ export default class Profile extends Component {
       visibleProfession: false,
       warningVisible: false,
       maleChecked: this.props.gender === "Male",
+
+      mediaType : 'jpg'
     }
   }
 
@@ -116,12 +118,15 @@ export default class Profile extends Component {
       } else {
         const source = response.data;
 
+        const array = response.uri.split('.')
+        const mediaType = array.length > 0 ? array[array.length - 1] : 'jpg';
         // You can also display the image using data:
         // const source = { uri: 'data:image/jpeg;base64,' + response.data };
         // console.log(source)
 
         this.setState({
           image: source,
+          mediaType : mediaType
         });
       }
     });
@@ -137,7 +142,7 @@ export default class Profile extends Component {
 
     this.refs.loading.show();
 
-    let imgName = "IMG" + (+new Date()) + '.JPG';
+    let imgName = "IMG" + (+new Date()) +  '.' + this.state.mediaType;
 
     let body = {};
 
@@ -321,7 +326,6 @@ export default class Profile extends Component {
     const options = {
       behavior: Platform.OS === 'ios' ? 'padding' : 'null',
     };
-
 
 
     const G_BUTTONS = [

@@ -188,117 +188,130 @@ export default class OtpScreen extends Component {
         }
 
         // setTimeout(function () {
-          if (responseData) {
-            if (responseData.userId) {
-              if (responseData.userPolArea) {
-                  axios.post(LANDING_TOP_SIX, {
-                    userId: responseData.userId,
-                  })
-                  .then(response_2 => {
+        thatObj.refs.loading.close();
+        // return;
+        if (responseData) {
+          if (responseData.userId) {
 
-                    // alert(JSON.stringify(response_2.data));
-                    // console.log('kkkkkkkk');
-                    let responseData_2 = response_2.data;
-                    let languageArry = responseData_2.extraImageFile3 ? responseData_2.extraImageFile3 : "Trends,Survey,Arena,Notifications,Rate Now, Profile, Male,Female, Select Your Profession,Student,Salaried,Entrepreneur, Retired, Housewife,Other, Select Your Age group, Teenager,Twenties,Thirties,Forties,Fifties,Sixty+";
-                    // console.log(response_2.data);
-                   
-                    // let menuArr = responseData_2.extraImageFile3.split(',');
-                    let menuArr = languageArry.split(',');
-                    
-                    thatObj.refs.loading.close();
-                    saveUserID(responseData.userId);
-                    saveUserData(data);
-                    Navigation.push(thatObj.props.componentId, {
-                      component: {
-                        id: 'Profile',
-                        name: 'Profile',
-                        passProps: {
-                          email: responseData.userEmail,
-                          image: responseData.userImageData,
-                          firstName: responseData.userFirstName,
-                          lastName: responseData.userLastName,
-                          username: responseData.userName,
-                          mobileNumber: thatObj.props.mobileNumber,
-                          code: thatObj.props.code,
-                          userId: responseData.userId,
-                          userDesignation : responseData.userDesignation,
-                          selectedAgeGroupCode: responseData.userAgeGroup,
-                          description: responseData.userDescription,
-                          gender: responseData.userGender,
-                          userLanguage: responseData.userLanguage,
-                          language: menuArr ? menuArr[5] : null,
-                          male: menuArr ? menuArr[6] : null,
-                          female: menuArr ? menuArr[7] : null,
-                          selProfession: menuArr ? menuArr[8] : null,
-                          student: menuArr ? menuArr[9] : null,
-                          salaried: menuArr ? menuArr[10] : null,
-                          entrepreneur: menuArr ? menuArr[11] : null,
-                          retired: menuArr ? menuArr[12] : null,
-                          housewife: menuArr ? menuArr[13] : null,
-                          other: menuArr ? menuArr[14] : null,
-                          selAgeGroup: menuArr ? menuArr[15] : null,
-                          teenager: menuArr ? menuArr[16] : null,
-                          twenties: menuArr ? menuArr[17] : null,
-                          thirties: menuArr ? menuArr[18] : null,
-                          fourties: menuArr ? menuArr[19] : null,
-                          fifties: menuArr ? menuArr[20] : null,
-                          aboveSixty: menuArr ? menuArr[21] : null,
-                        },
-                        options: {
-                          topBar: {
-                            visible: false,
-                            animate: false,
-                            drawBehind: true
-                          }
-                        }
-                      },
-                    });
-                  })
-                  .catch(error => {
-                    console.log(error)
-                  })
-              } else {
-                // console.log('no location')
-                Navigation.push(thisObj.props.componentId, {
-                  component: {
-                    name: 'AreaScreen',
-                    passProps: {
-                      data: responseData.areaStateMap,
-                      mobileNumber: thisObj.props.mobileNumber,
-                      code: thisObj.props.code,
-                      username: responseData.userName,
-                      firstName: responseData.userFirstName,
-                      lastName: responseData.userLastName,
-                      image: responseData.userImageData,
-                      userId: responseData.userId,
-                      responseData: responseData,
-                      dataToSave: data,
-                      userDesignation : responseData.userDesignation,
-                      selectedAgeGroupCode: responseData.userAgeGroup,
-                      description: responseData.userDescription,
-                      gender: responseData.userGender,
-                      userLanguage: responseData.userLanguage
-                    },
-                    options: {
-                      topBar: {
-                        visible: false,
-                        drawBehind: true,
-                        animate: false,
-                      },
-                      popGesture: false
-                    }
+
+            if (!responseData.areaStateMap) {
+              // axios.post(LANDING_TOP_SIX, {
+              //   userId: responseData.userId,
+              // })
+              // .then(response_2 => {
+
+              //   // alert(JSON.stringify(response_2.data));
+              //   // console.log('kkkkkkkk');
+              //   let responseData_2 = response_2.data;
+              //   let languageArry = responseData_2.extraImageFile3 ? responseData_2.extraImageFile3 : "Trends,Survey,Arena,Notifications,Rate Now, Profile, Male,Female, Select Your Profession,Student,Salaried,Entrepreneur, Retired, Housewife,Other, Select Your Age group, Teenager,Twenties,Thirties,Forties,Fifties,Sixty+";
+
+              let languageArry = "Trends,Survey,Arena,Notifications,Rate Now, Profile, Male,Female, Select Your Profession,Student,Salaried,Entrepreneur, Retired, Housewife,Other, Select Your Age group, Teenager,Twenties,Thirties,Forties,Fifties,Sixty+";
+              let menuArr = languageArry.split(',');
+
+
+              saveUserID(responseData.userId);
+              let dict = {
+                email: responseData.userEmail,
+                image: responseData.userImageData,
+                firstName: responseData.userFirstName,
+                lastName: responseData.userLastName,
+                username: responseData.userName,
+                mobileNumber: thatObj.props.mobileNumber,
+                code: thatObj.props.code,
+                userId: responseData.userId,
+                userDesignation: responseData.userDesignation,
+                selectedAgeGroupCode: responseData.userAgeGroup,
+                description: responseData.userDescription,
+                gender: responseData.userGender,
+                userLanguage: responseData.userLanguage
+              };
+              saveUserData(dict);
+              Navigation.push(thatObj.props.componentId, {
+                component: {
+                  id: 'Profile',
+                  name: 'Profile',
+                  passProps: {
+                    ...dict,
+                    language: menuArr ? menuArr[5] : null,
+                    male: menuArr ? menuArr[6] : null,
+                    female: menuArr ? menuArr[7] : null,
+                    selProfession: menuArr ? menuArr[8] : null,
+                    student: menuArr ? menuArr[9] : null,
+                    salaried: menuArr ? menuArr[10] : null,
+                    entrepreneur: menuArr ? menuArr[11] : null,
+                    retired: menuArr ? menuArr[12] : null,
+                    housewife: menuArr ? menuArr[13] : null,
+                    other: menuArr ? menuArr[14] : null,
+                    selAgeGroup: menuArr ? menuArr[15] : null,
+                    teenager: menuArr ? menuArr[16] : null,
+                    twenties: menuArr ? menuArr[17] : null,
+                    thirties: menuArr ? menuArr[18] : null,
+                    fourties: menuArr ? menuArr[19] : null,
+                    fifties: menuArr ? menuArr[20] : null,
+                    aboveSixty: menuArr ? menuArr[21] : null,
                   },
-                });
-                // }, 1000)
-              }
-              // }
-
-
+                  options: {
+                    topBar: {
+                      visible: false,
+                      animate: false,
+                      drawBehind: true
+                    }
+                  }
+                },
+              });
+              // })
+              // .catch(error => {
+              //   console.log(error)
+              // })
             } else {
-              this.refs.loading.close();
-              alert("Invalid OTP");
+              // console.log('no location')
+              Navigation.push(thisObj.props.componentId, {
+                component: {
+                  name: 'AreaScreen',
+                  passProps: {
+                    data: responseData.areaStateMap,
+                    mobileNumber: thisObj.props.mobileNumber,
+                    code: thisObj.props.code,
+                    username: responseData.userName,
+                    firstName: responseData.userFirstName,
+                    lastName: responseData.userLastName,
+                    image: responseData.userImageData,
+                    userId: responseData.userId,
+                    responseData: responseData,
+                    dataToSave: data,
+                    userDesignation: responseData.userDesignation,
+                    selectedAgeGroupCode: responseData.userAgeGroup,
+                    description: responseData.userDescription,
+                    gender: responseData.userGender,
+                    userLanguage: responseData.userLanguage
+                  },
+                  options: {
+                    topBar: {
+                      visible: false,
+                      drawBehind: true,
+                      animate: false,
+                    },
+                    popGesture: false
+                  }
+                },
+              });
+              // }, 1000)
             }
+            // }
+
+
+          } else {
+            // this.refs.loading.close();
+            setTimeout(function () {
+              alert("Invalid OTP");
+            }, 500);
           }
+        } else {
+          setTimeout(function () {
+            alert("Invalid OTP");
+          }, 500);
+          // this.refs.loading.close();
+        }
         // }, 200)
       })
       .catch((error) => {

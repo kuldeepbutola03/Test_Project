@@ -28,6 +28,7 @@ import TutorialScreen from './src/screens/AboutAppScreen/TutorialScreen';
 
 import TcScreen from './src/screens/LoginScreen/TcScreen';
 import NotificationScreen from './src/screens/NotificationScreen/NotificationScreen';
+import SurveyList from './src/screens/QuestionnaireScreen/SurveyList';
 
 Navigation.registerComponent('LoginScreen', () => LoginSceen);
 Navigation.registerComponent('MobileNumber', () => MobileNumber);
@@ -56,6 +57,8 @@ Navigation.registerComponent('TutorialScreen', () => TutorialScreen);
 Navigation.registerComponent('TcScreen', () => TcScreen);
 
 Navigation.registerComponent('NotificationScreen', () => NotificationScreen);
+
+Navigation.registerComponent('SurveyList', () => SurveyList);
 // import Orientation from 'react-native-orientation';
 // Start App
 import { AsyncStorage, Platform } from "react-native"
@@ -70,46 +73,13 @@ import { DEFAULT_USER_ID, getUserData, saveUserData, saveUserID } from './Consta
 Navigation.events().registerAppLaunchedListener(() => {
 
   Navigation.setDefaultOptions({
-   
-      layout: {
-        orientation: ['portrait']
-      }
-    
+
+    layout: {
+      orientation: ['portrait']
+    }
+
   })
-  // if (Platform.OS === 'android') {
-  //   Orientation.lockToPortrait();
-  // // Orientation.lockToPortrait();
-  //       Orientation.addOrientationListener((orr) => {
-  //           // alert('aaaa');
-  //           Orientation.lockToPortrait();
-  //       })
-  // }
 
-  //   SplashScreen.hide()
-  //   Navigation.setRoot ({
-  //     root: {
-  //       stack: {
-  //         children: [
-  //           {x1
-  //             component: {
-  //               id: "Test", // Optional, Auto generated if empty
-  //               name: "Test",
-  //               options: {
-  //                 topBar: {
-  //                   visible:false,
-  //                     drawBehind:true,
-  //                     animate:false
-  //                 },
-  //               },
-
-  //             },
-  //           },
-  //         ],
-  //       },
-  //     },
-  //   });
-  // });
-  // return;
 
   getUserData().then((data) => {
     SplashScreen.hide();
@@ -150,56 +120,99 @@ Navigation.events().registerAppLaunchedListener(() => {
         });
         // });
       } else {
-        // Navigation.events ().registerAppLaunchedListener (() => {
-        Navigation.setRoot({
-          root: {
-            stack: {
-              children: [
-                {
-                  component: {
-                    id: 'Profile',
-                    name: 'Profile',
-                    options: {
-                      topBar: {
-                        visible: false,
-                        animate: false,
-                        drawBehind: true,
+        let languageArry = "Trends,Survey,Arena,Notifications,Rate Now, Profile, Male,Female, Select Your Profession,Student,Salaried,Entrepreneur, Retired, Housewife,Other, Select Your Age group, Teenager,Twenties,Thirties,Forties,Fifties,Sixty+";
+        let menuArr = languageArry.split(',');
+        
 
-                      }
-                    }
+          Navigation.setRoot({
+            root: {
+              stack: {
+                children: [
+                  {
+                    component: {
+                      id: 'Profile',
+                      name: 'Profile',
+                      options: {
+                        topBar: {
+                          visible: false,
+                          animate: false,
+                          drawBehind: true,
+
+                        }
+                      },
+
+                      passProps: {
+                        // email: null,
+  
+                        // name: thisObject.props.name,
+                        // image: thisObject.props.image,
+                        // username: username,
+                        // mobileNumber: thisObject.props.mobileNumber,
+                        // code: thisObject.props.code,
+                        ...data,
+                        // userId: data.userId,
+  
+                        language: menuArr ? menuArr[5] : null,
+                        male: menuArr ? menuArr[6] : null,
+                        female: menuArr ? menuArr[7] : null,
+                        selProfession: menuArr ? menuArr[8] : null,
+                        student: menuArr ? menuArr[9] : null,
+                        salaried: menuArr ? menuArr[10] : null,
+                        entrepreneur: menuArr ? menuArr[11] : null,
+                        retired: menuArr ? menuArr[12] : null,
+                        housewife: menuArr ? menuArr[13] : null,
+                        other: menuArr ? menuArr[14] : null,
+                        selAgeGroup: menuArr ? menuArr[15] : null,
+                        teenager: menuArr ? menuArr[16] : null,
+                        twenties: menuArr ? menuArr[17] : null,
+                        thirties: menuArr ? menuArr[18] : null,
+                        fourties: menuArr ? menuArr[19] : null,
+                        fifties: menuArr ? menuArr[20] : null,
+                        aboveSixty: menuArr ? menuArr[21] : null,
+  
+  
+  
+                        email: null,
+                        // firstName: data.firstName,
+                        // lastName: data.lastName,
+                        // image: thisObject.props.image,
+                        // username: username,
+                        // mobileNumber: thisObject.props.mobileNumber,
+                        // code: thisObject.props.code,
+                        // userId: thisObject.props.userId,
+                        // selectedAgeGroupCode: thisObject.props.selectedAgeGroupCode,
+                        // description: thisObject.props.description,
+                        // userDesignation: thisObject.props.designation,
+                        // gender: thisObject.props.gender,
+  
+                        // userLanguage: 'en',
+                        // language: menuArr ? menuArr[5] : null,
+                        // male: menuArr ? menuArr[6] : null,
+                        // female: menuArr ? menuArr[7] : null,
+                        // selProfession: menuArr ? menuArr[8] : null,
+                        // student: menuArr ? menuArr[9] : null,
+                        // salaried: menuArr ? menuArr[10] : null,
+                        // entrepreneur: menuArr ? menuArr[11] : null,
+                        // retired: menuArr ? menuArr[12] : null,
+                        // housewife: menuArr ? menuArr[13] : null,
+                        // other: menuArr ? menuArr[14] : null,
+                        // selAgeGroup: menuArr ? menuArr[15] : null,
+                        // teenager: menuArr ? menuArr[16] : null,
+                        // twenties: menuArr ? menuArr[17] : null,
+                        // thirties: menuArr ? menuArr[18] : null,
+                        // fourties: menuArr ? menuArr[19] : null,
+                        // fifties: menuArr ? menuArr[20] : null,
+                        // aboveSixty: menuArr ? menuArr[21] : null,
+                      },
+                    },
+                    
+                    
                   },
-                  passProps: {
-                    // email: null,
-
-                    // name: thisObject.props.name,
-                    // image: thisObject.props.image,
-                    // username: username,
-                    // mobileNumber: thisObject.props.mobileNumber,
-                    // code: thisObject.props.code,
-                    userId: data.userId,
-
-                    // selectedAgeGroupCode: thisObject.selectedAgeGroupCode,
-                    // description: thisObject.description,
-                    // gender: thisObject.gender
-                  },
-                  // component: {
-                  //   id: "MobileNumber", // Optional, Auto generated if empty
-                  //   name: "MobileNumber",
-                  //   options: {
-                  //     topBar: {
-                  //       visible:false,
-                  //         drawBehind:true,
-                  //         animate:false
-                  //     },
-                  //   },
-
-                  // },
-                },
-              ],
+                ],
+              },
             },
-          },
-        });
-        // });
+          });
+        
       }
     }
     else {
@@ -219,7 +232,7 @@ Navigation.events().registerAppLaunchedListener(() => {
                       animate: false,
 
                     },
-                    
+
 
                   },
 

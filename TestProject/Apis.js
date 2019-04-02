@@ -31,6 +31,8 @@ export const TREND_CDM = BASE_URL + 'trends/getCDMResourceGprHistoryDetails';
 export const GET_CURRENT_ACTIVE_SURVEY = BASE_URL + 'survey/getCurrActiveRegnSurvey';
 export const SUBMIT_USER_SURVEY_QUESTION = BASE_URL + 'survey/postSurveyAnswers';
 
+export const GET_SURVEY_BY_ID = BASE_URL + 'survey/getSurveyById';
+
 export const UPDATE_USER_AREA = BASE_URL + 'user/insertBaseAreaDetails';
 
 // Api 1 - Error in sending sms
@@ -54,6 +56,6 @@ export const MESSAGE_REPLY = BASE_URL + 'message/messageReply';
 export const MEDIA_MESSAGE_REPLY = "http://holygrailwar.babbles.zone/" + 'mediaMessageReply';//Do not have the api
 
 export const GET_USER_NOTIFICATIONS = BASE_URL + 'notification/getUserNotification';
-export const UPDATE_USER_NOTIFICATIONS = BASE_URL + '/notification/updateUserNotificationStatus';
+export const UPDATE_USER_NOTIFICATIONS = BASE_URL + 'notification/updateUserNotificationStatus';
 
 // http://localhost/customMapAPIs/message/messageCompose

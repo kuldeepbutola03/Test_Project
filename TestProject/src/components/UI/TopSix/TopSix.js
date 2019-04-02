@@ -20,13 +20,14 @@ class TopSix extends Component {
         const { source, logo, resourceGpr, logoName , logoCatName} = this.props;
         return (
             <View style={styles.container}>
-                <View style={styles.row}>
-                    <View style = {{justifyContent : 'center' , alignItems : 'center'}}>
+                {/* <View style={styles.row}> */}
+                    {/* <View style = {{justifyContent : 'center' , alignItems : 'center'}}> */}
+                    <View>
                         <Avatar
                             rounded
                             source={source[0]}
-                            size={normalize(60)}//"large"
-                            avatarStyle={{ borderColor: APP_GLOBAL_COLOR, borderWidth: 2, borderRadius: normalize(30) }}
+                            size={normalize(54)}//"large"
+                            avatarStyle={{ borderColor: APP_GLOBAL_COLOR, borderWidth: 2, borderRadius: normalize(27) }}
                         />
 
                         <Badge
@@ -53,8 +54,8 @@ class TopSix extends Component {
                         <Avatar
                             rounded 
                             source={source[1]}
-                            size={normalize(60)}//"large"
-                            avatarStyle={{ borderColor: APP_GLOBAL_COLOR, borderWidth: 2, borderRadius: normalize(30) }}
+                            size={normalize(54)}//"large"
+                            avatarStyle={{ borderColor: APP_GLOBAL_COLOR, borderWidth: 2, borderRadius: normalize(27) }}
                         />
 
                         <Badge
@@ -80,8 +81,8 @@ class TopSix extends Component {
                         <Avatar
                             rounded
                             source={source[2]}
-                            size={normalize(60)}//"large"
-                            avatarStyle={{ borderColor: APP_GLOBAL_COLOR, borderWidth: 2, borderRadius: normalize(30) }}
+                            size={normalize(54)}//"large"
+                            avatarStyle={{ borderColor: APP_GLOBAL_COLOR, borderWidth: 2, borderRadius: normalize(27) }}
                         />
 
                         <Badge
@@ -103,7 +104,7 @@ class TopSix extends Component {
                         {/* <Text style = {{position: 'absolute',  top : normalize(70) , fontSize : normalize(8) }}>{logoName[2]}</Text> */}
                         {/* <Text style={{position: 'absolute',  bottom : normalize(70), fontSize : normalize(8 ) }}>{logoCatName[2]}</Text> */}
                     </View>
-                </View>
+                {/* </View> */}
                 
             </View>
         )
@@ -113,8 +114,10 @@ class TopSix extends Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        flexDirection: 'column',
+        flexDirection: 'row',
+        justifyContent: 'space-around',
         width: '100%',
+        alignItems: 'center'
     },
 
     row: {

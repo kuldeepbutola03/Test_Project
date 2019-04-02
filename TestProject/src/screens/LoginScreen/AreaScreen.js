@@ -50,7 +50,7 @@ export default class AreaScreen extends Component {
         //firebase.analytics().logEvent("Trends_Screen");
         firebase.analytics().setUserProperty("Screen", "Area_Selection_Screen");
         firebase.analytics().logEvent("Content", { "Screen": "Area_Selection_Screen" });
-    
+
 
 
         // getUserID().then((value) => {
@@ -191,67 +191,79 @@ export default class AreaScreen extends Component {
                     code: this.props.code
                 }
 
-                axios.post(LANDING_TOP_SIX, {
-                    userId: responseData.userId,
-                })
-                .then(response_2 => {
-                    let responseData_2 = response_2.data;
-                    let menuArr = responseData_2.extraImageFile3.split(',');
-                    saveUserID(this.props.userId);
-                    saveUserData(this.props.dataToSave);
+                // axios.post(LANDING_TOP_SIX, {
+                //     userId: responseData.userId,
+                // })
+                // .then(response_2 => {
 
-                    thisObject.refs.loading.close();
-                    setTimeout(function () {
-                        Navigation.push(thisObject.props.componentId, {
-                            component: {
-                                id: 'Profile',
-                                name: 'Profile',
-                                passProps: {
-                                    email: null,
-                                    firstName: thisObject.props.firstName,
-                                    lastName: thisObject.props.lastName,
-                                    image: thisObject.props.image,
-                                    username: username,
-                                    mobileNumber: thisObject.props.mobileNumber,
-                                    code: thisObject.props.code,
-                                    userId: thisObject.props.userId,
-                                    selectedAgeGroupCode: thisObject.props.selectedAgeGroupCode,
-                                    description: thisObject.props.description,
-                                    userDesignation : thisObject.props.designation,
-                                    gender: thisObject.props.gender,
-                                    userLanguage : thisObject.props.userLanguage,
-                                    language: menuArr ? menuArr[5] : null,
-                                    male: menuArr ? menuArr[6] : null,
-                                    female: menuArr ? menuArr[7] : null,
-                                    selProfession: menuArr ? menuArr[8] : null,
-                                    student: menuArr ? menuArr[9] : null,
-                                    salaried: menuArr ? menuArr[10] : null,
-                                    entrepreneur: menuArr ? menuArr[11] : null,
-                                    retired: menuArr ? menuArr[12] : null,
-                                    housewife: menuArr ? menuArr[13] : null,
-                                    other: menuArr ? menuArr[14] : null,
-                                    selAgeGroup: menuArr ? menuArr[15] : null,
-                                    teenager: menuArr ? menuArr[16] : null,
-                                    twenties: menuArr ? menuArr[17] : null,
-                                    thirties: menuArr ? menuArr[18] : null,
-                                    fourties: menuArr ? menuArr[19] : null,
-                                    fifties: menuArr ? menuArr[20] : null,
-                                    aboveSixty: menuArr ? menuArr[21] : null,
-                                },
-                                options: {
-                                    topBar: {
-                                        visible: false,
-                                        animate: false,
-                                        drawBehind: true
-                                    }
-                                }
+                let languageArry = "Trends,Survey,Arena,Notifications,Rate Now, Profile, Male,Female, Select Your Profession,Student,Salaried,Entrepreneur, Retired, Housewife,Other, Select Your Age group, Teenager,Twenties,Thirties,Forties,Fifties,Sixty+";
+                let menuArr = languageArry.split(',');
+                // let responseData_2 = response_2.data;
+                // let menuArr = responseData_2.extraImageFile3.split(',');
+                saveUserID(this.props.userId);
+                
+
+                thisObject.refs.loading.close();
+
+                let dict = {
+                    email: null,
+                    firstName: thisObject.props.firstName,
+                    lastName: thisObject.props.lastName,
+                    image: thisObject.props.image,
+                    username: username,
+                    mobileNumber: thisObject.props.mobileNumber,
+                    code: thisObject.props.code,
+                    userId: thisObject.props.userId,
+                    selectedAgeGroupCode: thisObject.props.selectedAgeGroupCode,
+                    description: thisObject.props.description,
+                    userDesignation: thisObject.props.userDesignation,
+                    gender: thisObject.props.gender,
+                    userLanguage: thisObject.props.userLanguage
+                };
+
+                saveUserData(dict);
+
+                setTimeout(function () {
+                    Navigation.push(thisObject.props.componentId, {
+                        component: {
+                            id: 'Profile',
+                            name: 'Profile',
+                            passProps: {
+
+                                ...dict,
+
+                                language: menuArr ? menuArr[5] : null,
+                                male: menuArr ? menuArr[6] : null,
+                                female: menuArr ? menuArr[7] : null,
+                                selProfession: menuArr ? menuArr[8] : null,
+                                student: menuArr ? menuArr[9] : null,
+                                salaried: menuArr ? menuArr[10] : null,
+                                entrepreneur: menuArr ? menuArr[11] : null,
+                                retired: menuArr ? menuArr[12] : null,
+                                housewife: menuArr ? menuArr[13] : null,
+                                other: menuArr ? menuArr[14] : null,
+                                selAgeGroup: menuArr ? menuArr[15] : null,
+                                teenager: menuArr ? menuArr[16] : null,
+                                twenties: menuArr ? menuArr[17] : null,
+                                thirties: menuArr ? menuArr[18] : null,
+                                fourties: menuArr ? menuArr[19] : null,
+                                fifties: menuArr ? menuArr[20] : null,
+                                aboveSixty: menuArr ? menuArr[21] : null,
                             },
-                        });
-                    }, 500);
-                })
-                .catch(error => {
-                    console.log(error)
-                })
+                            options: {
+                                topBar: {
+                                    visible: false,
+                                    animate: false,
+                                    drawBehind: true
+                                }
+                            }
+                        },
+                    });
+                }, 500);
+                // })
+                // .catch(error => {
+                //     console.log(error)
+                // })
             })
             .catch((error) => {
                 this.refs.loading.close();
@@ -443,7 +455,7 @@ class SectionHeader extends Component {
             // } else {
             //     this.setState({ sectionSelected: section });
             // }
-            }
+        }
         }>
 
             <Text style={{ fontWeight: '600', fontSize: 15, marginLeft: 20, marginRight: 10 }}>{this.props.section.title}</Text>

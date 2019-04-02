@@ -94,7 +94,7 @@ class NotificationScreen extends Component {
         const { notifications } = this.state;
         console.log(this.state.notifications)
         return (
-            <SafeAreaView style={styles.containerStyle}>
+            <SafeAreaView style={styles.containerStyle} >
                 <FlatList 
                     data={notifications.notificationList}
                     extraData={this.state}
@@ -110,6 +110,7 @@ const styles = StyleSheet.create({
     containerStyle: {
         flex: 1,
         backgroundColor: '#fff',
+        // paddingTop: Platform.OS === 'ios' ? 0 : 0
 
     },
     readStyle: {},
