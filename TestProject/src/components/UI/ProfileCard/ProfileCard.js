@@ -85,7 +85,7 @@ class menuButtons extends React.Component {
             ],
             { cancelable: false },
           );
-          console.log(response.data)
+          console.log(response.data);
           let responseData = response.data;
           this.props.updateResources({
             resourceType: resourceType,
@@ -173,7 +173,7 @@ class menuButtons extends React.Component {
             padding: 5,
             marginHorizontal: normalize(13),
             width: '100%',
-            flexDirection : 'row'
+            flexDirection: 'row'
           }}>
           <View style={{ flex: 1, width: '50%', marginRight: normalize(4) }}>
             <Text
@@ -189,7 +189,7 @@ class menuButtons extends React.Component {
               style={
                 index == 0 ? listTitleStyle.headerView : listTitleStyle.view
               }
-            > 
+            >
               {item.attributeValue}
             </Text>
           </View>
@@ -203,13 +203,13 @@ class menuButtons extends React.Component {
     if (isFlagEnabled === 'Y' && this.state.submitted === false) {
       return (
         <TouchableHighlight onPress={() => this.submitRating()}>
-          <FontAwesome style={{ marginLeft: hp('1%')}} name="check-circle" size={27} color="green" />
+          <FontAwesome style={{ marginLeft: hp('1%') }} name="check-circle" size={27} color="green" />
         </TouchableHighlight>
       )
     } else {
       return (
         <TouchableWithoutFeedback onPress={() => { }}>
-          <FontAwesome style={{ marginLeft: hp('1%')}} name="check-circle" size={27} color="#999" />
+          <FontAwesome style={{ marginLeft: hp('1%') }} name="check-circle" size={27} color="#999" />
         </TouchableWithoutFeedback>
       )
     }
@@ -293,12 +293,12 @@ class menuButtons extends React.Component {
             {/* <View height={1} style={{ borderTopColor: '#999', borderTopWidth: 1, width: '100%' }} /> */}
 
             <View style={{ flex: 0.40, position: 'relative', alignItems: 'center' }}>
-              <View style={{}}>
+              <View style={{flex:0.8,marginVertical:3}}>
                 <Avatar
                   rounded
                   imageProps={{ resizeMode: 'cover' }}
-                  size={normalize(80)}
-                  containerStyle={{ marginVertical: 8 }}
+                  size={normalize(75)}
+                  containerStyle={{ marginVertical: 6 }}
                   source={this.props.data.profilePic}
                 />
                 <Avatar
@@ -322,14 +322,14 @@ class menuButtons extends React.Component {
                   maxStars={5}
                   rating={this.state.starCount}
                   fullStarColor={'#FAA21B'}
-                  starSize={20}
+                  starSize={normalize(18)}
                   selectedStar={(rating) => this.onStarRatingPress(rating)}
                 />
                 {loading ?
                   <View style={{ marginTop: normalize(3) }}>
                     <ActivityIndicator size="small" color={APP_GLOBAL_COLOR} />
                   </View> :
-                  <View style={{ marginTop: hp('-.5%')}}>
+                  <View style={{ marginTop: hp('-.5%') }}>
                     {this.renderSubmitIcon()}
                   </View>
                 }
@@ -338,7 +338,7 @@ class menuButtons extends React.Component {
 
           </View>
           <Divider />
-          <View style={[styles.row, styles.thirdRow]}>
+          <View style={[styles.row, styles.thirdRow,{overflow:'hidden'}]}>
             <View style={{ flex: 1, flexDirection: 'row' }}>
               <View style={{ flex: 1, width: '50%', marginRight: normalize(4) }}>
                 {/* <FlatList
@@ -355,7 +355,7 @@ class menuButtons extends React.Component {
                   keyExtractor={this._keyExtractor}
                   renderItem={this.renderItem2}
                   showsVerticalScrollIndicator={false}  
-                /> */}  
+                /> */}
               </View>
               <View style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }}>
                 <FlatList
@@ -417,7 +417,7 @@ const styles = StyleSheet.create({
   },
 
   ratingContainer: {
-    flex: 1,
+    flex: 0.2,
     marginHorizontal: normalize(8),
     flexDirection: 'row',
     justifyContent: 'space-around'

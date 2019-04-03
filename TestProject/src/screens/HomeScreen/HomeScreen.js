@@ -48,6 +48,9 @@ export default class HomeScreen extends Component {
   };
 
   constructor(props) {
+    let extraImage = "Trends,Survey,Arena,Notifications,Rate Now, Profile, Male,Female, Select Your Profession,Student,Salaried,Entrepreneur, Retired, Housewife,Other, Select Your Age group, Teenager,Twenties,Thirties,Forties,Fifties,Sixty+";
+    let menuArr = extraImage.split(',');
+
     super(props);
     this.state = {
       showDialog: false,
@@ -66,7 +69,7 @@ export default class HomeScreen extends Component {
 
       data: this.props.data,
       // menuName: this.getLanguageCode(this.props.data.userLanguage),
-      menuName: null,
+      menuName: menuArr,
       // loadingFourth
 
       notifications: {
@@ -436,7 +439,7 @@ export default class HomeScreen extends Component {
     // });
 
 
-    
+
   };
 
   toTrendScreen = () => {
@@ -580,6 +583,7 @@ export default class HomeScreen extends Component {
     this.startTimer();
 
     if (this.props.refresh) {
+
       this.setState({
         showDialog: false,
         currLandPageSurvey: null,
@@ -597,7 +601,7 @@ export default class HomeScreen extends Component {
 
         data: this.props.data,
         // menuName: this.getLanguageCode(this.props.data.userLanguage),
-        menuName: null,
+        // menuName: null,
         // loadingFourth
 
         notifications: {
@@ -1320,10 +1324,21 @@ export default class HomeScreen extends Component {
             // height: hp('50%'),
             flexDirection: 'column'
           }}>
+
           {this.state.landingTopSix ?
             <Text style={styles.landingTopSixHeader}> {this.state.landingTopSix.extraImageFile1} </Text> :
             null
           }
+          <View style={{ position: 'absolute', width: 50, height: 40, top: 0, right: 0 }}>
+            <TouchableOpacity style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
+              this.setState({ isLoading: true, landingTopSix: null });
+              this.tick();
+            }
+            }>
+              <Image source={require('../../assets/Home_1_2/refresh.png')} />
+            </TouchableOpacity>
+          </View>
+
           <ScrollView
             pagingEnabled
             horizontal
@@ -1427,6 +1442,7 @@ export default class HomeScreen extends Component {
                     renderButton={this.renderSurveyButton}
                   />
                 </View>
+
               </View>
               ) :
               <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: wd }}>
@@ -1464,6 +1480,7 @@ export default class HomeScreen extends Component {
             source={menuImageName[2]}
           />
 
+
         </View>
       </SafeAreaView>
     );
@@ -1490,8 +1507,9 @@ const styles = StyleSheet.create({
     paddingTop: 0,
     flexDirection: 'row',
     backgroundColor: '#fff',
-    height: hp('24%'),
-    flex: 1,
+    aspectRatio : 1.6
+    // height: hp('24%'),
+    // flex: 1,
   },
 
   buttonContainer: {

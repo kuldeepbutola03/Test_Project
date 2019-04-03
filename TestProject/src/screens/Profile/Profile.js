@@ -520,7 +520,7 @@ export default class Profile extends Component {
             <DefaultInput placeholder="Last Name" value={this.state.lastName} onChangeText={(text) => this.setState({ lastName: text })} /> */}
 
 
-            <DefaultInput style={{ height: 100, width: '85%' }} placeholder="About me" multiline value={this.state.description} onChangeText={(text) => this.setState({ description: text })} />
+            <DefaultInput style={{ height: 100, width: '85%' }} maxLength = {200} placeholder="About me" multiline value={this.state.description} onChangeText={(text) => this.setState({ description: text })} />
 
             {/* <TouchableOpacity onPress={() => this.setState({ visibleGender: true })} style={{ width: '65%' }} >
               <View pointerEvents='none'>

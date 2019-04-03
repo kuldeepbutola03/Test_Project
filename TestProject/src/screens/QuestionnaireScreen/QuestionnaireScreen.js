@@ -780,7 +780,7 @@ export default class QuestionnireScreen extends Component {
                 options: {
                     topBar: {
                         visible: true,
-                        drawBehind: true,
+                        // drawBehind: true,
                         animate: true,
                         buttonColor: '#fff',
                         background: {

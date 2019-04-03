@@ -193,6 +193,7 @@ export default class ReportScreen extends Component {
   }
 
   gotoProfile = () => {
+    let menuName = this.props.menuName;
     Navigation.push(this.props.componentId, {
       component: {
         name: 'Profile',
@@ -211,7 +212,25 @@ export default class ReportScreen extends Component {
 
           refreshUI: this.refreshUI,
 
-          languageCode: this.props.languageCode
+          languageCode: this.props.languageCode,
+
+          language: menuName ? menuName[5] : null,
+          male: menuName ? menuName[6] : null,
+          female: menuName ? menuName[7] : null,
+          selProfession: menuName ? menuName[8] : null,
+          student: menuName ? menuName[9] : null,
+          salaried: menuName ? menuName[10] : null,
+          entrepreneur: menuName ? menuName[11] : null,
+          retired: menuName ? menuName[12] : null,
+          housewife: menuName ? menuName[13] : null,
+          other: menuName ? menuName[14] : null,
+          selAgeGroup: menuName ? menuName[15] : null,
+          teenager: menuName ? menuName[16] : null,
+          twenties: menuName ? menuName[17] : null,
+          thirties: menuName ? menuName[18] : null,
+          fourties: menuName ? menuName[19] : null,
+          fifties: menuName ? menuName[20] : null,
+          aboveSixty: menuName ? menuName[21] : null,
         },
         options: {
           topBar: {
@@ -845,7 +864,7 @@ export default class ReportScreen extends Component {
         options: {
           topBar: {
             visible: true,
-            drawBehind: true,
+            // drawBehind: true,
             animate: true,
             buttonColor: '#fff',
             background: {

@@ -137,7 +137,7 @@ class TrendScreen extends Component {
           notificationDateTime: moment().format(),
         },
       ]
-  }
+    }
     // refreshUI : this.props.refreshUI
   }
 
@@ -169,26 +169,27 @@ class TrendScreen extends Component {
     // that = this;
     // getUserData().then((data) => {
 
-      
-      // setTimeout(()=> {
-        this.props.refreshUI(data);
-      // },300);
-      
 
-      // if (data.userLanguage === 'hi') {
-      //   // let menu = ['रुझान', 'सर्वे', 'अखाड़ा']
-      //   this.setState({ data: data });
-      //   return;
-      // }
+    // setTimeout(()=> {
+    this.props.refreshUI(data);
+    // },300);
 
-      // let menu = ['Trends', 'Survey', 'Arena']
-      this.setState({ data: data });
+
+    // if (data.userLanguage === 'hi') {
+    //   // let menu = ['रुझान', 'सर्वे', 'अखाड़ा']
+    //   this.setState({ data: data });
+    //   return;
+    // }
+
+    // let menu = ['Trends', 'Survey', 'Arena']
+    this.setState({ data: data });
 
 
     // })
   }
 
   gotoProfile = () => {
+    let menuName = this.props.menuName;
     Navigation.push(this.props.componentId, {
       component: {
         name: 'Profile',
@@ -207,7 +208,25 @@ class TrendScreen extends Component {
 
           refreshUI: this.refreshUI,
 
-          languageCode: this.props.languageCode
+          languageCode: this.props.languageCode,
+
+          language: menuName ? menuName[5] : null,
+          male: menuName ? menuName[6] : null,
+          female: menuName ? menuName[7] : null,
+          selProfession: menuName ? menuName[8] : null,
+          student: menuName ? menuName[9] : null,
+          salaried: menuName ? menuName[10] : null,
+          entrepreneur: menuName ? menuName[11] : null,
+          retired: menuName ? menuName[12] : null,
+          housewife: menuName ? menuName[13] : null,
+          other: menuName ? menuName[14] : null,
+          selAgeGroup: menuName ? menuName[15] : null,
+          teenager: menuName ? menuName[16] : null,
+          twenties: menuName ? menuName[17] : null,
+          thirties: menuName ? menuName[18] : null,
+          fourties: menuName ? menuName[19] : null,
+          fifties: menuName ? menuName[20] : null,
+          aboveSixty: menuName ? menuName[21] : null,
         },
         options: {
           topBar: {
@@ -412,12 +431,12 @@ class TrendScreen extends Component {
   readNotification = (index, notifications, screen) => {
     const { count } = this.state.notifications;
     let counted;
-    let newNotifications =  notifications;
+    let newNotifications = notifications;
 
-    if(count > 0 ) {
-        counted = count-1;
+    if (count > 0) {
+      counted = count - 1;
     } else {
-        counted = count;
+      counted = count;
     }
 
     newNotifications.notificationList[index].read = true;
@@ -426,98 +445,98 @@ class TrendScreen extends Component {
     let updatedNotification = Object.assign(newNotifications, {});
     console.log(updatedNotification)
     this.setState({
-        notificationsnotification : updatedNotification
+      notificationsnotification: updatedNotification
     })
 
-    if(screen === 'survey' || screen === 'Survey') {
-        this.toQuesScreen(notifications)
-    } else if(screen === 'trends' || screen === 'Survey') {
-        // this.toTrendScreen()
+    if (screen === 'survey' || screen === 'Survey') {
+      this.toQuesScreen(notifications)
+    } else if (screen === 'trends' || screen === 'Survey') {
+      // this.toTrendScreen()
     } else if (screen === 'timeline' || screen === 'Survey') {
-        // this.toReportScreen()
+      // this.toReportScreen()
     }
   }
 
   updateNotifications = (notificationLogId) => {
     console.log('called')
     axios.post(UPDATE_USER_NOTIFICATIONS, {
-        notificationLogId: notificationLogId.toString(),
-        read: "Y",
-        userId: this.props.user_id
-        // notificationLogId: notificationLogId.toString(),
-        // read: 'Y',
-        // userId: this.state.user_id
+      notificationLogId: notificationLogId.toString(),
+      read: "Y",
+      userId: this.props.user_id
+      // notificationLogId: notificationLogId.toString(),
+      // read: 'Y',
+      // userId: this.state.user_id
     }).then((response) => {
-        let responseData = response.data;
-        console.log('_________')
-        console.log(responseData)
-        console.log('_________')
-        this.getNotifications()
+      let responseData = response.data;
+      console.log('_________')
+      console.log(responseData)
+      console.log('_________')
+      this.getNotifications()
 
     }).catch(error => {
-        console.log(error)
+      console.log(error)
     })
   }
 
   showNotificationScreen = () => {
     const { menuName } = this.props;
     Navigation.push(this.props.componentId, {
-        component: {
+      component: {
         name: 'NotificationScreen',
-          options: {
-              topBar: {
-              visible: true,
-              drawBehind: true,
-              animate: true,
-              buttonColor: '#fff',
-              background: {
-                  color: APP_GLOBAL_COLOR,
-              },
-              title: {
-                  text: menuName ? menuName[3] : null,
-                  // text: 'Hello',
-                  fontSize: hp('2.5%'),
-                  color: '#fff',
-              },
-              backButton: {
-                  color: '#fff'
-              }            
+        options: {
+          topBar: {
+            visible: true,
+            // drawBehind: true,
+            animate: true,
+            buttonColor: '#fff',
+            background: {
+              color: APP_GLOBAL_COLOR,
             },
+            title: {
+              text: menuName ? menuName[3] : null,
+              // text: 'Hello',
+              fontSize: hp('2.5%'),
+              color: '#fff',
+            },
+            backButton: {
+              color: '#fff'
+            }
+          },
         },
         passProps: {
-            notifications: this.state.notifications,
-            readNotification: this.readNotification,
-            updateNotifications: this.updateNotifications,
+          notifications: this.state.notifications,
+          readNotification: this.readNotification,
+          updateNotifications: this.updateNotifications,
         }
 
-        },
+      },
     });
   }
 
   toQuesScreen = () => {
     Navigation.push(this.props.componentId, {
-        component: {
+      component: {
         name: 'QuestionnaireScreen',
         options: {
-            topBar: {
+          topBar: {
             visible: false,
             drawBehind: true,
             animate: false,
-            },
+          },
         },
         passProps: {
-            user_id: this.props.user_id,
-            lat_lon: this.props.lat_lon,
-            userLanguage: this.props.userLanguage,
+          user_id: this.props.user_id,
+          lat_lon: this.props.lat_lon,
+          userLanguage: this.props.userLanguage,
         }
-        },
+      },
     });
   };
 
   getLanguageCode(language) {
     if (language === 'hi') {
-        let menu = "सर्वे"
-        return menu;
+      let menu = "सर्वे"
+      return menu;
 
     }
 
@@ -573,29 +592,29 @@ class TrendScreen extends Component {
               </Text>
             </View>
           </TouchableOpacity>
-          <View 
-            style={{ 
-              flex: 5, 
-              justifyContent: 'flex-end', 
-              alignItems: 'center', 
-              flexDirection: 'row', 
+          <View
+            style={{
+              flex: 5,
+              justifyContent: 'flex-end',
+              alignItems: 'center',
+              flexDirection: 'row',
               marginRight: hp('4%'),
               backgroundColor: 'rgba(255,255,255,1)',
             }}>
             <TouchableWithoutFeedback onPress={() => this.showNotificationScreen()}>
-                {notifications.count <= 0 ? 
-                  <FontAwesome 
-                      size={hp('3%')}
-                      // onPress={() => this.showNotificationScreen()}
-                      name="bell-o" 
-                      color={APP_GLOBAL_COLOR}
-                  /> : 
-                  <BadgedIcon
-                      color={APP_GLOBAL_COLOR}
-                      type="font-awesome"
-                      // onPress={() => this.showNotificationScreen()}
-                      name="bell-o" />
-                }
+              {notifications.count <= 0 ?
+                <FontAwesome
+                  size={hp('3%')}
+                  // onPress={() => this.showNotificationScreen()}
+                  name="bell-o"
+                  color={APP_GLOBAL_COLOR}
+                /> :
+                <BadgedIcon
+                  color={APP_GLOBAL_COLOR}
+                  type="font-awesome"
+                  // onPress={() => this.showNotificationScreen()}
+                  name="bell-o" />
+              }
             </TouchableWithoutFeedback>
           </View>
         </View>
