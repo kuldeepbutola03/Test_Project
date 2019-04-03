@@ -44,7 +44,8 @@ class NotificationScreen extends Component {
             return source;
         }
 
-        let updatedDate = moment().calendar(item.notificationDateTime);
+        // let updatedDate = moment().calendar(item.notificationDateTime);
+        let updatedDate = new Date(item.notificationDateTime).toDateString();
 
         return (
             <View

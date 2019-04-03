@@ -60,7 +60,7 @@ export default class Profile extends Component {
       warningVisible: false,
       maleChecked: this.props.gender === "Male",
 
-      mediaType : 'jpg'
+      mediaType: 'jpg'
     }
   }
 
@@ -79,7 +79,7 @@ export default class Profile extends Component {
 
     let validUsername = username.match(usernameRegex);
 
-    if(username.length < 1) {
+    if (username.length < 1) {
       alert('Please fill in your username');
     } else {
       this.updateDetails();
@@ -126,7 +126,7 @@ export default class Profile extends Component {
 
         this.setState({
           image: source,
-          mediaType : mediaType
+          mediaType: mediaType
         });
       }
     });
@@ -142,7 +142,7 @@ export default class Profile extends Component {
 
     this.refs.loading.show();
 
-    let imgName = "IMG" + (+new Date()) +  '.' + this.state.mediaType;
+    let imgName = "IMG" + (+new Date()) + '.' + this.state.mediaType;
 
     let body = {};
 
@@ -158,7 +158,7 @@ export default class Profile extends Component {
         userAgeGroup: this.state.selectedAgeGroupCode,
         userDescription: this.state.description,
         userDesignation: this.state.userDesignation,
-        userLanguage : this.state.userLanguage
+        userLanguage: this.state.userLanguage
 
       });
       // alert(body);
@@ -176,7 +176,7 @@ export default class Profile extends Component {
         userAgeGroup: this.state.selectedAgeGroupCode,
         userDescription: this.state.description,
         userDesignation: this.state.userDesignation,
-        userLanguage : this.state.userLanguage
+        userLanguage: this.state.userLanguage
       });
     }
     // alert(body);
@@ -367,7 +367,7 @@ export default class Profile extends Component {
             />}
           </View>
           <View style={{ flex: 2.5, backgroundColor: 'clear', flexDirection: 'row', alignItems: 'center' }}>
-            
+
           </View>
           <View style={styles.textheaderView}>
             <Text style={styles.textView}>{this.props.language}</Text>
@@ -519,8 +519,8 @@ export default class Profile extends Component {
             <DefaultInput placeholder="First Name" value={this.state.firstName} onChangeText={(text) => this.setState({ firstName: text })} />
             <DefaultInput placeholder="Last Name" value={this.state.lastName} onChangeText={(text) => this.setState({ lastName: text })} /> */}
 
-
-            <DefaultInput style={{ height: 100, width: '85%' }} maxLength = {200} placeholder="About me" multiline value={this.state.description} onChangeText={(text) => this.setState({ description: text })} />
+            <Text style={{ alignSelf: 'flex-end', marginRight: '10%' , color : 'grey'}}>{500 - (this.state.description.length)}</Text>
+            <DefaultInput style={{ height: 100, width: '85%' }} maxLength={500} placeholder="About me" multiline value={this.state.description} onChangeText={(text) => this.setState({ description: text })} />
 
             {/* <TouchableOpacity onPress={() => this.setState({ visibleGender: true })} style={{ width: '65%' }} >
               <View pointerEvents='none'>

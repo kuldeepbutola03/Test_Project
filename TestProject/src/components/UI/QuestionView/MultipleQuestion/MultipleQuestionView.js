@@ -85,7 +85,8 @@ export default class multipleQuestionView extends React.Component {
                     <RadioForm
                         formHorizontal={false}
                         animation={true}>
-                            {this.renderOptions()}
+                        {this.props.isSurveyTaken === 'Y' ? this.renderPoll() : this.renderOptions()}
+                            {/* {this.renderOptions()} */}
                     </RadioForm>
                 </View>
             </View>

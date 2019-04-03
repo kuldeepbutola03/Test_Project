@@ -53,11 +53,8 @@ Navigation.registerComponent('ComposeScreen', () => ComposeScreen);
 Navigation.registerComponent('AboutAppScreen', () => AboutAppScreen);
 
 Navigation.registerComponent('TutorialScreen', () => TutorialScreen);
-
 Navigation.registerComponent('TcScreen', () => TcScreen);
-
 Navigation.registerComponent('NotificationScreen', () => NotificationScreen);
-
 Navigation.registerComponent('SurveyList', () => SurveyList);
 // import Orientation from 'react-native-orientation';
 // Start App

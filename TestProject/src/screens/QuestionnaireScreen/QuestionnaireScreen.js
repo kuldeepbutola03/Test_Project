@@ -1,36 +1,26 @@
-import React, { Component } from 'react';
-import {
-    StyleSheet,
-    View,
-    Text,
-    Dimensions,
-    SafeAreaView,
-    ScrollView,
-    ActivityIndicator,
-    TouchableWithoutFeedback,
-    Alert,
-} from 'react-native';
-import { PropTypes } from 'prop-types';
-import { normalize, APP_GLOBAL_COLOR, APP_ALERT_MESSAGE } from '../../../Constant';
-import CustomButton from '../../components/UI/ButtonMod/CustomButtom';
-import { Navigation } from 'react-native-navigation';
-import CustomTextButton from '../../components/UI/ButtonMod/CustomTextButton';
 import axios from 'axios';
-import QuestionniareListView from '../../components/UI/QuestionView/QuestionniareListView'
-import { GET_CURRENT_ACTIVE_SURVEY, SUBMIT_USER_SURVEY_QUESTION, GET_SURVEY_BY_ID, GET_USER_NOTIFICATIONS, UPDATE_USER_NOTIFICATIONS } from '../../../Apis';
-import Loading from 'react-native-whc-loading';
 import _ from 'lodash';
-import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import { withBadge, Icon } from 'react-native-elements';
-import SpinKit from 'react-native-spinkit';
 import moment from 'moment';
-import firebase from 'react-native-firebase';
+import { PropTypes } from 'prop-types';
+import React, { Component } from 'react';
+import { Alert, Dimensions, SafeAreaView, ScrollView, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
 import Draggable from 'react-native-draggable';
-import SurveyList from './SurveyList';
+import { Icon, withBadge } from 'react-native-elements';
+import firebase from 'react-native-firebase';
+import { Navigation } from 'react-native-navigation';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import SpinKit from 'react-native-spinkit';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Loading from 'react-native-whc-loading';
+import { GET_CURRENT_ACTIVE_SURVEY, GET_SURVEY_BY_ID, GET_USER_NOTIFICATIONS, SUBMIT_USER_SURVEY_QUESTION, UPDATE_USER_NOTIFICATIONS } from '../../../Apis';
+import { APP_ALERT_MESSAGE, APP_GLOBAL_COLOR, normalize } from '../../../Constant';
+import CustomButton from '../../components/UI/ButtonMod/CustomButtom';
+import CustomTextButton from '../../components/UI/ButtonMod/CustomTextButton';
+import QuestionniareListView from '../../components/UI/QuestionView/QuestionniareListView';
 
 export default class QuestionnireScreen extends Component {
     state = {
+        surveyIdFromList : null,
         loading: true,
         state: false,
         questionniareData1: [
@@ -162,7 +152,12 @@ export default class QuestionnireScreen extends Component {
 
 
     getSurvey = (mount) => {
-        const { surveyType, notification } = this.props;
+        const { surveyType, notification  } = this.props;
+
+        if (this.state.surveyIdFromList) {
+            this.refreshDataWithId(this.state.surveyIdFromList , '');
+            return;
+        }
 
         if (notification) {
             axios.post(GET_SURVEY_BY_ID, {
@@ -281,7 +276,7 @@ export default class QuestionnireScreen extends Component {
                                     // console.log(this.state)
                                     this.refs.loading.close();
                                     setTimeout(() => {
-                                        if (this.state.questionnaire1 && this.state.questionnaire1.activeSurveyList) {
+                                        if (this.state.questionnaire2 && this.state.questionnaire2.activeSurveyList && this.state.questionnaire2.activeSurveyList.length > 0) {
                                             Alert.alert(
                                                 APP_ALERT_MESSAGE,
                                                 'Thanks for submitting the survey. Please press the survey button for more',
@@ -347,14 +342,27 @@ export default class QuestionnireScreen extends Component {
 
                                     this.refs.loading.close()
                                     setTimeout(() => {
-                                        Alert.alert(
-                                            APP_ALERT_MESSAGE,
-                                            'Your feedback has been sent successfully!',
-                                            [
-                                                { text: 'OK', onPress: () => { } },
-                                            ],
-                                            { cancelable: false },
-                                        );
+
+                                        if (this.state.questionnaire2 && this.state.questionnaire2.activeSurveyList && this.state.questionnaire2.activeSurveyList.length > 0) {
+                                            Alert.alert(
+                                                APP_ALERT_MESSAGE,
+                                                'Thanks for submitting the survey. Please press the survey button for more',
+                                                [
+                                                    { text: 'OK', onPress: () => { } },
+                                                ],
+                                                { cancelable: false },
+                                            );
+                                        } else{
+                                            Alert.alert(
+                                                APP_ALERT_MESSAGE,
+                                                'Your feedback has been sent successfully!',
+                                                [
+                                                    { text: 'OK', onPress: () => { } },
+                                                ],
+                                                { cancelable: false },
+                                            );
+                                        }
+                                        
                                     }, 200)
                                 })
                                 .catch(error => {
@@ -375,6 +383,7 @@ export default class QuestionnireScreen extends Component {
                     })
                         .then(response => {
                             let responseData = response.data;
+                            console.log(responseData);
                             this.setState({
                                 questionniareData2: responseData.surveyQuestionList,
                                 questionnaire2: responseData,
@@ -395,8 +404,8 @@ export default class QuestionnireScreen extends Component {
                                         questionnaire1: responseData_2,
                                         isSurveyTaken1: responseData_2.isSurveyTaken,
                                     })
-                                    console.log(this.props.user_id)
-                                    console.log(responseData_2)
+                                    console.log(this.props.user_id);
+                                    console.log(responseData_2);
                                     this.refs.scrollview.scrollTo({ x: 0, animate: true });
                                 })
                                 .catch(error => {
@@ -412,7 +421,7 @@ export default class QuestionnireScreen extends Component {
 
                 } else {
                     let body1 = {
-                        isNationalLevel: !this.state.state ? 'N' : 'Y',
+                        isNationalLevel:  'N',
                         userId: this.props.user_id,
                         userCurrentCoord: this.props.lat_lon,
 
@@ -421,6 +430,7 @@ export default class QuestionnireScreen extends Component {
                     axios.post(GET_CURRENT_ACTIVE_SURVEY, body1)
                         .then(response => {
                             let responseData = response.data;
+                            console.log(responseData);
                             this.setState({
                                 questionniareData1: responseData.surveyQuestionList,
                                 // loading: false, 
@@ -437,6 +447,11 @@ export default class QuestionnireScreen extends Component {
                             axios.post(GET_CURRENT_ACTIVE_SURVEY, body2)
                                 .then(response_2 => {
                                     let responseData_2 = response_2.data;
+                                    console.log(responseData_2);
+                                    if (this.setState.questionniareData2) {
+                                        this.refs.loading.close();
+                                    }
+                                    
 
                                     this.setState({
                                         state: true,
@@ -476,7 +491,7 @@ export default class QuestionnireScreen extends Component {
         const { surveyTitle } = this.props;
 
         if (this.props.surveyTitle) {
-            this.setState({ surveyTitle: `${this.getLanguageCode(this.props.userLanguage)} - ${surveyTitle.toUpperCase()}` })
+            this.setState({ surveyTitle: `${this.getLanguageCode(this.props.userLanguage)} - ${surveyTitle ? surveyTitle.toUpperCase() : ''}` })
         }
 
         firebase.analytics().setCurrentScreen("Screen", "Questionnaire_Screen");
@@ -543,7 +558,7 @@ export default class QuestionnireScreen extends Component {
         this.refs.scrollview.scrollTo({ x: 0, animate: true });
 
         if (this.props.surveyTitle) {
-            this.setState({ surveyTitle: `${this.getLanguageCode(this.props.userLanguage)} - ${surveyTitle.toUpperCase()}` })
+            this.setState({ surveyTitle: `${this.getLanguageCode(this.props.userLanguage)} - ${surveyTitle ? surveyTitle.toUpperCase() : ''}` })
             // this.setState({ surveyTitle:  `SURVEY - ${surveyTitle.toUpperCase()}` })
         } else {
             if (questionnaire2) {
@@ -608,6 +623,7 @@ export default class QuestionnireScreen extends Component {
                         this.getSurvey(true);
                     })
                     .catch(error => {
+                        this.refs.loading.close()
                         console.log(error)
                     })
             }
@@ -650,6 +666,7 @@ export default class QuestionnireScreen extends Component {
                         this.getSurvey(true);
                     })
                     .catch(error => {
+                        this.refs.loading.close();
                         console.log(error)
                     })
             }
@@ -693,6 +710,7 @@ export default class QuestionnireScreen extends Component {
                         this.getSurvey(true);
                     })
                     .catch(error => {
+                        this.refs.loading.close();
                         console.log(error)
                     })
             }
@@ -915,7 +933,8 @@ export default class QuestionnireScreen extends Component {
                             style={{ flex: 1 }}
                             textColor={!this.state.state ? "white" : "black"}
                             bgColor={!this.state.state ? APP_GLOBAL_COLOR : "transparent"} >
-                            {this.state.questionnaire1 ? this.state.questionnaire2.userCurrentState.toUpperCase() : "STATE"}
+                            {
+                                (this.state.questionnaire1 && this.state.questionnaire2.userCurrentState) ? this.state.questionnaire2.userCurrentState.toUpperCase() : "STATE"}
                         </CustomTextButton>
                     </View>
 
@@ -977,7 +996,21 @@ export default class QuestionnireScreen extends Component {
 
     refreshDataWithId = (surveyId, surveyDesc) => {
 
-        this.setState({ loading: true });
+        // this.props.surveyId = surveyId;
+        if (this.state.surveyIdFromList !== surveyId) {
+            this.setState({ loading: true , surveyIdFromList : surveyId});
+            this.refreshDataWithId2(surveyId,surveyDesc, this);
+        }else{
+            let that = this;
+            setTimeout(function () {
+                that.refreshDataWithId2(surveyId,surveyDesc,that);
+            }, 500);
+        }
+        
+        
+    }
+    refreshDataWithId2 = (surveyId, surveyDesc , thatObj) => {
+
         axios.post(GET_SURVEY_BY_ID, {
             surveyId: surveyId,
             userId: this.props.user_id,
@@ -988,7 +1021,7 @@ export default class QuestionnireScreen extends Component {
 
             // this.props.surveyTitle = surveyDesc;
             // let abc = 'asd';
-            this.setState({
+            thatObj.setState({
                 questionniareData2: responseData.surveyQuestionList,
                 questionnaire2: responseData,
                 isSurveyTaken2: responseData.isSurveyTaken,
@@ -1014,13 +1047,14 @@ export default class QuestionnireScreen extends Component {
                 .then(response => {
                     let responseData_2 = response.data;
                     // alert(JSON.stringify(responseData_2));
+                    thatObj.refs.loading.close()
 
-                    this.setState({
+                    thatObj.setState({
                         loading: false,
 
                         questionniareData1: responseData_2.surveyQuestionList,
                         // loading: false, 
-                        questionnaire1: null,
+                        questionnaire1: responseData_2,
                         isSurveyTaken1: responseData_2.isSurveyTaken,
                         // surveyTitle: responseData_2.surveyDesc ? (responseData_2.surveyDesc === '' ? responseData_2.surveyDesc : this.state.surveyTitle) : this.state.surveyTitle
                     })
@@ -1031,12 +1065,16 @@ export default class QuestionnireScreen extends Component {
                     //     questionnaire2: responseData_2,
                     //     isSurveyTaken2: responseData_2.isSurveyTaken,
                     // })
-                    // this.refs.scrollview.scrollTo({ x: 0, animate: true });
+                    this.refs.scrollview.scrollTo({ x: 0, animate: true });
 
                 })
                 .catch(error => {
+                    this.refs.loading.close()
                     console.error(error)
                 })
+        }).catch(error => {
+            this.refs.loading.close()
+            console.error(error)
         });
     }
 
@@ -1045,7 +1083,7 @@ export default class QuestionnireScreen extends Component {
             component: {
                 name: 'SurveyList',
                 passProps: {
-                    activeSurveyList: this.state.questionnaire1 && this.state.questionnaire1.activeSurveyList ? this.state.questionnaire1.activeSurveyList : "",
+                    activeSurveyList: this.state.questionnaire2 && this.state.questionnaire2.activeSurveyList ? this.state.questionnaire2.activeSurveyList : "",
                     refresh: this.refreshDataWithId
                 },
                 options: {
@@ -1080,7 +1118,7 @@ export default class QuestionnireScreen extends Component {
 
                 {this.renderComponent()}
 
-                {this.state.questionnaire1 && this.state.questionnaire1.activeSurveyList &&
+                {this.state.questionnaire2 && this.state.questionnaire2.activeSurveyList && this.state.questionnaire2.activeSurveyList.length > 0 &&
                     <Draggable
                         reverse={false}
                         renderShape='image'

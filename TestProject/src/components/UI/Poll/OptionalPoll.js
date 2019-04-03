@@ -33,9 +33,37 @@ class OptionalPoll extends Component {
     renderPercentage = () => {
         const { percentage } = this.state;
         const { surveyAnswerList } = this.props;
-
+        let percent;
         if(surveyAnswerList.length > 0 ) {
-            let percent = surveyAnswerList.map((answer, index) => {
+            percent = surveyAnswerList.map((answer, index) => {
+                return (
+                    <View style={{ width: '100%' }} key={index + answer.answerId }>
+                        {index === 0 ? 
+                            <View style={styles.pollContainer}>
+                                <View style={{ width: '80%', position: 'relative' }}>
+                                    <View style={[{ width: answer.answerPercentage+"%" }, styles.pollAnswer]}>
+                                        {this.renderUserAnswer(index, "Yes")}
+                                    </View> 
+                                </View>
+                                <View style={{ width: '20%', height: normalize(25) }}>
+                                    <Text style={styles.percent}> {answer.answerPercentage + "%"} </Text>
+                                </View>
+                            </View> : null
+                        }
+                        {index === 1 ? 
+                           <View style={styles.pollContainer}>
+                                <View style={{ width: '80%', position: 'relative' }}>
+                                    <View style={[{ width: answer.answerPercentage+"%" }, styles.pollAnswer]}>
+                                        {this.renderUserAnswer(index, "No")}
+                                    </View> 
+                                </View>
+                                <View style={{ width: '20%', height: normalize(25) }}>
+                                    <Text style={styles.percent}>  {answer.answerPercentage + "%"} </Text>
+                                </View>
+                            </View> : null
+                        }
+                    </View>
+                );
                 return (
                     <View style={{ width: '100%' }} key={index + answer.answerId }>
                         {index === 0 ? 
@@ -102,7 +130,7 @@ class OptionalPoll extends Component {
                 )
             })
         } else if(surveyAnswerList.length <= 0 ) {
-            let percent = percentage.map((answer, index) => {
+            percent = percentage.map((answer, index) => {
                 return (
                     <View style={{ width: '100%' }} key={index + answer.answerId }>
                         {index === 0 ? 
@@ -133,8 +161,9 @@ class OptionalPoll extends Component {
                 )
             })
 
-            return percent;
+            
         }
+        return percent;
     }
 
     render() {

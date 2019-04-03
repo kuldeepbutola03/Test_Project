@@ -90,7 +90,7 @@ export default class optionalQuestionView extends Component  {
                         <Text >{this.props.data.questionText}</Text>
                     </View>
                 </View>
-                {this.renderOptions()}
+                {this.props.isSurveyTaken === 'Y' ? this.renderPoll() : this.renderOptions()}
                 {/* {this.renderPoll()} */}
             </View>
         )

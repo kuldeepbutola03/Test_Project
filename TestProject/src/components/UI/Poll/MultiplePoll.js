@@ -176,8 +176,9 @@ class MultiplePoll extends Component {
                 )
             })
 
-            return percent;
+           
         }
+        return percent;
     }
 
     render() {
