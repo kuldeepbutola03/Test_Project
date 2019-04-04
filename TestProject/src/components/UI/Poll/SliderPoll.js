@@ -44,60 +44,60 @@ class SliderPoll extends Component {
                         {index === 0 ?
                             <View style={styles.pollContainer}>
                                 <View style={{ width: '80%', position: 'relative' }}>
-                                    <View style={[{ width: answer.answerPercentage + "%" }, styles.pollAnswer]}>
+                                    <View style={[{ width: (answer.answerPercentage ? answer.answerPercentage : 0) + "%" }, styles.pollAnswer]}>
                                         {this.renderUserAnswer(index, "Strongly Disagree")}
                                     </View>
                                 </View>
                                 <View style={{ width: '20%', height: normalize(25) }}>
-                                    <Text style={styles.percent}> {answer.answerPercentage + "%"} </Text>
+                                    <Text style={styles.percent}> {(answer.answerPercentage ? answer.answerPercentage : 0) + "%"} </Text>
                                 </View>
                             </View> : null
                         }
                         {index === 1 ?
                             <View style={styles.pollContainer}>
                                 <View style={{ width: '80%', position: 'relative' }}>
-                                    <View style={[{ width: answer.answerPercentage + "%" }, styles.pollAnswer]}>
+                                    <View style={[{ width: (answer.answerPercentage ? answer.answerPercentage : 0) + "%" }, styles.pollAnswer]}>
                                         {this.renderUserAnswer(index, "Disagree")}
                                     </View>
                                 </View>
                                 <View style={{ width: '20%', height: normalize(25) }}>
-                                    <Text style={styles.percent}>  {answer.answerPercentage + "%"} </Text>
+                                    <Text style={styles.percent}>  {(answer.answerPercentage ? answer.answerPercentage : 0) + "%"} </Text>
                                 </View>
                             </View> : null
                         }
                         {index === 2 ?
                             <View style={styles.pollContainer}>
                                 <View style={{ width: '80%', position: 'relative' }}>
-                                    <View style={[{ width: answer.answerPercentage + "%" }, styles.pollAnswer]}>
+                                    <View style={[{ width: (answer.answerPercentage ? answer.answerPercentage : 0) + "%" }, styles.pollAnswer]}>
                                         {this.renderUserAnswer(index, "Neutral")}
                                     </View>
                                 </View>
                                 <View style={{ width: '20%', height: normalize(25) }}>
-                                    <Text style={styles.percent}>  {answer.answerPercentage + "%"} </Text>
+                                    <Text style={styles.percent}>  {(answer.answerPercentage ? answer.answerPercentage : 0) + "%"} </Text>
                                 </View>
                             </View> : null
                         }
                         {index === 3 ?
                             <View style={styles.pollContainer}>
                                 <View style={{ width: '80%', position: 'relative' }}>
-                                    <View style={[{ width: answer.answerPercentage + "%" }, styles.pollAnswer]}>
+                                    <View style={[{ width: (answer.answerPercentage ? answer.answerPercentage : 0) + "%" }, styles.pollAnswer]}>
                                         {this.renderUserAnswer(index, "Agree")}
                                     </View>
                                 </View>
                                 <View style={{ width: '20%', height: normalize(25) }}>
-                                    <Text style={styles.percent}>  {answer.answerPercentage + "%"} </Text>
+                                    <Text style={styles.percent}>  {(answer.answerPercentage ? answer.answerPercentage : 0) + "%"} </Text>
                                 </View>
                             </View> : null
                         }
                         {index === 4 ?
                             <View style={styles.pollContainer}>
                                 <View style={{ width: '80%', position: 'relative' }}>
-                                    <View style={[{ width: answer.answerPercentage + "%" }, styles.pollAnswer]}>
+                                    <View style={[{ width: (answer.answerPercentage ? answer.answerPercentage : 0) + "%" }, styles.pollAnswer]}>
                                         {this.renderUserAnswer(index, "Strongly Agree")}
                                     </View>
                                 </View>
                                 <View style={{ width: '20%', height: normalize(25) }}>
-                                    <Text style={styles.percent}>  {answer.answerPercentage + "%"} </Text>
+                                    <Text style={styles.percent}>  {(answer.answerPercentage ? answer.answerPercentage : 0) + "%"} </Text>
                                 </View>
                             </View> : null
                         }

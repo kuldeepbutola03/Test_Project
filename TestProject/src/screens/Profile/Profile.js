@@ -78,7 +78,12 @@ export default class Profile extends Component {
     let usernameRegex = /^[a-zA-Z0-9]+$/;
 
     let validUsername = username.match(usernameRegex);
-
+    if (!validUsername && this.state.editable) {
+      alert('Your username can only contain alphabets and numbers');
+      return;
+    } 
+  
+    
     if (username.length < 1) {
       alert('Please fill in your username');
     } else {
@@ -90,9 +95,9 @@ export default class Profile extends Component {
     // } else if (username.length < 1) {
     //   alert('Please fill in your username');
     //   return
-    // } else if (!validUsername) {
-    //   alert('Your handle can only contain alphabets and numbers');
-    // } else {
+    // } else 
+    
+    // else {
     //   // saveUserData(this.state);
     //   this.updateDetails();
     // }

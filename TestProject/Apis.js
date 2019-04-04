@@ -9,9 +9,7 @@ export const FACEBOOK_REGISTRATION = BASE_URL + "user/userRegistratoionByFB";
 export const UPDATE_USER = BASE_URL + "user/updateUserDetails";
 export const FORGET_PASSWORD = BASE_URL + "user/forgetPassword";
 
-
 export const GET_USER_DETAILS_EMAIL = BASE_URL + 'user/getUserDetails';
-
 
 export const LANDING_RESOURCES = BASE_URL + "landing/getFirPolResourceAndHeatMapDtl";
 export const LANDING_TOP_SIX = BASE_URL + 'landing/getTopSixResources';

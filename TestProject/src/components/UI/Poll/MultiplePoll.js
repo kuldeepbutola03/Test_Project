@@ -43,19 +43,21 @@ class MultiplePoll extends Component {
             percent = surveyAnswerList.map((answer, index) => {
                 return (
                     <View style={{ width: '100%' }} key={index + answer.answerId }>
-                        {index === 0 ? 
+                    
+                        {/* {index === 0 ?  */}
                             <View style={styles.pollContainer}>
                                 <View style={{ width: '80%', position: 'relative' }}>
-                                    <View style={[{ width: answer.answerPercentage+"%" }, styles.pollAnswer]}>
+                                    <View style={[{ width: (answer.answerPercentage ? answer.answerPercentage : 0)+"%" }, styles.pollAnswer]}>
                                         {this.renderUserAnswer(index, answer.answerText)}
                                     </View> 
                                 </View>
                                 <View style={{ width: '20%', height: normalize(25) }}>
-                                    <Text style={styles.percent}> {answer.answerPercentage + "%"} </Text>
+                                    <Text style={styles.percent}> {(answer.answerPercentage ? answer.answerPercentage : 0) + "%"} </Text>
                                 </View>
-                            </View> : null
-                        }
-                        {index === 1 ? 
+                            </View>
+                             {/* : null
+                        } */}
+                        {/* {index === 1 ? 
                            <View style={styles.pollContainer}>
                                 <View style={{ width: '80%', position: 'relative' }}>
                                     <View style={[{ width: answer.answerPercentage+"%" }, styles.pollAnswer]}>
@@ -102,7 +104,7 @@ class MultiplePoll extends Component {
                                     <Text style={styles.percent}>  {answer.answerPercentage + "%"} </Text>
                                 </View>
                             </View> : null
-                        }
+                        } */}
                     </View>
                 )
             })
