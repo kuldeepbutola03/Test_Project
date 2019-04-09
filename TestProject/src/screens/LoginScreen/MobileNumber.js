@@ -28,7 +28,7 @@ import Geolocation from 'react-native-geolocation-service';
 import { APP_GLOBAL_COLOR } from '../../../Constant';
 
 import firebase from 'react-native-firebase';
-
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 export default class MobileNumber extends Component {
   static propTypes = {
     componentId: PropTypes.string,
@@ -227,6 +227,7 @@ export default class MobileNumber extends Component {
             {this.renderButton()}
 
             <CheckBox containerStyle={{ marginTop: 20 }}
+            size = {wp('5%')}
               title='Agree to Terms and Conditions'
               checked={this.state.checkBocSelected}
               onPress={() => {

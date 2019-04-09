@@ -1696,6 +1696,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.Daemon;
 				PRODUCT_NAME = TestProject;
 				PROVISIONING_PROFILE_SPECIFIER = Daemon_6_Feb_2019;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -1731,6 +1732,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.Daemon;
 				PRODUCT_NAME = TestProject;
 				PROVISIONING_PROFILE_SPECIFIER = Daemon_6_Feb_2019;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;

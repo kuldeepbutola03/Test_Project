@@ -60,7 +60,7 @@ export default class PictureQuestion extends React.Component {
         for (let i = 0; i < data.length; i = i + 2) {
             viewArray.push(
                 <View style={{ flex: 1, flexDirection: 'row' }}>
-                    <View style={{ height: width, width: width}}>
+                    <View style={{  width: width}}>
                         <PictureQuestionView
                             key={i}
                             isSelected={this.props.data.userAnswerId - 1 === (i)}
@@ -72,9 +72,11 @@ export default class PictureQuestion extends React.Component {
                             }}
                             data={data[i]}
                         />
+                        {this.props.isSurveyTaken === 'Y' && <Text style = {{marginLeft : 10}}>{(data[i].answerPercentage ? data[i].answerPercentage : 0)}%</Text>}
+                        
                     </View>
                     {i + 1 < data.length &&
-                        <View style={{ height: width , width: width }}>
+                        <View style={{  width: width }}>
                             <PictureQuestionView
                                 key={i + 1}
                                 isSelected={this.props.data.userAnswerId - 1 === (i + 1)}
@@ -86,16 +88,19 @@ export default class PictureQuestion extends React.Component {
                                 }}
                                 data={data[i + 1]}
                             />
+                            {this.props.isSurveyTaken === 'Y' && <Text style = {{marginLeft : 10}}>{(data[i+1].answerPercentage ? data[i+1].answerPercentage : 0)}%</Text>}
                         </View>
                     }
 
                 </View>
+                
             );
         }
         return (
             <View style = {{flex : 1 }}>
                 {viewArray}
             </View>
+
 
 
             // this.props.data.surveyAnswerList.map((data, indexValue) => {

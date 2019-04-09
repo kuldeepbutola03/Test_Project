@@ -42,102 +42,7 @@ class TrendScreen extends Component {
     activeSlide: 0,
     loading: true,
     data: this.props.data,
-    notifications: {
-      count: 12,
-      data: this.props.data,
-      menuName: this.getLanguageCode(this.props.userLanguage),
-      notification: [
-        {
-          read: false,
-          notificationLogId: '12',
-          title: 'Survey Update',
-          notificationFor: 'survey',
-          subtitle: 'A new survey has been added, please take your time and check it out',
-          notificationDateTime: moment().format(),
-
-        },
-        {
-          read: true,
-          notificationLogId: '11',
-          title: 'Survey Update',
-          notificationFor: 'survey',
-          subtitle: 'A new survey has been added, please take your time and check it out',
-          notificationDateTime: moment().format(),
-        },
-        {
-          read: false,
-          notificationLogId: '14',
-          title: 'Timeline Update',
-          notificationFor: 'timeline',
-          subtitle: 'Someone liked your comment',
-          notificationDateTime: moment().format(),
-        },
-        {
-          read: false,
-          notificationLogId: '743',
-          title: 'Survey Update',
-          notificationFor: 'survey',
-          subtitle: 'A new survey has been added, please take your time and check it out',
-          notificationDateTime: moment().format(),
-        },
-        {
-          read: false,
-          notificationLogId: '9483',
-          title: 'Survey',
-          notificationFor: 'survey',
-          subtitle: 'A new survey has been added, please take your time and check it out',
-          notificationDateTime: moment().format(),
-        },
-        {
-          read: false,
-          notificationLogId: '0293',
-          title: 'Timeline Update',
-          notificationFor: 'timeline',
-          subtitle: 'Ben just commented on your update',
-          notificationDateTime: moment().format(),
-        },
-        {
-          read: false,
-          notificationLogId: '837484',
-          title: 'Timeline Update',
-          notificationFor: 'timeline',
-          subtitle: 'Chuks commented on your post',
-          notificationDateTime: moment().format(),
-        },
-        {
-          read: false,
-          notificationLogId: '838494',
-          title: 'Survey',
-          notificationFor: 'survey',
-          subtitle: 'A new survey has been added, please take your time and check it out',
-          notificationDateTime: moment().format(),
-        },
-        {
-          read: true,
-          notificationLogId: '938292933',
-          title: 'Survey',
-          notificationFor: 'survey',
-          subtitle: 'A new survey has been added, please take your time and check it out',
-          notificationDateTime: moment().format(),
-        },
-        {
-          read: false,
-          notificationLogId: '027842',
-          title: 'Survey',
-          notificationFor: 'survey',
-          subtitle: 'A new survey has been added, please take your time and check it out',
-          notificationDateTime: moment().format(),
-        },
-        {
-          read: true,
-          notificationLogId: '948392',
-          title: 'Survey',
-          notificationFor: 'survey',
-          subtitle: 'A new survey has been added, please take your time and check it out',
-          notificationDateTime: moment().format(),
-        },
-      ]
-    }
+    notifications: this.props.notifications
     // refreshUI : this.props.refreshUI
   }
 
@@ -152,7 +57,7 @@ class TrendScreen extends Component {
       this.user_Id = userId;
       // this.getLocation()
       this.getDataFromServer(true);
-      this.getNotifications()
+      // this.getNotifications()
 
     })
   }
@@ -264,6 +169,8 @@ class TrendScreen extends Component {
         this._requestPermission();
       } else if (response === 'authorized') {
         this.getLocation();
+      }else{
+        this.getDataFromServer(true);
       }
     })
   }
@@ -449,7 +356,9 @@ class TrendScreen extends Component {
     })
 
     if (screen === 'survey' || screen === 'Survey') {
-      this.toQuesScreen(notifications)
+      let obj = updatedNotification.notificationList[index]
+      let surveyThreadID = obj["surveyThreadId"];
+      this.toQuesScreen(surveyThreadID)
     } else if (screen === 'trends' || screen === 'Survey') {
       // this.toTrendScreen()
     } else if (screen === 'timeline' || screen === 'Survey') {
@@ -504,16 +413,20 @@ class TrendScreen extends Component {
           },
         },
         passProps: {
+          // notifications: this.state.notifications,
+          // readNotification: this.readNotification,
+          // updateNotifications: this.updateNotifications,
+
           notifications: this.state.notifications,
-          readNotification: this.readNotification,
-          updateNotifications: this.updateNotifications,
+          readNotification: this.props.readNotification,
+          updateNotifications: this.props.updateNotifications,
         }
 
       },
     });
   }
 
-  toQuesScreen = () => {
+  toQuesScreen = (surveyThreadID) => {
     Navigation.push(this.props.componentId, {
       component: {
         name: 'QuestionnaireScreen',
@@ -528,6 +441,7 @@ class TrendScreen extends Component {
           user_id: this.props.user_id,
           lat_lon: this.props.lat_lon,
           userLanguage: this.props.userLanguage,
+          surveyThreadID: surveyThreadID
         }
       },
     });
@@ -555,7 +469,7 @@ class TrendScreen extends Component {
         style={styles.safeViewContainer}>
         <View style={{ flex: 1, flexDirection: 'row', backgroundColor: 'rgba(255,255,255,1)' }}>
 
-          <View style={{ flex: 2, backgroundColor: APP_GLOBAL_COLOR }}>
+          <View style={{ width: 60, backgroundColor: APP_GLOBAL_COLOR }}>
             <CustomButton
               style={{
                 flexDirection: 'row',
@@ -587,22 +501,55 @@ class TrendScreen extends Component {
                   marginLeft: 5,
                   fontSize: normalize(14),
                   color: '#000',
-                }}>
+                  flex: 1
+                }}
+                minimumFontScale={.03}
+                adjustsFontSizeToFit
+                numberOfLines={1}
+              >
                 {this.state.data.username}
               </Text>
             </View>
           </TouchableOpacity>
-          <View
+          {/* <View
             style={{
-              flex: 5,
-              justifyContent: 'flex-end',
+              // flex: 5,
+              width: 100,
+              justifyContent: 'center',
               alignItems: 'center',
               flexDirection: 'row',
-              marginRight: hp('4%'),
+              // marginRight: hp('4%'),
               backgroundColor: 'rgba(255,255,255,1)',
-            }}>
-            <TouchableWithoutFeedback onPress={() => this.showNotificationScreen()}>
-              {notifications.count <= 0 ?
+            }}> */}
+          <TouchableOpacity style={{
+            // flex: 5,
+            width: hp('10%'),
+            justifyContent: 'center',
+            alignItems: 'center',
+            flexDirection: 'row',
+            // marginRight: hp('4%'),
+            backgroundColor: 'rgba(255,255,255,1)',
+          }}
+            // style={{  justifyContent: 'center', alignItems: 'center' }}
+            onPress={() => this.showNotificationScreen()}>
+            {/* <View> */}
+            {notifications.count && notifications.count > 0 ?
+              <BadgedIcon
+                size={hp('3%')}
+                color={APP_GLOBAL_COLOR}
+                type="font-awesome"
+                // onPress={() => this.showNotificationScreen()}
+                name="bell-o" />
+              :
+              <FontAwesome
+                size={hp('3%')}
+                // onPress={() => this.showNotificationScreen()}
+                name="bell-o"
+                color={APP_GLOBAL_COLOR}
+              />
+            }
+            {/* </View> */}
+            {/* {notifications.count <= 0 ?
                 <FontAwesome
                   size={hp('3%')}
                   // onPress={() => this.showNotificationScreen()}
@@ -614,9 +561,9 @@ class TrendScreen extends Component {
                   type="font-awesome"
                   // onPress={() => this.showNotificationScreen()}
                   name="bell-o" />
-              }
-            </TouchableWithoutFeedback>
-          </View>
+              } */}
+          </TouchableOpacity>
+          {/* </View> */}
         </View>
         {this.renderComponent()}
       </SafeAreaView>

@@ -20,7 +20,8 @@ import QuestionniareListView from '../../components/UI/QuestionView/Questionniar
 
 export default class QuestionnireScreen extends Component {
     state = {
-        surveyIdFromList : null,
+        surveyThreadID: this.props.surveyThreadID,
+        surveyIdFromList: null,
         loading: true,
         state: false,
         questionniareData1: [
@@ -44,102 +45,8 @@ export default class QuestionnireScreen extends Component {
         isSurveyTaken1: 'N',
         isSurveyTaken2: 'N',
         surveyTitle: 'SURVEY',
-        notifications: {
-            count: 12,
-            data: this.props.data,
-            menuName: this.getLanguageCode(this.props.userLanguage),
-            notification: [
-                {
-                    read: false,
-                    notificationLogId: '12',
-                    title: 'Survey Update',
-                    notificationFor: 'survey',
-                    subtitle: 'A new survey has been added, please take your time and check it out',
-                    notificationDateTime: moment().format(),
+        notifications: this.props.notifications
 
-                },
-                {
-                    read: true,
-                    notificationLogId: '11',
-                    title: 'Survey Update',
-                    notificationFor: 'survey',
-                    subtitle: 'A new survey has been added, please take your time and check it out',
-                    notificationDateTime: moment().format(),
-                },
-                {
-                    read: false,
-                    notificationLogId: '14',
-                    title: 'Timeline Update',
-                    notificationFor: 'timeline',
-                    subtitle: 'Someone liked your comment',
-                    notificationDateTime: moment().format(),
-                },
-                {
-                    read: false,
-                    notificationLogId: '743',
-                    title: 'Survey Update',
-                    notificationFor: 'survey',
-                    subtitle: 'A new survey has been added, please take your time and check it out',
-                    notificationDateTime: moment().format(),
-                },
-                {
-                    read: false,
-                    notificationLogId: '9483',
-                    title: 'Survey',
-                    notificationFor: 'survey',
-                    subtitle: 'A new survey has been added, please take your time and check it out',
-                    notificationDateTime: moment().format(),
-                },
-                {
-                    read: false,
-                    notificationLogId: '0293',
-                    title: 'Timeline Update',
-                    notificationFor: 'timeline',
-                    subtitle: 'Ben just commented on your update',
-                    notificationDateTime: moment().format(),
-                },
-                {
-                    read: false,
-                    notificationLogId: '837484',
-                    title: 'Timeline Update',
-                    notificationFor: 'timeline',
-                    subtitle: 'Chuks commented on your post',
-                    notificationDateTime: moment().format(),
-                },
-                {
-                    read: false,
-                    notificationLogId: '838494',
-                    title: 'Survey',
-                    notificationFor: 'survey',
-                    subtitle: 'A new survey has been added, please take your time and check it out',
-                    notificationDateTime: moment().format(),
-                },
-                {
-                    read: true,
-                    notificationLogId: '938292933',
-                    title: 'Survey',
-                    notificationFor: 'survey',
-                    subtitle: 'A new survey has been added, please take your time and check it out',
-                    notificationDateTime: moment().format(),
-                },
-                {
-                    read: false,
-                    notificationLogId: '027842',
-                    title: 'Survey',
-                    notificationFor: 'survey',
-                    subtitle: 'A new survey has been added, please take your time and check it out',
-                    notificationDateTime: moment().format(),
-                },
-                {
-                    read: true,
-                    notificationLogId: '948392',
-                    title: 'Survey',
-                    notificationFor: 'survey',
-                    subtitle: 'A new survey has been added, please take your time and check it out',
-                    notificationDateTime: moment().format(),
-                },
-            ]
-        }
     }
 
     static propTypes = {
@@ -152,10 +59,14 @@ export default class QuestionnireScreen extends Component {
 
 
     getSurvey = (mount) => {
-        const { surveyType, notification  } = this.props;
+        const { surveyType, notification } = this.props;
 
         if (this.state.surveyIdFromList) {
-            this.refreshDataWithId(this.state.surveyIdFromList , '');
+            this.refreshDataWithId(this.state.surveyIdFromList, '');
+            return;
+        }
+        if (this.state.surveyThreadID) {
+            this.refreshDataWithId2(this.state.surveyThreadID, '', this)
             return;
         }
 
@@ -311,7 +222,7 @@ export default class QuestionnireScreen extends Component {
 
                 } else {
                     axios.post(GET_CURRENT_ACTIVE_SURVEY, {
-                        isNationalLevel: !this.state.state ? 'N' : 'Y',
+                        isNationalLevel: 'N',
                         userId: this.props.user_id,
                         userCurrentCoord: this.props.lat_lon
                     })
@@ -352,7 +263,7 @@ export default class QuestionnireScreen extends Component {
                                                 ],
                                                 { cancelable: false },
                                             );
-                                        } else{
+                                        } else {
                                             Alert.alert(
                                                 APP_ALERT_MESSAGE,
                                                 'Your feedback has been sent successfully!',
@@ -362,7 +273,7 @@ export default class QuestionnireScreen extends Component {
                                                 { cancelable: false },
                                             );
                                         }
-                                        
+
                                     }, 200)
                                 })
                                 .catch(error => {
@@ -421,7 +332,7 @@ export default class QuestionnireScreen extends Component {
 
                 } else {
                     let body1 = {
-                        isNationalLevel:  'N',
+                        isNationalLevel: 'N',
                         userId: this.props.user_id,
                         userCurrentCoord: this.props.lat_lon,
 
@@ -451,7 +362,7 @@ export default class QuestionnireScreen extends Component {
                                     if (this.setState.questionniareData2) {
                                         this.refs.loading.close();
                                     }
-                                    
+
 
                                     this.setState({
                                         state: true,
@@ -487,7 +398,7 @@ export default class QuestionnireScreen extends Component {
     componentDidMount() {
         // this.refreshDataWithId('2', 'sadsa');
         this.getSurvey();
-        this.getNotifications();
+        // this.getNotifications();
         const { surveyTitle } = this.props;
 
         if (this.props.surveyTitle) {
@@ -501,7 +412,8 @@ export default class QuestionnireScreen extends Component {
     }
 
     homeButtonTapped = () => {
-        Navigation.pop(this.props.componentId);
+        // Navigation.pop(this.props.componentId);
+        Navigation.popToRoot(this.props.componentId);
     };
 
     stateBttnTapped = () => {
@@ -652,7 +564,7 @@ export default class QuestionnireScreen extends Component {
                     ],
                     { cancelable: false },
                 );
-                this.refs.loading.close()
+                this.refs.loading.close();
             } else if (!submit) {
                 axios.post(SUBMIT_USER_SURVEY_QUESTION, {
                     surveyId: this.state.questionnaire2.surveyId,
@@ -726,69 +638,79 @@ export default class QuestionnireScreen extends Component {
         )
     }
 
-    getNotifications = () => {
-        axios.post(GET_USER_NOTIFICATIONS, {
-            userId: this.props.user_id
-        }).then((response) => {
-            let responseData = response.data;
-            console.log(responseData)
-            this.setState({
-                notifications: responseData
-            })
-        }).catch(error => {
-            console.log(error)
-        })
+    // getNotifications = () => {
+    //     axios.post(GET_USER_NOTIFICATIONS, {
+    //         userId: this.props.user_id
+    //     }).then((response) => {
+    //         let responseData = response.data;
+    //         console.log(responseData)
+    //         this.setState({
+    //             notifications: responseData
+    //         })
+    //     }).catch(error => {
+    //         console.log(error)
+    //     })
+    // }
+
+    updateNotifications = (notificationLogId,notification) => {
+        this.props.updateNotifications(notificationLogId,notification);
+        let updatedNotification = Object.assign(notification, {});
+        this.setState({notifications : updatedNotification});
     }
 
-    readNotification = (index, notifications, screen) => {
-        const { count } = this.state.notifications;
-        let counted;
-        let newNotifications = notifications;
+    // readNotification = (index, notifications, screen) => {
+    //     this.props.readNotification(index,notifications,screen);
+    //     let updatedNotification = Object.assign(notifications, {});
+    //     this.setState({notifications : updatedNotification});
+    // }
+    //     const { count } = this.state.notifications;
+    //     let counted;
+    //     let newNotifications = notifications;
 
-        if (count > 0) {
-            counted = count - 1;
-        } else {
-            counted = count;
-        }
+    //     if (count > 0) {
+    //         counted = count - 1;
+    //     } else {
+    //         counted = count;
+    //     }
 
-        newNotifications.notificationList[index].read = true;
-        newNotifications.count = counted;
+    //     newNotifications.notificationList[index].read = true;
+    //     newNotifications.count = counted;
 
-        let updatedNotification = Object.assign(newNotifications, {});
-        console.log(updatedNotification)
-        this.setState({
-            notificationsnotification: updatedNotification
-        })
+    //     let updatedNotification = Object.assign(newNotifications, {});
+    //     console.log(updatedNotification)
+    //     this.setState({
+    //         notifications: updatedNotification
+    //     })
 
-        if (screen === 'survey' || screen === 'Survey') {
-            this.toQuesScreen(notifications)
-        } else if (screen === 'trends' || screen === 'Survey') {
-            // this.toTrendScreen()
-        } else if (screen === 'timeline' || screen === 'Survey') {
-            // this.toReportScreen()
-        }
-    }
+    //     if (screen === 'survey' || screen === 'Survey') {
+    //         this.toQuesScreen(notifications)
+    //     } else if (screen === 'trends' || screen === 'Survey') {
+    //         // this.toTrendScreen()
+    //     } else if (screen === 'timeline' || screen === 'Survey') {
+    //         // this.toReportScreen()
+    //     }
+    // }
 
-    updateNotifications = (notificationLogId) => {
-        // console.log('called')
-        axios.post(UPDATE_USER_NOTIFICATIONS, {
-            notificationLogId: notificationLogId.toString(),
-            read: "Y",
-            userId: this.props.user_id
-            // notificationLogId: notificationLogId.toString(),
-            // read: 'Y',
-            // userId: this.state.user_id
-        }).then((response) => {
-            let responseData = response.data;
-            console.log('_________')
-            console.log(responseData)
-            console.log('_________')
-            this.getNotifications()
+    // updateNotifications = (notificationLogId) => {
+    //     // console.log('called')
+    //     axios.post(UPDATE_USER_NOTIFICATIONS, {
+    //         notificationLogId: notificationLogId.toString(),
+    //         read: "Y",
+    //         userId: this.props.user_id
+    //         // notificationLogId: notificationLogId.toString(),
+    //         // read: 'Y',
+    //         // userId: this.state.user_id
+    //     }).then((response) => {
+    //         let responseData = response.data;
+    //         console.log('_________')
+    //         console.log(responseData)
+    //         console.log('_________')
+    //         this.getNotifications()
 
-        }).catch(error => {
-            console.log(error)
-        })
-    }
+    //     }).catch(error => {
+    //         console.log(error)
+    //     })
+    // }
 
     showNotificationScreen = () => {
         const { menuName } = this.props;
@@ -816,8 +738,11 @@ export default class QuestionnireScreen extends Component {
                     },
                 },
                 passProps: {
+                    // notifications: this.state.notifications,
+                    // readNotification: this.readNotification,
+                    // updateNotifications: this.updateNotifications,
                     notifications: this.state.notifications,
-                    readNotification: this.readNotification,
+                    readNotification: this.props.readNotification,
                     updateNotifications: this.updateNotifications,
                 }
 
@@ -886,7 +811,7 @@ export default class QuestionnireScreen extends Component {
                     <View
                         style={topViewStyle.headerView}
                         backgroundColor="rgba(242,241,244,1)">
-                        <View style={{ flex: 2, backgroundColor: APP_GLOBAL_COLOR }}>
+                        <View style={{ width: 60, backgroundColor: APP_GLOBAL_COLOR }}>
                             <CustomButton
                                 style={{
                                     flexDirection: 'row',
@@ -897,9 +822,31 @@ export default class QuestionnireScreen extends Component {
                             />
                         </View>
                         {this.renderTitle()}
-                        <View style={{ flex: 5, justifyContent: 'flex-end', alignItems: 'center', flexDirection: 'row', marginRight: hp('4%') }}>
-                            <TouchableWithoutFeedback onPress={() => this.showNotificationScreen()}>
-                                {notifications.count <= 0 ?
+                        <TouchableWithoutFeedback style={{ width: hp('10%'), justifyContent: 'center', alignItems: 'center', flexDirection: 'row' }} onPress={() => this.showNotificationScreen()}>
+                            <View style={{
+                                // width: hp('10%'),
+                                // flex : 1,
+                                width: hp('10%'),
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                // flexDirection: 'row',
+                            }} onPress={() => this.showNotificationScreen()}>
+                                {notifications.count && notifications.count > 0 ?
+                                    <BadgedIcon
+                                        size={hp('3%')}
+                                        color={APP_GLOBAL_COLOR}
+                                        type="font-awesome"
+                                        // onPress={() => this.showNotificationScreen()}
+                                        name="bell-o" />
+                                    :
+                                    <FontAwesome
+                                        size={hp('3%')}
+                                        // onPress={() => this.showNotificationScreen()}
+                                        name="bell-o"
+                                        color={APP_GLOBAL_COLOR}
+                                    />
+                                }
+                                {/* {notifications.count <= 0 ?
                                     <FontAwesome
                                         size={hp('3%')}
                                         // onPress={() => this.showNotificationScreen()}
@@ -911,9 +858,10 @@ export default class QuestionnireScreen extends Component {
                                         type="font-awesome"
                                         // onPress={() => this.showNotificationScreen()}
                                         name="bell-o" />
-                                }
-                            </TouchableWithoutFeedback>
-                        </View>
+                                } */}
+                            </View>
+                        </TouchableWithoutFeedback>
+
                     </View>
                     <View style={{ width: "100%", height: 1 }} backgroundColor="gray" />
 
@@ -998,18 +946,17 @@ export default class QuestionnireScreen extends Component {
 
         // this.props.surveyId = surveyId;
         if (this.state.surveyIdFromList !== surveyId) {
-            this.setState({ loading: true , surveyIdFromList : surveyId});
-            this.refreshDataWithId2(surveyId,surveyDesc, this);
-        }else{
+            this.setState({ loading: true, surveyIdFromList: surveyId });
+            this.refreshDataWithId2(surveyId, surveyDesc, this);
+        } else {
             let that = this;
             setTimeout(function () {
-                that.refreshDataWithId2(surveyId,surveyDesc,that);
+                that.refreshDataWithId2(surveyId, surveyDesc, that);
             }, 500);
         }
-        
-        
     }
-    refreshDataWithId2 = (surveyId, surveyDesc , thatObj) => {
+
+    refreshDataWithId2 = (surveyId, surveyDesc, thatObj) => {
 
         axios.post(GET_SURVEY_BY_ID, {
             surveyId: surveyId,

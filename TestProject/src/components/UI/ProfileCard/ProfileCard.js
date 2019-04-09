@@ -22,6 +22,7 @@ import axios from 'axios';
 import { GPR_FLAG } from '../../../../Apis';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
+
 homeButton = props => {
   if (props.showHome) {
     return (
@@ -44,8 +45,8 @@ class menuButtons extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      starCount: 0,
-      submitted: false,
+      starCount: this.props.oldRating ? this.props.oldRating : 0,
+      submitted: this.props.oldRating ? true : false,
     };
   }
 
@@ -56,57 +57,62 @@ class menuButtons extends React.Component {
   }
 
   submitRating = () => {
+
     this.setState({ loading: true });
     const { userId, location, resourceId } = this.props.data;
-    const { isFlagEnabled, resourceType } = this.props;
+    const { isFlagEnabled, resourceType, oldRating1, oldRating2 } = this.props;
     const { starCount, submitted } = this.state;
 
     if (isFlagEnabled === 'Y' && submitted === false) {
-      axios.post(GPR_FLAG, {
-        userLocationCoord: location,
-        resourceMaster:
-        {
-          resourceId: resourceId
-        },
-        userMaster:
-        {
-          userId: userId
-        },
-        flagValue: starCount,
-        customAreaId: this.props.customAreaId
-      })
-        .then(response => {
-          // console.log(response.data);
-          Alert.alert(
-            APP_ALERT_MESSAGE,
-            'Thanks for your Rating!',
-            [
-              { text: 'OK', onPress: () => { } },
-            ],
-            { cancelable: false },
-          );
-          console.log(response.data);
-          let responseData = response.data;
-          this.props.updateResources({
-            resourceType: resourceType,
-            resourceGPR: responseData.resourceGPR,
-            rtnGprI: responseData.rtnGprI,
-            rtnGprO: responseData.rtnGprO,
-            totalFlagCount: responseData.totalFlagCount,
-            totalFlagUniqueCount: responseData.totalFlagUniqueCount,
+      if (this.state.starCount) {
+        axios.post(GPR_FLAG, {
+          userLocationCoord: location,
+          resourceMaster:
+          {
+            resourceId: resourceId
+          },
+          userMaster:
+          {
+            userId: userId
+          },
+          flagValue: starCount,
+          customAreaId: this.props.customAreaId
+        })
+          .then(response => {
+            // console.log(response.data);
+            Alert.alert(
+              APP_ALERT_MESSAGE,
+              'Thanks for your Rating!',
+              [
+                { text: 'OK', onPress: () => { } },
+              ],
+              { cancelable: false },
+            );
+            console.log(response.data);
+            let responseData = response.data;
+            this.props.updateResources({
+              resourceType: resourceType,
+              resourceGPR: responseData.resourceGPR,
+              rtnGprI: responseData.rtnGprI,
+              rtnGprO: responseData.rtnGprO,
+              totalFlagCount: responseData.totalFlagCount,
+              totalFlagUniqueCount: responseData.totalFlagUniqueCount,
+            })
+            this.setState({ loading: false, submitted: true });
           })
-          this.setState({ loading: false, submitted: true });
-        })
-        .catch(error => {
-          console.error(error);
-          this.setState({ loading: false, submitted: false });
-        })
+          .catch(error => {
+            console.error(error);
+            this.setState({ loading: false, submitted: false });
+          })
+      } else {
+        this.setState({ loading: false });
+        alert("Rate to submit")
+      }
+
     } else {
       alert("You have already sent a feedback");
       this.setState({ loading: false })
     }
-
-
   }
 
   _keyExtractor = (item, index) => index + "abc";
@@ -199,7 +205,7 @@ class menuButtons extends React.Component {
   }
 
   renderSubmitIcon = () => {
-    const { isFlagEnabled } = this.props;
+    const { isFlagEnabled, share } = this.props;
     if (isFlagEnabled === 'Y' && this.state.submitted === false) {
       return (
         <TouchableHighlight onPress={() => this.submitRating()}>
@@ -208,12 +214,14 @@ class menuButtons extends React.Component {
       )
     } else {
       return (
-        <TouchableWithoutFeedback onPress={() => { }}>
-          <FontAwesome style={{ marginLeft: hp('1%') }} name="check-circle" size={27} color="#999" />
+        <TouchableWithoutFeedback onPress={() => { share(this.state.starCount,this.props.name) }}>
+          <FontAwesome style={{ marginLeft: hp('1%') }} name="share-alt" size={25} />
         </TouchableWithoutFeedback>
       )
     }
   }
+
+  
 
   render() {
     // alert(JSON.stringify(this.props.data.data));
@@ -293,7 +301,7 @@ class menuButtons extends React.Component {
             {/* <View height={1} style={{ borderTopColor: '#999', borderTopWidth: 1, width: '100%' }} /> */}
 
             <View style={{ flex: 0.40, position: 'relative', alignItems: 'center' }}>
-              <View style={{flex:0.8,marginVertical:3}}>
+              <View style={{ flex: 0.8, marginVertical: 3 }}>
                 <Avatar
                   rounded
                   imageProps={{ resizeMode: 'cover' }}
@@ -318,7 +326,7 @@ class menuButtons extends React.Component {
               </View>
               <View style={styles.ratingContainer}>
                 <StarRating
-                  disabled={this.props.isFlagEnabled === 'Y' || this.state.submitted === false ? false : true}
+                  disabled={this.props.isFlagEnabled === 'N' ? true : false}
                   maxStars={5}
                   rating={this.state.starCount}
                   fullStarColor={'#FAA21B'}
@@ -338,7 +346,7 @@ class menuButtons extends React.Component {
 
           </View>
           <Divider />
-          <View style={[styles.row, styles.thirdRow,{overflow:'hidden'}]}>
+          <View style={[styles.row, styles.thirdRow, { overflow: 'hidden' }]}>
             <View style={{ flex: 1, flexDirection: 'row' }}>
               <View style={{ flex: 1, width: '50%', marginRight: normalize(4) }}>
                 {/* <FlatList
@@ -368,12 +376,13 @@ class menuButtons extends React.Component {
             </View>
           </View>
         </View>
-        {this.props.onPressInfo && <TouchableOpacity style={{ position: 'absolute', right: 0, top: 0, height: 50, width: 50, backgroundColor: 'clear', alignItems: 'center', justifyContent: 'center' }} onPress={this.props.onPressInfo}>
+        {/* {this.props.onPressInfo && <TouchableOpacity style={{ position: 'absolute', right: 0, top: 0, height: 50, width: 50, backgroundColor: 'clear', alignItems: 'center', justifyContent: 'center' }} onPress={this.props.onPressInfo}>
           <View style={{ alignItems: 'center', justifyContent: 'center', width: 26, height: 26, borderRadius: 13, backgroundColor: APP_GLOBAL_COLOR }}>
             <Text style={{ fontSize: normalize(12), fontWeight: 'bold', color: 'white' }}>i</Text>
           </View>
         </TouchableOpacity>
-        }
+        } */}
+
       </View>
     );
   }
@@ -524,3 +533,5 @@ const listTitleStyle = StyleSheet.create({
 });
 
 export default menuButtons;
+
+

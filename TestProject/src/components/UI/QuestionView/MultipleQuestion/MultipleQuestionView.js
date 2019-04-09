@@ -24,14 +24,14 @@ export default class multipleQuestionView extends React.Component {
 
     renderPoll = () => {
         const { data } = this.props;
-        if(data.userAnswerId) {
+        // if(data.userAnswerId) {
             return (
                 <MultiplePoll 
                     surveyAnswerList={this.props.data.surveyAnswerList}
                     userAnswerId={this.props.data.userAnswerId}
                 />
             )
-        } else return null;
+        // } else return null;
     }
 
     renderOptions = () => {

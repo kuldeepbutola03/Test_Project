@@ -17,7 +17,7 @@ class MultiplePoll extends Component {
 
     renderUserAnswer = (index, answerText) => {
         const { userAnswerId } = this.props;
-        if(userAnswerId === index ) {
+        if(userAnswerId === (index+1) ) {
             return (
                 <View style={styles.iconContainer}>
                     <Text style={styles.answerText}> {answerText} </Text>
@@ -27,7 +27,7 @@ class MultiplePoll extends Component {
         } else {
             return (
                 <View style={styles.iconContainer}>
-                    <Text style={styles.answerText}> {answerText} </Text>
+                    <Text style={styles.answerText}>{answerText}</Text>
                 </View>
             )
         }
@@ -38,13 +38,14 @@ class MultiplePoll extends Component {
         const { surveyAnswerList } = this.props;
 
         let percent;
+        
         if(surveyAnswerList.length > 0 ) {
         // if(surveyAnswerList.length <= 0 ) {
             percent = surveyAnswerList.map((answer, index) => {
                 return (
                     <View style={{ width: '100%' }} key={index + answer.answerId }>
-                    
                         {/* {index === 0 ?  */}
+                        
                             <View style={styles.pollContainer}>
                                 <View style={{ width: '80%', position: 'relative' }}>
                                     <View style={[{ width: (answer.answerPercentage ? answer.answerPercentage : 0)+"%" }, styles.pollAnswer]}>
@@ -54,10 +55,12 @@ class MultiplePoll extends Component {
                                 <View style={{ width: '20%', height: normalize(25) }}>
                                     <Text style={styles.percent}> {(answer.answerPercentage ? answer.answerPercentage : 0) + "%"} </Text>
                                 </View>
-                            </View>
-                             {/* : null
-                        } */}
-                        {/* {index === 1 ? 
+                            </View> 
+
+                            {/* <View style = {{height : 50 , flex : 1 , backgroundColor : 'red'}}/> */}
+                            {/* : null */}
+                        {/* }
+                        {index === 1 ? 
                            <View style={styles.pollContainer}>
                                 <View style={{ width: '80%', position: 'relative' }}>
                                     <View style={[{ width: answer.answerPercentage+"%" }, styles.pollAnswer]}>

@@ -4,6 +4,7 @@ import {
   Text,
   TouchableOpacity,
   Image,
+  Platform
 } from 'react-native';
 import { normalize } from '../../../../Constant';
 
@@ -30,12 +31,12 @@ const styles = StyleSheet.create ({
     backgroundColor:"#a01414"
   },
   icon: {
-    height: normalize(25),
-    width: normalize(25),
+    height: Platform.isPad ? normalize(17) : normalize(25),
+    width: Platform.isPad ? normalize(17) : normalize(25),
     marginBottom: normalize(5)
   },
   text: {
-    fontSize: normalize(11),
+    fontSize: Platform.isPad ? normalize(9) : normalize(11),
     color: 'white',
   },
 });

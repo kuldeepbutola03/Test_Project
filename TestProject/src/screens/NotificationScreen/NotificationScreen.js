@@ -20,9 +20,9 @@ class NotificationScreen extends Component {
 
     _keyExtractor = (item, index) => item.notificationLogId.toString();
 
-    _renderItem = ({item, index}) => {
+    _renderItem = ({ item, index }) => {
 
-        const { readNotification, notifications, updateNotifications } = this.props;
+        const { readNotification, updateNotifications } = this.props;
 
         let Icons = [
             require('../../assets/trends.png'),
@@ -33,9 +33,9 @@ class NotificationScreen extends Component {
         const checkType = () => {
             let source;
 
-            if(item.type === 'survey' || item.type === 'Survey') {
+            if (item.type === 'survey' || item.type === 'Survey') {
                 source = Icons[1];
-            } else if(item.type === 'trends' || item.type === 'Trends') {
+            } else if (item.type === 'trends' || item.type === 'Trends') {
                 source = Icons[0];
             } else if (item.type === 'timeline' || item.type === 'Timeline') {
                 source = Icons[2]
@@ -45,8 +45,8 @@ class NotificationScreen extends Component {
         }
 
         // alert(item.notificationDateTime);
-        let updatedDate = moment(item.notificationDateTime , 'YYYY-MM-DDThh:mm:ssZ').fromNow();
-            
+        let updatedDate = moment(item.notificationDateTime, 'YYYY-MM-DDThh:mm:ssZ').fromNow();
+
         // let updatedDate = moment().calendar(item.notificationDateTime);
         // let updatedDate = new Date(item.notificationDateTime).toDateString();
 
@@ -55,38 +55,52 @@ class NotificationScreen extends Component {
                 style={{ backgroundColor: item.read ? '#fff' : '#eee' }}
             >
                 <ListItem
-                    leftAvatar={{ 
-                        source: checkType(), 
+                    leftAvatar={{
+                        source: checkType(),
                         imageProps: { resizeMode: 'contain' },
-                        overlayContainerStyle: { 
-                            backgroundColor: APP_GLOBAL_COLOR, 
+                        overlayContainerStyle: {
+                            backgroundColor: APP_GLOBAL_COLOR,
                             padding: hp('1.3%')
                         },
                     }}
                     title={item.title}
                     subtitle={item.subtitle}
                     chevron
-                    containerStyle={{ backgroundColor: item.read ? '#fff' : '#eee'}}
+                    containerStyle={{ backgroundColor: item.read ? '#fff' : '#eee' }}
                     onPress={() => {
-                        let newNotifications =  notifications;
-                        newNotifications.notificationList[index].read = true;
-                        let updatedNotification = Object.assign(newNotifications, {})
-                        readNotification(index, notifications, item.type);
-                        updateNotifications(item.notificationLogId)
-                        this.setState({
-                            notifications: updatedNotification
-                        })
+                        let newNotifications = this.state.notifications;
+                        let obj = newNotifications.notificationList[index];
+
+ 
+                        if (obj.read !== true) {
+                            obj.read = true;
+                            let counted = newNotifications.count;
+                            if (counted > 0) {
+                                counted = counted - 1;
+                            }
+                            newNotifications.count = counted;
+
+                            let updatedNotification = Object.assign(newNotifications, {})
+
+                            this.setState({
+                                notifications: updatedNotification
+                            })
+                            updateNotifications(item.notificationLogId,updatedNotification);
+                        }
+                        readNotification(index, newNotifications, item.type);
+                       
+
                     }}
                 />
-                <Text 
-                    style={{ 
-                        color: APP_GLOBAL_COLOR, 
+                <Text
+                    style={{
+                        color: APP_GLOBAL_COLOR,
                         marginLeft: hp('8%'),
                         fontWeight: '900',
                         marginBottom: hp('1%')
                         // marginTop: hp('1%')
                     }}
-                    > {updatedDate} 
+                > {updatedDate}
                 </Text>
                 <Divider />
             </View>
@@ -94,12 +108,12 @@ class NotificationScreen extends Component {
     }
 
 
-    render() {  
+    render() {
         const { notifications } = this.state;
         console.log(this.state.notifications)
         return (
             <SafeAreaView style={styles.containerStyle} >
-                <FlatList 
+                <FlatList
                     data={notifications.notificationList}
                     extraData={this.state}
                     keyExtractor={this._keyExtractor}
@@ -118,7 +132,7 @@ const styles = StyleSheet.create({
 
     },
     readStyle: {},
-    notRadStyle: { },
+    notRadStyle: {},
 
 })
 

@@ -7,10 +7,11 @@ import {
   TouchableOpacity,
   Image,
   ActivityIndicator,
+  Platform
 } from 'react-native';
 import { normalize, APP_GLOBAL_COLOR } from '../../../../Constant';
 import { Card, Avatar } from 'react-native-elements';
-import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import SpinKit from 'react-native-spinkit';
 
 const profileView = props => {
@@ -18,45 +19,45 @@ const profileView = props => {
   if (source == null) {
     return (
       <View style={[styles.container]}>
-          <SpinKit 
-              isVisible 
-              size={hp('3%')}
-              type={'ChasingDots'} 
-              color={APP_GLOBAL_COLOR}
-          />
+        <SpinKit
+          isVisible
+          size={hp('3%')}
+          type={'ChasingDots'}
+          color={APP_GLOBAL_COLOR}
+        />
         {/* <ActivityIndicator style={{ flex: 1 }} /> */}
       </View>
     );
   } else {
     return (
-      <TouchableOpacity 
+      <TouchableOpacity
         onPress={props.onPress}
         style={{ flex: 1, marginTop: hp('-1.5%'), position: 'relative' }}>
-          <Card
-            containerStyle={{ flex: 1, marginHorizontal: normalize(2), padding: 0 }}
-            wrapperStyle={{ flex: 1 }}
-            >
-              <View style={{ flex: 4 }}>
-                <Image  
-                  source={props.source[0]}
-                  style={{ flex: 1, height: null, width: null }}
-                  resizeMode="stretch"
-                />
-                <Avatar
-                  rounded
-                  size={hp('5%')}
-                  // source={{
-                  //   uri:
-                  //     'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
-                  // }}
-                  source={props.source[1]}
-                  containerStyle={{
-                    position: 'absolute',
-                    top: hp('1%'),
-                    right: hp('1%'),
-                  }}
-                />
-                {/* <Image  
+        <Card
+          containerStyle={{ flex: 1, marginHorizontal: normalize(2), padding: 0 }}
+          wrapperStyle={{ flex: 1 }}
+        >
+          <View style={{ flex: 4 }}>
+            <Image
+              source={props.source[0]}
+              style={{ flex: 1, height: null, width: null }}
+              resizeMode="stretch"
+            />
+            <Avatar
+              rounded
+              size={hp('5%')}
+              // source={{
+              //   uri:
+              //     'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
+              // }}
+              source={props.source[1]}
+              containerStyle={{
+                position: 'absolute',
+                top: hp('1%'),
+                right: hp('1%'),
+              }}
+            />
+            {/* <Image  
                   source={props.source[1]}
                   style={{ 
                     position: 'absolute',
@@ -67,20 +68,22 @@ const profileView = props => {
                   }}
                   resizeMode="stretch"
                 /> */}
-              </View>
-              <View style={{ flex: 1, flexDirection: 'row', paddingHorizontal: normalize(2) }} >
-                <View style={{ flex: 1, justifyContent: 'center' }}>
-                  <Text  adjustsFontSizeToFit 
-                    style={{ 
-                      fontWeight: '700', 
-                      fontSize: hp('1.9%'), 
-                      textAlign: 'center',
-                    }}
-                        > {props.infos[1]} | {props.areaType ? props.areaType : null }  </Text>
-                  <Text style={{ textAlign: 'center', fontSize: hp('1.7%') }}> {props.infos[0]} </Text>
-                </View>
-              </View>
-          </Card>
+          </View>
+          <View style={{ flex: 1, flexDirection: 'row', paddingHorizontal: normalize(2) }} >
+            <View style={{ flex: 1, justifyContent: 'center' }}>
+              <Text adjustsFontSizeToFit
+                style={{
+                  fontWeight: '700',
+                  fontSize: Platform.isPad ? hp('1.9%') : wp('3.5'),// hp('1.9%'), 
+                  textAlign: 'center',
+                }}
+              >
+                {props.infos[1]} | {props.areaType ? props.areaType : null}
+              </Text>
+              <Text style={{ textAlign: 'center', fontSize: Platform.isPad ? hp('1.7%') : wp('3.3') }}> {props.infos[0]} </Text>
+            </View>
+          </View>
+        </Card>
       </TouchableOpacity>
     );
   }

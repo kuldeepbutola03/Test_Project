@@ -11,7 +11,8 @@ import {
   AsyncStorage,
   TouchableOpacity,
   Picker,
-  PickerIOS
+  PickerIOS,
+  Platform
 } from 'react-native';
 
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -21,8 +22,8 @@ import ProfileView from '../../components/UI/ProfileView/ProfileView';
 import MenuButtons from '../../components/UI/ProfileView/MenuButtons';
 import { Navigation } from 'react-native-navigation';
 import { PropTypes } from 'prop-types';
-import { normalize, getUserID, DEFAULT_USER_ID, authHeaders, getUserData, APP_GLOBAL_COLOR } from '../../../Constant';
-import { LANDING_RESOURCES, LANDING_CDM, DEBUG, LANDING_PDM, LANDING_TOP_SIX, GET_USER_NOTIFICATIONS, UPDATE_USER_NOTIFICATIONS } from '../../../Apis';
+import { normalize, getUserID, DEFAULT_USER_ID, authHeaders, getUserData, saveUserData, APP_GLOBAL_COLOR } from '../../../Constant';
+import { LANDING_RESOURCES, LANDING_CDM, DEBUG, LANDING_PDM, LANDING_TOP_SIX, GET_USER_NOTIFICATIONS, UPDATE_USER_NOTIFICATIONS , GET_USER_DETAILS_EMAIL} from '../../../Apis';
 import axios from 'axios';
 import { Button, withBadge, Icon } from 'react-native-elements';
 import HomeScoreView from '../../components/UI/ProfileCard/HomeScoreView';
@@ -51,6 +52,7 @@ export default class HomeScreen extends Component {
     let extraImage = "Trends,Survey,Arena,Notifications,Rate Now, Profile, Male,Female, Select Your Profession,Student,Salaried,Entrepreneur, Retired, Housewife,Other, Select Your Age group, Teenager,Twenties,Thirties,Forties,Fifties,Sixty+";
     let menuArr = extraImage.split(',');
 
+
     super(props);
     this.state = {
       showDialog: false,
@@ -73,7 +75,7 @@ export default class HomeScreen extends Component {
       // loadingFourth
 
       notifications: {
-        count: 12,
+        count: null,
         data: this.props.data,
         menuName: this.getLanguageCode(this.props.data.userLanguage),
         notification: [
@@ -171,28 +173,70 @@ export default class HomeScreen extends Component {
     };
   }
 
+  getUserDetails = () => {
+
+    let body = null;
+    that = this;
+    body = JSON.stringify({
+      userId: that.state.user_id,
+    });
+
+    fetch(GET_USER_DETAILS_EMAIL, {
+      method: 'POST',
+      headers: authHeaders(),
+      body: body,
+    }).then((response) => response.json())
+      .then((responseJson) => {
+        if (responseJson) {
+          let dict = {};
+          dict["image"] = responseJson.userImageData;
+          dict["username"] = responseJson.userName;
+          dict["firstName"] = responseJson.userFirstName;
+          dict["lastName"] = responseJson.userLastName;
+          dict["selectedAgeGroupCode"] = responseJson.userAgeGroup;
+          dict["gender"] = responseJson.userGender;
+          dict["userId"] = responseJson.userId;
+          dict["description"] = responseJson.userDescription;
+          dict["userDesignation"] = responseJson.userDesignation;
+          dict["userLanguage"] = responseJson.userLanguage;
+
+          this.setState({ data: dict });
+          saveUserData(this.state.data);
+        }
+
+        // this.serverHitForSecondResponse();
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+
   readNotification = (index, notifications, screen) => {
-    const { count } = this.state.notifications;
-    let counted;
+    // const { count } = this.state.notifications;
+    // let counted;
     let newNotifications = notifications;
 
-    if (count > 0) {
-      counted = count - 1;
-    } else {
-      counted = count;
-    }
+   
+    // if (count > 0) {
+    //   counted = count - 1;
+    // } else {
+    //   counted = count;
+    // }
 
-    newNotifications.notificationList[index].read = true;
-    newNotifications.count = counted;
+    // newNotifications.notificationList[index].read = true;
+    // newNotifications.count = counted;
 
     let updatedNotification = Object.assign(newNotifications, {});
+
     console.log(updatedNotification)
     this.setState({
-      notificationsnotification: updatedNotification
+      notifications: updatedNotification
     })
-
+    // alert(JSON.stringify(notifications[index]));
     if (screen === 'survey' || screen === 'Survey') {
-      this.toQuesScreen(notifications)
+      let obj = newNotifications.notificationList[index];
+      let surveyThreadID = obj["surveyThreadId"];
+      this.toQuesScreen(surveyThreadID,updatedNotification);
     } else if (screen === 'trends' || screen === 'Survey') {
       this.toTrendScreen()
     } else if (screen === 'timeline' || screen === 'Survey') {
@@ -200,8 +244,9 @@ export default class HomeScreen extends Component {
     }
   }
 
-  updateNotifications = (notificationLogId) => {
+  updateNotifications = (notificationLogId,notification) => {
     console.log('called')
+    // return;
     axios.post(UPDATE_USER_NOTIFICATIONS, {
       notificationLogId: notificationLogId.toString(),
       read: "Y",
@@ -286,15 +331,20 @@ export default class HomeScreen extends Component {
   tick = () => {
 
     // alert('aaa');
-    Permissions.check('location').then(response => {
-      if (response === 'denied' || response === 'undetermined') {
-        // this.setState({ isForFirstTime: true });
-        this._requestPermission();
-      } else if (response === 'authorized') {
-        // this.getLocation()
-        this.fetchCurrentLocation();
-      }
-    })
+    this.checkPermission();
+
+    this.getUserDetails();
+
+    // Permissions.check('location').then(response => {
+      
+    //   if (response === 'denied' || response === 'undetermined') {
+    //     // this.setState({ isForFirstTime: true });
+    //     this._requestPermission();
+    //   } else if (response === 'authorized') {
+    //     // this.getLocation()
+    //     this.fetchCurrentLocation();
+    //   }
+    // })
 
     // let counter = this.state.counter + 1;
     // this.setState({
@@ -348,6 +398,7 @@ export default class HomeScreen extends Component {
           user_id: this.state.user_id,
           lat_long: this.state.lat_lon,
           isPolice: true,
+          username : this.state.data.username,
           userLanguage: this.state.data.userLanguage,
           languageCode: this.state.firstAPIresponse ? this.state.firstAPIresponse.languageCodes : null,
           language: menuName ? menuName[4] : null,
@@ -387,15 +438,20 @@ export default class HomeScreen extends Component {
           user_id: this.state.user_id,
           lat_lon: this.state.lat_lon,
           // languageCode: this.state.firstAPIresponse ? this.state.firstAPIresponse.languageCodes : null,
-          menuName: menuName
+          menuName: menuName,
+
+          notifications: this.state.notifications,
+          readNotification: this.readNotification,
+          updateNotifications: this.updateNotifications,
         },
       },
     });
   };
 
-  toQuesScreen = () => {
+  toQuesScreen = (surveyThreadID,updatedNotification) => {
     const { menuName } = this.state;
 
+    let notification = updatedNotification ? updatedNotification : this.state.notifications;
     Navigation.push(this.props.componentId, {
       component: {
         name: 'QuestionnaireScreen',
@@ -411,7 +467,13 @@ export default class HomeScreen extends Component {
           lat_lon: this.state.lat_lon,
           userLanguage: this.state.data.userLanguage,
           // languageCode: this.state.firstAPIresponse ? this.state.firstAPIresponse.languageCodes : null,
-          menuName: menuName
+          menuName: menuName,
+          surveyThreadID: surveyThreadID,
+
+          notifications: notification,
+          readNotification: this.readNotification,
+          updateNotifications: this.updateNotifications,
+
         }
       },
     });
@@ -465,7 +527,12 @@ export default class HomeScreen extends Component {
           userLanguage: this.state.data.userLanguage,
           languageCode: this.state.firstAPIresponse ? this.state.firstAPIresponse.languageCodes : null,
           user_id: this.state.user_id,
-          menuName: menuName
+          menuName: menuName,
+
+          notifications: this.state.notifications,
+          readNotification: this.readNotification,
+          updateNotifications: this.updateNotifications,
+          // readNotification: this.readNotification,
         }
       },
     });
@@ -524,11 +591,15 @@ export default class HomeScreen extends Component {
 
   checkPermission = () => {
     Permissions.check('location').then(response => {
+      
       if (response === 'denied' || response === 'undetermined') {
         this._requestPermission();
       } else if (response === 'authorized') {
         // this.getLocation()
         this.fetchCurrentLocation();
+      }else{
+        this.serverHitForFourthResponse();
+        this.requestToServer();
       }
     })
   }
@@ -605,7 +676,7 @@ export default class HomeScreen extends Component {
         // loadingFourth
 
         notifications: {
-          count: 12,
+          count: null,
           data: this.props.data,
           menuName: this.getLanguageCode(this.props.data.userLanguage),
           notification: [
@@ -1011,7 +1082,11 @@ export default class HomeScreen extends Component {
                     surveyType: 'L',
                     surveyTitle: currLandPageSurvey[firstKey],
                     componentId: this.props.componentId,
-                    menuName: menuName ? menuName[3] : null,
+                    menuName: menuName ? menuName : null,
+
+                    notifications: this.state.notifications,
+                    readNotification: this.readNotification,
+                    updateNotifications: this.updateNotifications,
                   }
                 },
               });
@@ -1254,6 +1329,7 @@ export default class HomeScreen extends Component {
 
     const BadgedIcon = withBadge(notifications.count)(Icon);
 
+
     console.log(this.state)
 
 
@@ -1267,11 +1343,11 @@ export default class HomeScreen extends Component {
             <Image
               style={{
                 marginLeft: normalize(10),
-                width: normalize(40),
-                height: normalize(40),
+                width: normalize(30),
+                height: normalize(30),
                 marginTop: normalize(5),
                 marginBottom: normalize(5),
-                borderRadius: normalize(40) / 2,
+                borderRadius: normalize(30) / 2,
               }}
               // source={typeof(this.props.data.image) === 'number' ? require('../../assets/UserSmall.png') : this.props.data.image}
               source={this.state.data.image ? { uri: "data:image/png;base64," + this.state.data.image } : require('../../assets/UserSmall.png')}
@@ -1279,36 +1355,61 @@ export default class HomeScreen extends Component {
           </TouchableOpacity>
           <Text
             style={{
+              textAlign: 'center',
               justifyContent: 'center',
               alignItems: 'center',
               marginLeft: 5,
               fontSize: normalize(14),
               color: 'white',
+              flex: 1
             }}
+            minimumFontScale={.3}
+            adjustsFontSizeToFit
+            numberOfLines={1}
           >
             {this.state.data.username}
           </Text>
 
-          <View style={{ marginRight: hp('4%') }}>
-            {notifications.count <= 0 ?
+          <TouchableOpacity style={{
+            // marginRight: hp('4%'),
+            // marginLeft: 0,
+
+            width: hp('10%'),
+            justifyContent: 'center',
+            alignItems: 'center',
+          }} onPress={() => { this.showNotificationScreen() }}>
+            {/* <BadgedIcon
+                color="#fff"
+                type="font-awesome"
+                onPress={() => this.showNotificationScreen()}
+                name="bell-o" /> */}
+            {/* <FontAwesome
+                size={hp('3%')}
+                onPress={() => this.showNotificationScreen()}
+                name="bell-o"
+                color="#fff"
+              />  */}
+            {notifications.count && notifications.count > 0 ?
+              <BadgedIcon
+                size={hp('3%')}
+                color="#fff"
+                type="font-awesome"
+                onPress={() => this.showNotificationScreen()}
+                name="bell-o" />
+              :
               <FontAwesome
                 size={hp('3%')}
                 onPress={() => this.showNotificationScreen()}
                 name="bell-o"
                 color="#fff"
-              /> :
-              <BadgedIcon
-                color="#fff"
-                type="font-awesome"
-                onPress={() => this.showNotificationScreen()}
-                name="bell-o" />
+              />
             }
             {/* <BadgedIcon
               color="#fff"
               type="font-awesome"
               onPress={() => this.showNotificationScreen()}
               name="bell-o" /> */}
-          </View>
+          </TouchableOpacity>
         </View>
 
         {/* //Second half */}
@@ -1331,8 +1432,9 @@ export default class HomeScreen extends Component {
           }
           <View style={{ position: 'absolute', width: 50, height: 40, top: 0, right: 0 }}>
             <TouchableOpacity style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
-              this.setState({ isLoading: true, landingTopSix: null });
-              this.tick();
+              this.setState({ landingTopSix: null });
+              // this.tick();
+              this.serverHitForFourthResponse();
             }
             }>
               <Image source={require('../../assets/Home_1_2/refresh.png')} />
@@ -1465,7 +1567,7 @@ export default class HomeScreen extends Component {
           <View style={styles.seperator} />
 
           <MenuButtons
-            onPress={this.toQuesScreen}
+            onPress={() => this.toQuesScreen(null,null)}
             // info={menuName[1]}
             info={menuName ? menuName[1] : null}
             source={menuImageName[1]}
@@ -1507,7 +1609,7 @@ const styles = StyleSheet.create({
     paddingTop: 0,
     flexDirection: 'row',
     backgroundColor: '#fff',
-    aspectRatio : 1.6
+    aspectRatio: Platform.isPad ? 2.1 : 1.6
     // height: hp('24%'),
     // flex: 1,
   },

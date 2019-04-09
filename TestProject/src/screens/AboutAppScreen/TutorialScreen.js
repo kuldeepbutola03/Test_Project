@@ -8,7 +8,8 @@ import {
   Image,
   TouchableOpacity,
   AsyncStorage,
-  Alert
+  Alert,
+  Platform
 } from 'react-native';
 
 
@@ -35,17 +36,30 @@ export default class TutorialScreen extends Component {
   //   locationLatLong = null;
   // //   user_Id = 1;
 
-  state = {
-    // trendImages: null,
-    imageList: [require('../../assets/Tutorial/t_1.png'), require('../../assets/Tutorial/t_2.png'), require('../../assets/Tutorial/t_3.png')],
-    activeSlide: 0,
-    pushNotificationToken: null,
-    // loading: true,
-  }
 
-  constructor(props){
+
+  constructor(props) {
     super(props);
-    // alert("saf")
+
+    let array = Platform.isPad ?
+      [
+        require('../../assets/Tutorial/t_1_.jpg'),
+        require('../../assets/Tutorial/t_2_.jpg'),
+        require('../../assets/Tutorial/t_3_.jpg')
+      ]
+      :
+      [
+        require('../../assets/Tutorial/t_1.jpg'),
+        require('../../assets/Tutorial/t_2.jpg'),
+        require('../../assets/Tutorial/t_3.jpg')
+      ];
+    this.state = {
+      // trendImages: null,
+      imageList: array,
+      activeSlide: 0,
+      pushNotificationToken: null,
+      // loading: true,
+    }
   }
 
   componentDidMount() {
@@ -76,11 +90,11 @@ export default class TutorialScreen extends Component {
   async getToken() {
     let fcmToken = await AsyncStorage.getItem(FCM_TOKEN);
     if (!fcmToken) {
-        fcmToken = await firebase.messaging().getToken();
-        if (fcmToken) {
-            // user has a device token
-            await AsyncStorage.setItem(FCM_TOKEN, fcmToken);
-        }
+      fcmToken = await firebase.messaging().getToken();
+      if (fcmToken) {
+        // user has a device token
+        await AsyncStorage.setItem(FCM_TOKEN, fcmToken);
+      }
     }
     // alert(fcmToken);
     this.setState({ pushNotificationToken: fcmToken })
@@ -106,25 +120,25 @@ export default class TutorialScreen extends Component {
     * Triggered when a particular notification has been received in foreground
     * */
     this.notificationListener = firebase.notifications().onNotification((notification) => {
-        const { title, body } = notification;
-        this.showAlert(title, body);
+      const { title, body } = notification;
+      this.showAlert(title, body);
     });
-  
+
     /*
     * If your app is in background, you can listen for when a notification is clicked / tapped / opened as follows:
     * */
     this.notificationOpenedListener = firebase.notifications().onNotificationOpened((notificationOpen) => {
-        const { title, body } = notificationOpen.notification;
-        this.showAlert(title, body);
+      const { title, body } = notificationOpen.notification;
+      this.showAlert(title, body);
     });
-  
+
     /*
     * If your app is closed, you can check if it was opened by a notification being clicked / tapped / opened as follows:
     * */
     const notificationOpen = await firebase.notifications().getInitialNotification();
     if (notificationOpen) {
-        const { title, body } = notificationOpen.notification;
-        this.showAlert(title, body);
+      const { title, body } = notificationOpen.notification;
+      this.showAlert(title, body);
     }
     /*
     * Triggered for data only payload in foreground
@@ -135,12 +149,12 @@ export default class TutorialScreen extends Component {
       console.log(JSON.stringify(message));
     });
   }
-  
+
   showAlert(title, body) {
     Alert.alert(
       title, body,
       [
-          { text: 'OK', onPress: () => console.log('OK Pressed') },
+        { text: 'OK', onPress: () => console.log('OK Pressed') },
       ],
       { cancelable: false },
     );
@@ -166,7 +180,7 @@ export default class TutorialScreen extends Component {
             animate: false,
             drawBehind: true,
           },
-          layout : {
+          layout: {
             orientation: ['portrait']
           },
         },

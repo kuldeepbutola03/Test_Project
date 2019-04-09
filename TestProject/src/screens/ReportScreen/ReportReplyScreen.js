@@ -583,7 +583,7 @@ export default class ReportReplyScreen extends Component {
 
           <View style={styles.headerView} backgroundColor={APP_GLOBAL_COLOR}>
 
-            <View style={{ flex: 1, backgroundColor: 'clear' }}>
+            <View style={{ width : 60 , backgroundColor: 'clear' }}>
               <CustomButton
                 source={require('../../assets/back.png')}
                 style={{
@@ -594,7 +594,7 @@ export default class ReportReplyScreen extends Component {
                 onPress={this.homeButtonTapped}
               />
             </View>
-            <View style={{ flex: 2.5, backgroundColor: 'clear', flexDirection: 'row', alignItems: 'center' }}>
+            <View style={{ flex: 7.5, backgroundColor: 'clear', flexDirection: 'row', alignItems: 'center' }}>
               <Image
                 style={{
                   backgroundColor: APP_GLOBAL_COLOR,
@@ -615,7 +615,12 @@ export default class ReportReplyScreen extends Component {
                   marginLeft: 5,
                   fontSize: normalize(14),
                   color: 'white',
-                }}>
+                  flex : 1
+                }}
+                minimumFontScale={.03}
+                adjustsFontSizeToFit
+                numberOfLines={1}
+                >
                 {this.props.userData.username}
               </Text>
             </View>
@@ -854,17 +859,19 @@ const styles = StyleSheet.create({
     height: Dimensions.get('window').height * 0.07
   },
   textheaderView: {
-    flex: 2.5,
+    // flex: 2.5,
     backgroundColor: 'transparent',
     justifyContent: 'center',
   },
   textView: {
-    position: 'absolute',
+    // position: 'absolute',
     backgroundColor: 'transparent',
-    right: 15,
+    marginRight: 15,
+    marginLeft : 10,
     fontSize: normalize(17),
     fontWeight: 'bold',
-    color: 'white'
+    color: 'white',
+
   },
   bottomView: {
     flex: 0.93,

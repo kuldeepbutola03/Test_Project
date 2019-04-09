@@ -30,13 +30,6 @@ export default class VideoScreen extends Component {
         componentId: PropTypes.string,
     };
 
-   
-
-    
-     
-
-   
-
     render() {
         var { height, width } = Dimensions.get('window');
 

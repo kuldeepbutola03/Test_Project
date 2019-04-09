@@ -61,100 +61,10 @@ export default class ReportScreen extends Component {
     sortMethod: 3,
     likeLoading: false,
     notifications: {
-      count: 12,
+      count: null,
       data: this.props.data,
       menuName: this.getLanguageCode(this.props.data.userLanguage),
-      notification: [
-        {
-          read: false,
-          notificationLogId: '12',
-          title: 'Survey Update',
-          notificationFor: 'survey',
-          subtitle: 'A new survey has been added, please take your time and check it out',
-          notificationDateTime: moment().format(),
-
-        },
-        {
-          read: true,
-          notificationLogId: '11',
-          title: 'Survey Update',
-          notificationFor: 'survey',
-          subtitle: 'A new survey has been added, please take your time and check it out',
-          notificationDateTime: moment().format(),
-        },
-        {
-          read: false,
-          notificationLogId: '14',
-          title: 'Timeline Update',
-          notificationFor: 'timeline',
-          subtitle: 'Someone liked your comment',
-          notificationDateTime: moment().format(),
-        },
-        {
-          read: false,
-          notificationLogId: '743',
-          title: 'Survey Update',
-          notificationFor: 'survey',
-          subtitle: 'A new survey has been added, please take your time and check it out',
-          notificationDateTime: moment().format(),
-        },
-        {
-          read: false,
-          notificationLogId: '9483',
-          title: 'Survey',
-          notificationFor: 'survey',
-          subtitle: 'A new survey has been added, please take your time and check it out',
-          notificationDateTime: moment().format(),
-        },
-        {
-          read: false,
-          notificationLogId: '0293',
-          title: 'Timeline Update',
-          notificationFor: 'timeline',
-          subtitle: 'Ben just commented on your update',
-          notificationDateTime: moment().format(),
-        },
-        {
-          read: false,
-          notificationLogId: '837484',
-          title: 'Timeline Update',
-          notificationFor: 'timeline',
-          subtitle: 'Chuks commented on your post',
-          notificationDateTime: moment().format(),
-        },
-        {
-          read: false,
-          notificationLogId: '838494',
-          title: 'Survey',
-          notificationFor: 'survey',
-          subtitle: 'A new survey has been added, please take your time and check it out',
-          notificationDateTime: moment().format(),
-        },
-        {
-          read: true,
-          notificationLogId: '938292933',
-          title: 'Survey',
-          notificationFor: 'survey',
-          subtitle: 'A new survey has been added, please take your time and check it out',
-          notificationDateTime: moment().format(),
-        },
-        {
-          read: false,
-          notificationLogId: '027842',
-          title: 'Survey',
-          notificationFor: 'survey',
-          subtitle: 'A new survey has been added, please take your time and check it out',
-          notificationDateTime: moment().format(),
-        },
-        {
-          read: true,
-          notificationLogId: '948392',
-          title: 'Survey',
-          notificationFor: 'survey',
-          subtitle: 'A new survey has been added, please take your time and check it out',
-          notificationDateTime: moment().format(),
-        },
-      ]
+      notification: this.props.notifications
     }
   };
 
@@ -259,7 +169,7 @@ export default class ReportScreen extends Component {
   }
 
   _onRefresh = () => {
-    this.getNotifications()
+    // this.getNotifications()
     this.setState({ refreshing: true, likeLoading: true, fetchRecords: 0, });
 
     getUserID().then((userId) => {
@@ -882,9 +792,13 @@ export default class ReportScreen extends Component {
           },
         },
         passProps: {
+          // notifications: this.state.notifications,
+          // readNotification: this.readNotification,
+          // updateNotifications: this.updateNotifications,
+
           notifications: this.state.notifications,
-          readNotification: this.readNotification,
-          updateNotifications: this.updateNotifications,
+          readNotification: this.props.readNotification,
+          updateNotifications: this.props.updateNotifications,
         }
 
       },
@@ -945,18 +859,19 @@ export default class ReportScreen extends Component {
 
         <View style={styles.headerView} backgroundColor={APP_GLOBAL_COLOR}>
 
-          <View style={{ flex: 1, backgroundColor: 'clear' }}>
+          <View style={{ width: 60, backgroundColor: 'clear' }}>
             <CustomButton
-              source={require('../../assets/homez.png')}
+              source={require('../../assets/home2.png')}
               style={{
                 flexDirection: 'row',
                 flex: 1,
-                margin: normalize(.5)
+                margin: normalize(.5),
+                // width : 60
               }}
               onPress={this.homeButtonTapped}
             />
           </View>
-          <TouchableOpacity onPress={this.gotoProfile} style={{ flex: 2.5 }}>
+          <TouchableOpacity onPress={this.gotoProfile} style={{ flex: 2.5 }} backgroundColor='grey'>
             <View style={{ flex: 1, backgroundColor: 'clear', flexDirection: 'row', alignItems: 'center' }}>
               <Image
                 style={{
@@ -973,12 +888,20 @@ export default class ReportScreen extends Component {
 
               <Text
                 style={{
+                  flex: 1,
                   justifyContent: 'center',
                   alignItems: 'center',
                   marginLeft: 5,
                   fontSize: normalize(14),
                   color: 'white',
-                }}>
+
+                  marginRight: 0
+                }}
+                minimumFontScale={.03}
+                adjustsFontSizeToFit
+                numberOfLines={1}
+
+              >
                 {this.props.data.username}
               </Text>
             </View>
@@ -1010,13 +933,28 @@ export default class ReportScreen extends Component {
                 style={{ marginTop: hp('.5%'), marginRight: hp('.8%') }}
               />
             </TouchableWithoutFeedback>
-            <TouchableWithoutFeedback onPress={() => this.showNotificationScreen()}>
+            <TouchableWithoutFeedback style = {{width : hp('10%')}} onPress={() => this.showNotificationScreen()}>
               {/* <BadgedIcon
                   color="#fff"
                   type="font-awesome"
                   onPress={() => { }}
                   name="bell-o" /> */}
-              {notifications.count <= 0 ?
+              {notifications.count && notifications.count > 0 ?
+                <BadgedIcon
+                  size={hp('3%')}
+                  color="#fff"
+                  type="font-awesome"
+                  // onPress={() => this.showNotificationScreen()}
+                  name="bell-o" />
+                :
+                <FontAwesome
+                  size={hp('3%')}
+                  // onPress={() => this.showNotificationScreen()}
+                  name="bell-o"
+                  color="#fff"
+                />
+              }
+              {/* {notifications.count <= 0 ?
                 <FontAwesome
                   size={hp('3%')}
                   style={{ marginRight: hp('.8%') }}
@@ -1030,7 +968,7 @@ export default class ReportScreen extends Component {
                   style={{ marginRight: hp('.8%') }}
                   // onPress={() => this.showNotificationScreen()}
                   name="bell-o" />
-              }
+              } */}
             </TouchableWithoutFeedback>
           </View>
         </View>
@@ -1178,7 +1116,7 @@ const styles = StyleSheet.create({
     height: Dimensions.get('window').height * 0.07
   },
   topIcons: {
-    flex: 5,
+    // flex: 5,
     marginRight: hp('2%'),
     flexDirection: 'row',
     justifyContent: 'flex-end',

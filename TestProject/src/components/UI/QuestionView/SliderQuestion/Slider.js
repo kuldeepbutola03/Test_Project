@@ -93,7 +93,7 @@ class Sliders extends Component {
       return menu;
     }
 
-    return ["Strongly\nDisagree", 'Disagree', 'Neutral', 'Agree', "Strongly\nDisagree"];
+    return ["Strongly\nDisagree", 'Disagree', 'Neutral', 'Agree', "Strongly\nAgree"];
 
   }
   render() {
