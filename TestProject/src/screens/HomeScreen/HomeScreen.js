@@ -373,7 +373,10 @@ export default class HomeScreen extends Component {
           lat_long: this.state.lat_lon,
           isPolice: false,
           userLanguage: this.state.data.userLanguage,
-          languageCode: this.state.firstAPIresponse ? this.state.firstAPIresponse.languageCodes : null
+          languageCode: this.state.firstAPIresponse ? this.state.firstAPIresponse.languageCodes : null,
+
+          username : this.state.data.username,
+          language: menuName ? menuName[4] : null
         }
 
       },
@@ -591,7 +594,7 @@ export default class HomeScreen extends Component {
 
   checkPermission = () => {
     Permissions.check('location').then(response => {
-      
+      // alert(response);
       if (response === 'denied' || response === 'undetermined') {
         this._requestPermission();
       } else if (response === 'authorized') {
@@ -607,6 +610,7 @@ export default class HomeScreen extends Component {
   _requestPermission = () => {
     Permissions.request('location').then(response => {
       // this.setState({ location: response })
+      // alert('aaaa'+response);
       if (response === 'denied' || response === 'undetermined') {
         // this._requestPermission();
         this.serverHitForFourthResponse();
@@ -615,6 +619,9 @@ export default class HomeScreen extends Component {
       } else if (response === 'authorized') {
         // this.getLocation()
         this.fetchCurrentLocation();
+      } else {
+        this.serverHitForFourthResponse();
+        this.requestToServer();
       }
     })
   }

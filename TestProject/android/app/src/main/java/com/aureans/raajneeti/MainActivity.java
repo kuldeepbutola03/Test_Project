@@ -34,9 +34,11 @@ public class MainActivity extends NavigationActivity implements OnImagePickerPer
         // SplashScreen.show(this);
         super.onActivityResult(requestCode, resultCode, data);
         MainApplication.getCallbackManager().onActivityResult(requestCode, resultCode, data);
-
-
         
+        Intent intent = getIntent();
+    String action = intent.getAction();
+    //Uri dd = intent.getData();
+
     }
 
     //imagepicker code from here

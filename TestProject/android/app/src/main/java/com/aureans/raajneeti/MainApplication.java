@@ -5,8 +5,9 @@ import com.airbnb.android.react.maps.MapsPackage;
 import com.dylanvann.fastimage.FastImageViewPackage;
 import com.facebook.CallbackManager;
 import com.facebook.react.ReactApplication;
+import com.kochava.reactlibrary.RNKochavaTrackerPackage;
 import com.react.rnspinkit.RNSpinkitPackage;
-import com.reactnativecomponent.swiperefreshlayout.RCTSwipeRefreshLayoutPackage;
+// import com.reactnativecomponent.swiperefreshlayout.RCTSwipeRefreshLayoutPackage;
 import com.airbnb.android.react.maps.MapsPackage;
 import com.dylanvann.fastimage.FastImageViewPackage;
 import com.github.yamill.orientation.OrientationPackage;
@@ -38,7 +39,7 @@ import io.invertase.firebase.analytics.RNFirebaseAnalyticsPackage;
 import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;                      
 import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
 
-import com.reactnativecomponent.swiperefreshlayout.RCTSwipeRefreshLayoutPackage; 
+
 
 
 public class MainApplication extends NavigationApplication implements ShareApplication, ReactApplication {
@@ -86,7 +87,7 @@ public class MainApplication extends NavigationApplication implements ShareAppli
                 new PickerPackage(),
                 new RNFirebaseMessagingPackage(),
                 new RNFirebaseNotificationsPackage(),
-                new RCTSwipeRefreshLayoutPackage(),
+                // new RCTSwipeRefreshLayoutPackage(),
                 new OrientationPackage(),
                  new RNSpinkitPackage()   
         );

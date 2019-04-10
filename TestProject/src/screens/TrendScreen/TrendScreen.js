@@ -182,8 +182,10 @@ class TrendScreen extends Component {
       // this.getLocation()
       if (response === 'denied' || response === 'undetermined') {
         this.getDataFromServer(true);
-      } else {
+      } else if (response === 'authorized'){
         this.getLocation();
+      }else{
+        this.getDataFromServer(true);
       }
     })
   }

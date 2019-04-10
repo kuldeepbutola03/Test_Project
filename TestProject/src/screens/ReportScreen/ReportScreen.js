@@ -41,7 +41,7 @@ import axios from 'axios';
 
 import firebase from 'react-native-firebase';
 
-import PullToRefreshListView from 'react-native-smart-pull-to-refresh-listview';
+// import PullToRefreshListView from 'react-native-smart-pull-to-refresh-listview';
 
 // import SharingCard from '../../components/UI/Sharing/SharingCard';
 export default class ReportScreen extends Component {
@@ -1038,7 +1038,7 @@ export default class ReportScreen extends Component {
                 }}>Whatsapp</Button>
               <Button iconSrc={{ uri: GOOGLE_PLUS_ICON }}
                 onPress={() => {
-                  this.props.onCancel();
+                  this.onCancel();
                   setTimeout(() => {
                     Share.shareSingle(Object.assign(shareOptions, {
                       "social": "googleplus"

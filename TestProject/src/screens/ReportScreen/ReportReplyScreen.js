@@ -800,7 +800,7 @@ export default class ReportReplyScreen extends Component {
               }}>Whatsapp</Button>
             <Button iconSrc={{ uri: GOOGLE_PLUS_ICON }}
               onPress={() => {
-                this.props.onCancel();
+                this.onCancel();
                 setTimeout(() => {
                   Share.shareSingle(Object.assign(shareOptions, {
                     "social": "googleplus"

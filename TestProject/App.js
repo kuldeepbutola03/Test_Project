@@ -67,6 +67,16 @@ import { DEFAULT_USER_ID, getUserData, saveUserData, saveUserID } from './Consta
 
 // ScreenOrientation.allow(ScreenOrientation.Orientation.PORTRAIT);
 
+// Import
+// import KochavaTracker from 'react-native-kochava-tracker';
+ 
+// // Configure
+// var configMapObject = {}
+// configMapObject[KochavaTracker.PARAM_ANDROID_APP_GUID_STRING_KEY] = "_YOUR_ANDROID_APP_GUID";
+// configMapObject[KochavaTracker.PARAM_IOS_APP_GUID_STRING_KEY] = "_YOUR_IOS_APP_GUID";
+// configMapObject[KochavaTracker.PARAM_WINDOWS_APP_GUID_STRING_KEY] = "_YOUR_WINDOWS_APP_GUID";
+// KochavaTracker.configure(configMapObject);
+
 Navigation.events().registerAppLaunchedListener(() => {
 
   Navigation.setDefaultOptions({

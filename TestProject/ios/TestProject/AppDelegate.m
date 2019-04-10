@@ -18,7 +18,7 @@
 
 #import "RNFirebaseNotifications.h"
 #import "RNFirebaseMessaging.h"
-
+#import <React/RCTLinkingManager.h>
 
 @implementation AppDelegate
 
@@ -56,6 +56,10 @@
             openURL:(NSURL *)url
             options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
 
+  if([[url absoluteString] hasPrefix:@"raajneeti"]){
+    return [RCTLinkingManager application:application openURL:url
+                 sourceApplication:options[UIApplicationOpenURLOptionsSourceApplicationKey] annotation:options[UIApplicationOpenURLOptionsAnnotationKey]];
+  }
   BOOL handled = [[FBSDKApplicationDelegate sharedInstance] application:application
     openURL:url
     sourceApplication:options[UIApplicationOpenURLOptionsSourceApplicationKey]
@@ -81,5 +85,15 @@ fetchCompletionHandler:(nonnull void (^)(UIBackgroundFetchResult))completionHand
   completionHandler();
 }
 
+
+
+// Only if your app is using [Universal Links](https://developer.apple.com/library/prerelease/ios/documentation/General/Conceptual/AppSearch/UniversalLinks.html).
+//- (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity
+// restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler
+//{
+//  return [RCTLinkingManager application:application
+//                   continueUserActivity:userActivity
+//                     restorationHandler:restorationHandler];
+//}
 
 @end

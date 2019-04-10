@@ -272,6 +272,11 @@ export default class PoliceProfileScreen extends Component {
     // alert(JSON.stringify(dataTappedForMore));
     let message = "@"+this.props.username + " gave " + count + " stars to " + name + "\n\nCheck it out on Raajneeti app";
 
+
+//     IOS- https://itunes.apple.com/us/app/raajneeti/id1449128685?mt=8
+ 
+// Android- https://play.google.com/store/apps/details?id=com.aureans.raajneeti
+
     shareOptions = {
       title: "Check out Raajneeti app",
       message: message,
@@ -280,7 +285,7 @@ export default class PoliceProfileScreen extends Component {
     };
 
     // if (data.picture && data.picture.uri) {
-    //   shareOptions["url"] = data.picture.uri;
+      shareOptions["url"] = Platform.OS === 'ios' ? 'https://itunes.apple.com/us/app/raajneeti/id1449128685?mt=8' : 'https://play.google.com/store/apps/details?id=com.aureans.raajneeti';
     // }
     if (Platform.OS === "android") {
       this.setState({ visible: true });
@@ -616,7 +621,7 @@ export default class PoliceProfileScreen extends Component {
 
           <Button iconSrc={{ uri: GOOGLE_PLUS_ICON }}
             onPress={() => {
-              this.props.onCancel();
+              this.onCancel();
               setTimeout(() => {
                 Share.shareSingle(Object.assign(shareOptions, {
                   "social": "googleplus"

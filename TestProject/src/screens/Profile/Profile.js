@@ -81,9 +81,9 @@ export default class Profile extends Component {
     if (!validUsername && this.state.editable) {
       alert('Your username can only contain alphabets and numbers');
       return;
-    } 
-  
-    
+    }
+
+
     if (username.length < 1) {
       alert('Please fill in your username');
     } else {
@@ -96,7 +96,7 @@ export default class Profile extends Component {
     //   alert('Please fill in your username');
     //   return
     // } else 
-    
+
     // else {
     //   // saveUserData(this.state);
     //   this.updateDetails();
@@ -523,9 +523,32 @@ export default class Profile extends Component {
 
             <DefaultInput placeholder="First Name" value={this.state.firstName} onChangeText={(text) => this.setState({ firstName: text })} />
             <DefaultInput placeholder="Last Name" value={this.state.lastName} onChangeText={(text) => this.setState({ lastName: text })} /> */}
+            
+            <View style={{ height: 100, width: '85 %', alignItems: 'center', justifyContent: 'center' }}>
+              {<Text style={{ color: 'grey', position: 'absolute', top: 5, right: 10, fontSize: 12 }}>{500 - (this.state.description.length)}</Text>}
+              <View style={{
+                height: "100%",
+                width: "100%",
+                borderWidth: 2,
+                borderColor: '#eee',
+                borderRadius: 20,
+                alignItems: 'center', justifyContent: 'center'
+              }}>
+                <TextInput
+                  underlineColorAndroid="transparent"
+                  maxLength={400}
+                  placeholder="About me"
+                  multiline
+                  value={this.state.description}
+                  style={{ height: "90%", width: '94%', paddingVertical: "10%", paddingHorizontal: "10%", textAlign: 'center', textAlignVertical: 'center' }}
+                  onChangeText={(text) => this.setState({ description: text })}
+                />
+              </View>
+            </View>
 
-            <Text style={{ alignSelf: 'flex-end', marginRight: '10%' , color : 'grey'}}>{500 - (this.state.description.length)}</Text>
-            <DefaultInput style={{ height: 100, width: '85%' }} maxLength={500} placeholder="About me" multiline value={this.state.description} onChangeText={(text) => this.setState({ description: text })} />
+
+            {/* <Text style={{ alignSelf: 'flex-end', marginRight: '10%' , color : 'grey'}}>{500 - (this.state.description.length)}</Text>
+            <DefaultInput style={{ height: 100, width: '85%' }} maxLength={500} placeholder="About me" multiline value={this.state.description} onChangeText={(text) => this.setState({ description: text })} /> */}
 
             {/* <TouchableOpacity onPress={() => this.setState({ visibleGender: true })} style={{ width: '65%' }} >
               <View pointerEvents='none'>

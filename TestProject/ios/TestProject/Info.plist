@@ -28,6 +28,16 @@
 				<string>fb2253732584951139</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string></string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>raajneeti</string>
+			</array>
+		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
@@ -57,6 +67,12 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>Raajneeti wants to use music</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Raajneeti wants to use bluetooth</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Raajneeti wants to use calender</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Allow to use camera</string>
 	<key>NSLocationAlwaysUsageDescription</key>
@@ -65,10 +81,14 @@
 	<string>Raajneeti wants to use location</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Allow to use microphone</string>
+	<key>NSMotionUsageDescription</key>
+	<string>Raajneeti wants to use motion</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Raajneeti wants to save photos</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Raajneeti wants to use photos</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Raajneeti wants to use speech recognition</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>AntDesign.ttf</string>
@@ -103,15 +123,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>NSCalendarsUsageDescription</key>
-	<string>Raajneeti wants to use calender</string>
-	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>Raajneeti wants to use bluetooth</string>
-	<key>NSAppleMusicUsageDescription</key>
-	<string>Raajneeti wants to use music</string>
-	<key>NSMotionUsageDescription</key>
-	<string>Raajneeti wants to use motion</string>
-	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>Raajneeti wants to use speech recognition</string>
 </dict>
 </plist>
