@@ -26,6 +26,8 @@ import axios from 'axios';
 import { APP_GLOBAL_COLOR } from '../../../Constant';
 import firebase from 'react-native-firebase';
 import Orientation from 'react-native-orientation';
+
+import KochavaTracker from 'react-native-kochava-tracker';
 export default class AboutAppScreen extends Component {
     static propTypes = {
         componentId: PropTypes.string,
@@ -39,34 +41,38 @@ export default class AboutAppScreen extends Component {
     }
 
     componentDidMount() {
-        
+
         // this.getDataFromServer(true)
         firebase.analytics().setCurrentScreen("Screen", "About_App_Screen");
         //firebase.analytics().logEvent("Trends_Screen");
         firebase.analytics().setUserProperty("Screen", "About_App_Screen");
         firebase.analytics().logEvent("Content", { "Screen": "About_App_Screen" });
+
+        var eventMapObject = {};
+        eventMapObject["screen_name"] = "About_App_Screen";
+        KochavaTracker.sendEventMapObject(KochavaTracker.EVENT_TYPE_LEVEL_COMPLETE_STRING_KEY, eventMapObject);
     }
 
 
     handleTap = () => {
         Navigation.push(this.props.componentId, {
             component: {
-              name: 'TutorialScreen',
-              options: {
-                topBar: {
-                  visible: false,
-                  drawBehind: true,
-                  animate: false,
+                name: 'TutorialScreen',
+                options: {
+                    topBar: {
+                        visible: false,
+                        drawBehind: true,
+                        animate: false,
+                    },
+                    layout: {
+                        orientation: ['portrait']
+                    }
                 },
-                layout : {
-                    orientation: ['portrait']
-                  }
-              },
-              passProps: {
-                
-              }
+                passProps: {
+
+                }
             },
-          });
+        });
     }
 
 
@@ -84,13 +90,13 @@ export default class AboutAppScreen extends Component {
 
                 <View style={{ flex: 1, width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', backgroundColor: APP_GLOBAL_COLOR }}>
 
-                    
-                {/* 161 × 174 */}
+
+                    {/* 161 × 174 */}
                     <Image style={{ marginBottom: 10, height: normalize(161) * 1.5, width: normalize(174) * 1.5, resizeMode: 'cover' }} source={require('../../assets/Tutorial/mainBg.png')} />
-                   
-                    <TouchableOpacity onPress={this.handleTap} style = {{height : 40 , width : '40%' , marginTop : 10 }} >
-                        <View style={{flex : 1, backgroundColor : 'white', justifyContent: 'center', alignItems:'center'}}>
-                            <Text style={{ fontWeight: 'bold', color:  APP_GLOBAL_COLOR  }}>GET STARTED</Text>
+
+                    <TouchableOpacity onPress={this.handleTap} style={{ height: 40, width: '40%', marginTop: 10 }} >
+                        <View style={{ flex: 1, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center' }}>
+                            <Text style={{ fontWeight: 'bold', color: APP_GLOBAL_COLOR }}>GET STARTED</Text>
                         </View>
                     </TouchableOpacity>
 

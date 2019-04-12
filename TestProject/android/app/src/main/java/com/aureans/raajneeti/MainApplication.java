@@ -89,7 +89,8 @@ public class MainApplication extends NavigationApplication implements ShareAppli
                 new RNFirebaseNotificationsPackage(),
                 // new RCTSwipeRefreshLayoutPackage(),
                 new OrientationPackage(),
-                 new RNSpinkitPackage()   
+                 new RNSpinkitPackage(),
+                 new RNKochavaTrackerPackage()   
         );
     }
 

@@ -32,6 +32,8 @@ import firebase from 'react-native-firebase';
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
+import KochavaTracker from 'react-native-kochava-tracker';
+
 export default class TutorialScreen extends Component {
   //   locationLatLong = null;
   // //   user_Id = 1;
@@ -69,6 +71,14 @@ export default class TutorialScreen extends Component {
     //firebase.analytics().logEvent("Trends_Screen");
     firebase.analytics().setUserProperty("Screen", "Tutorial_Screen");
     firebase.analytics().logEvent("Content", { "Screen": "Tutorial_Screen" });
+
+
+    
+
+var eventMapObject = {};
+        eventMapObject["screen_name"] = "Tutorial_Screen";
+        KochavaTracker.sendEventMapObject(KochavaTracker.EVENT_TYPE_LEVEL_COMPLETE_STRING_KEY, eventMapObject);
+
 
     this.createNotificationListeners();
   }

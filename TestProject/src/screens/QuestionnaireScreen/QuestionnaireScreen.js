@@ -18,6 +18,7 @@ import CustomButton from '../../components/UI/ButtonMod/CustomButtom';
 import CustomTextButton from '../../components/UI/ButtonMod/CustomTextButton';
 import QuestionniareListView from '../../components/UI/QuestionView/QuestionniareListView';
 
+import KochavaTracker from 'react-native-kochava-tracker';
 export default class QuestionnireScreen extends Component {
     state = {
         surveyThreadID: this.props.surveyThreadID,
@@ -409,6 +410,13 @@ export default class QuestionnireScreen extends Component {
         //firebase.analytics().logEvent("Trends_Screen");
         firebase.analytics().setUserProperty("Screen", "Questionnaire_Screen");
         firebase.analytics().logEvent("Content", { "Screen": "Questionnaire_Screen" });
+
+
+
+        var eventMapObject = {};
+        eventMapObject["screen_name"] = "Questionnaire_Screen";
+        KochavaTracker.sendEventMapObject(KochavaTracker.EVENT_TYPE_LEVEL_COMPLETE_STRING_KEY, eventMapObject);
+
     }
 
     homeButtonTapped = () => {
@@ -652,10 +660,10 @@ export default class QuestionnireScreen extends Component {
     //     })
     // }
 
-    updateNotifications = (notificationLogId,notification) => {
-        this.props.updateNotifications(notificationLogId,notification);
+    updateNotifications = (notificationLogId, notification) => {
+        this.props.updateNotifications(notificationLogId, notification);
         let updatedNotification = Object.assign(notification, {});
-        this.setState({notifications : updatedNotification});
+        this.setState({ notifications: updatedNotification });
     }
 
     // readNotification = (index, notifications, screen) => {

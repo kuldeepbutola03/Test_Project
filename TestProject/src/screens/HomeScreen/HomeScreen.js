@@ -23,7 +23,7 @@ import MenuButtons from '../../components/UI/ProfileView/MenuButtons';
 import { Navigation } from 'react-native-navigation';
 import { PropTypes } from 'prop-types';
 import { normalize, getUserID, DEFAULT_USER_ID, authHeaders, getUserData, saveUserData, APP_GLOBAL_COLOR } from '../../../Constant';
-import { LANDING_RESOURCES, LANDING_CDM, DEBUG, LANDING_PDM, LANDING_TOP_SIX, GET_USER_NOTIFICATIONS, UPDATE_USER_NOTIFICATIONS , GET_USER_DETAILS_EMAIL} from '../../../Apis';
+import { LANDING_RESOURCES, LANDING_CDM, DEBUG, LANDING_PDM, LANDING_TOP_SIX, GET_USER_NOTIFICATIONS, UPDATE_USER_NOTIFICATIONS, GET_USER_DETAILS_EMAIL } from '../../../Apis';
 import axios from 'axios';
 import { Button, withBadge, Icon } from 'react-native-elements';
 import HomeScoreView from '../../components/UI/ProfileCard/HomeScoreView';
@@ -36,7 +36,7 @@ import Permissions from 'react-native-permissions';
 import firebase from 'react-native-firebase';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import moment from 'moment';
-
+import KochavaTracker from 'react-native-kochava-tracker';
 // const { notifications } = this.state
 
 export default class HomeScreen extends Component {
@@ -216,7 +216,7 @@ export default class HomeScreen extends Component {
     // let counted;
     let newNotifications = notifications;
 
-   
+
     // if (count > 0) {
     //   counted = count - 1;
     // } else {
@@ -236,7 +236,7 @@ export default class HomeScreen extends Component {
     if (screen === 'survey' || screen === 'Survey') {
       let obj = newNotifications.notificationList[index];
       let surveyThreadID = obj["surveyThreadId"];
-      this.toQuesScreen(surveyThreadID,updatedNotification);
+      this.toQuesScreen(surveyThreadID, updatedNotification);
     } else if (screen === 'trends' || screen === 'Survey') {
       this.toTrendScreen()
     } else if (screen === 'timeline' || screen === 'Survey') {
@@ -244,7 +244,7 @@ export default class HomeScreen extends Component {
     }
   }
 
-  updateNotifications = (notificationLogId,notification) => {
+  updateNotifications = (notificationLogId, notification) => {
     console.log('called')
     // return;
     axios.post(UPDATE_USER_NOTIFICATIONS, {
@@ -336,7 +336,7 @@ export default class HomeScreen extends Component {
     this.getUserDetails();
 
     // Permissions.check('location').then(response => {
-      
+
     //   if (response === 'denied' || response === 'undetermined') {
     //     // this.setState({ isForFirstTime: true });
     //     this._requestPermission();
@@ -358,6 +358,8 @@ export default class HomeScreen extends Component {
   };
 
   toFireDepartmentScreen = () => {
+    const { menuName } = this.state;
+
     Navigation.push(this.props.componentId, {
       component: {
         name: 'PoliceProfileScreen',
@@ -375,7 +377,7 @@ export default class HomeScreen extends Component {
           userLanguage: this.state.data.userLanguage,
           languageCode: this.state.firstAPIresponse ? this.state.firstAPIresponse.languageCodes : null,
 
-          username : this.state.data.username,
+          username: this.state.data.username,
           language: menuName ? menuName[4] : null
         }
 
@@ -401,7 +403,7 @@ export default class HomeScreen extends Component {
           user_id: this.state.user_id,
           lat_long: this.state.lat_lon,
           isPolice: true,
-          username : this.state.data.username,
+          username: this.state.data.username,
           userLanguage: this.state.data.userLanguage,
           languageCode: this.state.firstAPIresponse ? this.state.firstAPIresponse.languageCodes : null,
           language: menuName ? menuName[4] : null,
@@ -451,7 +453,7 @@ export default class HomeScreen extends Component {
     });
   };
 
-  toQuesScreen = (surveyThreadID,updatedNotification) => {
+  toQuesScreen = (surveyThreadID, updatedNotification) => {
     const { menuName } = this.state;
 
     let notification = updatedNotification ? updatedNotification : this.state.notifications;
@@ -600,7 +602,7 @@ export default class HomeScreen extends Component {
       } else if (response === 'authorized') {
         // this.getLocation()
         this.fetchCurrentLocation();
-      }else{
+      } else {
         this.serverHitForFourthResponse();
         this.requestToServer();
       }
@@ -634,6 +636,11 @@ export default class HomeScreen extends Component {
     //firebase.analytics().logEvent("Home_Screen");
     firebase.analytics().setUserProperty("Screen", "Home_Screen");
     firebase.analytics().logEvent("Content", { "Screen": "Home_Screen" });
+    
+    var eventMapObject = {};
+    eventMapObject["screen_name"] = "Home_Screen";
+    KochavaTracker.sendEventMapObject(KochavaTracker.EVENT_TYPE_LEVEL_COMPLETE_STRING_KEY, eventMapObject);
+
   }
 
   goBack = () => {
@@ -1574,7 +1581,7 @@ export default class HomeScreen extends Component {
           <View style={styles.seperator} />
 
           <MenuButtons
-            onPress={() => this.toQuesScreen(null,null)}
+            onPress={() => this.toQuesScreen(null, null)}
             // info={menuName[1]}
             info={menuName ? menuName[1] : null}
             source={menuImageName[1]}

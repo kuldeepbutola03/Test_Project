@@ -1,4 +1,5 @@
 import { Navigation } from 'react-native-navigation';
+
 import SplashScreen from 'react-native-splash-screen';
 import LoginSceen from './src/screens/LoginScreen/LoginScreen';
 import Profile from './src/screens/Profile/Profile';
@@ -68,14 +69,10 @@ import { DEFAULT_USER_ID, getUserData, saveUserData, saveUserID } from './Consta
 // ScreenOrientation.allow(ScreenOrientation.Orientation.PORTRAIT);
 
 // Import
-// import KochavaTracker from 'react-native-kochava-tracker';
- 
-// // Configure
-// var configMapObject = {}
-// configMapObject[KochavaTracker.PARAM_ANDROID_APP_GUID_STRING_KEY] = "_YOUR_ANDROID_APP_GUID";
-// configMapObject[KochavaTracker.PARAM_IOS_APP_GUID_STRING_KEY] = "_YOUR_IOS_APP_GUID";
-// configMapObject[KochavaTracker.PARAM_WINDOWS_APP_GUID_STRING_KEY] = "_YOUR_WINDOWS_APP_GUID";
-// KochavaTracker.configure(configMapObject);
+import KochavaTracker from 'react-native-kochava-tracker';
+
+// // // Configure
+
 
 Navigation.events().registerAppLaunchedListener(() => {
 
@@ -85,7 +82,17 @@ Navigation.events().registerAppLaunchedListener(() => {
       orientation: ['portrait']
     }
 
-  })
+  });
+
+  var configMapObject = {}
+  if (Platform.OS === 'ios') {
+    configMapObject[KochavaTracker.PARAM_IOS_APP_GUID_STRING_KEY] = "koraajneeti-ios-iocima";
+    
+  } else {
+    configMapObject[KochavaTracker.PARAM_ANDROID_APP_GUID_STRING_KEY] = "koraajneeti-t9c";
+  }
+  // configMapObject[KochavaTracker.PARAM_WINDOWS_APP_GUID_STRING_KEY] = "_YOUR_WINDOWS_APP_GUID";
+  KochavaTracker.configure(configMapObject);
 
 
   getUserData().then((data) => {
@@ -129,97 +136,97 @@ Navigation.events().registerAppLaunchedListener(() => {
       } else {
         let languageArry = "Trends,Survey,Arena,Notifications,Rate Now, Profile, Male,Female, Select Your Profession,Student,Salaried,Entrepreneur, Retired, Housewife,Other, Select Your Age group, Teenager,Twenties,Thirties,Forties,Fifties,Sixty+";
         let menuArr = languageArry.split(',');
-        
 
-          Navigation.setRoot({
-            root: {
-              stack: {
-                children: [
-                  {
-                    component: {
-                      id: 'Profile',
-                      name: 'Profile',
-                      options: {
-                        topBar: {
-                          visible: false,
-                          animate: false,
-                          drawBehind: true,
 
-                        }
-                      },
+        Navigation.setRoot({
+          root: {
+            stack: {
+              children: [
+                {
+                  component: {
+                    id: 'Profile',
+                    name: 'Profile',
+                    options: {
+                      topBar: {
+                        visible: false,
+                        animate: false,
+                        drawBehind: true,
 
-                      passProps: {
-                        // email: null,
-  
-                        // name: thisObject.props.name,
-                        // image: thisObject.props.image,
-                        // username: username,
-                        // mobileNumber: thisObject.props.mobileNumber,
-                        // code: thisObject.props.code,
-                        ...data,
-                        // userId: data.userId,
-  
-                        language: menuArr ? menuArr[5] : null,
-                        male: menuArr ? menuArr[6] : null,
-                        female: menuArr ? menuArr[7] : null,
-                        selProfession: menuArr ? menuArr[8] : null,
-                        student: menuArr ? menuArr[9] : null,
-                        salaried: menuArr ? menuArr[10] : null,
-                        entrepreneur: menuArr ? menuArr[11] : null,
-                        retired: menuArr ? menuArr[12] : null,
-                        housewife: menuArr ? menuArr[13] : null,
-                        other: menuArr ? menuArr[14] : null,
-                        selAgeGroup: menuArr ? menuArr[15] : null,
-                        teenager: menuArr ? menuArr[16] : null,
-                        twenties: menuArr ? menuArr[17] : null,
-                        thirties: menuArr ? menuArr[18] : null,
-                        fourties: menuArr ? menuArr[19] : null,
-                        fifties: menuArr ? menuArr[20] : null,
-                        aboveSixty: menuArr ? menuArr[21] : null,
-  
-  
-  
-                        email: null,
-                        // firstName: data.firstName,
-                        // lastName: data.lastName,
-                        // image: thisObject.props.image,
-                        // username: username,
-                        // mobileNumber: thisObject.props.mobileNumber,
-                        // code: thisObject.props.code,
-                        // userId: thisObject.props.userId,
-                        // selectedAgeGroupCode: thisObject.props.selectedAgeGroupCode,
-                        // description: thisObject.props.description,
-                        // userDesignation: thisObject.props.designation,
-                        // gender: thisObject.props.gender,
-  
-                        // userLanguage: 'en',
-                        // language: menuArr ? menuArr[5] : null,
-                        // male: menuArr ? menuArr[6] : null,
-                        // female: menuArr ? menuArr[7] : null,
-                        // selProfession: menuArr ? menuArr[8] : null,
-                        // student: menuArr ? menuArr[9] : null,
-                        // salaried: menuArr ? menuArr[10] : null,
-                        // entrepreneur: menuArr ? menuArr[11] : null,
-                        // retired: menuArr ? menuArr[12] : null,
-                        // housewife: menuArr ? menuArr[13] : null,
-                        // other: menuArr ? menuArr[14] : null,
-                        // selAgeGroup: menuArr ? menuArr[15] : null,
-                        // teenager: menuArr ? menuArr[16] : null,
-                        // twenties: menuArr ? menuArr[17] : null,
-                        // thirties: menuArr ? menuArr[18] : null,
-                        // fourties: menuArr ? menuArr[19] : null,
-                        // fifties: menuArr ? menuArr[20] : null,
-                        // aboveSixty: menuArr ? menuArr[21] : null,
-                      },
+                      }
                     },
-                    
-                    
+
+                    passProps: {
+                      // email: null,
+
+                      // name: thisObject.props.name,
+                      // image: thisObject.props.image,
+                      // username: username,
+                      // mobileNumber: thisObject.props.mobileNumber,
+                      // code: thisObject.props.code,
+                      ...data,
+                      // userId: data.userId,
+
+                      language: menuArr ? menuArr[5] : null,
+                      male: menuArr ? menuArr[6] : null,
+                      female: menuArr ? menuArr[7] : null,
+                      selProfession: menuArr ? menuArr[8] : null,
+                      student: menuArr ? menuArr[9] : null,
+                      salaried: menuArr ? menuArr[10] : null,
+                      entrepreneur: menuArr ? menuArr[11] : null,
+                      retired: menuArr ? menuArr[12] : null,
+                      housewife: menuArr ? menuArr[13] : null,
+                      other: menuArr ? menuArr[14] : null,
+                      selAgeGroup: menuArr ? menuArr[15] : null,
+                      teenager: menuArr ? menuArr[16] : null,
+                      twenties: menuArr ? menuArr[17] : null,
+                      thirties: menuArr ? menuArr[18] : null,
+                      fourties: menuArr ? menuArr[19] : null,
+                      fifties: menuArr ? menuArr[20] : null,
+                      aboveSixty: menuArr ? menuArr[21] : null,
+
+
+
+                      email: null,
+                      // firstName: data.firstName,
+                      // lastName: data.lastName,
+                      // image: thisObject.props.image,
+                      // username: username,
+                      // mobileNumber: thisObject.props.mobileNumber,
+                      // code: thisObject.props.code,
+                      // userId: thisObject.props.userId,
+                      // selectedAgeGroupCode: thisObject.props.selectedAgeGroupCode,
+                      // description: thisObject.props.description,
+                      // userDesignation: thisObject.props.designation,
+                      // gender: thisObject.props.gender,
+
+                      // userLanguage: 'en',
+                      // language: menuArr ? menuArr[5] : null,
+                      // male: menuArr ? menuArr[6] : null,
+                      // female: menuArr ? menuArr[7] : null,
+                      // selProfession: menuArr ? menuArr[8] : null,
+                      // student: menuArr ? menuArr[9] : null,
+                      // salaried: menuArr ? menuArr[10] : null,
+                      // entrepreneur: menuArr ? menuArr[11] : null,
+                      // retired: menuArr ? menuArr[12] : null,
+                      // housewife: menuArr ? menuArr[13] : null,
+                      // other: menuArr ? menuArr[14] : null,
+                      // selAgeGroup: menuArr ? menuArr[15] : null,
+                      // teenager: menuArr ? menuArr[16] : null,
+                      // twenties: menuArr ? menuArr[17] : null,
+                      // thirties: menuArr ? menuArr[18] : null,
+                      // fourties: menuArr ? menuArr[19] : null,
+                      // fifties: menuArr ? menuArr[20] : null,
+                      // aboveSixty: menuArr ? menuArr[21] : null,
+                    },
                   },
-                ],
-              },
+
+
+                },
+              ],
             },
-          });
-        
+          },
+        });
+
       }
     }
     else {

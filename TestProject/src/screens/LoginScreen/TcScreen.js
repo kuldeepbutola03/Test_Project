@@ -24,7 +24,7 @@ import { EMAIL_REGISTRATION, DEBUG } from '../../../Apis';
 import { validateEmail, saveUserID, authHeaders } from '../../../Constant';
 
 import firebase from 'react-native-firebase';
-
+import KochavaTracker from 'react-native-kochava-tracker';
 export default class TcScreen extends Component {
     static propTypes = {
         componentId: PropTypes.string,
@@ -36,6 +36,13 @@ export default class TcScreen extends Component {
         //firebase.analytics().logEvent("Trends_Screen");
         firebase.analytics().setUserProperty("Screen", "Terms_And_Conditions_Screen");
         firebase.analytics().logEvent("Content", { "Screen": "Terms_And_Conditions_Screen" });
+
+
+
+        var eventMapObject = {};
+        eventMapObject["screen_name"] = "Terms_And_Conditions_Screen";
+        KochavaTracker.sendEventMapObject(KochavaTracker.EVENT_TYPE_LEVEL_COMPLETE_STRING_KEY, eventMapObject);
+
     }
 
 

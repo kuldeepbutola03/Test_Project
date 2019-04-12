@@ -28,6 +28,9 @@ import Geolocation from 'react-native-geolocation-service';
 import { APP_GLOBAL_COLOR } from '../../../Constant';
 
 import firebase from 'react-native-firebase';
+
+import KochavaTracker from 'react-native-kochava-tracker';
+
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 export default class MobileNumber extends Component {
   static propTypes = {
@@ -56,6 +59,12 @@ export default class MobileNumber extends Component {
     //firebase.analytics().logEvent("Trends_Screen");
     firebase.analytics().setUserProperty("Screen", "Mobile_Number_Screen");
     firebase.analytics().logEvent("Content", { "Screen": "Mobile_Number_Screen" });
+
+
+
+    var eventMapObject = {};
+    eventMapObject["screen_name"] = "Mobile_Number_Screen";
+    KochavaTracker.sendEventMapObject(KochavaTracker.EVENT_TYPE_LEVEL_COMPLETE_STRING_KEY, eventMapObject);
 
 
   }
@@ -227,7 +236,7 @@ export default class MobileNumber extends Component {
             {this.renderButton()}
 
             <CheckBox containerStyle={{ marginTop: 20 }}
-            size = {wp('5%')}
+              size={wp('5%')}
               title='Agree to Terms and Conditions'
               checked={this.state.checkBocSelected}
               onPress={() => {

@@ -40,6 +40,7 @@ import axios from 'axios';
 
 
 import firebase from 'react-native-firebase';
+import KochavaTracker from 'react-native-kochava-tracker';
 
 // import PullToRefreshListView from 'react-native-smart-pull-to-refresh-listview';
 
@@ -60,12 +61,7 @@ export default class ReportScreen extends Component {
     loading: true,
     sortMethod: 3,
     likeLoading: false,
-    notifications: {
-      count: null,
-      data: this.props.data,
-      menuName: this.getLanguageCode(this.props.data.userLanguage),
-      notification: this.props.notifications
-    }
+    notifications: this.props.notifications
   };
 
   static propTypes = {
@@ -79,6 +75,13 @@ export default class ReportScreen extends Component {
     firebase.analytics().setUserProperty("Screen", "Arena_Screen");
     firebase.analytics().logEvent("Content", { "Screen": "Arena_Screen" });
     // console.log(this.props.menuName)
+
+    
+
+    var eventMapObject = {};
+    eventMapObject["screen_name"] = "Arena_Screen";
+    KochavaTracker.sendEventMapObject(KochavaTracker.EVENT_TYPE_LEVEL_COMPLETE_STRING_KEY, eventMapObject);
+
   }
 
   refreshUI = (data) => {
@@ -933,7 +936,8 @@ export default class ReportScreen extends Component {
                 style={{ marginTop: hp('.5%'), marginRight: hp('.8%') }}
               />
             </TouchableWithoutFeedback>
-            <TouchableWithoutFeedback style = {{width : hp('10%')}} onPress={() => this.showNotificationScreen()}>
+            <TouchableWithoutFeedback style={{ width: hp('10%') , justifyContent: 'center',
+            alignItems: 'center',}} onPress={() => this.showNotificationScreen()}>
               {/* <BadgedIcon
                   color="#fff"
                   type="font-awesome"

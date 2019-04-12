@@ -23,6 +23,8 @@ import CustomButton from "../../components/UI/ButtonMod/CustomButtom";
 import { SearchBar } from 'react-native-elements';
 import axios from 'axios';
 
+import KochavaTracker from 'react-native-kochava-tracker';
+
 export default class AreaScreen extends Component {
     static propTypes = {
         componentId: PropTypes.string,
@@ -52,11 +54,12 @@ export default class AreaScreen extends Component {
         firebase.analytics().logEvent("Content", { "Screen": "Area_Selection_Screen" });
 
 
+        
 
-        // getUserID().then((value) => {
-        //     this.user_id = value;
-        //     // alert(value);
-        // })
+        var eventMapObject = {};
+        eventMapObject["screen_name"] = "Area_Selection_Screen";
+        KochavaTracker.sendEventMapObject(KochavaTracker.EVENT_TYPE_LEVEL_COMPLETE_STRING_KEY, eventMapObject);
+
 
         var dict = this.props.data;
         var arr = [];
@@ -201,7 +204,7 @@ export default class AreaScreen extends Component {
                 // let responseData_2 = response_2.data;
                 // let menuArr = responseData_2.extraImageFile3.split(',');
                 saveUserID(this.props.userId);
-                
+
 
                 thisObject.refs.loading.close();
 

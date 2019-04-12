@@ -23,6 +23,7 @@ import CustomButton from '../../components/UI/ButtonMod/CustomButtom';
 import firebase from 'react-native-firebase';
 import Share, { ShareSheet, Button } from 'react-native-share';
 
+import KochavaTracker from 'react-native-kochava-tracker';
 export default class PoliceProfileScreen extends Component {
   shareOptions = null;
   static propTypes = {
@@ -121,6 +122,12 @@ export default class PoliceProfileScreen extends Component {
     //firebase.analytics().logEvent("Trends_Screen");
     firebase.analytics().setUserProperty("Screen", screenName);
     firebase.analytics().logEvent("Content", { "Screen": screenName });
+
+
+
+    var eventMapObject = {};
+    eventMapObject["screen_name"] = screenName;
+    KochavaTracker.sendEventMapObject(KochavaTracker.EVENT_TYPE_LEVEL_COMPLETE_STRING_KEY, eventMapObject);
 
   }
 
@@ -270,12 +277,12 @@ export default class PoliceProfileScreen extends Component {
     // alert(data);
     // dataTappedForMore = data;
     // alert(JSON.stringify(dataTappedForMore));
-    let message = "@"+this.props.username + " gave " + count + " stars to " + name + "\n\nCheck it out on Raajneeti app";
+    let message = "@" + this.props.username + " gave " + count + " stars to " + name + "\n\nCheck it out on Raajneeti app";
 
 
-//     IOS- https://itunes.apple.com/us/app/raajneeti/id1449128685?mt=8
- 
-// Android- https://play.google.com/store/apps/details?id=com.aureans.raajneeti
+    //     IOS- https://itunes.apple.com/us/app/raajneeti/id1449128685?mt=8
+
+    // Android- https://play.google.com/store/apps/details?id=com.aureans.raajneeti
 
     shareOptions = {
       title: "Check out Raajneeti app",
@@ -285,7 +292,7 @@ export default class PoliceProfileScreen extends Component {
     };
 
     // if (data.picture && data.picture.uri) {
-      shareOptions["url"] = Platform.OS === 'ios' ? 'https://itunes.apple.com/us/app/raajneeti/id1449128685?mt=8' : 'https://play.google.com/store/apps/details?id=com.aureans.raajneeti';
+    shareOptions["url"] = Platform.OS === 'ios' ? 'https://itunes.apple.com/us/app/raajneeti/id1449128685?mt=8' : 'https://play.google.com/store/apps/details?id=com.aureans.raajneeti';
     // }
     if (Platform.OS === "android") {
       this.setState({ visible: true });

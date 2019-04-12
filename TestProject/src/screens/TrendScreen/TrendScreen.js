@@ -28,6 +28,7 @@ import moment from 'moment';
 import Permissions from 'react-native-permissions';
 
 import firebase from 'react-native-firebase';
+import KochavaTracker from 'react-native-kochava-tracker';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -52,6 +53,11 @@ class TrendScreen extends Component {
     //firebase.analytics().logEvent("Trends_Screen");
     firebase.analytics().setUserProperty("Screen", "Trends_Screen");
     firebase.analytics().logEvent("Content", { "Screen": "Trends_Screen" });
+
+    var eventMapObject = {};
+    eventMapObject["screen_name"] = "Trends_Screen";
+    KochavaTracker.sendEventMapObject(KochavaTracker.EVENT_TYPE_LEVEL_COMPLETE_STRING_KEY, eventMapObject);
+
 
     getUserID().then((userId) => {
       this.user_Id = userId;
@@ -169,7 +175,7 @@ class TrendScreen extends Component {
         this._requestPermission();
       } else if (response === 'authorized') {
         this.getLocation();
-      }else{
+      } else {
         this.getDataFromServer(true);
       }
     })
@@ -182,9 +188,9 @@ class TrendScreen extends Component {
       // this.getLocation()
       if (response === 'denied' || response === 'undetermined') {
         this.getDataFromServer(true);
-      } else if (response === 'authorized'){
+      } else if (response === 'authorized') {
         this.getLocation();
-      }else{
+      } else {
         this.getDataFromServer(true);
       }
     })

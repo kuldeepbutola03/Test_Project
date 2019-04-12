@@ -19,6 +19,7 @@ import { MOBILE_NUMBER_, MESSAGE_COMPOSE, MEDIA_COMPOSE, MEDIA_MESSAGE_REPLY, ME
 import { normalize, getUserID, DEFAULT_USER_ID, authHeaders, getUserData, authHeadersMedia } from '../../../Constant';
 
 import firebase from 'react-native-firebase';
+import KochavaTracker from 'react-native-kochava-tracker';
 
 export default class ComposeScreen extends Component {
 
@@ -44,6 +45,13 @@ export default class ComposeScreen extends Component {
     //firebase.analytics().logEvent("Trends_Screen");
     firebase.analytics().setUserProperty("Screen", "Compose_Screen");
     firebase.analytics().logEvent("Content", { "Screen": "Compose_Screen" });
+
+    
+
+    var eventMapObject = {};
+    eventMapObject["screen_name"] = "Compose_Screen";
+    KochavaTracker.sendEventMapObject(KochavaTracker.EVENT_TYPE_LEVEL_COMPLETE_STRING_KEY, eventMapObject);
+
   }
 
 
@@ -74,7 +82,7 @@ export default class ComposeScreen extends Component {
 
       this.setState({
         selected: media,
-        mimeType:mimeType
+        mimeType: mimeType
       });
     });
   }; npm
@@ -97,7 +105,7 @@ export default class ComposeScreen extends Component {
       // alert(JSON.stringify(media));
       this.setState({
         selected: media,
-        mimeType : mimeType
+        mimeType: mimeType
       });
 
     });
@@ -198,7 +206,7 @@ export default class ComposeScreen extends Component {
 
         body = JSON.stringify(body);
         console.log(body);
-        
+
 
         let FETCH = this.props.reply ? MESSAGE_REPLY : MESSAGE_COMPOSE; // +_+
 

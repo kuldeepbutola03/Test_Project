@@ -11,6 +11,7 @@ import { FETCH_REPLY_POST, MOBILE_NUMBER_, LIKDISLIKE_POST, REPORT_POST, MESSAGE
 import Share, { ShareSheet, Button } from 'react-native-share';
 import axios from 'axios';
 import firebase from 'react-native-firebase';
+import KochavaTracker from 'react-native-kochava-tracker';
 
 export default class ReportReplyScreen extends Component {
   dataTappedForMore = null;
@@ -28,6 +29,13 @@ export default class ReportReplyScreen extends Component {
     //firebase.analytics().logEvent("Trends_Screen");
     firebase.analytics().setUserProperty("Screen", "Arena_Reply_Screen");
     firebase.analytics().logEvent("Content", { "Screen": "Arena_Reply_Screen" });
+
+    
+
+    var eventMapObject = {};
+    eventMapObject["screen_name"] = "Arena_Reply_Screen";
+    KochavaTracker.sendEventMapObject(KochavaTracker.EVENT_TYPE_LEVEL_COMPLETE_STRING_KEY, eventMapObject);
+
   }
 
   state = {
@@ -583,7 +591,7 @@ export default class ReportReplyScreen extends Component {
 
           <View style={styles.headerView} backgroundColor={APP_GLOBAL_COLOR}>
 
-            <View style={{ width : 60 , backgroundColor: 'clear' }}>
+            <View style={{ width: 60, backgroundColor: 'clear' }}>
               <CustomButton
                 source={require('../../assets/back.png')}
                 style={{
@@ -615,12 +623,12 @@ export default class ReportReplyScreen extends Component {
                   marginLeft: 5,
                   fontSize: normalize(14),
                   color: 'white',
-                  flex : 1
+                  flex: 1
                 }}
                 minimumFontScale={.03}
                 adjustsFontSizeToFit
                 numberOfLines={1}
-                >
+              >
                 {this.props.userData.username}
               </Text>
             </View>
@@ -717,14 +725,14 @@ export default class ReportReplyScreen extends Component {
 
             scrollEventThrottle={400}
             renderItem={({ item }) =>
-              
-                <CaseCard
-                  moreButtonTapped={this.moreButtonTapped}
-                  onPressLike={(data2) => this.likeButtonTapped(data2)}
-                  onPressDisLike={(data2) => this.disLikeButtonTapped(data2)}
-                  data={item}
-                  onPressReply={(data2) => {}}
-                />
+
+              <CaseCard
+                moreButtonTapped={this.moreButtonTapped}
+                onPressLike={(data2) => this.likeButtonTapped(data2)}
+                onPressDisLike={(data2) => this.disLikeButtonTapped(data2)}
+                data={item}
+                onPressReply={(data2) => { }}
+              />
 
             }
           >
@@ -867,7 +875,7 @@ const styles = StyleSheet.create({
     // position: 'absolute',
     backgroundColor: 'transparent',
     marginRight: 15,
-    marginLeft : 10,
+    marginLeft: 10,
     fontSize: normalize(17),
     fontWeight: 'bold',
     color: 'white',

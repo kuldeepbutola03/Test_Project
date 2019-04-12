@@ -24,6 +24,8 @@ import { CheckBox } from 'react-native-elements';
 
 import firebase from 'react-native-firebase';
 
+import KochavaTracker from 'react-native-kochava-tracker';
+
 export default class OtpScreen extends Component {
 
   static propTypes = {
@@ -56,6 +58,13 @@ export default class OtpScreen extends Component {
     //firebase.analytics().logEvent("Trends_Screen");
     firebase.analytics().setUserProperty("Screen", "OTP_Screen");
     firebase.analytics().logEvent("Content", { "Screen": "OTP_Screen" });
+    
+    
+
+var eventMapObject = {};
+        eventMapObject["screen_name"] = "OTP_Screen";
+        KochavaTracker.sendEventMapObject(KochavaTracker.EVENT_TYPE_LEVEL_COMPLETE_STRING_KEY, eventMapObject);
+
 
   }
 
