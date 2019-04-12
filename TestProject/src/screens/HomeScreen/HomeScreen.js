@@ -359,7 +359,6 @@ export default class HomeScreen extends Component {
 
   toFireDepartmentScreen = () => {
     const { menuName } = this.state;
-
     Navigation.push(this.props.componentId, {
       component: {
         name: 'PoliceProfileScreen',
