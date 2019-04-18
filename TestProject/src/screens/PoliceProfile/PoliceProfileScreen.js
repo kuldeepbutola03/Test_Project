@@ -15,7 +15,7 @@ import {
 import ProfileCard from '../../components/UI/ProfileCard/ProfileCard';
 import { Navigation } from 'react-native-navigation';
 import { PropTypes } from 'prop-types';
-import { normalize, authHeaders, APP_GLOBAL_COLOR } from '../../../Constant';
+import { normalize, authHeaders, APP_GLOBAL_COLOR, SHARE_LINK } from '../../../Constant';
 import { AREA_PDM, DEBUG, GPR_FLAG, AREA_CDM } from '../../../Apis';
 import Spinner from '../../components/UI/Spinner/Spinner';
 import CustomButton from '../../components/UI/ButtonMod/CustomButtom';
@@ -288,11 +288,11 @@ export default class PoliceProfileScreen extends Component {
       title: "Check out Raajneeti app",
       message: message,
       subject: "Share Link", //  for email
-      // social: Share.Social.TWITTER
+      url : SHARE_LINK
     };
 
     // if (data.picture && data.picture.uri) {
-    shareOptions["url"] = Platform.OS === 'ios' ? 'https://itunes.apple.com/us/app/raajneeti/id1449128685?mt=8' : 'https://play.google.com/store/apps/details?id=com.aureans.raajneeti';
+    // shareOptions["url"] = LINK
     // }
     if (Platform.OS === "android") {
       this.setState({ visible: true });

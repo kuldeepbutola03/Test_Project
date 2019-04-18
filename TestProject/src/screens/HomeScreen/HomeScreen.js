@@ -12,7 +12,8 @@ import {
   TouchableOpacity,
   Picker,
   PickerIOS,
-  Platform
+  Platform,
+  Linking
 } from 'react-native';
 
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -36,8 +37,9 @@ import Permissions from 'react-native-permissions';
 import firebase from 'react-native-firebase';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import moment from 'moment';
-import KochavaTracker from 'react-native-kochava-tracker';
+
 // const { notifications } = this.state
+import KochavaTracker from 'react-native-kochava-tracker';
 
 export default class HomeScreen extends Component {
 
@@ -241,6 +243,9 @@ export default class HomeScreen extends Component {
       this.toTrendScreen()
     } else if (screen === 'timeline' || screen === 'Survey') {
       this.toReportScreen()
+    }else if (screen === 'MESSAGE' || screen === 'Survey') {
+      let obj = newNotifications.notificationList[index];
+      this.toReportReplyScreen(obj.surveyThreadId);
     }
   }
 
@@ -358,7 +363,6 @@ export default class HomeScreen extends Component {
   };
 
   toFireDepartmentScreen = () => {
-    const { menuName } = this.state;
     Navigation.push(this.props.componentId, {
       component: {
         name: 'PoliceProfileScreen',
@@ -450,6 +454,45 @@ export default class HomeScreen extends Component {
         },
       },
     });
+  };
+
+  toReportReplyScreen = (surveyThreadId) => {
+    const { menuName } = this.state;
+    if (surveyThreadId) {
+      let dict = { threadId: surveyThreadId , Message_Id: '' };
+      Navigation.push(this.props.componentId, {
+        component: {
+          name: 'ReportReplyScreen',
+          options: {
+            topBar: {
+              visible: false,
+              drawBehind: true,
+              animate: false,
+            },
+          },
+          passProps: {
+            coordinates: this.state.coordinates,
+            data: dict,
+            data2: this.state.data,
+            userData: this.state.data,
+            // refreshUI: this.refreshUI,
+            userLanguage: this.state.data.userLanguage,
+            // languageCode: this.state.firstAPIresponse ? this.state.firstAPIresponse.languageCodes : null,
+            user_id: this.state.user_id,
+            // lat_lon: this.state.lat_lon,
+            // // languageCode: this.state.firstAPIresponse ? this.state.firstAPIresponse.languageCodes : null,
+            // menuName: menuName,
+  
+            // notifications: this.state.notifications,
+            // readNotification: this.readNotification,
+            // updateNotifications: this.updateNotifications,
+  
+  
+          },
+        },
+      });
+    }
+   
   };
 
   toQuesScreen = (surveyThreadID, updatedNotification) => {
@@ -635,11 +678,12 @@ export default class HomeScreen extends Component {
     //firebase.analytics().logEvent("Home_Screen");
     firebase.analytics().setUserProperty("Screen", "Home_Screen");
     firebase.analytics().logEvent("Content", { "Screen": "Home_Screen" });
-    
+
     var eventMapObject = {};
     eventMapObject["screen_name"] = "Home_Screen";
     KochavaTracker.sendEventMapObject(KochavaTracker.EVENT_TYPE_LEVEL_COMPLETE_STRING_KEY, eventMapObject);
 
+    Linking.removeEventListener('url', this.handleOpenURL);
   }
 
   goBack = () => {
@@ -786,6 +830,36 @@ export default class HomeScreen extends Component {
         }
       });
     }
+
+    if (Platform.OS === 'android') {
+      Linking.getInitialURL().then(url => {
+        this.navigate(url);
+      });
+
+      // Linking.addEventListener('url', this.handleOpenURL);
+
+
+    } else {
+      Linking.addEventListener('url', this.handleOpenURL);
+
+    }
+  }
+
+
+  handleOpenURL = (event) => { // D
+    this.navigate(event.url);
+  }
+
+  navigate = (url) => { // E
+    // const { navigate } = this.props.navigation;
+    const route = url.replace(/.*?:\/\//g, '');
+    this.toReportReplyScreen(route);
+    // const id = route.match(/\/([^\/]+)\/?$/)[1];
+    // const routeName = route.split('/')[0];
+
+    // if (routeName === 'people') {
+    //   navigate('People', { id, name: 'chris' })
+    // };
   }
 
   componentDidUpdate() {

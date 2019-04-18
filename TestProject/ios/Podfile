@@ -52,10 +52,12 @@ target 'TestProject' do
   pod 'ReactNativePermissions', :path => '../node_modules/react-native-permissions'
 
 
-  pod 'react-native-orientation', :path => '../node_modules/react-native-orientation'
+  # pod 'react-native-orientation', :path => '../node_modules/react-native-orientation'
 
-  pod 'react-native-spinkit', :path => '../node_modules/react-native-spinkit'
+  # pod 'react-native-spinkit', :path => '../node_modules/react-native-spinkit'
 
+  pod 'Firebase/DynamicLinks'
+  
 end
 
 post_install do |installer|

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { FlatList, View, StyleSheet, SafeAreaView, Text, ScrollView, RefreshControl, Dimensions, KeyboardAvoidingView, TextInput, Image, TouchableOpacity, ActionSheetIOS } from 'react-native';
 import { Navigation } from 'react-native-navigation';
 import { PropTypes } from 'prop-types';
-import { normalize, APP_GLOBAL_COLOR, getCurrentLocation } from '../../../Constant';
+import { normalize, APP_GLOBAL_COLOR, getCurrentLocation, SHARE_LINK } from '../../../Constant';
 import CustomButton from "../../components/UI/ButtonMod/CustomButtom";
 import CaseCard from "../../components/UI/CaseCard/CaseCard";
 import { Platform } from 'react-native';
@@ -331,6 +331,7 @@ export default class ReportReplyScreen extends Component {
         this.props.data = dict;
         // return;
       }
+      var videoURL = null;
       let innerData = {
         // // key: key,
         // // picture: (dict.Image_Path && (dict.messageType === 'Image' || dict.messageType === 'Gif')) ? { uri: dict.Image_Path } : videoURL,
@@ -345,7 +346,7 @@ export default class ReportReplyScreen extends Component {
         // // LikingCount: dict.LikingCount
 
 
-        key: key,
+        // key: key,
         picture: (dict.mediaContentData && (dict.messageType === 'Image' || dict.messageType === 'Gif')) ? { uri: "data:image/png;base64," + dict.mediaContentData } : videoURL,
         name: dict.userName ? ("@" + dict.userName) : "Anonymous",
         place: dict.locationName,
@@ -357,6 +358,7 @@ export default class ReportReplyScreen extends Component {
         width_Image: dict.width,
         Is_Liked: dict.isSelfLiked,
         LikingCount: dict.likingCount,
+        Thread_Id: dict.threadId,
         ReplyCount: dict.replyCount,
         isOP: dict.isOP,
         ...dict
@@ -389,23 +391,32 @@ export default class ReportReplyScreen extends Component {
     }
   }
 
+  getMessage = (data) => {
+    if(data){
+      return (data.length > 100 ? data.substr(0,100) + "..." : data) + '\n\nCheck it out on Raajneeti app'
+    }else {
+      return 'Check it out on Raajneeti app'
+    }
+  }
+
   moreButtonTapped = (data) => {
     // alert(data);
     dataTappedForMore = data;
     shareOptions = {
       title: "Check out Raajneeti app",
-      message: data.details,
-      subject: "Share Link" //  for email
+      message: this.getMessage(data.details),
+      subject: "Share Link",
+      url: SHARE_LINK+"?raajneetiId="+data.Thread_Id// Platform.OS ===  'ios' ? 'https://itunes.apple.com/us/app/raajneeti/id1449128685?mt=8' : 'https://play.google.com/store/apps/details?id=com.aureans.raajneeti'
     };
     if (data.picture && data.picture.uri) {
       shareOptions["url"] = data.picture.uri;
+      shareOptions["message"] = shareOptions.message + "\n" + SHARE_LINK+"?raajneetiId="+data.Thread_Id;
     }
     if (Platform.OS === "android") {
       this.setState({ visible: true });
     } else {
       this.showActionSheetForIOS();
     }
-
   }
 
 

@@ -7,6 +7,7 @@ export const APP_GLOBAL_COLOR = '#a01414';
 export const APP_ALERT_MESSAGE = 'Raajneeti - Message';
 export const DEFAULT_USER_ID = "userIdInTheAppTest5";
 export const DEFAULT_USER_DATA = "userDataInTheAppTest5";
+export const SHARE_LINK = 'http://babbles.zone/share_raajneeti.html';
 
 export const FCM_TOKEN = "fcmToken";
 export const USER_AREA_DATA = "userAreaData1";

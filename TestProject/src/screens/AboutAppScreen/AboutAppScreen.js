@@ -9,8 +9,8 @@ import {
     Image,
     SafeAreaView,
     TouchableOpacity,
-    AsyncStorage
-
+    AsyncStorage,
+    Linking
 } from 'react-native';
 import SplashScreen from 'react-native-splash-screen'
 import { Navigation } from 'react-native-navigation';
@@ -51,6 +51,8 @@ export default class AboutAppScreen extends Component {
         var eventMapObject = {};
         eventMapObject["screen_name"] = "About_App_Screen";
         KochavaTracker.sendEventMapObject(KochavaTracker.EVENT_TYPE_LEVEL_COMPLETE_STRING_KEY, eventMapObject);
+
+
     }
 
 

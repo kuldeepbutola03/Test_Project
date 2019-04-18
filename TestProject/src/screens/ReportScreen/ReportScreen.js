@@ -21,7 +21,7 @@ import {
 import { Navigation } from 'react-native-navigation';
 import { PropTypes } from 'prop-types';
 import CustomButton from '../../components/UI/ButtonMod/CustomButtom';
-import { normalize, getUserID, getCurrentLocation, APP_GLOBAL_COLOR, getUserData } from '../../../Constant';
+import { normalize, getUserID, getCurrentLocation, APP_GLOBAL_COLOR, getUserData, SHARE_LINK } from '../../../Constant';
 import CaseCard from '../../components/UI/CaseCard/CaseCard';
 import Draggable from 'react-native-draggable';
 import { TIMELINE_DATA, MOBILE_NUMBER_, LIKDISLIKE_POST, REPORT_POST, GET_USER_NOTIFICATIONS, UPDATE_USER_NOTIFICATIONS } from '../../../Apis';
@@ -416,6 +416,14 @@ export default class ReportScreen extends Component {
     }
   }
 
+  getMessage = (data) => {
+    if(data){
+      return (data.length > 100 ? data.substr(0,100) + "..." : data) + '\n\nCheck it out on Raajneeti app'
+    }else {
+      return 'Check it out on Raajneeti app'
+    }
+  }
+
   moreButtonTapped = (data) => {
     // alert(data);
     dataTappedForMore = data;
@@ -423,11 +431,13 @@ export default class ReportScreen extends Component {
 
     shareOptions = {
       title: "Check out Raajneeti app",
-      message: data.details,
-      subject: "Share Link" //  for email
+      message: this.getMessage(data.details),//((data.details ? data.details.length : '') > 100 ? data.details.substr(0,100) + '...' : data.details) + "\n\nCheck it out on Raajneeti app",
+      subject: "Share Link",
+      url: SHARE_LINK+"?raajneetiId="+data.Thread_Id// Platform.OS ===  'ios' ? 'https://itunes.apple.com/us/app/raajneeti/id1449128685?mt=8' : 'https://play.google.com/store/apps/details?id=com.aureans.raajneeti'
     };
     if (data.picture && data.picture.uri) {
       shareOptions["url"] = data.picture.uri;
+      shareOptions["message"] = shareOptions.message + "\n" + SHARE_LINK+"?raajneetiId="+data.Thread_Id;
     }
     if (Platform.OS === "android") {
       this.setState({ visible: true });
@@ -435,7 +445,6 @@ export default class ReportScreen extends Component {
       this.showActionSheetForIOS();
     }
   }
-
   onCancel() {
     console.log("CANCEL")
     this.setState({ visible: false });

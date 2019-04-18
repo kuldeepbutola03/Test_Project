@@ -18,6 +18,7 @@
 
 #import "RNFirebaseNotifications.h"
 #import "RNFirebaseMessaging.h"
+//#import "FIRDynamicLinks"
 #import <React/RCTLinkingManager.h>
 
 @implementation AppDelegate
@@ -89,11 +90,59 @@ fetchCompletionHandler:(nonnull void (^)(UIBackgroundFetchResult))completionHand
 
 // Only if your app is using [Universal Links](https://developer.apple.com/library/prerelease/ios/documentation/General/Conceptual/AppSearch/UniversalLinks.html).
 //- (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity
-// restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler
+//restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler
 //{
-//  return [RCTLinkingManager application:application
-//                   continueUserActivity:userActivity
-//                     restorationHandler:restorationHandler];
+// return [RCTLinkingManager application:application
+//                  continueUserActivity:userActivity
+//                    restorationHandler:restorationHandler];
 //}
+
+ - (BOOL)application:(UIApplication *)application
+ continueUserActivity:(nonnull NSUserActivity *)userActivity
+  restorationHandler:
+ #if defined(__IPHONE_12_0) && (__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_12_0)
+ (nonnull void (^)(NSArray<id<UIUserActivityRestoring>> *_Nullable))restorationHandler {
+ #else
+     (nonnull void (^)(NSArray *_Nullable))restorationHandler {
+ #endif  // __IPHONE_12_0
+   BOOL handled = [[FIRDynamicLinks dynamicLinks] handleUniversalLink:userActivity.webpageURL
+                                                           completion:^(FIRDynamicLink * _Nullable dynamicLink,
+                                                                        NSError * _Nullable error) {
+                                                             // ...
+                                                             NSLog(@"aaaaaa %@",dynamicLink);
+                                                           }];
+   return handled;
+ }
+   
+//   - (BOOL)application:(UIApplication *)app
+// openURL:(NSURL *)url
+// options:(NSDictionary<NSString *, id> *)options {
+//   return [self application:app
+//                    openURL:url
+//          sourceApplication:options[UIApplicationOpenURLOptionsSourceApplicationKey]
+//                 annotation:options[UIApplicationOpenURLOptionsAnnotationKey]];
+// }
+   
+//   - (BOOL)application:(UIApplication *)application
+// openURL:(NSURL *)url
+// sourceApplication:(NSString *)sourceApplication
+// annotation:(id)annotation {
+//   FIRDynamicLink *dynamicLink = [[FIRDynamicLinks dynamicLinks] dynamicLinkFromCustomSchemeURL:url];
+//
+//   if (dynamicLink) {
+//     if (dynamicLink.url) {
+//       // Handle the deep link. For example, show the deep-linked content,
+//       // apply a promotional offer to the user's account or show customized onboarding view.
+//       // ...
+//     } else {
+//       // Dynamic link has empty deep link. This situation will happens if
+//       // Firebase Dynamic Links iOS SDK tried to retrieve pending dynamic link,
+//       // but pending link is not available for this device/App combination.
+//       // At this point you may display default onboarding view.
+//     }
+//     return YES;
+//   }
+//   return NO;
+// }
 
 @end

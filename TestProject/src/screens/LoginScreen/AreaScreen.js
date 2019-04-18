@@ -24,7 +24,6 @@ import { SearchBar } from 'react-native-elements';
 import axios from 'axios';
 
 import KochavaTracker from 'react-native-kochava-tracker';
-
 export default class AreaScreen extends Component {
     static propTypes = {
         componentId: PropTypes.string,
@@ -60,6 +59,11 @@ export default class AreaScreen extends Component {
         eventMapObject["screen_name"] = "Area_Selection_Screen";
         KochavaTracker.sendEventMapObject(KochavaTracker.EVENT_TYPE_LEVEL_COMPLETE_STRING_KEY, eventMapObject);
 
+
+        // getUserID().then((value) => {
+        //     this.user_id = value;
+        //     // alert(value);
+        // })
 
         var dict = this.props.data;
         var arr = [];

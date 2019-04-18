@@ -972,6 +972,9 @@
 							com.apple.Push = {
 								enabled = 1;
 							};
+							com.apple.SafariKeychain = {
+								enabled = 1;
+							};
 						};
 					};
 					2D02E47A1E0B4A5D006451C7 = {
@@ -1730,7 +1733,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.Daemon;
+				PRODUCT_BUNDLE_IDENTIFIER = raajneeti;
 				PRODUCT_NAME = TestProject;
 				PROVISIONING_PROFILE_SPECIFIER = Daemon_6_Feb_2019;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1767,7 +1770,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.Daemon;
+				PRODUCT_BUNDLE_IDENTIFIER = raajneeti;
 				PRODUCT_NAME = TestProject;
 				PROVISIONING_PROFILE_SPECIFIER = Daemon_6_Feb_2019;
 				TARGETED_DEVICE_FAMILY = "1,2";

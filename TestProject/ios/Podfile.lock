@@ -29,6 +29,9 @@ PODS:
     - FirebaseAnalytics (= 5.4.0)
   - Firebase/CoreOnly (5.15.0):
     - FirebaseCore (= 5.1.10)
+  - Firebase/DynamicLinks (5.15.0):
+    - Firebase/CoreOnly
+    - FirebaseDynamicLinks (= 3.3.0)
   - Firebase/Messaging (5.15.0):
     - Firebase/CoreOnly
     - FirebaseMessaging (= 3.2.2)
@@ -44,6 +47,10 @@ PODS:
   - FirebaseAnalyticsInterop (1.1.0)
   - FirebaseCore (5.1.10):
     - GoogleUtilities/Logger (~> 5.2)
+  - FirebaseDynamicLinks (3.3.0):
+    - FirebaseAnalytics (~> 5.1)
+    - FirebaseAnalyticsInterop (~> 1.0)
+    - FirebaseCore (~> 5.1)
   - FirebaseInstanceID (3.3.0):
     - FirebaseCore (~> 5.1)
     - GoogleUtilities/Environment (~> 5.3)
@@ -214,6 +221,7 @@ DEPENDENCIES:
   - FBSDKLoginKit (~> 4.38.0)
   - FBSDKShareKit (~> 4.38.0)
   - Firebase/Core (~> 5.15.0)
+  - Firebase/DynamicLinks
   - Firebase/Messaging
   - Google-Maps-iOS-Utils (from `https://github.com/pjamrozowicz/google-maps-ios-utils.git`)
   - GoogleMaps
@@ -251,6 +259,7 @@ SPEC REPOS:
     - FirebaseAnalytics
     - FirebaseAnalyticsInterop
     - FirebaseCore
+    - FirebaseDynamicLinks
     - FirebaseInstanceID
     - FirebaseMessaging
     - FLAnimatedImage
@@ -306,6 +315,7 @@ SPEC CHECKSUMS:
   FirebaseAnalytics: c06f9d70577d79074214700a71fd5d39de5550fb
   FirebaseAnalyticsInterop: e5f21be9af6548372e2f0815834ff909bff395a2
   FirebaseCore: 35747502d9e8c6ee217385ad04446c7c2aaf9c5c
+  FirebaseDynamicLinks: c713da5f75c324f38fb2d57164bbc1c461aa6739
   FirebaseInstanceID: e2fa4cb35ef5558c200f7f0ad8a53e212215f93e
   FirebaseMessaging: b412996f6a09337d232bb3a6676ce4d1f353d024
   FLAnimatedImage: 4a0b56255d9b05f18b6dd7ee06871be5d3b89e31
@@ -331,6 +341,6 @@ SPEC CHECKSUMS:
   SDWebImage: ecc03494e973b93b80213649d32175f8d2d17d4d
   yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
 
-PODFILE CHECKSUM: abc8d1c632f001fb9ca052094a3da613f25c8f50
+PODFILE CHECKSUM: bca36fd2d2a7cfc99aaff005cfba0c1638bf855b
 
 COCOAPODS: 1.5.3

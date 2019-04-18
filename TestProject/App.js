@@ -59,7 +59,7 @@ Navigation.registerComponent('NotificationScreen', () => NotificationScreen);
 Navigation.registerComponent('SurveyList', () => SurveyList);
 // import Orientation from 'react-native-orientation';
 // Start App
-import { AsyncStorage, Platform } from "react-native"
+import { AsyncStorage, Platform , Linking} from "react-native"
 import { DEFAULT_USER_ID, getUserData, saveUserData, saveUserID } from './Constant';
 // import { platform } from 'os';
 
@@ -70,6 +70,10 @@ import { DEFAULT_USER_ID, getUserData, saveUserData, saveUserID } from './Consta
 
 // Import
 import KochavaTracker from 'react-native-kochava-tracker';
+
+
+/////
+
 
 // // // Configure
 
