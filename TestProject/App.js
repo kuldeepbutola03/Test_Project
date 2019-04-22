@@ -100,7 +100,8 @@ Navigation.events().registerAppLaunchedListener(() => {
 
 
   getUserData().then((data) => {
-    SplashScreen.hide();
+    // SplashScreen.show();
+    // SplashScreen.hide();
     if (data) {
       if (data.username || data.userName) {
         // Navigation.events ().registerAppLaunchedListener (() => {

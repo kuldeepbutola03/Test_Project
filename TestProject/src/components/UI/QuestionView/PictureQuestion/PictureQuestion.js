@@ -51,11 +51,10 @@ export default class PictureQuestion extends React.Component {
 
     renderOptions = () => {
 
-        
         let width = Dimensions.get('window').width/2;
 
         let data = this.props.data.surveyAnswerList;
-
+        let userAnswerId = this.props.data.userAnswerId;
         var viewArray = [];
         for (let i = 0; i < data.length; i = i + 2) {
             viewArray.push(
@@ -63,14 +62,17 @@ export default class PictureQuestion extends React.Component {
                     <View style={{  width: width}}>
                         <PictureQuestionView
                             key={i}
-                            isSelected={this.props.data.userAnswerId - 1 === (i)}
+                            isSelected={this.props.data.userAnswerId === data[i].answerId}
+                            // isSelected={this.props.data.userAnswerId - 1 === (i)}
                             onPress={() => {
                                 if (this.props.isSurveyTaken === 'N') {
-                                    this.props.data.userAnswerId = i + 1;
+                                    // this.props.data.userAnswerId = i + 1;
+                                    this.props.data.userAnswerId = data[i].answerId;
                                     this.props.onChangeData(this.props.data, this.props.indexValue);
                                 }
                             }}
                             data={data[i]}
+                            userAnswerId = {userAnswerId}
                         />
                         {this.props.isSurveyTaken === 'Y' && <Text style = {{marginLeft : 10}}>{(data[i].answerPercentage ? data[i].answerPercentage : 0)}%</Text>}
                         
@@ -79,14 +81,17 @@ export default class PictureQuestion extends React.Component {
                         <View style={{  width: width }}>
                             <PictureQuestionView
                                 key={i + 1}
-                                isSelected={this.props.data.userAnswerId - 1 === (i + 1)}
+                                // isSelected={this.props.data.userAnswerId - 1 === (i + 1)}
+                                isSelected={this.props.data.userAnswerId === data[i+1].answerId}
                                 onPress={() => {
                                     if (this.props.isSurveyTaken === 'N') {
-                                        this.props.data.userAnswerId = i + 1 + 1;
+                                        // this.props.data.userAnswerId = i + 1 + 1;
+                                        this.props.data.userAnswerId = data[i+1].answerId;
                                         this.props.onChangeData(this.props.data, this.props.indexValue);
                                     }
                                 }}
                                 data={data[i + 1]}
+                                userAnswerId = {userAnswerId}
                             />
                             {this.props.isSurveyTaken === 'Y' && <Text style = {{marginLeft : 10}}>{(data[i+1].answerPercentage ? data[i+1].answerPercentage : 0)}%</Text>}
                         </View>

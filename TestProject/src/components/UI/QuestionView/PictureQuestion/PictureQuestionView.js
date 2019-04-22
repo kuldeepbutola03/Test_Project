@@ -32,7 +32,7 @@ class PictureQuestionView extends Component {
                 priority: FastImage.priority.normal 
             } : null;
         return (
-            <TouchableWithoutFeedback 
+            <TouchableWithoutFeedback
                 onPress={() => {
                     LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
                     this.props.onPress()
@@ -47,7 +47,7 @@ class PictureQuestionView extends Component {
                     <View style={{ }}>
                         <Text style={styles.answerText}> {data.answerText} </Text>
                     </View>
-                    {this.props.isSelected ? 
+                    {this.props.data.answerId === this.props.userAnswerId ? 
                         <AntDesign 
                             size={hp('3%')} 
                             color={APP_GLOBAL_COLOR} 

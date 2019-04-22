@@ -40,7 +40,7 @@ import moment from 'moment';
 
 // const { notifications } = this.state
 import KochavaTracker from 'react-native-kochava-tracker';
-
+import SplashScreen from 'react-native-splash-screen'
 export default class HomeScreen extends Component {
 
   areaCode = null;
@@ -235,15 +235,15 @@ export default class HomeScreen extends Component {
       notifications: updatedNotification
     })
     // alert(JSON.stringify(notifications[index]));
-    if (screen === 'survey' || screen === 'Survey') {
+    if (screen.toString().toLowerCase() === 'survey' || screen === 'Survey') {
       let obj = newNotifications.notificationList[index];
       let surveyThreadID = obj["surveyThreadId"];
       this.toQuesScreen(surveyThreadID, updatedNotification);
-    } else if (screen === 'trends' || screen === 'Survey') {
+    } else if (screen.toString().toLowerCase() === 'trends' ) {
       this.toTrendScreen()
-    } else if (screen === 'timeline' || screen === 'Survey') {
+    } else if (screen.toString().toLowerCase() === 'timeline') {
       this.toReportScreen()
-    }else if (screen === 'MESSAGE' || screen === 'Survey') {
+    }else if (screen.toString().toLowerCase() === 'message') {
       let obj = newNotifications.notificationList[index];
       this.toReportReplyScreen(obj.surveyThreadId);
     }
@@ -363,6 +363,7 @@ export default class HomeScreen extends Component {
   };
 
   toFireDepartmentScreen = () => {
+    const { menuName } = this.state;
     Navigation.push(this.props.componentId, {
       component: {
         name: 'PoliceProfileScreen',
@@ -457,6 +458,8 @@ export default class HomeScreen extends Component {
   };
 
   toReportReplyScreen = (surveyThreadId) => {
+    console.log('toReportReplyScreen');
+    console.log(surveyThreadId);
     const { menuName } = this.state;
     if (surveyThreadId) {
       let dict = { threadId: surveyThreadId , Message_Id: '' };
@@ -470,6 +473,7 @@ export default class HomeScreen extends Component {
               animate: false,
             },
           },
+          
           passProps: {
             coordinates: this.state.coordinates,
             data: dict,
@@ -695,6 +699,7 @@ export default class HomeScreen extends Component {
   }
 
   componentDidMount() {
+    SplashScreen.hide();
     // getUserID();
     // SplashScreen.hide();
     AsyncStorage.getItem(DEFAULT_USER_ID).then((value) => {
@@ -851,9 +856,20 @@ export default class HomeScreen extends Component {
   }
 
   navigate = (url) => { // E
+    // alert(url);
     // const { navigate } = this.props.navigation;
     const route = url.replace(/.*?:\/\//g, '');
-    this.toReportReplyScreen(route);
+    //alert(route);
+if (Platform.OS === 'ios') {
+  this.toReportReplyScreen(route);
+}else{
+   let routeName = route.split('/');
+   console.log(routeName);
+   if (routeName.length >= 2) {
+    this.toReportReplyScreen(routeName[1]);
+   }
+}
+    
     // const id = route.match(/\/([^\/]+)\/?$/)[1];
     // const routeName = route.split('/')[0];
 

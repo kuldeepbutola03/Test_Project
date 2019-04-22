@@ -29,6 +29,7 @@ export default class multipleQuestionView extends React.Component {
                 <MultiplePoll 
                     surveyAnswerList={this.props.data.surveyAnswerList}
                     userAnswerId={this.props.data.userAnswerId}
+                    answerID={this.props.data.surveyAnswerList.map(a => a.answerId)}
                 />
             )
         // } else return null;
@@ -39,23 +40,25 @@ export default class multipleQuestionView extends React.Component {
             return (
                 this.props.data.surveyAnswerList.map((data, indexValue) => {
                     return (
-                        <RadioButton 
-                            labelHorizontal={true} 
-                            key={indexValue} 
+                        <RadioButton
+                            labelHorizontal={true}
+                            key={indexValue}
                             wrapStyle={{ marginVertical: normalize(5) }}>
                             <RadioButtonInput
                                 obj={data}
                                 index={(indexValue)}
-                                isSelected={this.props.data.userAnswerId-1 === (indexValue)}
+                                // isSelected={this.props.data.userAnswerId-1 === (indexValue)}
+                                isSelected={this.props.data.userAnswerId === data.answerId}
                                 onPress = {() => {
                                     if(this.props.isSurveyTaken === 'N') {
-                                        this.props.data.userAnswerId = indexValue+1;
+                                        // this.props.data.userAnswerId = indexValue+1;
+                                        this.props.data.userAnswerId = data.answerId;
                                         this.props.onChangeData(this.props.data, this.props.indexValue);
                                     }
                                 }} 
                                 borderWidth={1}
                                 buttonInnerColor={APP_GLOBAL_COLOR}
-                                buttonOuterColor={this.props.data.userAnswerId-1 === indexValue ? APP_GLOBAL_COLOR : '#000'}
+                                buttonOuterColor={this.props.data.userAnswerId === data.answerId ? APP_GLOBAL_COLOR : '#000'}
                                 buttonSize={normalize(7)}
                                 buttonOuterSize={normalize(14)}
                                 buttonStyle={{}}

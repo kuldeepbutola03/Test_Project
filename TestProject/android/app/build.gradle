@@ -103,8 +103,8 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         missingDimensionStrategy "RNN.reactNativeVersion", "reactNative57_5"
         multiDexEnabled true
-        versionCode 8
-        versionName "1.6"
+        versionCode 9
+        versionName "1.7"
         ndk {
             abiFilters "armeabi-v7a", "x86"
         }

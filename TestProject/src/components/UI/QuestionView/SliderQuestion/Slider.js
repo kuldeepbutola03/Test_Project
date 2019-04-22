@@ -127,8 +127,8 @@ class Sliders extends Component {
               <Slider
                 disabled={this.props.isSurveyTaken === 'N' ? false : true}
                 value={this.props.data.userAnswerId ? this.props.data.userAnswerId : 2}
-                maximumValue={4}
-                minimumValue={0}
+                maximumValue={this.props.data.surveyAnswerList[4].answerId} //{4}
+                minimumValue={this.props.data.surveyAnswerList[0].answerId}//{0}
                 style={{ height: 30, width: '80%', marginBottom: normalize(5) }}
                 step={1}
                 minimumTrackTintColor={this.state.color}

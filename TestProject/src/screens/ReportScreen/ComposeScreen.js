@@ -75,9 +75,10 @@ export default class ComposeScreen extends Component {
       // for (i = 0; i < response.length; i++) {
       if (response.data) {
         // alert(response.data);
-        // media.push({ uri: "data:image/png;base64," + response.data });
-        media.push({ uri: response.data, width: response[i].width, height: response[i].height });
-        mimeType = response[i].mime;
+        // media.push({width: response.width, height: response.height});
+        media.push({ uri: response.data, width: response.width, height: response.height });
+        mimeType = response.mime;
+
       }
 
       this.setState({
@@ -85,7 +86,7 @@ export default class ComposeScreen extends Component {
         mimeType: mimeType
       });
     });
-  }; npm
+  }; 
 
   openImageGallery = () => {
     ImagePicker.openPicker({
@@ -97,10 +98,11 @@ export default class ComposeScreen extends Component {
       console.log(response);
       let media = [];// this.state.selected;
       var mimeType = '';
-      for (i = 0; i < 1; i++) {                //------------------ i < response.length ------------------
+      for (i = 0; i < response.length; i++) {                //------------------ i < response.length ------------------
 
         media.push({ uri: response[i].data, width: response[i].width, height: response[i].height });
         mimeType = response[i].mime;
+        break;
       }
       // alert(JSON.stringify(media));
       this.setState({

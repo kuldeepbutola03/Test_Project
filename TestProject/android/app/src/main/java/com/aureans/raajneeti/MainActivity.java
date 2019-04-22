@@ -52,13 +52,14 @@ public class MainActivity extends NavigationActivity implements OnImagePickerPer
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        
         super.onCreate(savedInstanceState);
 
     Intent intent = getIntent();
     String action = intent.getAction();
     Uri data = intent.getData();
 
-        Log.i("1", "onCreate KKKKKKKKKKKKK");
+        
         FirebaseDynamicLinks.getInstance()
                 .getDynamicLink(getIntent())
                 .addOnSuccessListener(this, new OnSuccessListener<PendingDynamicLinkData>() {

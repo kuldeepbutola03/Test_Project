@@ -15,9 +15,9 @@ class SliderPoll extends Component {
             ]
     }
 
-    renderUserAnswer = (index, answerText) => {
+    renderUserAnswer = (index, answerText , answerId) => {
         const { userAnswerId } = this.props;
-        if (userAnswerId === index) {
+        if (userAnswerId === answerId) {
             return (
                 <View style={styles.iconContainer}>
                     <Text style={styles.answerText}> {answerText} </Text>
@@ -45,7 +45,7 @@ class SliderPoll extends Component {
                             <View style={styles.pollContainer}>
                                 <View style={{ width: '80%', position: 'relative' }}>
                                     <View style={[{ width: (answer.answerPercentage ? answer.answerPercentage : 0) + "%" }, styles.pollAnswer]}>
-                                        {this.renderUserAnswer(index, "Strongly Disagree")}
+                                        {this.renderUserAnswer(index, "Strongly Disagree",answer.answerId)}
                                     </View>
                                 </View>
                                 <View style={{ width: '20%', height: normalize(25) }}>
@@ -57,7 +57,7 @@ class SliderPoll extends Component {
                             <View style={styles.pollContainer}>
                                 <View style={{ width: '80%', position: 'relative' }}>
                                     <View style={[{ width: (answer.answerPercentage ? answer.answerPercentage : 0) + "%" }, styles.pollAnswer]}>
-                                        {this.renderUserAnswer(index, "Disagree")}
+                                        {this.renderUserAnswer(index, "Disagree",answer.answerId)}
                                     </View>
                                 </View>
                                 <View style={{ width: '20%', height: normalize(25) }}>
@@ -69,7 +69,7 @@ class SliderPoll extends Component {
                             <View style={styles.pollContainer}>
                                 <View style={{ width: '80%', position: 'relative' }}>
                                     <View style={[{ width: (answer.answerPercentage ? answer.answerPercentage : 0) + "%" }, styles.pollAnswer]}>
-                                        {this.renderUserAnswer(index, "Neutral")}
+                                        {this.renderUserAnswer(index, "Neutral",answer.answerId)}
                                     </View>
                                 </View>
                                 <View style={{ width: '20%', height: normalize(25) }}>
@@ -81,7 +81,7 @@ class SliderPoll extends Component {
                             <View style={styles.pollContainer}>
                                 <View style={{ width: '80%', position: 'relative' }}>
                                     <View style={[{ width: (answer.answerPercentage ? answer.answerPercentage : 0) + "%" }, styles.pollAnswer]}>
-                                        {this.renderUserAnswer(index, "Agree")}
+                                        {this.renderUserAnswer(index, "Agree",answer.answerId)}
                                     </View>
                                 </View>
                                 <View style={{ width: '20%', height: normalize(25) }}>
@@ -93,7 +93,7 @@ class SliderPoll extends Component {
                             <View style={styles.pollContainer}>
                                 <View style={{ width: '80%', position: 'relative' }}>
                                     <View style={[{ width: (answer.answerPercentage ? answer.answerPercentage : 0) + "%" }, styles.pollAnswer]}>
-                                        {this.renderUserAnswer(index, "Strongly Agree")}
+                                        {this.renderUserAnswer(index, "Strongly Agree",answer.answerId)}
                                     </View>
                                 </View>
                                 <View style={{ width: '20%', height: normalize(25) }}>

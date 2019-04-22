@@ -54,22 +54,22 @@ export default class optionalQuestionView extends Component  {
 
                     </View>
                     <View style={{ flex: 8.5, marginRight: 10, flexDirection: 'row' }}>
-                        <CustomTextButton 
-                            style={data.userAnswerId == 1 ? buttonViewStyle.selectedStyle : buttonViewStyle.unSelectedStyle} 
-                            textColor={data.userAnswerId == 1 ? "#fff" :  '#000'}
+                        <CustomTextButton
+                            style={data.userAnswerId == this.props.data.surveyAnswerList[0].answerId ? buttonViewStyle.selectedStyle : buttonViewStyle.unSelectedStyle} 
+                            textColor={data.userAnswerId == this.props.data.surveyAnswerList[0].answerId ? "#fff" :  '#000'}
                             onPress={() => {
                                 if(this.props.isSurveyTaken === 'N') {
-                                    data.userAnswerId = 1;
+                                    this.props.data.userAnswerId = this.props.data.surveyAnswerList[0].answerId;
                                     this.props.onChangeData(data, this.props.index);
                                 }
                             }
                         }>{dataO[0]}</CustomTextButton>
-                        <CustomTextButton  
-                            style={data.userAnswerId == 2 ? buttonViewStyle.selectedStyle : buttonViewStyle.unSelectedStyle} 
-                            textColor={data.userAnswerId == 2 ? "#fff" :  '#000'}
+                        <CustomTextButton
+                            style={data.userAnswerId == this.props.data.surveyAnswerList[1].answerId ? buttonViewStyle.selectedStyle : buttonViewStyle.unSelectedStyle} 
+                            textColor={data.userAnswerId == this.props.data.surveyAnswerList[1].answerId ? "#fff" :  '#000'}
                             onPress={() => {
                                 if(this.props.isSurveyTaken === 'N') {
-                                    data.userAnswerId = 2;
+                                    data.userAnswerId = this.props.data.surveyAnswerList[1].answerId;
                                     this.props.onChangeData(data, this.props.index);
                                 }
                             }
@@ -96,7 +96,6 @@ export default class optionalQuestionView extends Component  {
         )
     }
 
-    
 };
 
 const buttonViewStyle = StyleSheet.create({

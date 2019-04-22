@@ -12,9 +12,9 @@ class OptionalPoll extends Component {
             ]
     }
 
-    renderUserAnswer = (index, answerText) => {
+    renderUserAnswer = (index, answerText, answerId) => {
         const { userAnswerId } = this.props;
-        if(userAnswerId === index+1 ) {
+        if(userAnswerId === answerId) {
             return (
                 <View style={styles.iconContainer}>
                     <Text style={styles.answerText}> {answerText} </Text>
@@ -42,7 +42,7 @@ class OptionalPoll extends Component {
                             <View style={styles.pollContainer}>
                                 <View style={{ width: '80%', position: 'relative' }}>
                                     <View style={[{ width: (answer.answerPercentage ? answer.answerPercentage : 0)+"%" }, styles.pollAnswer]}>
-                                        {this.renderUserAnswer(index, "Yes")}
+                                        {this.renderUserAnswer(index, "Yes",answer.answerId)}
                                     </View> 
                                 </View>
                                 <View style={{ width: '20%', height: normalize(25) }}>
@@ -54,7 +54,7 @@ class OptionalPoll extends Component {
                            <View style={styles.pollContainer}>
                                 <View style={{ width: '80%', position: 'relative' }}>
                                     <View style={[{ width: (answer.answerPercentage ? answer.answerPercentage : 0)+"%" }, styles.pollAnswer]}>
-                                        {this.renderUserAnswer(index, "No")}
+                                        {this.renderUserAnswer(index, "No",answer.answerId)}
                                     </View> 
                                 </View>
                                 <View style={{ width: '20%', height: normalize(25) }}>

@@ -33,7 +33,7 @@ class NotificationScreen extends Component {
         const checkType = () => {
             let source;
 
-            if (item.type === 'survey' || item.type === 'Survey') {
+            if (item.type.toString().toLowerCase() === 'survey' || item.type === 'Survey') {
                 source = Icons[1];
             } else if (item.type === 'trends' || item.type === 'Trends') {
                 source = Icons[0];
