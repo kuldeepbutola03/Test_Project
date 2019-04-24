@@ -19,7 +19,7 @@ import com.reactnativenavigation.viewcontrollers.navigator.RootPresenter;
 
 import android.content.Intent;
 
-import org.devio.rn.splashscreen.SplashScreen;
+// import org.devio.rn.splashscreen.SplashScreen;
 
 import android.content.pm.ActivityInfo;
 
@@ -29,6 +29,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import android.os.Handler;
 //import package
 
 public class MainActivity extends NavigationActivity implements OnImagePickerPermissionsCallback {
@@ -53,7 +54,8 @@ public class MainActivity extends NavigationActivity implements OnImagePickerPer
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         
-        super.onCreate(savedInstanceState);
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.launch_screen);
 
     Intent intent = getIntent();
     String action = intent.getAction();
@@ -97,7 +99,6 @@ public class MainActivity extends NavigationActivity implements OnImagePickerPer
                             // content, or apply promotional credit to the user's
                             // account.
                             // ...
-
                             // ...
                         }
                     }
@@ -108,9 +109,7 @@ public class MainActivity extends NavigationActivity implements OnImagePickerPer
                         }
                     });
 
-
-
-                }
+        }
 
 
         @Override

@@ -18,7 +18,6 @@ import {
 
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
-// import SplashScreen from 'react-native-splash-screen';
 import ProfileView from '../../components/UI/ProfileView/ProfileView';
 import MenuButtons from '../../components/UI/ProfileView/MenuButtons';
 import { Navigation } from 'react-native-navigation';
@@ -40,7 +39,7 @@ import moment from 'moment';
 
 // const { notifications } = this.state
 import KochavaTracker from 'react-native-kochava-tracker';
-import SplashScreen from 'react-native-splash-screen'
+
 export default class HomeScreen extends Component {
 
   areaCode = null;
@@ -699,7 +698,7 @@ export default class HomeScreen extends Component {
   }
 
   componentDidMount() {
-    SplashScreen.hide();
+    // SplashScreen.hide();
     // getUserID();
     // SplashScreen.hide();
     AsyncStorage.getItem(DEFAULT_USER_ID).then((value) => {

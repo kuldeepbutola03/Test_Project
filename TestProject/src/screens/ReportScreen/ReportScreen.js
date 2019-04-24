@@ -76,7 +76,7 @@ export default class ReportScreen extends Component {
     firebase.analytics().logEvent("Content", { "Screen": "Arena_Screen" });
     // console.log(this.props.menuName)
 
-    
+
 
     var eventMapObject = {};
     eventMapObject["screen_name"] = "Arena_Screen";
@@ -417,9 +417,9 @@ export default class ReportScreen extends Component {
   }
 
   getMessage = (data) => {
-    if(data){
-      return (data.length > 100 ? data.substr(0,100) + "..." : data) + '\n\nCheck it out on Raajneeti app'
-    }else {
+    if (data) {
+      return (data.length > 100 ? data.substr(0, 100) + "..." : data) + '\n\nCheck it out on Raajneeti app'
+    } else {
       return 'Check it out on Raajneeti app'
     }
   }
@@ -433,11 +433,11 @@ export default class ReportScreen extends Component {
       title: "Check out Raajneeti app",
       message: this.getMessage(data.details),//((data.details ? data.details.length : '') > 100 ? data.details.substr(0,100) + '...' : data.details) + "\n\nCheck it out on Raajneeti app",
       subject: "Share Link",
-      url: SHARE_LINK+"?raajneetiId="+data.Thread_Id// Platform.OS ===  'ios' ? 'https://itunes.apple.com/us/app/raajneeti/id1449128685?mt=8' : 'https://play.google.com/store/apps/details?id=com.aureans.raajneeti'
+      url: SHARE_LINK + "?raajneetiId=" + data.Thread_Id// Platform.OS ===  'ios' ? 'https://itunes.apple.com/us/app/raajneeti/id1449128685?mt=8' : 'https://play.google.com/store/apps/details?id=com.aureans.raajneeti'
     };
     if (data.picture && data.picture.uri) {
       shareOptions["url"] = data.picture.uri;
-      shareOptions["message"] = shareOptions.message + "\n" + SHARE_LINK+"?raajneetiId="+data.Thread_Id;
+      shareOptions["message"] = shareOptions.message + "\n" + SHARE_LINK + "?raajneetiId=" + data.Thread_Id;
     }
     if (Platform.OS === "android") {
       this.setState({ visible: true });
@@ -861,7 +861,7 @@ export default class ReportScreen extends Component {
 
     const { loading, selectedSort, notifications } = this.state;
     const BadgedIcon = withBadge(notifications.count)(Icon);
-    // const BadgedIcon = withBadge(10)(Icon);
+    
 
     return (
       <SafeAreaView
@@ -945,28 +945,35 @@ export default class ReportScreen extends Component {
                 style={{ marginTop: hp('.5%'), marginRight: hp('.8%') }}
               />
             </TouchableWithoutFeedback>
-            <TouchableWithoutFeedback style={{ width: hp('10%') , justifyContent: 'center',
-            alignItems: 'center',}} onPress={() => this.showNotificationScreen()}>
-              {/* <BadgedIcon
+            <TouchableWithoutFeedback style={{
+              width: hp('10%'), justifyContent: 'center',
+              alignItems: 'center'
+            }} onPress={() => this.showNotificationScreen()}>
+              <View style={{ height : null,
+                width: hp('6%'), justifyContent: 'center',
+                alignItems: 'flex-start', 
+              }}>
+                {/* <BadgedIcon
                   color="#fff"
                   type="font-awesome"
                   onPress={() => { }}
                   name="bell-o" /> */}
-              {notifications.count && notifications.count > 0 ?
-                <BadgedIcon
-                  size={hp('3%')}
-                  color="#fff"
-                  type="font-awesome"
-                  // onPress={() => this.showNotificationScreen()}
-                  name="bell-o" />
-                :
-                <FontAwesome
-                  size={hp('3%')}
-                  // onPress={() => this.showNotificationScreen()}
-                  name="bell-o"
-                  color="#fff"
-                />
-              }
+                {notifications.count && notifications.count > 0 ?
+                  <BadgedIcon
+                    size={hp('3%')}
+                    color="#fff"
+                    type="font-awesome"
+                    // onPress={() => this.showNotificationScreen()}
+                    name="bell-o" />
+                  :
+                  <FontAwesome
+                    size={hp('3%')}
+                    // onPress={() => this.showNotificationScreen()}
+                    name="bell-o"
+                    color="#fff"
+                  />
+                }
+              </View>
               {/* {notifications.count <= 0 ?
                 <FontAwesome
                   size={hp('3%')}
@@ -1130,9 +1137,9 @@ const styles = StyleSheet.create({
   },
   topIcons: {
     // flex: 5,
-    marginRight: hp('2%'),
+    //marginRight: hp('2%'),
     flexDirection: 'row',
-    justifyContent: 'flex-end',
+    // justifyContent: 'flex-end',
     alignItems: 'center',
   },
   textView: {

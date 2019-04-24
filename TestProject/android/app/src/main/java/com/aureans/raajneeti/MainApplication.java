@@ -24,7 +24,7 @@ import com.reactnativenavigation.react.NavigationReactNativeHost;
 import com.reactnativenavigation.react.ReactGateway;
 import io.invertase.firebase.auth.RNFirebaseAuthPackage;
 
-import org.devio.rn.splashscreen.SplashScreenReactPackage;
+// import org.devio.rn.splashscreen.SplashScreenReactPackage;
 
 import java.util.Arrays;
 import java.util.List;
@@ -76,7 +76,7 @@ public class MainApplication extends NavigationApplication implements ShareAppli
                 new FBSDKPackage(mCallbackManager),
                 new SvgPackage(),
                 new VectorIconsPackage(),
-                new SplashScreenReactPackage(),
+                // new SplashScreenReactPackage(),
                 new FastImageViewPackage(),
                 new RNFusedLocationPackage(),
                 new RNImgToBase64Package(),

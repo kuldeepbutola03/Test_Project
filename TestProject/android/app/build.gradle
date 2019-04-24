@@ -201,7 +201,6 @@ dependencies {
 
     implementation 'com.facebook.android:facebook-android-sdk:4.34.0'
     implementation project(':react-native-fbsdk')
-    compile project(':react-native-splash-screen')
     implementation project(':react-native-fast-image')
     compile project(':react-native-geolocation-service')
     compile(project(':react-native-geolocation-service')) {

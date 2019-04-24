@@ -30,8 +30,6 @@ export default class ReportReplyScreen extends Component {
     firebase.analytics().setUserProperty("Screen", "Arena_Reply_Screen");
     firebase.analytics().logEvent("Content", { "Screen": "Arena_Reply_Screen" });
 
-    
-
     var eventMapObject = {};
     eventMapObject["screen_name"] = "Arena_Reply_Screen";
     KochavaTracker.sendEventMapObject(KochavaTracker.EVENT_TYPE_LEVEL_COMPLETE_STRING_KEY, eventMapObject);
@@ -54,11 +52,8 @@ export default class ReportReplyScreen extends Component {
     if (language === 'hi') {
       let menu = "अखाड़ा"
       return menu;
-
     }
-
     return "Arena"
-
   }
 
   attachment = () => {
@@ -364,6 +359,7 @@ export default class ReportReplyScreen extends Component {
         ...dict
 
       }
+      
 
       //    console.log(JSON.stringify( ));
       console.log(innerData);
@@ -793,9 +789,6 @@ export default class ReportReplyScreen extends Component {
                   Share.shareSingle(Object.assign(shareOptions, {
                     "social": "twitter"
                   }));
-
-
-
 
                 }, 300);
               }}>Twitter</Button>

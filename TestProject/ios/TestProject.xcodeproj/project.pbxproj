@@ -16,7 +16,6 @@
 		0421692F222E3F6C00268185 /* libRNShare.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0421692D222E3F4D00268185 /* libRNShare.a */; };
 		04216931222E3FBE00268185 /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 04216930222E3FBE00268185 /* Social.framework */; };
 		04216933222E3FEB00268185 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 04216932222E3FEB00268185 /* MessageUI.framework */; };
-		0488069022245EB300FD34AA /* libSplashScreen.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0488068F22245E7800FD34AA /* libSplashScreen.a */; };
 		0C0BAF082C16471C9C7270F6 /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CF56F7F231C64F59A914B301 /* Zocial.ttf */; };
 		11D1A2F320CAFA9E000508D9 /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E9157331DD0AC6500FF2AA8 /* libRCTAnimation.a */; };
 		133E29F31AD74F7200F7D852 /* libRCTLinking.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 78C398B91ACF4ADC00677621 /* libRCTLinking.a */; };
@@ -124,13 +123,6 @@
 			proxyType = 2;
 			remoteGlobalIDString = 134814201AA4EA6300B7C361;
 			remoteInfo = RNImgToBase64;
-		};
-		0488068E22245E7800FD34AA /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0488066222245E7800FD34AA /* SplashScreen.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 3D7682761D8E76B80014119E;
-			remoteInfo = SplashScreen;
 		};
 		139105C01AF99BAD00B5F7CC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -427,7 +419,6 @@
 		04216900222E3F4D00268185 /* RNShare.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNShare.xcodeproj; path = "../node_modules/react-native-share/ios/RNShare.xcodeproj"; sourceTree = "<group>"; };
 		04216930222E3FBE00268185 /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
 		04216932222E3FEB00268185 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
-		0488066222245E7800FD34AA /* SplashScreen.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SplashScreen.xcodeproj; path = "../node_modules/react-native-splash-screen/ios/SplashScreen.xcodeproj"; sourceTree = "<group>"; };
 		09CF41518DC142FBBB725705 /* RNImgToBase64.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNImgToBase64.xcodeproj; path = "../node_modules/react-native-image-base64/ios/RNImgToBase64.xcodeproj"; sourceTree = "<group>"; };
 		0D6798FFEF844486819314E9 /* Ionicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Ionicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Ionicons.ttf"; sourceTree = "<group>"; };
 		0F995166D15948169F662D61 /* FontAwesome5_Solid.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Solid.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Solid.ttf"; sourceTree = "<group>"; };
@@ -495,7 +486,6 @@
 				04216933222E3FEB00268185 /* MessageUI.framework in Frameworks */,
 				04216931222E3FBE00268185 /* Social.framework in Frameworks */,
 				0421692F222E3F6C00268185 /* libRNShare.a in Frameworks */,
-				0488069022245EB300FD34AA /* libSplashScreen.a in Frameworks */,
 				C278BBC821E74AA200193423 /* libRNImagePicker.a in Frameworks */,
 				C278BB8021E730F600193423 /* libReactNativeNavigation.a in Frameworks */,
 				ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */,
@@ -628,14 +618,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		0488066322245E7800FD34AA /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				0488068F22245E7800FD34AA /* libSplashScreen.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		139105B71AF99BAD00B5F7CC /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -756,7 +738,6 @@
 			children = (
 				5A929A4B2241153800C0F4D1 /* RNSpinkit.xcodeproj */,
 				04216900222E3F4D00268185 /* RNShare.xcodeproj */,
-				0488066222245E7800FD34AA /* SplashScreen.xcodeproj */,
 				C278BB9B21E74A8800193423 /* RNImagePicker.xcodeproj */,
 				C278BB7721E72EC400193423 /* ReactNativeNavigation.xcodeproj */,
 				5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */,
@@ -1077,10 +1058,6 @@
 					ProductGroup = 5A929A4C2241153800C0F4D1 /* Products */;
 					ProjectRef = 5A929A4B2241153800C0F4D1 /* RNSpinkit.xcodeproj */;
 				},
-				{
-					ProductGroup = 0488066322245E7800FD34AA /* Products */;
-					ProjectRef = 0488066222245E7800FD34AA /* SplashScreen.xcodeproj */;
-				},
 			);
 			projectRoot = "";
 			targets = (
@@ -1140,13 +1117,6 @@
 			fileType = archive.ar;
 			path = libRNImgToBase64.a;
 			remoteRef = 0479F412222F9B480009194C /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		0488068F22245E7800FD34AA /* libSplashScreen.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libSplashScreen.a;
-			remoteRef = 0488068E22245E7800FD34AA /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		139105C11AF99BAD00B5F7CC /* libRCTSettings.a */ = {
@@ -1716,11 +1686,6 @@
 				DEVELOPMENT_TEAM = Q79W9BJDU3;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../node_modules/react-native-navigation/lib/ios/**",
-					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
-					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
-					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
-					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
-					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
 					"/**",
 					"$(SRCROOT)/../node_modules/react-native-image-base64/ios",
 					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
@@ -1753,11 +1718,6 @@
 				DEVELOPMENT_TEAM = Q79W9BJDU3;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../node_modules/react-native-navigation/lib/ios/**",
-					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
-					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
-					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
-					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
-					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
 					"/**",
 					"$(SRCROOT)/../node_modules/react-native-image-base64/ios",
 					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",

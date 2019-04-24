@@ -32,7 +32,7 @@ const caseCard = props => {
     imagewidth = imagewidth ? (imagewidth > 0 ? imagewidth : 1) : 1
 
     let isOp = (data.isOP === 'Y');
-    var height = ((SCREEN_WIDTH + (isOp ? 0 : normalize(80))) * imageheight) / imagewidth;
+    var height = ((SCREEN_WIDTH - (isOp ? 0 : normalize(80))) * imageheight) / imagewidth;
 
     var imageLike = (data.Is_Liked === 1) ? require('../../../assets/ReportImages/likeSelected.png') : require('../../../assets/ReportImages/likeUnSelected.png');
 
@@ -154,14 +154,14 @@ const caseCard = props => {
       </View>
 
       {/* middle */}
-      <View style={{}}>
+      <View style={{ marginLeft : (isOp ? 0 :normalize(80))}}>
 
         {data.picture &&
           <FastImage
             resizeMode='stretch' //"contain"
             // source={require ('../../../assets/1.png')}
             source={{ ...data.picture, priority: FastImage.priority.normal }}
-            style={{ flex: 1, height: height, width: '100%' ,  marginLeft : (isOp ? 0 :normalize(80))}}
+            style={{ flex: 1, height: height, width: '100%' }}
           />}
       </View>
 

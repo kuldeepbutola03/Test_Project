@@ -35,9 +35,9 @@ class NotificationScreen extends Component {
 
             if (item.type.toString().toLowerCase() === 'survey' || item.type === 'Survey') {
                 source = Icons[1];
-            } else if (item.type === 'trends' || item.type === 'Trends') {
+            } else if (item.type.toString().toLowerCase() === 'trends') {
                 source = Icons[0];
-            } else if (item.type === 'timeline' || item.type === 'Timeline') {
+            } else if (item.type.toString().toLowerCase() === 'timeline' || item.type.toString().toLowerCase() === 'message') {
                 source = Icons[2]
             }
 

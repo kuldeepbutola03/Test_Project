@@ -348,7 +348,7 @@ export default class QuestionnireScreen extends Component {
                                 // loading: false, 
                                 questionnaire1: responseData,
                                 isSurveyTaken1: responseData.isSurveyTaken,
-                                surveyTitle: responseData.surveyDesc ? (responseData.surveyDesc === '' ? responseData.surveyDesc : this.state.surveyTitle) : this.state.surveyTitle
+                                surveyTitle: responseData.surveyDesc ? (responseData.surveyDesc === '' ?  this.state.surveyTitle : responseData.surveyDesc) : this.state.surveyTitle
                             })
 
                             let body2 = {
@@ -371,6 +371,8 @@ export default class QuestionnireScreen extends Component {
                                         loading: false,
                                         questionnaire2: responseData_2,
                                         isSurveyTaken2: responseData_2.isSurveyTaken,
+                                        surveyTitle: responseData_2.surveyDesc ? (responseData_2.surveyDesc === '' ?  this.state.surveyTitle : responseData_2.surveyDesc) : this.state.surveyTitle
+
                                     })
                                 })
                                 .catch(error => {
@@ -990,7 +992,7 @@ export default class QuestionnireScreen extends Component {
                 // isSurveyTaken2: 'N',
                 // surveyTitle: 'SURVEY',
                 // questionnaire2.surveyDesc
-                surveyTitle: responseData.surveyDesc ? (responseData.surveyDesc === '' ? responseData.surveyDesc : this.state.surveyTitle) : this.state.surveyTitle
+                surveyTitle: responseData.surveyDesc ? (responseData.surveyDesc === '' ?  this.state.surveyTitle : responseData.surveyDesc) : this.state.surveyTitle
             })
 
             axios.post(GET_CURRENT_ACTIVE_SURVEY, {
@@ -1011,7 +1013,7 @@ export default class QuestionnireScreen extends Component {
                         // loading: false, 
                         questionnaire1: responseData_2,
                         isSurveyTaken1: responseData_2.isSurveyTaken,
-                        // surveyTitle: responseData_2.surveyDesc ? (responseData_2.surveyDesc === '' ? responseData_2.surveyDesc : this.state.surveyTitle) : this.state.surveyTitle
+                        // surveyTitle: responseData_2.surveyDesc ? (responseData_2.surveyDesc === '' ? this.state.surveyTitle : responseData_2.surveyDesc) : this.state.surveyTitle
                     })
 
                     // this.setState({

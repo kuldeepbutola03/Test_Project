@@ -2,4 +2,5 @@
 <resources>
     <item name="splashBackground" type="color">#C90035</item>
     <color name="primary_dark">#C90035</color>
+    <color name="colorPrimary">#C90035</color>
 </resources>

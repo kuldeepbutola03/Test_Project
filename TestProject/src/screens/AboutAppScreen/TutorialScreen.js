@@ -45,15 +45,15 @@ export default class TutorialScreen extends Component {
 
     let array = Platform.isPad ?
       [
-        require('../../assets/Tutorial/t_1_.jpg'),
-        require('../../assets/Tutorial/t_2_.jpg'),
-        require('../../assets/Tutorial/t_3_.jpg')
+        require('../../assets/Tutorial/tutorial_ipad_1.jpg'),
+        require('../../assets/Tutorial/tutorial_ipad_2.jpg'),
+        require('../../assets/Tutorial/tutorial_ipad_3.jpg')
       ]
       :
       [
-        require('../../assets/Tutorial/t_1.jpg'),
-        require('../../assets/Tutorial/t_2.jpg'),
-        require('../../assets/Tutorial/t_3.jpg')
+        require('../../assets/Tutorial/tutorial_iphone_1.jpg'),
+        require('../../assets/Tutorial/tutorial_iphone_2.jpg'),
+        require('../../assets/Tutorial/tutorial_iphone_3.jpg')
       ];
     this.state = {
       // trendImages: null,

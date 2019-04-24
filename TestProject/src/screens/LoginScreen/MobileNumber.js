@@ -12,7 +12,7 @@ import {
   ScrollView
 
 } from 'react-native';
-import SplashScreen from 'react-native-splash-screen'
+
 import { Navigation } from 'react-native-navigation';
 import { PropTypes } from 'prop-types';
 import ButtonMod from '../../components/UI/ButtonMod/ButtonMod';

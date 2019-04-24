@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
     containerStyle: {
         marginVertical: normalize(5),
         marginTop: normalize(10),
-        marginHorizontal: normalize(25)
+        marginHorizontal: normalize(0)
     },
 
     pollContainer: {

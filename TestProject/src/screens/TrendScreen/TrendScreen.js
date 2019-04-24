@@ -534,7 +534,7 @@ class TrendScreen extends Component {
             width: hp('10%'),
             justifyContent: 'center',
             alignItems: 'center',
-            flexDirection: 'row',
+            // flexDirection: 'row',
             // marginRight: hp('4%'),
             backgroundColor: 'rgba(255,255,255,1)',
           }}

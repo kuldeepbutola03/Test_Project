@@ -1,6 +1,5 @@
 import { Navigation } from 'react-native-navigation';
 
-import SplashScreen from 'react-native-splash-screen';
 import LoginSceen from './src/screens/LoginScreen/LoginScreen';
 import Profile from './src/screens/Profile/Profile';
 import MobileNumber from './src/screens/LoginScreen/MobileNumber';
