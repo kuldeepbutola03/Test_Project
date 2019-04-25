@@ -7,7 +7,9 @@ import HashTag from '../../../components/UI/HashTag/HashTag';
 import CustomButton from '../ButtonMod/CustomButtom';
 import { MOBILE_NUMBER_ } from '../../../../Apis';
 
-import FastImage from 'react-native-fast-image'
+import FastImage from 'react-native-fast-image';
+
+
 const caseCard = props => {
   //             picture={data.picture}
   //             name={data.name}
@@ -27,12 +29,13 @@ const caseCard = props => {
     var imagewidth = data.width_Image ? data.width_Image : 1;
 
     // "height_Image": 200,
-    //           "width_Image": 157,
+    // "width_Image": 157,
     imageheight = imageheight ? (imageheight > 0 ? imageheight : 1) : 1;
-    imagewidth = imagewidth ? (imagewidth > 0 ? imagewidth : 1) : 1
+    imagewidth = imagewidth ? (imagewidth > 0 ? imagewidth : 1) : 1;
 
     let isOp = (data.isOP === 'Y');
-    var height = ((SCREEN_WIDTH - (isOp ? 0 : normalize(80))) * imageheight) / imagewidth;
+    // var height = ((SCREEN_WIDTH - (isOp ? 0 : normalize(80))) * imageheight) / imagewidth;
+    var height = imageheight > imagewidth ? imagewidth : imageheight;
 
     var imageLike = (data.Is_Liked === 1) ? require('../../../assets/ReportImages/likeSelected.png') : require('../../../assets/ReportImages/likeUnSelected.png');
 
@@ -157,12 +160,14 @@ const caseCard = props => {
       <View style={{ marginLeft : (isOp ? 0 :normalize(80))}}>
 
         {data.picture &&
+        <TouchableOpacity onPress={() => props.showFullPic(data.picture)}>
           <FastImage
-            resizeMode='stretch' //"contain"
+            resizeMode= 'cover'// 'center' //"contain"
             // source={require ('../../../assets/1.png')}
             source={{ ...data.picture, priority: FastImage.priority.normal }}
-            style={{ flex: 1, height: height, width: '100%' }}
-          />}
+            style={{ flex: 1, height: null  , width: '100%', aspectRatio:2, backgroundColor:'black'}}
+          
+          /></TouchableOpacity>}
       </View>
 
       {/* footer */}

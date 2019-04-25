@@ -197,9 +197,9 @@ class MultiplePoll extends Component {
 
 const styles = StyleSheet.create({
     containerStyle: {
-        marginVertical: normalize(5),
+        // marginVertical: normalize(0),
         marginTop: normalize(10),
-        marginHorizontal: normalize(0)
+        marginHorizontal: normalize(-11)
     },
 
     pollContainer: {

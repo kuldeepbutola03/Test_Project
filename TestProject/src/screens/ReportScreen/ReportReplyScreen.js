@@ -156,11 +156,17 @@ export default class ReportReplyScreen extends Component {
         if (Array.isArray(responseData)) {
           this.filterData2(responseData)
         } else {
-          console.log(responseData.response)
-          alert(responseData.response);
+          console.log(responseData.response);
+          if(responseData.response === 'Invalid Thread Id!'){
+            this.homeButtonTapped();
+          }else{
+            alert(responseData.response);
+          }
+          
         }
       })
       .catch(error => {
+        
         console.log(error);
         alert(error)
         this.setState({ refreshing: false });

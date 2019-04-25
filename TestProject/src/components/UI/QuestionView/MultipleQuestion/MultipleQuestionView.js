@@ -40,10 +40,12 @@ export default class multipleQuestionView extends React.Component {
             return (
                 this.props.data.surveyAnswerList.map((data, indexValue) => {
                     return (
+                        
                         <RadioButton
                             labelHorizontal={true}
                             key={indexValue}
                             wrapStyle={{ marginVertical: normalize(5) }}>
+                            
                             <RadioButtonInput
                                 obj={data}
                                 index={(indexValue)}
@@ -63,8 +65,14 @@ export default class multipleQuestionView extends React.Component {
                                 buttonOuterSize={normalize(14)}
                                 buttonStyle={{}}
                                 buttonWrapStyle={{marginLeft: 10 }}
-                            />
-                            <Text style={{ marginLeft: normalize(3)}}> {data.answerText} </Text>
+                            /><TouchableOpacity onPress={() =>{
+                                if(this.props.isSurveyTaken === 'N') {
+                                    // this.props.data.userAnswerId = indexValue+1;
+                                    this.props.data.userAnswerId = data.answerId;
+                                    this.props.onChangeData(this.props.data, this.props.indexValue);
+                                }
+                            }}>
+                            <Text style={{ marginLeft: normalize(3)}}> {data.answerText} </Text></TouchableOpacity>
                         </RadioButton>
                     );
                 })

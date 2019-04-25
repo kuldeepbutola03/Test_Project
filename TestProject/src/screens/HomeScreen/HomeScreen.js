@@ -457,7 +457,7 @@ export default class HomeScreen extends Component {
   };
 
   toReportReplyScreen = (surveyThreadId) => {
-    console.log('toReportReplyScreen');
+    console.log('toReportReplyScreen----yyy');
     console.log(surveyThreadId);
     const { menuName } = this.state;
     if (surveyThreadId) {
@@ -677,15 +677,6 @@ export default class HomeScreen extends Component {
     clearInterval(this.state.timer);
     this.backHandler.remove();
 
-    firebase.analytics().setCurrentScreen("Home_Screen");
-    //firebase.analytics().logEvent("Home_Screen");
-    firebase.analytics().setUserProperty("Screen", "Home_Screen");
-    firebase.analytics().logEvent("Content", { "Screen": "Home_Screen" });
-
-    var eventMapObject = {};
-    eventMapObject["screen_name"] = "Home_Screen";
-    KochavaTracker.sendEventMapObject(KochavaTracker.EVENT_TYPE_LEVEL_COMPLETE_STRING_KEY, eventMapObject);
-
     Linking.removeEventListener('url', this.handleOpenURL);
   }
 
@@ -701,6 +692,16 @@ export default class HomeScreen extends Component {
     // SplashScreen.hide();
     // getUserID();
     // SplashScreen.hide();
+
+    firebase.analytics().setCurrentScreen("Home_Screen");
+    //firebase.analytics().logEvent("Home_Screen");
+    firebase.analytics().setUserProperty("Screen", "Home_Screen");
+    firebase.analytics().logEvent("Content", { "Screen": "Home_Screen" });
+
+    var eventMapObject = {};
+    eventMapObject["screen_name"] = "Home_Screen";
+    KochavaTracker.sendEventMapObject(KochavaTracker.EVENT_TYPE_LEVEL_COMPLETE_STRING_KEY, eventMapObject);
+
     AsyncStorage.getItem(DEFAULT_USER_ID).then((value) => {
       // alert(value);
       let userID = value ? value : 1;
@@ -859,14 +860,22 @@ export default class HomeScreen extends Component {
     // const { navigate } = this.props.navigation;
     const route = url.replace(/.*?:\/\//g, '');
     //alert(route);
-if (Platform.OS === 'ios') {
-  this.toReportReplyScreen(route);
-}else{
-   let routeName = route.split('/');
-   console.log(routeName);
-   if (routeName.length >= 2) {
-    this.toReportReplyScreen(routeName[1]);
-   }
+    if(route) {
+      if (Platform.OS === 'ios') {
+        if(route.length > 3){
+          var strFirstThree = route.substring(0,3);
+          if(strFirstThree && strFirstThree === 'THD')
+          this.toReportReplyScreen(route);
+        }
+        
+      }else{
+         let routeName = route.split('/');
+         console.log(routeName);
+         if (routeName.length >= 2) {
+          this.toReportReplyScreen(routeName[1]);
+         }
+    }
+
 }
     
     // const id = route.match(/\/([^\/]+)\/?$/)[1];

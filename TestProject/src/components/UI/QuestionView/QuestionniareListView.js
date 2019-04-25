@@ -33,9 +33,10 @@ export default questionniareListView = props => {
             data={props.data}
             keyExtractor={this._keyExtractor}
             extraData={props.data}
+            onScroll={props.hideMoreSurveyOnScroll}
             ListFooterComponent={() => {
                 return (
-                    <View style={{ marginTop: 10, justifyContent: 'center', alignItems: 'center' }}>
+                    <View style={{ marginTop: 10, justifyContent: 'center', alignItems: 'center' , marginBottom:30 }}>
                         <Button 
                             onPress={() => props.updateQuestionaire(props.survey)} 
                             title="Submit"

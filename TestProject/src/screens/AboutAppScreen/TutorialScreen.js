@@ -119,7 +119,9 @@ var eventMapObject = {};
       this.getToken();
     } catch (error) {
       // User has rejected permissions
-      alert('permission rejected');
+
+      //alert('permission rejected');
+      
       console.log('permission rejected');
     }
   }

@@ -76,8 +76,6 @@ export default class ReportScreen extends Component {
     firebase.analytics().logEvent("Content", { "Screen": "Arena_Screen" });
     // console.log(this.props.menuName)
 
-
-
     var eventMapObject = {};
     eventMapObject["screen_name"] = "Arena_Screen";
     KochavaTracker.sendEventMapObject(KochavaTracker.EVENT_TYPE_LEVEL_COMPLETE_STRING_KEY, eventMapObject);
@@ -392,6 +390,25 @@ export default class ReportScreen extends Component {
             visible: false,
             drawBehind: true,
             animate: false,
+          },
+        }
+      }
+    });
+  }
+
+ showFullPic = (data) => {
+   console.log(data);
+    Navigation.push(this.props.componentId, {
+      component: {
+        name: 'FullPicture',
+        passProps: {
+          data : data.uri
+        },
+        options: {
+          topBar: {
+            visible: true,
+            // drawBehind: true,
+            // animate: false,
           },
         }
       }
@@ -1021,6 +1038,7 @@ export default class ReportScreen extends Component {
                     onPressDisLike={(data2) => this.disLikeButtonTapped(data2)}
                     data={item}
                     onPressReply={(data2) => this.replyButtonTapped(data2)}
+                    showFullPic = {this.showFullPic}
                   />
                 </TouchableOpacity>
               }

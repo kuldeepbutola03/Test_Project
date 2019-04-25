@@ -21,6 +21,7 @@ import AreaScreen from './src/screens/LoginScreen/AreaScreen';
 import ComposeScreen from './src/screens/ReportScreen/ComposeScreen';
 import Sharing from './src/components/UI/Sharing/Sharing';
 import ReportReplyScreen from './src/screens/ReportScreen/ReportReplyScreen';
+import FullPicture from './src/screens/ReportScreen/FullPicture';
 // Register Screens
 import AboutAppScreen from './src/screens/AboutAppScreen/AboutAppScreen';
 
@@ -56,6 +57,10 @@ Navigation.registerComponent('TutorialScreen', () => TutorialScreen);
 Navigation.registerComponent('TcScreen', () => TcScreen);
 Navigation.registerComponent('NotificationScreen', () => NotificationScreen);
 Navigation.registerComponent('SurveyList', () => SurveyList);
+
+Navigation.registerComponent('FullPicture', () => FullPicture);
+
+
 // import Orientation from 'react-native-orientation';
 // Start App
 import { AsyncStorage, Platform , Linking} from "react-native"

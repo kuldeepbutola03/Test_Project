@@ -1,9 +1,9 @@
 import axios from 'axios';
 import _ from 'lodash';
-import moment from 'moment';
+import moment, { duration } from 'moment';
 import { PropTypes } from 'prop-types';
 import React, { Component } from 'react';
-import { Alert, Dimensions, SafeAreaView, ScrollView, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
+import { Alert, Dimensions, SafeAreaView, ScrollView, StyleSheet, Text, TouchableWithoutFeedback, View, Image, TouchableOpacity, LayoutAnimation } from 'react-native';
 import Draggable from 'react-native-draggable';
 import { Icon, withBadge } from 'react-native-elements';
 import firebase from 'react-native-firebase';
@@ -46,9 +46,12 @@ export default class QuestionnireScreen extends Component {
         isSurveyTaken1: 'N',
         isSurveyTaken2: 'N',
         surveyTitle: 'SURVEY',
-        notifications: this.props.notifications
+        notifications: this.props.notifications,
+        positionRight: -30
 
     }
+
+
 
     static propTypes = {
         componentId: PropTypes.string,
@@ -348,7 +351,7 @@ export default class QuestionnireScreen extends Component {
                                 // loading: false, 
                                 questionnaire1: responseData,
                                 isSurveyTaken1: responseData.isSurveyTaken,
-                                surveyTitle: responseData.surveyDesc ? (responseData.surveyDesc === '' ?  this.state.surveyTitle : responseData.surveyDesc) : this.state.surveyTitle
+                                surveyTitle: responseData.surveyDesc ? (responseData.surveyDesc === '' ? this.state.surveyTitle : responseData.surveyDesc) : this.state.surveyTitle
                             })
 
                             let body2 = {
@@ -371,7 +374,7 @@ export default class QuestionnireScreen extends Component {
                                         loading: false,
                                         questionnaire2: responseData_2,
                                         isSurveyTaken2: responseData_2.isSurveyTaken,
-                                        surveyTitle: responseData_2.surveyDesc ? (responseData_2.surveyDesc === '' ?  this.state.surveyTitle : responseData_2.surveyDesc) : this.state.surveyTitle
+                                        surveyTitle: responseData_2.surveyDesc ? (responseData_2.surveyDesc === '' ? this.state.surveyTitle : responseData_2.surveyDesc) : this.state.surveyTitle
 
                                     })
                                 })
@@ -418,6 +421,8 @@ export default class QuestionnireScreen extends Component {
         var eventMapObject = {};
         eventMapObject["screen_name"] = "Questionnaire_Screen";
         KochavaTracker.sendEventMapObject(KochavaTracker.EVENT_TYPE_LEVEL_COMPLETE_STRING_KEY, eventMapObject);
+
+
 
     }
 
@@ -911,6 +916,7 @@ export default class QuestionnireScreen extends Component {
                                     survey={this.props.surveyType ? 'L' : 'Y'}
                                     isSurveyTaken={this.state.isSurveyTaken2}
                                     updateQuestionaire={this.updateQuestionaire}
+                                    hideMoreSurveyOnScroll={() => this.hideMoreSurveyOnScroll()}
                                     onChangeData={(data, index) => {
                                         var d = [];
                                         this.state.questionniareData2.map((object, indexIn) => {
@@ -931,6 +937,7 @@ export default class QuestionnireScreen extends Component {
                                     updateQuestionaire={this.updateQuestionaire}
                                     isSurveyTaken={this.state.isSurveyTaken1}
                                     survey={"N"}
+                                    hideMoreSurvey={() => this.hideMoreSurveyOnScroll()}
                                     onChangeData={(data, index) => {
                                         var d = [];
                                         this.state.questionniareData1.map((object, indexIn) => {
@@ -992,7 +999,7 @@ export default class QuestionnireScreen extends Component {
                 // isSurveyTaken2: 'N',
                 // surveyTitle: 'SURVEY',
                 // questionnaire2.surveyDesc
-                surveyTitle: responseData.surveyDesc ? (responseData.surveyDesc === '' ?  this.state.surveyTitle : responseData.surveyDesc) : this.state.surveyTitle
+                surveyTitle: responseData.surveyDesc ? (responseData.surveyDesc === '' ? this.state.surveyTitle : responseData.surveyDesc) : this.state.surveyTitle
             })
 
             axios.post(GET_CURRENT_ACTIVE_SURVEY, {
@@ -1023,7 +1030,6 @@ export default class QuestionnireScreen extends Component {
                     //     isSurveyTaken2: responseData_2.isSurveyTaken,
                     // })
                     this.refs.scrollview.scrollTo({ x: 0, animate: true });
-
                 })
                 .catch(error => {
                     this.refs.loading.close()
@@ -1061,13 +1067,23 @@ export default class QuestionnireScreen extends Component {
         });
     }
 
+    hideMoreSurveyOnScroll = () => {
+        if (this.state.positionRight === -30) {
+            this.hideMoreSurvey();
+        }
+    }
+
+    hideMoreSurvey = () => {
+        LayoutAnimation.spring();
+        this.setState({
+            positionRight: this.state.positionRight == -30 ? -150 : -30
+        })
+    }
+
     render() {
         // console.log(this.state);
         // console.log(this.props);
-        const {
-            width: SCREEN_WIDTH,
-            height: SCREEN_HEIGHT,
-        } = Dimensions.get('window');
+        const { height, width } = Dimensions.get('window');
         return (
             <SafeAreaView
                 forceInset={{ bottom: 'always' }}
@@ -1076,21 +1092,32 @@ export default class QuestionnireScreen extends Component {
                 {this.renderComponent()}
 
                 {this.state.questionnaire2 && this.state.questionnaire2.activeSurveyList && this.state.questionnaire2.activeSurveyList.length > 0 &&
+                    <TouchableOpacity onPress={() => this.hideMoreSurvey()} style={{ flexDirection: 'row', position: 'absolute', bottom: 100, right: this.state.positionRight, alignItems: 'center' }}>
+                        <View style={{ position: 'absolute', left: 36 - 10, right: 0, top: 0, bottom: 0, backgroundColor: '#ff0000' }} />
+
+                        <Image source={this.state.positionRight === -150 ? require('../../assets/Extra/next.png') : require('../../assets/Extra/next1.png')} style={{ height: 30, width: 36 }} />
+                        <View style={{ marginLeft: -7.5, height: 30, justifyContent: 'center', width: (150 + 7.5 - 7.5) }}>
+                            <Text style={{ marginLeft: 20, margin: 0, fontSize: 13, color: 'white', fontWeight: 'bold' }} onPress={() => this.moreSurveys()}>More Survey</Text>
+                        </View>
+                    </TouchableOpacity>
+                }
+
+                {/* {this.state.questionnaire2 && this.state.questionnaire2.activeSurveyList && this.state.questionnaire2.activeSurveyList.length > 0 &&
                     <Draggable
                         reverse={false}
                         renderShape='image'
                         backgroundColor={APP_GLOBAL_COLOR}
                         offsetX={SCREEN_WIDTH / 2 - 10}
-                        offsetY={SCREEN_HEIGHT / 2 - 50}
+                        offsetY={SCREEN_HEIGHT / 2 - 120}
                         imageSource={require("../../assets/Extra/more_.png")}
                         renderSize={50}
                         // pressDrag={() => console.log('called here')}
                         pressInDrag={() => this.moreSurveys()}
                     // pressOutDrag={()=>console.log('out press')}
-                    >
-                        {/* <Image source = {require('../../assets/1.png')} styles = {{flex : 1}} /> */}
-                    </Draggable>
-                }
+                    > */}
+                {/* <Image source = {require('../../assets/1.png')} styles = {{flex : 1}} /> */}
+                {/* </Draggable> */}
+                {/* } */}
             </SafeAreaView>
 
         )
