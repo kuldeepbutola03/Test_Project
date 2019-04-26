@@ -14,9 +14,9 @@ const scoreView = props => (
 
      <View style={props.style} >
      <View style={scoreViewStyle.scoreView} backgroundColor = {props.backgroundColor}>
-      <Text style = {{color : 'white' , fontSize : normalize(15) , fontWeight : '600'}}>{props.text[1]}</Text>
+      <Text style = {{color : 'white' , fontSize : normalize(15) , fontWeight : '600'}}>{props.text[1]} </Text>
       </View>
-      {props.bottomText && <Text style={scoreViewStyle.textView}>{props.text[0]}</Text>}
+      {props.bottomText && <Text style={scoreViewStyle.textView}>{props.text[0]} </Text>}
     </View>
 
 );

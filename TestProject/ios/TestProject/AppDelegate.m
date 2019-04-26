@@ -20,6 +20,7 @@
 #import "RNFirebaseMessaging.h"
 //#import "FIRDynamicLinks"
 #import <React/RCTLinkingManager.h>
+@import GoogleMobileAds;
 
 @implementation AppDelegate
 
@@ -37,7 +38,14 @@
   NSURL *jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
   
   [ReactNativeNavigation bootstrap:jsCodeLocation launchOptions:launchOptions];
-  //[RNSplashScreen show];  
+  
+//  [[GADMobileAds sharedInstance] startW];
+//  [GADMobileAds configureWithApplicationID:@"ca-app-pub-7743564213302746~9587017423"];
+  
+  [GADMobileAds configureWithApplicationID:@"ca-app-pub-3940256099942544~1458002511"];
+  
+  
+  
   return YES;
 }
 

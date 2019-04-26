@@ -10,7 +10,7 @@ class TopSix extends Component {
 
         RoundNumber = Math.trunc(value);
 
-        percentageNumber = `${RoundNumber}%`;
+        percentageNumber = ` ${RoundNumber}% `;
 
         return percentageNumber;
 

@@ -7,7 +7,8 @@ import {
   SafeAreaView,
   Image,
   TouchableOpacity,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
+  Platform
 } from 'react-native';
 import { Navigation } from 'react-native-navigation';
 import Spinner from '../../components/UI/Spinner/Spinner';
@@ -256,6 +257,7 @@ class TrendScreen extends Component {
       return (
         <View style={{ flex: 12, justifyContent: 'center', alignItems: 'center' }}>
           <Spinner />
+
         </View>
       )
     } else if (!loading) {
@@ -271,10 +273,42 @@ class TrendScreen extends Component {
             shouldOptimizeUpdates
             onSnapToItem={(index) => this.setState({ activeSlide: index })}
           />
+          {this.showBanner()}
           {this.pagination}
         </View>
       )
     }
+  }
+
+  showBanner = () => {
+    const Banner = firebase.admob.Banner;
+    const AdRequest = firebase.admob.AdRequest;
+    const request = new AdRequest();
+
+    const unitId =
+      // Platform.OS === 'ios'
+      //   ? 'ca-app-pub-7743564213302746/2830037388'
+      //   : 'ca-app-pub-7743564213302746/4150857916';
+
+      Platform.OS === 'ios'
+        ? 'ca-app-pub-3940256099942544/2934735716'
+        : 'ca-app-pub-3940256099942544/6300978111';
+
+    alert(unitId);
+    return (<View style={{ alignItems: 'center', justifyContent: 'center', backgroundColor: 'red', height: 100 }}>
+      <Banner
+        // unitId={unitId}
+        size={'SMART_BANNER'}
+        request={request.build()}
+        onAdLoaded={() => {
+          console.log('Advert loaded');
+          alert("onAdLoaded");
+        }}
+        onAdFailedToLoad={(sender) => {
+          alert("fail");
+        }}
+      />
+    </View>)
   }
 
   get pagination() {
@@ -471,6 +505,10 @@ class TrendScreen extends Component {
     console.log(this.props)
     const { notifications } = this.state;
     const BadgedIcon = withBadge(notifications.count)(Icon);
+
+
+
+
     return (
       <SafeAreaView
         forceInset={{ bottom: 'always' }}
@@ -574,6 +612,8 @@ class TrendScreen extends Component {
           {/* </View> */}
         </View>
         {this.renderComponent()}
+
+
       </SafeAreaView>
     )
   }

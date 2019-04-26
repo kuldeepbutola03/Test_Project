@@ -64,9 +64,6 @@ export default class Profile extends Component {
     }
   }
 
-  componentDidMount() {
-  }
-
   backTapped = () => {
     Navigation.pop(this.props.componentId);
   }
@@ -216,7 +213,6 @@ export default class Profile extends Component {
               children: [
                 {
                   component: {
-
                     name: "HomeScreen",
                     options: {
                       topBar: {
@@ -230,9 +226,6 @@ export default class Profile extends Component {
                       data: this.state,
                       refresh: true
                     },
-
-
-
                   },
                 },
               ],
@@ -375,7 +368,7 @@ export default class Profile extends Component {
 
           </View>
           <View style={styles.textheaderView}>
-            <Text style={styles.textView}>{this.props.language}</Text>
+            <Text style={styles.textView}>  {this.props.language}  </Text>
           </View>
 
         </View>
@@ -594,7 +587,7 @@ export default class Profile extends Component {
             {this.state.languageCode && <View style={{ width: '100%', marginTop: 5 }}>
 
               <View style={{ width: '100%', backgroundColor: APP_GLOBAL_COLOR, height: 40, justifyContent: 'center' }}>
-                <Text style={{ marginLeft: 10, color: 'white', fontWeight: 'bold' }}>Choose Your Language</Text>
+                <Text style={{ marginLeft: 10, color: 'white', fontWeight: 'bold' }}> Choose Your Language </Text>
               </View>
 
 
@@ -608,9 +601,7 @@ export default class Profile extends Component {
 
             {/* <View style={{ height: 100 }} /> */}
 
-            <ButtonMod onPress={this.toHomeScreen} color="#a01414">
-              Submit
-          </ButtonMod>
+            <ButtonMod onPress={this.toHomeScreen} color="#a01414"> Submit </ButtonMod>
             <View style={{ height: 10 }} />
           </ScrollView>
         </KeyboardAvoidingView>
@@ -618,7 +609,7 @@ export default class Profile extends Component {
 
         <ShareSheet visible={this.state.visible} onCancel={() => { this.onCancel() }} >
           <View style={{ backgroundColor: 'white', height: 50, alignItems: 'center', justifyContent: 'center' }}>
-            <Text style={{ fontSize: 16, fontWeight: 'bold', color: APP_GLOBAL_COLOR }}>{this.props.selAgeGroup}</Text>
+            <Text style={{ fontSize: 16, fontWeight: 'bold', color: APP_GLOBAL_COLOR }}> {this.props.selAgeGroup} </Text>
           </View>
 
           {this.BUTTONS.map((item) => {
@@ -630,7 +621,7 @@ export default class Profile extends Component {
                     this.setState({ selectedAgeGroupCode: item.ageGroupCode })
                   }, 300);
                 }}
-              >{item.ageGroup}</Button>
+              > {item.ageGroup} </Button>
             )
           })}
 
@@ -672,7 +663,7 @@ export default class Profile extends Component {
         <ShareSheet visible={this.state.visibleProfession} onCancel={() => { this.onCancelProfession() }} >
 
           <View style={{ backgroundColor: 'white', height: 50, alignItems: 'center', justifyContent: 'center' }}>
-            <Text style={{ fontSize: 16, fontWeight: 'bold', color: APP_GLOBAL_COLOR }}>{this.props.selProfession}</Text>
+            <Text style={{ fontSize: 16, fontWeight: 'bold', color: APP_GLOBAL_COLOR }}> {this.props.selProfession} </Text>
           </View>
 
           {P_BUTTONS.map((item) => {
@@ -683,7 +674,7 @@ export default class Profile extends Component {
                   setTimeout(() => {
                     this.setState({ userDesignation: item })
                   }, 300);
-                }}>{item}</Button>
+                }}>  {item}  </Button>
             )
           })}
 
@@ -691,7 +682,7 @@ export default class Profile extends Component {
 
         <ShareSheet visible={this.state.visibleGender} onCancel={() => this.onCancelGender()} >
 
-          <Button>Select Your Gender</Button>
+          <Button> Select Your Gender </Button>
 
           {G_BUTTONS.map((item) => {
             return (
@@ -701,7 +692,7 @@ export default class Profile extends Component {
                   setTimeout(() => {
                     this.setState({ gender: item })
                   }, 300);
-                }}>{item}</Button>
+                }}> {item} </Button>
             )
           })}
 

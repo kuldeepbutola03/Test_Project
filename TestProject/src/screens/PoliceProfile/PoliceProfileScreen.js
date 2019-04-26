@@ -193,6 +193,7 @@ export default class PoliceProfileScreen extends Component {
           oldRating2: responseJson.oldRating2
         });
         // this.setValueForFlag(responseJson)
+        // alert(responseJson.resourceGPRI2);
       })
       .catch((error) => {
         console.error(error);
@@ -604,7 +605,7 @@ export default class PoliceProfileScreen extends Component {
                   "social": "twitter"
                 }));
               }, 300);
-            }}>Twitter</Button>
+            }}> Twitter </Button>
 
           <Button iconSrc={{ uri: FACEBOOK_ICON }}
             onPress={() => {
@@ -614,7 +615,7 @@ export default class PoliceProfileScreen extends Component {
                   "social": "facebook"
                 }));
               }, 300);
-            }}>Facebook</Button>
+            }}> Facebook </Button>
 
           <Button iconSrc={{ uri: WHATSAPP_ICON }}
             onPress={() => {
@@ -624,7 +625,7 @@ export default class PoliceProfileScreen extends Component {
                   "social": "whatsapp"
                 }));
               }, 300);
-            }}>Whatsapp</Button>
+            }}>  Whatsapp  </Button>
 
           <Button iconSrc={{ uri: GOOGLE_PLUS_ICON }}
             onPress={() => {
@@ -634,7 +635,7 @@ export default class PoliceProfileScreen extends Component {
                   "social": "googleplus"
                 }));
               }, 300);
-            }}>Google +</Button>
+            }}> Google + </Button>
 
           <Button iconSrc={{ uri: EMAIL_ICON }}
             onPress={() => {
@@ -644,7 +645,7 @@ export default class PoliceProfileScreen extends Component {
                   "social": "email"
                 }));
               }, 300);
-            }}>Email</Button>
+            }}> Email </Button>
 
           {/* <Button iconSrc={{ uri: MORE_ICON }}
             onPress={() => {

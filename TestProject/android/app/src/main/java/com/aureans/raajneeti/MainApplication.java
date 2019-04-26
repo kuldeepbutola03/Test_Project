@@ -39,6 +39,8 @@ import io.invertase.firebase.analytics.RNFirebaseAnalyticsPackage;
 import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;                      
 import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
 
+import com.google.android.gms.ads.MobileAds;
+import io.invertase.firebase.admob.RNFirebaseAdMobPackage;
 
 
 
@@ -84,6 +86,8 @@ public class MainApplication extends NavigationApplication implements ShareAppli
                 new RNFirebasePackage(),
                 new RNFirebaseAnalyticsPackage(),
                 new RNFirebaseAuthPackage(),
+                new RNFirebaseAdMobPackage(),
+
                 new PickerPackage(),
                 new RNFirebaseMessagingPackage(),
                 new RNFirebaseNotificationsPackage(),

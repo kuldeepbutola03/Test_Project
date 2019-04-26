@@ -646,7 +646,7 @@ export default class ReportReplyScreen extends Component {
               </Text>
             </View>
             <View style={styles.textheaderView}>
-              <Text style={styles.textView}>{this.state.menuName}</Text>
+              <Text style={styles.textView}> {this.state.menuName} </Text>
             </View>
 
           </View>
@@ -797,7 +797,7 @@ export default class ReportReplyScreen extends Component {
                   }));
 
                 }, 300);
-              }}>Twitter</Button>
+              }}>Twitter  </Button>
             <Button iconSrc={{ uri: FACEBOOK_ICON }}
               onPress={() => {
                 this.onCancel();
@@ -806,7 +806,7 @@ export default class ReportReplyScreen extends Component {
                     "social": "facebook"
                   }));
                 }, 300);
-              }}>Facebook</Button>
+              }}>Facebook  </Button>
             <Button iconSrc={{ uri: WHATSAPP_ICON }}
               onPress={() => {
                 this.onCancel();
@@ -815,7 +815,7 @@ export default class ReportReplyScreen extends Component {
                     "social": "whatsapp"
                   }));
                 }, 300);
-              }}>Whatsapp</Button>
+              }}>Whatsapp  </Button>
             <Button iconSrc={{ uri: GOOGLE_PLUS_ICON }}
               onPress={() => {
                 this.onCancel();
@@ -824,7 +824,7 @@ export default class ReportReplyScreen extends Component {
                     "social": "googleplus"
                   }));
                 }, 300);
-              }}>Google +</Button>
+              }}>Google +  </Button>
             <Button iconSrc={{ uri: EMAIL_ICON }}
               onPress={() => {
                 this.onCancel();
@@ -833,7 +833,7 @@ export default class ReportReplyScreen extends Component {
                     "social": "email"
                   }));
                 }, 300);
-              }}>Email</Button>
+              }}>Email  </Button>
 
 
             <Button iconSrc={{ uri: MORE_ICON }}
@@ -846,7 +846,7 @@ export default class ReportReplyScreen extends Component {
                   //   "social": "twitter"
                   // }));
                 }, 300);
-              }}>More</Button>
+              }}>More  </Button>
             <Button iconSrc={null}
               onPress={() => {
                 this.onCancel();
@@ -858,7 +858,8 @@ export default class ReportReplyScreen extends Component {
                   this.reportTapped(dataTappedForMore);
 
                 }, 300);
-              }}>Report</Button>
+
+              }}>Report  </Button>
           </ShareSheet>
 
         </KeyboardAvoidingView>

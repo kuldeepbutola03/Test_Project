@@ -295,7 +295,7 @@ var eventMapObject = {};
         <View style={{ flex: 0.1, backgroundColor: APP_GLOBAL_COLOR, justifyContent: 'center', alignItems: 'center' }}>
           <TouchableOpacity onPress={this.handleTap} style={{ height: 40, width: '40%', justifyContent: 'center', alignItems: 'center', backgroundColor: 'white' }} >
 
-            <Text style={{ fontWeight: 'bold', color: APP_GLOBAL_COLOR }}>{this.state.activeSlide !== 2 ? 'Skip to Login' : 'Login'}</Text>
+            <Text style={{ fontWeight: 'bold', color: APP_GLOBAL_COLOR }}>{this.state.activeSlide !== 2 ? ' Skip to Login ' : ' Login '}</Text>
 
           </TouchableOpacity>
         </View>

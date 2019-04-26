@@ -153,9 +153,7 @@ export default class MobileNumber extends Component {
           onPress={this.mobileNumberSubmit}
           color="#a01414"
         // disabled={this.state.disabled}
-        >
-          Get OTP
-        </ButtonMod>
+        > Get OTP </ButtonMod>
       )
     }
   }

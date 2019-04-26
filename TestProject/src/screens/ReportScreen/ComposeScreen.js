@@ -387,7 +387,7 @@ export default class ComposeScreen extends Component {
               <View>
                 <Text style={{ paddingTop: 15, fontSize: 18 }}>{this.props.data.name ? this.props.data.name : ""}</Text>
                 <Text style={{ paddingTop: 4, fontSize: 14, fontWeight: '200' }}>
-                  {this.props.data.username ? ("@" + this.props.data.username) : ""}
+                  {this.props.data.username ? ("@" + this.props.data.username+" ") : ""}
                 </Text>
               </View>
             </View>

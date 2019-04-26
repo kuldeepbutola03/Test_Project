@@ -12,6 +12,8 @@ export const SHARE_LINK = 'http://babbles.zone/share_raajneeti.html';
 export const FCM_TOKEN = "fcmToken";
 export const USER_AREA_DATA = "userAreaData1";
 
+//export const ANDROID_ADS_MOB = ca-app-pub-7743564213302746~4917144675
+
 const {
   width: SCREEN_WIDTH,
   height: SCREEN_HEIGHT,

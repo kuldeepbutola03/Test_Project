@@ -24,6 +24,9 @@ PODS:
     - FBSDKCoreKit
   - FBSDKShareKit (4.38.1):
     - FBSDKCoreKit
+  - Firebase/AdMob (5.15.0):
+    - Firebase/Core
+    - Google-Mobile-Ads-SDK (~> 7.37)
   - Firebase/Core (5.15.0):
     - Firebase/CoreOnly
     - FirebaseAnalytics (= 5.4.0)
@@ -79,6 +82,7 @@ PODS:
     - GoogleMaps
   - Google-Maps-iOS-Utils/QuadTree (2.1.0):
     - GoogleMaps
+  - Google-Mobile-Ads-SDK (7.38.0)
   - GoogleAppMeasurement (5.4.0):
     - GoogleUtilities/AppDelegateSwizzler (~> 5.2)
     - GoogleUtilities/MethodSwizzler (~> 5.2)
@@ -220,6 +224,7 @@ DEPENDENCIES:
   - FacebookSDK (~> 4.38.0)
   - FBSDKLoginKit (~> 4.38.0)
   - FBSDKShareKit (~> 4.38.0)
+  - Firebase/AdMob
   - Firebase/Core (~> 5.15.0)
   - Firebase/DynamicLinks
   - Firebase/Messaging
@@ -263,6 +268,7 @@ SPEC REPOS:
     - FirebaseInstanceID
     - FirebaseMessaging
     - FLAnimatedImage
+    - Google-Mobile-Ads-SDK
     - GoogleAppMeasurement
     - GoogleMaps
     - GoogleUtilities
@@ -320,6 +326,7 @@ SPEC CHECKSUMS:
   FirebaseMessaging: b412996f6a09337d232bb3a6676ce4d1f353d024
   FLAnimatedImage: 4a0b56255d9b05f18b6dd7ee06871be5d3b89e31
   Google-Maps-iOS-Utils: c32891ff472eaaa1fca032beedafa1a013af7875
+  Google-Mobile-Ads-SDK: fec4a72b71a81302d3fd75454df3417c03c50ed5
   GoogleAppMeasurement: 98b71f5e04142793729a5ef23e5b96651ff4b70f
   GoogleMaps: c087b8e5dfe87ca6ebf59adb9b4894a4146bec4f
   GoogleUtilities: 111a012f4c3a29c9e7c954c082fafd6ee3c999c0
@@ -341,6 +348,6 @@ SPEC CHECKSUMS:
   SDWebImage: ecc03494e973b93b80213649d32175f8d2d17d4d
   yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
 
-PODFILE CHECKSUM: bca36fd2d2a7cfc99aaff005cfba0c1638bf855b
+PODFILE CHECKSUM: d727e65ff65c79c7f6fb8593e3f81035a3e714fe
 
 COCOAPODS: 1.5.3

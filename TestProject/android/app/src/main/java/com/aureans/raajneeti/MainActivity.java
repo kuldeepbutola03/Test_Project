@@ -31,6 +31,7 @@ import android.util.Log;
 
 import android.os.Handler;
 //import package
+import com.google.android.gms.ads.MobileAds;
 
 public class MainActivity extends NavigationActivity implements OnImagePickerPermissionsCallback {
     private PermissionListener listener; //imagepicker
@@ -55,6 +56,8 @@ public class MainActivity extends NavigationActivity implements OnImagePickerPer
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         
     super.onCreate(savedInstanceState);
+      MobileAds.initialize(this, "ca-app-pub-7743564213302746~4917144675");
+
     setContentView(R.layout.launch_screen);
 
     Intent intent = getIntent();

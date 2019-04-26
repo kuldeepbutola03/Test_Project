@@ -277,7 +277,7 @@ class menuButtons extends React.Component {
                       marginLeft: 5,
                       fontSize: normalize(11.5),
                       fontWeight: 'bold',
-                    }}> : {this.props.totalFlagCount}
+                    }}> : {this.props.totalFlagCount+ " "}
                   </Text>
                 </View>
 
@@ -292,7 +292,7 @@ class menuButtons extends React.Component {
                       marginLeft: 5,
                       fontSize: normalize(11.5),
                       fontWeight: 'bold',
-                    }}> : {this.props.totalFlagUniqueCount}
+                    }}> : {this.props.totalFlagUniqueCount+" "}
                   </Text>
                 </View>
               </View>

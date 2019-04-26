@@ -374,9 +374,7 @@ var eventMapObject = {};
           </HeaderText>
           </View>
           <DefaultInput onChangeText={(text) => this.textChanged(text)} placeholder="Enter OTP" secureTextEntry={true} />
-          <ButtonMod onPress={this.getLocation} color="#a01414">
-            Submit
-          </ButtonMod>
+          <ButtonMod onPress={this.getLocation} color="#a01414"> Submit </ButtonMod>
 
 
 
