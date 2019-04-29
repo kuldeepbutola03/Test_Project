@@ -16,7 +16,7 @@ import CustomButton from '../../components/UI/ButtonMod/CustomButtom';
 import { PropTypes } from 'prop-types';
 import TrendProfile from '../../components/UI/TrendProfile/TrendProfile';
 import { TREND_, TREND_PDM, TREND_CDM, TREND_IMAGE, GET_USER_NOTIFICATIONS, UPDATE_USER_NOTIFICATIONS } from '../../../Apis';
-import { authHeaders, getUserID, APP_GLOBAL_COLOR, getUserData } from '../../../Constant';
+import { authHeaders, getUserID, APP_GLOBAL_COLOR, getUserData, showAdsBanner } from '../../../Constant';
 import axios from 'axios';
 import Carousel, { Pagination } from 'react-native-snap-carousel';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -281,34 +281,9 @@ class TrendScreen extends Component {
   }
 
   showBanner = () => {
-    const Banner = firebase.admob.Banner;
-    const AdRequest = firebase.admob.AdRequest;
-    const request = new AdRequest();
+    return showAdsBanner();
 
-    const unitId =
-      // Platform.OS === 'ios'
-      //   ? 'ca-app-pub-7743564213302746/2830037388'
-      //   : 'ca-app-pub-7743564213302746/4150857916';
-
-      Platform.OS === 'ios'
-        ? 'ca-app-pub-3940256099942544/2934735716'
-        : 'ca-app-pub-3940256099942544/6300978111';
-
-    alert(unitId);
-    return (<View style={{ alignItems: 'center', justifyContent: 'center', backgroundColor: 'red', height: 100 }}>
-      <Banner
-        // unitId={unitId}
-        size={'SMART_BANNER'}
-        request={request.build()}
-        onAdLoaded={() => {
-          console.log('Advert loaded');
-          alert("onAdLoaded");
-        }}
-        onAdFailedToLoad={(sender) => {
-          alert("fail");
-        }}
-      />
-    </View>)
+    
   }
 
   get pagination() {

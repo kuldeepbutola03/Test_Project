@@ -120,6 +120,10 @@
             android:name="com.google.android.gms.analytics.CampaignTrackingService"
             android:enabled="true"
             android:exported="false" />
+
+            <meta-data
+    android:name="com.google.android.gms.ads.APPLICATION_ID"
+    android:value="ca-app-pub-7743564213302746~4917144675"/>
     </application>
 
 </manifest>

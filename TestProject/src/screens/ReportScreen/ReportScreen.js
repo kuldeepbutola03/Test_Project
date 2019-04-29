@@ -21,7 +21,7 @@ import {
 import { Navigation } from 'react-native-navigation';
 import { PropTypes } from 'prop-types';
 import CustomButton from '../../components/UI/ButtonMod/CustomButtom';
-import { normalize, getUserID, getCurrentLocation, APP_GLOBAL_COLOR, getUserData, SHARE_LINK } from '../../../Constant';
+import { normalize, getUserID, getCurrentLocation, APP_GLOBAL_COLOR, getUserData, SHARE_LINK, showAdsTilesRectangle } from '../../../Constant';
 import CaseCard from '../../components/UI/CaseCard/CaseCard';
 import Draggable from 'react-native-draggable';
 import { TIMELINE_DATA, MOBILE_NUMBER_, LIKDISLIKE_POST, REPORT_POST, GET_USER_NOTIFICATIONS, UPDATE_USER_NOTIFICATIONS } from '../../../Apis';
@@ -396,13 +396,13 @@ export default class ReportScreen extends Component {
     });
   }
 
- showFullPic = (data) => {
-   console.log(data);
+  showFullPic = (data) => {
+    console.log(data);
     Navigation.push(this.props.componentId, {
       component: {
         name: 'FullPicture',
         passProps: {
-          data : data.uri
+          data: data.uri
         },
         options: {
           topBar: {
@@ -878,7 +878,7 @@ export default class ReportScreen extends Component {
 
     const { loading, selectedSort, notifications } = this.state;
     const BadgedIcon = withBadge(notifications.count)(Icon);
-    
+
 
     return (
       <SafeAreaView
@@ -966,9 +966,10 @@ export default class ReportScreen extends Component {
               width: hp('10%'), justifyContent: 'center',
               alignItems: 'center'
             }} onPress={() => this.showNotificationScreen()}>
-              <View style={{ height : null,
+              <View style={{
+                height: null,
                 width: hp('6%'), justifyContent: 'center',
-                alignItems: 'flex-start', 
+                alignItems: 'flex-start',
               }}>
                 {/* <BadgedIcon
                   color="#fff"
@@ -1030,17 +1031,22 @@ export default class ReportScreen extends Component {
               onEndReachedThreshold={0.1}
               scrollEventThrottle={400}
               ListFooterComponent={() => this.footer()}
-              renderItem={({ item }) =>
-                <TouchableOpacity onPress={() => this.replyButtonTapped(item)}>
+              renderItem={({ item, index }) => 
+              {
+                // console.log(index);
+                return <TouchableOpacity onPress={() => this.replyButtonTapped(item)}>
                   <CaseCard
                     moreButtonTapped={this.moreButtonTapped}
                     onPressLike={(data2) => this.likeButtonTapped(data2)}
                     onPressDisLike={(data2) => this.disLikeButtonTapped(data2)}
                     data={item}
                     onPressReply={(data2) => this.replyButtonTapped(data2)}
-                    showFullPic = {this.showFullPic}
+                    showFullPic={this.showFullPic}
                   />
+                  {(index % 5) === 4 && <View><View style={{ flex: 1, height: 1, width: '100%', backgroundColor: 'lightgrey' }}></View>{showAdsTilesRectangle()}</View>}
                 </TouchableOpacity>
+              }
+
               }
             >
             </FlatList>

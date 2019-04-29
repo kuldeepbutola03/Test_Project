@@ -43,7 +43,7 @@
 //  [GADMobileAds configureWithApplicationID:@"ca-app-pub-7743564213302746~9587017423"];
   
   [GADMobileAds configureWithApplicationID:@"ca-app-pub-3940256099942544~1458002511"];
-  
+  FirebaseAdMob.instance.initialize(appId: @"ca-app-pub-3940256099942544~1458002511");
   
   
   return YES;
