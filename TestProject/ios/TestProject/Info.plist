@@ -38,6 +38,16 @@
 				<string>raajneeti</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>link</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>https://raajneetiforios.page.link/page2</string>
+			</array>
+		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
@@ -134,6 +144,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-
 </dict>
 </plist>

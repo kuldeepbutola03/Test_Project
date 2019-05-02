@@ -103,8 +103,6 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         missingDimensionStrategy "RNN.reactNativeVersion", "reactNative57_5"
         multiDexEnabled true
-        versionCode 10
-        versionName "1.8"
         ndk {
             abiFilters "armeabi-v7a", "x86"
         }
@@ -201,6 +199,7 @@ dependencies {
 
     implementation 'com.facebook.android:facebook-android-sdk:4.34.0'
     implementation project(':react-native-fbsdk')
+    compile project(':react-native-splash-screen')
     implementation project(':react-native-fast-image')
     compile project(':react-native-geolocation-service')
     compile(project(':react-native-geolocation-service')) {
@@ -217,8 +216,9 @@ dependencies {
     implementation 'com.google.android.gms:play-services-vision:16.2.0'
     implementation 'com.google.firebase:firebase-messaging:17.3.1'
 
+
 implementation 'com.google.firebase:firebase-dynamic-links:16.1.8'
-implementation "com.google.firebase:firebase-ads:16.0.1"
+ implementation "com.google.firebase:firebase-ads:16.0.1"
 
     implementation 'com.google.android.gms:play-services-ads-identifier:15.0.1'
 

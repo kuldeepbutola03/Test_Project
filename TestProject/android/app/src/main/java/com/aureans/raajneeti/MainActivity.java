@@ -19,7 +19,7 @@ import com.reactnativenavigation.viewcontrollers.navigator.RootPresenter;
 
 import android.content.Intent;
 
-// import org.devio.rn.splashscreen.SplashScreen;
+import org.devio.rn.splashscreen.SplashScreen;
 
 import android.content.pm.ActivityInfo;
 
@@ -56,9 +56,9 @@ public class MainActivity extends NavigationActivity implements OnImagePickerPer
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         
     super.onCreate(savedInstanceState);
-      MobileAds.initialize(this, "ca-app-pub-7743564213302746~4917144675");
-
     setContentView(R.layout.launch_screen);
+
+    MobileAds.initialize(this, "ca-app-pub-7743564213302746~4917144675");
 
     Intent intent = getIntent();
     String action = intent.getAction();
@@ -112,7 +112,7 @@ public class MainActivity extends NavigationActivity implements OnImagePickerPer
                         }
                     });
 
-        }
+                }
 
 
         @Override

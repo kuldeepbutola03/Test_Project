@@ -193,7 +193,6 @@ export default class PoliceProfileScreen extends Component {
           oldRating2: responseJson.oldRating2
         });
         // this.setValueForFlag(responseJson)
-        // alert(responseJson.resourceGPRI2);
       })
       .catch((error) => {
         console.error(error);

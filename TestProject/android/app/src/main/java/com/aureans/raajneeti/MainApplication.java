@@ -24,7 +24,7 @@ import com.reactnativenavigation.react.NavigationReactNativeHost;
 import com.reactnativenavigation.react.ReactGateway;
 import io.invertase.firebase.auth.RNFirebaseAuthPackage;
 
-// import org.devio.rn.splashscreen.SplashScreenReactPackage;
+import org.devio.rn.splashscreen.SplashScreenReactPackage;
 
 import java.util.Arrays;
 import java.util.List;
@@ -39,9 +39,7 @@ import io.invertase.firebase.analytics.RNFirebaseAnalyticsPackage;
 import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;                      
 import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
 
-import com.google.android.gms.ads.MobileAds;
 import io.invertase.firebase.admob.RNFirebaseAdMobPackage;
-
 
 
 public class MainApplication extends NavigationApplication implements ShareApplication, ReactApplication {
@@ -78,7 +76,7 @@ public class MainApplication extends NavigationApplication implements ShareAppli
                 new FBSDKPackage(mCallbackManager),
                 new SvgPackage(),
                 new VectorIconsPackage(),
-                // new SplashScreenReactPackage(),
+                new SplashScreenReactPackage(),
                 new FastImageViewPackage(),
                 new RNFusedLocationPackage(),
                 new RNImgToBase64Package(),
@@ -86,15 +84,14 @@ public class MainApplication extends NavigationApplication implements ShareAppli
                 new RNFirebasePackage(),
                 new RNFirebaseAnalyticsPackage(),
                 new RNFirebaseAuthPackage(),
-                new RNFirebaseAdMobPackage(),
-
                 new PickerPackage(),
                 new RNFirebaseMessagingPackage(),
                 new RNFirebaseNotificationsPackage(),
                 // new RCTSwipeRefreshLayoutPackage(),
                 new OrientationPackage(),
                  new RNSpinkitPackage(),
-                 new RNKochavaTrackerPackage()   
+                 new RNKochavaTrackerPackage(),
+                 new RNFirebaseAdMobPackage()  
         );
     }
 

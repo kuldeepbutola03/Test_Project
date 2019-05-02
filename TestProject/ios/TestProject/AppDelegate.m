@@ -10,7 +10,7 @@
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
 #import <ReactNativeNavigation/ReactNativeNavigation.h>
-// #import "RNSplashScreen.h"
+#import "RNSplashScreen.h"
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 // @import Firebase;
 @import GoogleMaps;
@@ -20,7 +20,6 @@
 #import "RNFirebaseMessaging.h"
 //#import "FIRDynamicLinks"
 #import <React/RCTLinkingManager.h>
-@import GoogleMobileAds;
 
 @implementation AppDelegate
 
@@ -38,14 +37,9 @@
   NSURL *jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
   
   [ReactNativeNavigation bootstrap:jsCodeLocation launchOptions:launchOptions];
-  
-//  [[GADMobileAds sharedInstance] startW];
-//  [GADMobileAds configureWithApplicationID:@"ca-app-pub-7743564213302746~9587017423"];
-  
-  [GADMobileAds configureWithApplicationID:@"ca-app-pub-3940256099942544~1458002511"];
-  FirebaseAdMob.instance.initialize(appId: @"ca-app-pub-3940256099942544~1458002511");
-  
-  
+
+   [GADMobileAds configureWithApplicationID:@"ca-app-pub-3940256099942544~1458002511"];
+  //[RNSplashScreen show];  
   return YES;
 }
 

@@ -57,8 +57,8 @@ target 'TestProject' do
   # pod 'react-native-spinkit', :path => '../node_modules/react-native-spinkit'
 
   pod 'Firebase/DynamicLinks'
-  pod 'Firebase/AdMob'
   
+  pod 'Firebase/AdMob'
 end
 
 post_install do |installer|
