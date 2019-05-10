@@ -5,7 +5,7 @@ import { APP_GLOBAL_COLOR } from '../../../Constant';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import axios from 'axios';
 import moment from 'moment';
-import { GET_CURRENT_ACTIVE_SURVEY, GET_SURVEY_BY_ID } from '../../../Apis';
+//import { GET_CURRENT_ACTIVE_SURVEY, GET_SURVEY_BY_ID } from '../../../Apis';
 
 class NotificationScreen extends Component {
     state = {

@@ -1,6 +1,6 @@
 
-import React, {Component} from 'react';
-import { Dimensions, Platform, PixelRatio, ImageStore ,View} from 'react-native';
+import React, { Component } from 'react';
+import { Dimensions, Platform, PixelRatio, ImageStore, View } from 'react-native';
 import { AsyncStorage } from "react-native"
 import Geolocation from 'react-native-geolocation-service';
 
@@ -9,10 +9,11 @@ export const APP_GLOBAL_COLOR = '#a01414';
 export const APP_ALERT_MESSAGE = 'Raajneeti - Message';
 export const DEFAULT_USER_ID = "userIdInTheAppTest5";
 export const DEFAULT_USER_DATA = "userDataInTheAppTest5";
-export const SHARE_LINK = 'http://babbles.zone/share_raajneeti.html';
+export const DEFAULT_USER_AREA = "userDataInTheAppArea";
+export const SHARE_LINK = 'https://raajneeti.in/sharing'// 'http://babbles.zone/share_raajneeti.html';
 
 export const FCM_TOKEN = "fcmToken";
-export const USER_AREA_DATA = "userAreaData1";
+
 
 import firebase from 'react-native-firebase';
 
@@ -21,14 +22,19 @@ const {
   height: SCREEN_HEIGHT,
 } = Dimensions.get('window');
 
-const unitId =
-  // Platform.OS === 'ios'
-  //   ? 'ca-app-pub-7743564213302746/2830037388'
-  //   : 'ca-app-pub-7743564213302746/4150857916';
+const unitIdFullScreen =
+    Platform.OS === 'ios'
+      ? 'ca-app-pub-7743564213302746/3208115795'
+      : 'ca-app-pub-7743564213302746/1581686276';
+      // ? 'ca-app-pub-3940256099942544/8691691433'
+      // : 'ca-app-pub-3940256099942544/8691691433';
 
+const unitId =
   Platform.OS === 'ios'
-    ? 'ca-app-pub-3940256099942544/2934735716'
-    : 'ca-app-pub-3940256099942544/6300978111';
+    ? 'ca-app-pub-7743564213302746/2830037388'
+    : 'ca-app-pub-7743564213302746/4150857916';
+  // ? 'ca-app-pub-3940256099942544/2934735716'
+  // : 'ca-app-pub-3940256099942544/6300978111';
 // based on iphone 5s's scale
 const scale = SCREEN_WIDTH / 320;//411;//320;
 
@@ -67,10 +73,10 @@ export function authHeaders() {
 
 export const saveUserID = async (userId) => {
   AsyncStorage.setItem(DEFAULT_USER_ID, userId.toString())
-  .then(res => {
-  })
-  .catch(error => {
-  })
+    .then(res => {
+    })
+    .catch(error => {
+    })
 }
 // export function getUserIdFunc (callback : string ) {
 
@@ -86,13 +92,13 @@ export const getUserID = async () => {
 
 
 export const saveUserData = async (data) => {
-  
+
   try {
     let dataString = JSON.stringify(data);
     await AsyncStorage.setItem(DEFAULT_USER_DATA, dataString);
 
     // var jsonOfItem = await AsyncStorage.setItem(key, JSON.stringify(item));
-      // return jsonOfItem;
+    // return jsonOfItem;
   } catch (error) {
     alert(error);
     console.log(error.message);
@@ -103,7 +109,7 @@ export const saveUserData = async (data) => {
 export const getUserData = async () => {
 
   try {
-    const retrievedItem =  await AsyncStorage.getItem(DEFAULT_USER_DATA);
+    const retrievedItem = await AsyncStorage.getItem(DEFAULT_USER_DATA);
     const item = JSON.parse(retrievedItem);
     // console.log('true')
     return item;
@@ -112,16 +118,14 @@ export const getUserData = async () => {
   }
   return
 }
+export const saveUserArea = async (data) => {
 
-
-export const saveAreaList = async (data) => {
-  
   try {
     let dataString = JSON.stringify(data);
-    await AsyncStorage.setItem(USER_AREA_DATA, dataString);
+    await AsyncStorage.setItem(DEFAULT_USER_AREA, dataString);
 
     // var jsonOfItem = await AsyncStorage.setItem(key, JSON.stringify(item));
-      // return jsonOfItem;
+    // return jsonOfItem;
   } catch (error) {
     alert(error);
     console.log(error.message);
@@ -129,14 +133,15 @@ export const saveAreaList = async (data) => {
 
 }
 
-export const getAreaList = async () => {
+export const getUserArea = async () => {
 
   try {
-    const retrievedItem =  await AsyncStorage.getItem(USER_AREA_DATA);
+    const retrievedItem = await AsyncStorage.getItem(DEFAULT_USER_AREA);
     const item = JSON.parse(retrievedItem);
-    // console.log('true')
+    console.log('true')
     return item;
   } catch (error) {
+    console.log('false')
     console.log(error.message);
   }
   return
@@ -164,30 +169,30 @@ export function authHeadersMedia() {
 export const getCurrentLocation = (data) => {
   Geolocation.getCurrentPosition(
     (position) => {
-       // const initialPosition = JSON.stringify(position);
+      // const initialPosition = JSON.stringify(position);
 
-        // let latlong = position.coords.latitude.toString() +  "," + position.coords.longitude.toString()
-        let latlong = position.coords.latitude.toString() + "," + position.coords.longitude.toString()
-        if (position.mocked) {
-            if (position.mocked == true) {
-                alert("you are using fake location");
-                data( null);
-                return;
-            }
+      // let latlong = position.coords.latitude.toString() +  "," + position.coords.longitude.toString()
+      let latlong = position.coords.latitude.toString() + "," + position.coords.longitude.toString()
+      if (position.mocked) {
+        if (position.mocked == true) {
+          alert("you are using fake location");
+          data(null);
+          return;
         }
+      }
 
-        data(position.coords);
-        
-      },
+      data(position.coords);
+
+    },
     (error) => {
-        // alert(error.message)
-        data(error.message);
-        // this.locationErrorMessage = error.message;
-        // alert(locationErrorMessage)
-        // this.showDialog();
+      // alert(error.message)
+      data(error.message);
+      // this.locationErrorMessage = error.message;
+      // alert(locationErrorMessage)
+      // this.showDialog();
     },
     { enableHighAccuracy: false, timeout: 20000, maximumAge: 1000 }
-);
+  );
 }
 
 export const showAdsBanner = () => {
@@ -207,7 +212,7 @@ export const showAdsBanner = () => {
   //alert(unitId);
   return (<View style={{ alignItems: 'center', justifyContent: 'center' }}>
     {/* <View> */}
-      {/* <AdMobBanner
+    {/* <AdMobBanner
         adSize="smartBannerPortrait"
         adUnitID="ca-app-pub-3940256099942544/6300978111"
         didFailToReceiveAdWithError={this.bannerError}
@@ -267,6 +272,7 @@ export const showAdsTilesRectangle = () => {
       unitId={unitId}
       // size={'SMART_BANNER'}
       size={'medium_rectangle'}
+      // size={'SMART_BANNER'}
       // size={'banner'}
       request={request.build()}
       onAdLoaded={() => {
@@ -278,4 +284,17 @@ export const showAdsTilesRectangle = () => {
       }}
     />
   </View>);
+}
+
+export const showAdsFullScreen = () => {
+  
+  const advert = firebase.admob().interstitial(unitIdFullScreen);
+  const AdRequest = firebase.admob.AdRequest;
+  const request = new AdRequest();
+  advert.loadAd(request.build());
+// return advert;
+  advert.on('onAdLoaded', () => {
+    console.log('Advert ready to show.');
+    advert.show();
+  });
 }

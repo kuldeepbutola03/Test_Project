@@ -14,14 +14,14 @@ import { Navigation } from 'react-native-navigation';
 import { PropTypes } from 'prop-types';
 import ButtonMod from '../../components/UI/ButtonMod/ButtonMod';
 import HeaderText from '../../components/UI/HeaderText/HeaderText';
-import { VALIDATE_OTP, DEBUG, GET_USER_DETAILS_EMAIL, LANDING_TOP_SIX } from '../../../Apis';
-import { saveUserID, authHeaders, saveUserData, getCurrentLocation, defaultUser } from '../../../Constant';
-import axios from 'axios';
-import Geolocation from 'react-native-geolocation-service';
+import { VALIDATE_OTP, DEBUG, GET_USER_DETAILS_EMAIL, LANDING_TOP_SIX, SEND_OTP } from '../../../Apis';
+import { saveUserID, authHeaders, saveUserData, getCurrentLocation, defaultUser, APP_GLOBAL_COLOR } from '../../../Constant';
+// import axios from 'axios';
+// import Geolocation from 'react-native-geolocation-service';
 import Loading from 'react-native-whc-loading';
 import Permissions from 'react-native-permissions';
 import { CheckBox } from 'react-native-elements';
-
+import axios from 'axios';
 import firebase from 'react-native-firebase';
 
 import KochavaTracker from 'react-native-kochava-tracker';
@@ -30,18 +30,26 @@ export default class OtpScreen extends Component {
 
   static propTypes = {
     componentId: PropTypes.string,
-
   };
-
-  constructor(props) {
-    super(props);
-  }
 
   state = {
     name: null,
     location: null,
+    seconds: "00",
+    minutes: 1,
+    show: true,
     // checkBocSelected: false,
     ...this.props
+  }
+
+  constructor(props) {
+    super(props);
+
+    this.secondsRemaining;
+    this.intervalHandle;
+    // this.handleChange = this.handleChange.bind(this);
+    this.startCountDown = this.startCountDown.bind(this);
+    this.tick = this.tick.bind(this);
   }
 
   componentDidMount() {
@@ -52,20 +60,88 @@ export default class OtpScreen extends Component {
         // this.getLocation()
       }
     })
-
     // this.getDataFromServer(true)
     firebase.analytics().setCurrentScreen("Screen", "OTP_Screen");
     //firebase.analytics().logEvent("Trends_Screen");
     firebase.analytics().setUserProperty("Screen", "OTP_Screen");
     firebase.analytics().logEvent("Content", { "Screen": "OTP_Screen" });
-    
-    
+    var eventMapObject = {};
+    eventMapObject["screen_name"] = "OTP_Screen";
+    KochavaTracker.sendEventMapObject(KochavaTracker.EVENT_TYPE_LEVEL_COMPLETE_STRING_KEY, eventMapObject);
+  }
 
-var eventMapObject = {};
-        eventMapObject["screen_name"] = "OTP_Screen";
-        KochavaTracker.sendEventMapObject(KochavaTracker.EVENT_TYPE_LEVEL_COMPLETE_STRING_KEY, eventMapObject);
+  // handleChange(event) {
+  //   this.setState({
+  //     minutes: event.target.value
+  //   })
+  // }
 
+  tick() {
+    var min = Math.floor(this.secondsRemaining / 60);
+    var sec = this.secondsRemaining - (min * 60);
+    this.setState({
+      minutes: min,
+      seconds: sec
+    })
+    if (sec < 10) {
+      this.setState({
+        seconds: "0" + this.state.seconds,
+      })
+    }
+    // if (min < 10) {
+    //   this.setState({
+    //     minutes : "0" + min,
+    //   })
+    // }
+    // alert()
+    if (min === 0 & sec == "00") {
+      // alert('asdsa')
+      clearInterval(this.intervalHandle);
+      this.intervalHandle = null;
+      this.setState({ show: true, minutes: 1, seconds: '00' })
+      // alert(this.intervalHandle);
+      return
+    }
+    this.secondsRemaining--
+  }
 
+  startCountDown() {
+    // alert(this.intervalHandle);
+    this.intervalHandle = setInterval(this.tick, 1000);
+    let time = this.state.minutes;
+    this.secondsRemaining = time * 60;
+    // alert(this.intervalHandle);
+  }
+
+  getTimer = () => {
+    return (
+      <View>
+        {this.state.show ? <Text onPress={() => { this.resendOTP() }} style={{ alignSelf: 'center', fontSize: 12, color: APP_GLOBAL_COLOR }}>Resend OTP</Text> : <Text style={{ alignSelf: 'center', fontSize: 12, color: APP_GLOBAL_COLOR }}>{this.state.minutes + ":" + this.state.seconds}</Text>}
+      </View>
+    )
+  }
+
+  resendOTP = () => {
+    // this.refs.loading.show();
+    // this.setState({ show: false });
+    // this.secondsRemaining = null;
+    // this.startCountDown();
+    // alert(this.intervalHandle)
+    axios.post(SEND_OTP, {
+      userMobile: this.props.mobileNumber,
+      userCountryCode: this.props.code
+    })
+      .then(response => {
+        let responseData = response.data.response;
+        this.setState({ show: false });
+        this.secondsRemaining = null;
+        this.startCountDown();
+        // this.refs.loading.close();
+      })
+      .catch(error => {
+        // this.refs.loading.close();
+        console.error(error);
+      })
   }
 
   _requestPermission = () => {
@@ -75,8 +151,6 @@ var eventMapObject = {};
       // this.getLocation()
     })
   }
-
-
 
   getLocation = () => {
     this.refs.loading.show();
@@ -88,7 +162,6 @@ var eventMapObject = {};
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const initialPosition = JSON.stringify(position);
-
         // let latlong = position.coords.latitude.toString() +  "," + position.coords.longitude.toString()
         let lat_lon = position.coords.latitude.toString() + "," + position.coords.longitude.toString();
         // alert(lat_lon);
@@ -99,7 +172,6 @@ var eventMapObject = {};
             return;
           }
         }
-
         // alert(code + "   " + phoneN);
         // this.setState({ lat_lon: latlong });
         this.mobileNumberSubmit(lat_lon, this);
@@ -110,8 +182,6 @@ var eventMapObject = {};
         // alert(locationErrorMessage)
         // this.showDialog();
         this.mobileNumberSubmit(null, this);
-
-
       },
       { enableHighAccuracy: false, timeout: 20000, maximumAge: 1000 }
     );
@@ -195,14 +265,11 @@ var eventMapObject = {};
           email: responseData.userEmail,
           username: responseData.userName
         }
-
         // setTimeout(function () {
         thatObj.refs.loading.close();
         // return;
         if (responseData) {
           if (responseData.userId) {
-
-
             if (!responseData.areaStateMap) {
               // axios.post(LANDING_TOP_SIX, {
               //   userId: responseData.userId,
@@ -307,8 +374,6 @@ var eventMapObject = {};
               // }, 1000)
             }
             // }
-
-
           } else {
             // this.refs.loading.close();
             setTimeout(function () {
@@ -343,9 +408,7 @@ var eventMapObject = {};
   //       // }
   //     },
   //   });
-
   // }
-
 
   textChanged = (sender) => {
     this.setState({ name: sender });
@@ -373,25 +436,20 @@ var eventMapObject = {};
               Enter OTP
           </HeaderText>
           </View>
-          <DefaultInput onChangeText={(text) => this.textChanged(text)} placeholder="Enter OTP" secureTextEntry={true} />
+          <DefaultInput onChangeText={(text) => this.textChanged(text)} placeholder="Enter OTP" secureTextEntry={true} autoFocus/>
+          {this.getTimer()}
           <ButtonMod onPress={this.getLocation} color="#a01414"> Submit </ButtonMod>
-
-
-
           {/* <CheckBox style = {{marginTop : 20}}
             title='Agree to Terms and Conditions'
             checked={this.state.checkBocSelected}
             onPress = {()=> {
-              
               // this.showTC();
-              
               if(!this.state.checkBocSelected) {
                 this.showTC();
               }
               // setTimeout(() => {
                 this.setState({checkBocSelected : !this.state.checkBocSelected});
               // },300);
-              
             }}
           /> */}
           <Loading

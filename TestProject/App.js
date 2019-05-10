@@ -32,6 +32,10 @@ import TcScreen from './src/screens/LoginScreen/TcScreen';
 import NotificationScreen from './src/screens/NotificationScreen/NotificationScreen';
 import SurveyList from './src/screens/QuestionnaireScreen/SurveyList';
 
+//New Login Screens
+import FirstScreen from './src/screens/LoginNewScreen/FirstScreen';
+
+
 Navigation.registerComponent('LoginScreen', () => LoginSceen);
 Navigation.registerComponent('MobileNumber', () => MobileNumber);
 Navigation.registerComponent('OtpScreen', () => OtpScreen);
@@ -61,10 +65,12 @@ Navigation.registerComponent('SurveyList', () => SurveyList);
 
 Navigation.registerComponent('FullPicture', () => FullPicture);
 
+Navigation.registerComponent('FirstScreen', () => FirstScreen);
 
+// FirstScreen
 // import Orientation from 'react-native-orientation';
 // Start App
-import { AsyncStorage, Platform , Linking} from "react-native"
+import { AsyncStorage, Platform, Linking } from "react-native"
 import { DEFAULT_USER_ID, getUserData, saveUserData, saveUserID } from './Constant';
 // import { platform } from 'os';
 
@@ -92,11 +98,92 @@ Navigation.events().registerAppLaunchedListener(() => {
     }
 
   });
+  // Navigation.setRoot({
+  //   root: {
+  //     stack: {
+  //       children: [
+  //         {
+  //           component: {
+  //             id: "FirstScreen", // Optional, Auto generated if empty
+  //             name: "FirstScreen",
+  //             options: {
+  //               topBar: {
+  //                 visible: false,
+  //                 drawBehind: true,
+  //                 animate: false,
+  //               },
+  //               popGesture: false
+  //             },
+  //             passProps: {
+  //               data: null
+  //             },
+
+  //             sideMenu: {
+  //               enabled: false,
+  //               visible: false
+  //             },
+
+
+  //           },
+  //         },
+  //       ],
+  //     },
+  //   },
+  // });
+  // return;
+  
+  
+  //   Navigation.setRoot({
+  //     root: {
+  //       stack: {
+  //         children: [
+  //           {
+  //             component: {
+  //               id: "AreaScreen", // Optional, Auto generated if empty
+  //               name: "AreaScreen",
+  //               options: {
+  //                 topBar: {
+  //                   visible: false,
+  //                   drawBehind: true,
+  //                   animate: false,
+  //                 },
+  //                 popGesture: false
+  //               },
+  //               passProps: {
+  //                 data: areaData,
+  //                 mobileNumber: "",
+  //                 code: "",
+  //                 username: "",
+  //                 firstName: "",
+  //                 lastName: "",
+  //                 image: "",
+  //                 userId: "6",
+  //                 responseData: [],
+  //                 dataToSave: [],
+  //               },
+
+  //               sideMenu: {
+  //                 enabled: false,
+  //                 visible: false
+  //               },
+
+
+  //             },
+  //           },
+  //         ],
+  //       },
+  //     },
+  //   });
+  //   return;
+  // })
+  // return;
+
+
 
   var configMapObject = {}
   if (Platform.OS === 'ios') {
     configMapObject[KochavaTracker.PARAM_IOS_APP_GUID_STRING_KEY] = "koraajneeti-ios-iocima";
-    
+
   } else {
     configMapObject[KochavaTracker.PARAM_ANDROID_APP_GUID_STRING_KEY] = "koraajneeti-t9c";
   }

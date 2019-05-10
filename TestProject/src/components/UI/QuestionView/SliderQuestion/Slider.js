@@ -58,6 +58,7 @@ class Sliders extends Component {
   }
 
   renderPoll = () => {
+    // return null;
     // console.log(this.props)
     const { data } = this.props;
     if (data.userAnswerId) {
@@ -126,8 +127,10 @@ class Sliders extends Component {
 
               <Slider
                 disabled={this.props.isSurveyTaken === 'N' ? false : true}
-                value={this.props.data.userAnswerId ? this.props.data.userAnswerId : 2}
-                maximumValue={this.props.data.surveyAnswerList[4].answerId} //{4}
+                value={this.props.data.userAnswerId ? this.props.data.userAnswerId : this.props.data.surveyAnswerList[0].answerId + 2}
+                // maximumValue={this.props.data.surveyAnswerList[this.props.data.surveyAnswerList.length - 1].answerId} //{4}
+                maximumValue={this.props.data.surveyAnswerList[0].answerId + 4} //{4}
+                // maximumValue={this.props.data.surveyAnswerList[4].answerId}
                 minimumValue={this.props.data.surveyAnswerList[0].answerId}//{0}
                 style={{ height: 30, width: '80%', marginBottom: normalize(5) }}
                 step={1}

@@ -22,6 +22,8 @@ export default class ReportReplyScreen extends Component {
   };
 
   componentDidMount() {
+
+    // alert('aaaaaa');
     console.log(this.props.data);
     this._onRefresh();
 
@@ -97,6 +99,27 @@ export default class ReportReplyScreen extends Component {
   //   });
   // }
 
+  showFullPic = (data) => {
+    console.log(data);
+
+    // return;
+    Navigation.push(this.props.componentId, {
+      component: {
+        name: 'FullPicture',
+        passProps: {
+          data: data.uri
+        },
+        options: {
+          topBar: {
+            visible: true,
+            // drawBehind: true,
+            // animate: false,
+          },
+        }
+      }
+    });
+    // this.setState({ refreshing: false });
+  }
   homeButtonTapped = () => {
     Navigation.pop(this.props.componentId);
   };
@@ -157,16 +180,16 @@ export default class ReportReplyScreen extends Component {
           this.filterData2(responseData)
         } else {
           console.log(responseData.response);
-          if(responseData.response === 'Invalid Thread Id!'){
+          if (responseData.response === 'Invalid Thread Id!') {
             this.homeButtonTapped();
-          }else{
+          } else {
             alert(responseData.response);
           }
-          
+
         }
       })
       .catch(error => {
-        
+
         console.log(error);
         alert(error)
         this.setState({ refreshing: false });
@@ -176,26 +199,27 @@ export default class ReportReplyScreen extends Component {
   requestForLikeDislike(data, isLiked) {
     getUserID().then((userId) => {
 
-      // let body = JSON.stringify({
 
-      //   "message":
-      //   {
-      //     "messageId": data.messageId
-      //   },
-      //   "userMaster":
-      //   {
-      //     "userId": userId
-      //   },
 
-      //   "isLiked": isLiked,
+      // this.setState({ likeLoading: true })
 
-      //   "latitude" : this.props.coordinates ? this.props.coordinates.latitude : 0,
-      //   "longitude": this.props.coordinates ? this.props.coordinates.longitude : 0,
+      var dataObj = this.state.replies;
+      var index = dataObj.indexOf(data);
+      let modifiedObj = Object.assign({}, data);
 
-      // });
+      modifiedObj.Is_Liked = isLiked;
+      modifiedObj.LikingCount = modifiedObj.LikingCount + ((isLiked == 1) ? 1 : -1);
+      modifiedObj.LikingCount = (modifiedObj.LikingCount < 0) ? 0 : modifiedObj.LikingCount;
 
-      this.setState({ likeLoading: true })
+      let array = Object.assign([], dataObj);
+      array[index] = modifiedObj;
+      
+      console.log(modifiedObj);
+      console.log(data);
+      console.log(index);
 
+      this.setState({ likeLoading: true, replies: array });
+      /////////////////////////
       axios.post(LIKDISLIKE_POST, {
         message: {
           messageId: data.messageId
@@ -211,8 +235,24 @@ export default class ReportReplyScreen extends Component {
         .then(response => {
           let responseData = response.data;
           console.log(responseData)
-          this.setState({ likeLoading: false })
-          this._onRefresh();
+          
+          // this._onRefresh();
+          if (responseData.response === 'true') {
+
+            this.setState({ likeLoading: false });
+            
+            if(modifiedObj.isOP === 'Y' && this.props.refreshData){
+              this.props.refreshData(modifiedObj);
+            }
+
+          } else {
+            var dataObj = that.state.replies;
+              let array = Object.assign([] ,dataObj);
+              array[index] = data;
+              that.setState({ replies: array , likeLoading: false});
+          }
+
+
         })
         .catch(error => {
           this.setState({ refreshing: false, likeLoading: false });
@@ -365,7 +405,7 @@ export default class ReportReplyScreen extends Component {
         ...dict
 
       }
-      
+
 
       //    console.log(JSON.stringify( ));
       console.log(innerData);
@@ -394,9 +434,9 @@ export default class ReportReplyScreen extends Component {
   }
 
   getMessage = (data) => {
-    if(data){
-      return (data.length > 100 ? data.substr(0,100) + "..." : data) + '\n\nCheck it out on Raajneeti app'
-    }else {
+    if (data) {
+      return (data.length > 100 ? data.substr(0, 100) + "..." : data) + '\n\nCheck it out on Raajneeti app'
+    } else {
       return 'Check it out on Raajneeti app'
     }
   }
@@ -408,11 +448,11 @@ export default class ReportReplyScreen extends Component {
       title: "Check out Raajneeti app",
       message: this.getMessage(data.details),
       subject: "Share Link",
-      url: SHARE_LINK+"?raajneetiId="+data.Thread_Id// Platform.OS ===  'ios' ? 'https://itunes.apple.com/us/app/raajneeti/id1449128685?mt=8' : 'https://play.google.com/store/apps/details?id=com.aureans.raajneeti'
+      url: SHARE_LINK + "?raajneetiId=" + data.Thread_Id// Platform.OS ===  'ios' ? 'https://itunes.apple.com/us/app/raajneeti/id1449128685?mt=8' : 'https://play.google.com/store/apps/details?id=com.aureans.raajneeti'
     };
     if (data.picture && data.picture.uri) {
       shareOptions["url"] = data.picture.uri;
-      shareOptions["message"] = shareOptions.message + "\n" + SHARE_LINK+"?raajneetiId="+data.Thread_Id;
+      shareOptions["message"] = shareOptions.message + "\n" + SHARE_LINK + "?raajneetiId=" + data.Thread_Id;
     }
     if (Platform.OS === "android") {
       this.setState({ visible: true });
@@ -745,6 +785,7 @@ export default class ReportReplyScreen extends Component {
                 onPressDisLike={(data2) => this.disLikeButtonTapped(data2)}
                 data={item}
                 onPressReply={(data2) => { }}
+                showFullPic={this.showFullPic}
               />
 
             }

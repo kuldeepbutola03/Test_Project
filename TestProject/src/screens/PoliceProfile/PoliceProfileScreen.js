@@ -152,7 +152,7 @@ export default class PoliceProfileScreen extends Component {
       }),
     }).then((response) => response.json())
       .then((responseJson) => {
-
+        console.log(responseJson);
       })
       .catch((error) => {
         console.error(error);
@@ -189,8 +189,8 @@ export default class PoliceProfileScreen extends Component {
           totalFlagCount_2: responseJson.resourceTotalFlagCount2,
           totalFlagUniqueCount_1: responseJson.resourceTotalFlagUniqueCount1,
           totalFlagUniqueCount_2: responseJson.resourceTotalFlagUniqueCount2,
-          oldRating1: responseJson.oldRating1,
-          oldRating2: responseJson.oldRating2
+          oldRating1: responseJson.lastGprFlagValue1,
+          oldRating2: responseJson.lastGprFlagValue2
         });
         // this.setValueForFlag(responseJson)
       })
@@ -288,7 +288,7 @@ export default class PoliceProfileScreen extends Component {
       title: "Check out Raajneeti app",
       message: message,
       subject: "Share Link", //  for email
-      url : SHARE_LINK
+      url: SHARE_LINK
     };
 
     // if (data.picture && data.picture.uri) {

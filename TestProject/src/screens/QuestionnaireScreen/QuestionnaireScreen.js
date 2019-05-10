@@ -138,7 +138,7 @@ export default class QuestionnireScreen extends Component {
                                 // loading: false, 
                                 questionnaire2: responseData,
                                 isSurveyTaken2: responseData.isSurveyTaken,
-                                surveyTitle: responseData.surveyDesc ? (responseData.surveyDesc === '' ? responseData.surveyDesc : this.state.surveyTitle) : this.state.surveyTitle
+                                // surveyTitle: responseData.surveyDesc ? (responseData.surveyDesc === '' ? this.state.surveyTitle : responseData.surveyDesc) : this.state.surveyTitle
                             })
 
                             this.setState({
@@ -185,7 +185,7 @@ export default class QuestionnireScreen extends Component {
                                         loading: false,
                                         questionnaire1: responseData_2,
                                         isSurveyTaken1: responseData_2.isSurveyTaken,
-                                        surveyTitle: responseData_2.surveyDesc ? (responseData_2.surveyDesc === '' ? responseData_2.surveyDesc : this.state.surveyTitle) : this.state.surveyTitle
+                                        surveyTitle: responseData_2.surveyDesc ? (responseData_2.surveyDesc === '' ? this.state.surveyTitle : responseData_2.surveyDesc) : this.state.surveyTitle
                                     })
                                     this.refs.scrollview.scrollTo({ x: 0, animate: true });
                                     // console.log(this.state)
@@ -351,7 +351,7 @@ export default class QuestionnireScreen extends Component {
                                 // loading: false, 
                                 questionnaire1: responseData,
                                 isSurveyTaken1: responseData.isSurveyTaken,
-                                surveyTitle: responseData.surveyDesc ? (responseData.surveyDesc === '' ? this.state.surveyTitle : responseData.surveyDesc) : this.state.surveyTitle
+                                // surveyTitle: responseData.surveyDesc ? (responseData.surveyDesc === '' ? this.state.surveyTitle : responseData.surveyDesc) : this.state.surveyTitle
                             })
 
                             let body2 = {
@@ -975,6 +975,7 @@ export default class QuestionnireScreen extends Component {
 
     refreshDataWithId2 = (surveyId, surveyDesc, thatObj) => {
 
+        // alert(surveyId);
         axios.post(GET_SURVEY_BY_ID, {
             surveyId: surveyId,
             userId: this.props.user_id,

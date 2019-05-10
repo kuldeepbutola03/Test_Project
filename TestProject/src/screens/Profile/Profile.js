@@ -151,6 +151,8 @@ export default class Profile extends Component {
     if (!this.state.editable) {
 
       body = JSON.stringify({
+        
+
         userId: this.state.userId,
         userImageData: this.state.image,
         userImageName: imgName,
@@ -191,6 +193,17 @@ export default class Profile extends Component {
       .then((responseJson) => {
         // console.log(responseJson);
         // alert(JSON.stringify(responseJson));
+
+
+        if (responseJson.response !== 'true') {
+          this.refs.loading.close();
+          setTimeout(() => {
+            alert(responseJson.response);
+          }, 300);
+
+          return;
+        }
+
         this.state.gender = this.state.maleChecked ? "Male" : "Female";
         saveUserData(this.state);
 
@@ -276,10 +289,10 @@ export default class Profile extends Component {
       case "41-50": return 'Fourties';
         break;
 
-      case "51-60": return 'Above Sixties';
+      case "51-60": return 'Fifties';
         break;
 
-      case ">60": return 'Above 60';
+      case ">60": return 'Above Sixties';
         break;
 
       default: return "";
@@ -516,7 +529,7 @@ export default class Profile extends Component {
 
             <DefaultInput placeholder="First Name" value={this.state.firstName} onChangeText={(text) => this.setState({ firstName: text })} />
             <DefaultInput placeholder="Last Name" value={this.state.lastName} onChangeText={(text) => this.setState({ lastName: text })} /> */}
-            
+
             <View style={{ height: 100, width: '85 %', alignItems: 'center', justifyContent: 'center' }}>
               {<Text style={{ color: 'grey', position: 'absolute', top: 5, right: 10, fontSize: 12 }}>{500 - (this.state.description.length)}</Text>}
               <View style={{
@@ -529,11 +542,11 @@ export default class Profile extends Component {
               }}>
                 <TextInput
                   underlineColorAndroid="transparent"
-                  maxLength={400}
+                  maxLength={500}
                   placeholder="About me"
                   multiline
                   value={this.state.description}
-                  style={{ height: "90%", width: '94%', paddingVertical: "10%", paddingHorizontal: "10%", textAlign: 'center', textAlignVertical: 'center' }}
+                  style={{ height: "90%", width: '94%', paddingVertical: 10, paddingHorizontal: 10, textAlign: 'center', textAlignVertical: 'center' }}
                   onChangeText={(text) => this.setState({ description: text })}
                 />
               </View>
@@ -621,7 +634,7 @@ export default class Profile extends Component {
                     this.setState({ selectedAgeGroupCode: item.ageGroupCode })
                   }, 300);
                 }}
-              > {item.ageGroup} </Button>
+              > {item.ageGroup}  </Button>
             )
           })}
 

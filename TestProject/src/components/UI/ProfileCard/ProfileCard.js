@@ -219,6 +219,8 @@ class menuButtons extends React.Component {
         </TouchableWithoutFeedback>
       )
     }
+
+    // this.props.isFlagEnabled === 'N' ? true : false
   }
 
   

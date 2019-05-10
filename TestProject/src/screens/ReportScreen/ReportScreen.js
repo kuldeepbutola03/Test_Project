@@ -222,7 +222,22 @@ export default class ReportScreen extends Component {
       });
   }
 
+  refreshData = (data) => {
+    var dataObj = this.state.case;
 
+    let array = Object.assign([], dataObj);
+
+    let arrayObj = dataObj.filter(function (dict) {
+      return data.messageId === dict.messageId;
+    });
+    arrayObj.map((item) => {
+      var index = dataObj.indexOf(item);
+      let modifiedObj = Object.assign({}, data);
+      array[index] = modifiedObj;
+    });
+    this.setState({case : array});
+
+  }
   requestForLikeDislike(data, isLiked) {
 
     let userId = this.props.user_id;
@@ -247,6 +262,23 @@ export default class ReportScreen extends Component {
     // alert(body);
     // return;
 
+
+    var dataObj = this.state.case;
+    var index = dataObj.indexOf(data);
+    let modifiedObj = Object.assign(data, {});
+
+    modifiedObj.Is_Liked = isLiked;
+    modifiedObj.LikingCount = modifiedObj.LikingCount + ((isLiked == 1) ? 1 : -1);
+    modifiedObj.LikingCount = (modifiedObj.LikingCount < 0) ? 0 : modifiedObj.LikingCount;
+
+    let array = Object.assign([], dataObj);
+    array[index] = modifiedObj;
+    this.setState({ case: array });
+    // return;
+
+    let that = this;
+    console.log(modifiedObj);
+    console.log(data);
     this.setState({ likeLoading: true })
     fetch(LIKDISLIKE_POST, {
       method: 'POST',
@@ -254,8 +286,18 @@ export default class ReportScreen extends Component {
       body: body,
     }).then((response) => response.json())
       .then((responseJson) => {
-        this._onRefresh();
+        // this._onRefresh();
+        if (responseJson.response === 'true') {
+          this.setState({ likeLoading: false })
+
+        } else {
+          var dataObj = that.state.case;
+          let array = Object.assign([], dataObj);
+          array[index] = data;
+          that.setState({ case: array, likeLoading: false });
+        }
         // alert(JSON.stringify(responseJson));
+
         // var dataObj = this.state.case;
         // var index = dataObj.indexOf(data);
         // data.Is_Liked = isLiked;
@@ -265,7 +307,8 @@ export default class ReportScreen extends Component {
         // this.setState({case : [...dataObj] });
         //  alert(JSON.stringify(responseJson));
         // this.filterData(responseJson.result);
-        this.setState({ likeLoading: false })
+
+
       })
       .catch((error) => {
         this.setState({ refreshing: false, loading: false, likeLoading: false });
@@ -383,7 +426,8 @@ export default class ReportScreen extends Component {
           data: data,
           user_id: this.props.user_id,
           coordinates: this.props.coordinates,
-          data2: this.props.data
+          data2: this.props.data,
+          refreshData : this.refreshData
         },
         options: {
           topBar: {
@@ -440,6 +484,7 @@ export default class ReportScreen extends Component {
       return 'Check it out on Raajneeti app'
     }
   }
+
 
   moreButtonTapped = (data) => {
     // alert(data);
@@ -1031,20 +1076,22 @@ export default class ReportScreen extends Component {
               onEndReachedThreshold={0.1}
               scrollEventThrottle={400}
               ListFooterComponent={() => this.footer()}
-              renderItem={({ item, index }) => 
-              {
+              renderItem={({ item, index }) => {
                 // console.log(index);
-                return <TouchableOpacity onPress={() => this.replyButtonTapped(item)}>
-                  <CaseCard
-                    moreButtonTapped={this.moreButtonTapped}
-                    onPressLike={(data2) => this.likeButtonTapped(data2)}
-                    onPressDisLike={(data2) => this.disLikeButtonTapped(data2)}
-                    data={item}
-                    onPressReply={(data2) => this.replyButtonTapped(data2)}
-                    showFullPic={this.showFullPic}
-                  />
-                  {(index % 5) === 4 && <View><View style={{ flex: 1, height: 1, width: '100%', backgroundColor: 'lightgrey' }}></View>{showAdsTilesRectangle()}</View>}
-                </TouchableOpacity>
+                return (<View>
+                  <TouchableOpacity onPress={() => this.replyButtonTapped(item)}>
+                    <CaseCard
+                      moreButtonTapped={this.moreButtonTapped}
+                      onPressLike={(data2) => this.likeButtonTapped(data2)}
+                      onPressDisLike={(data2) => this.disLikeButtonTapped(data2)}
+                      data={item}
+                      onPressReply={(data2) => this.replyButtonTapped(data2)}
+                      showFullPic={this.showFullPic}
+                    />
+                  </TouchableOpacity>
+                  {((index + 1) % 5) === 0 && <View style={{ marginTop: 2, marginBottom: 2 }}>{showAdsTilesRectangle()}</View>}
+                </View>
+                )
               }
 
               }

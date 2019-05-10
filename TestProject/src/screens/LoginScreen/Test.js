@@ -53,7 +53,7 @@ export default class Test extends Component {
   render() {
     return (
 
-      <View><Text>Shubham</Text></View>
+      <View><Text>asd</Text></View>
       
   //     <View style={styles.container}>
   //    <MapView
@@ -134,3 +134,4 @@ const styles = StyleSheet.create({
 //     margin: 20
 //   }
 // });
+

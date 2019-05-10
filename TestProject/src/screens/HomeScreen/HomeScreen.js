@@ -39,6 +39,8 @@ import moment from 'moment';
 
 // const { notifications } = this.state
 import KochavaTracker from 'react-native-kochava-tracker';
+import Circle from '../../components/UI/ResultPoll/Circle';
+import TextTicker from 'react-native-text-ticker'
 
 export default class HomeScreen extends Component {
 
@@ -238,11 +240,11 @@ export default class HomeScreen extends Component {
       let obj = newNotifications.notificationList[index];
       let surveyThreadID = obj["surveyThreadId"];
       this.toQuesScreen(surveyThreadID, updatedNotification);
-    } else if (screen.toString().toLowerCase() === 'trends' ) {
+    } else if (screen.toString().toLowerCase() === 'trends') {
       this.toTrendScreen()
     } else if (screen.toString().toLowerCase() === 'timeline') {
       this.toReportScreen()
-    }else if (screen.toString().toLowerCase() === 'message') {
+    } else if (screen.toString().toLowerCase() === 'message') {
       let obj = newNotifications.notificationList[index];
       this.toReportReplyScreen(obj.surveyThreadId);
     }
@@ -461,7 +463,7 @@ export default class HomeScreen extends Component {
     console.log(surveyThreadId);
     const { menuName } = this.state;
     if (surveyThreadId) {
-      let dict = { threadId: surveyThreadId , Message_Id: '' };
+      let dict = { threadId: surveyThreadId, Message_Id: '' };
       Navigation.push(this.props.componentId, {
         component: {
           name: 'ReportReplyScreen',
@@ -472,7 +474,7 @@ export default class HomeScreen extends Component {
               animate: false,
             },
           },
-          
+
           passProps: {
             coordinates: this.state.coordinates,
             data: dict,
@@ -485,17 +487,17 @@ export default class HomeScreen extends Component {
             // lat_lon: this.state.lat_lon,
             // // languageCode: this.state.firstAPIresponse ? this.state.firstAPIresponse.languageCodes : null,
             // menuName: menuName,
-  
+
             // notifications: this.state.notifications,
             // readNotification: this.readNotification,
             // updateNotifications: this.updateNotifications,
-  
-  
+
+
           },
         },
       });
     }
-   
+
   };
 
   toQuesScreen = (surveyThreadID, updatedNotification) => {
@@ -549,9 +551,6 @@ export default class HomeScreen extends Component {
     //     }
     //   },
     // });
-
-
-
   };
 
   toTrendScreen = () => {
@@ -860,24 +859,24 @@ export default class HomeScreen extends Component {
     // const { navigate } = this.props.navigation;
     const route = url.replace(/.*?:\/\//g, '');
     //alert(route);
-    if(route) {
+    if (route) {
       if (Platform.OS === 'ios') {
-        if(route.length > 3){
-          var strFirstThree = route.substring(0,3);
-          if(strFirstThree && strFirstThree === 'THD')
-          this.toReportReplyScreen(route);
+        if (route.length > 3) {
+          var strFirstThree = route.substring(0, 3);
+          if (strFirstThree && strFirstThree === 'THD')
+            this.toReportReplyScreen(route);
         }
-        
-      }else{
-         let routeName = route.split('/');
-         console.log(routeName);
-         if (routeName.length >= 2) {
+
+      } else {
+        let routeName = route.split('/');
+        console.log(routeName);
+        if (routeName.length >= 2) {
           this.toReportReplyScreen(routeName[1]);
-         }
+        }
+      }
+
     }
 
-}
-    
     // const id = route.match(/\/([^\/]+)\/?$/)[1];
     // const routeName = route.split('/')[0];
 
@@ -1146,6 +1145,7 @@ export default class HomeScreen extends Component {
       // console.log(this.state.firstAPIresponse)
       return (
         <View style={styles.profileContainer}>
+          {/* <Circle/> */}
           <ProfileView
             style={{ marginLeft: 0.5, marginRight: 1 }}
             infos={profileInfo}
@@ -1188,9 +1188,10 @@ export default class HomeScreen extends Component {
                     },
                   },
                   passProps: {
+                    surveyThreadID: firstKey,
                     user_id: this.state.user_id,
                     lat_lon: this.state.lat_lon,
-                    surveyType: 'L',
+                    // surveyType: 'L',
                     surveyTitle: currLandPageSurvey[firstKey],
                     componentId: this.props.componentId,
                     menuName: menuName ? menuName : null,
@@ -1538,7 +1539,12 @@ export default class HomeScreen extends Component {
           }}>
 
           {this.state.landingTopSix ?
-            <Text style={styles.landingTopSixHeader}> {this.state.landingTopSix.extraImageFile1} </Text> :
+            <Text style={styles.landingTopSixHeader}
+             duration={3000}
+              loop
+              bounce
+              repeatSpacer={50}
+              marqueeDelay={1000}> {this.state.landingTopSix.extraImageFile1} </Text> :
             null
           }
           <View style={{ position: 'absolute', width: 50, height: 40, top: 0, right: 0 }}>
