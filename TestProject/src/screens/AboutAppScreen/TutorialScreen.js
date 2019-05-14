@@ -108,6 +108,7 @@ var eventMapObject = {};
     }
     // alert(fcmToken);
     this.setState({ pushNotificationToken: fcmToken })
+    console.log("fcmToken");
     console.log(fcmToken);
   }
 
@@ -163,6 +164,7 @@ var eventMapObject = {};
   }
 
   showAlert(title, body) {
+    return;
     Alert.alert(
       title, body,
       [
@@ -182,6 +184,26 @@ var eventMapObject = {};
 
   showMobileScreen() {
 
+  //   Navigation.push(this.props.componentId, {
+  //     component: {
+  //       name: 'FirstScreen',
+  //       options: {
+  //         topBar: {
+  //           visible: false,
+  //           animate: false,
+  //           drawBehind: true,
+  //         },
+  //         layout: {
+  //           orientation: ['portrait']
+  //         },
+  //       },
+  //       passProps: {
+  //         pushNotificationToken: this.state.pushNotificationToken
+  //       }
+  //     },
+  //   });
+  // // };
+  // return;
     // alert('aaaaa');
     Navigation.push(this.props.componentId, {
       component: {

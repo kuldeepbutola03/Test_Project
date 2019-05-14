@@ -104,8 +104,8 @@ Navigation.events().registerAppLaunchedListener(() => {
   //       children: [
   //         {
   //           component: {
-  //             id: "FirstScreen", // Optional, Auto generated if empty
-  //             name: "FirstScreen",
+  //             id: "AboutAppScreen", // Optional, Auto generated if empty
+  //             name: "AboutAppScreen",
   //             options: {
   //               topBar: {
   //                 visible: false,
@@ -117,13 +117,10 @@ Navigation.events().registerAppLaunchedListener(() => {
   //             passProps: {
   //               data: null
   //             },
-
   //             sideMenu: {
   //               enabled: false,
   //               visible: false
   //             },
-
-
   //           },
   //         },
   //       ],

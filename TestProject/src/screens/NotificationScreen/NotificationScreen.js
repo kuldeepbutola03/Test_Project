@@ -107,7 +107,6 @@ class NotificationScreen extends Component {
         )
     }
 
-
     render() {
         const { notifications } = this.state;
         console.log(this.state.notifications)

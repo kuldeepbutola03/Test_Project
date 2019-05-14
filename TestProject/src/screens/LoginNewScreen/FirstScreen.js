@@ -61,7 +61,7 @@ export default class FirstScreen extends Component {
     }
 
     componentDidMount() {
-        this.phone.selectCountry('in')
+        // this.phone.selectCountry('in')
 
 
         // this.getDataFromServer(true)
@@ -94,8 +94,17 @@ export default class FirstScreen extends Component {
 
     mobileNumberSubmit = () => {
         // console.log(e);
-
-
+        Navigation.push(this.props.componentId, {
+            component: {
+                name: 'MobileNumber',
+                passProps: {
+                    pushNotificationToken: this.props.pushNotificationToken,
+                    // code: this.phone.getCountryCode(),
+                    // mobileNumber: this.phone.getValue(),
+                },
+            },
+        });
+        return;
 
         if (DEBUG == 0) {
             Navigation.push(this.props.componentId, {
@@ -157,7 +166,7 @@ export default class FirstScreen extends Component {
                     onPress={this.mobileNumberSubmit}
                     color="#a01414"
                 // disabled={this.state.disabled}
-                > Get OTP </ButtonMod>
+                > Mobile Number </ButtonMod>
             )
         }
     }
@@ -275,27 +284,27 @@ export default class FirstScreen extends Component {
                     {...options}
                     enabled>
                     <Circle style={{ flex: 1, height: 300 }} />
-                    
+
                     <View style={{ flex: 1 }} justifyContent='center' alignItems='center' backgroundColor='transparent'>
 
-                        <Image style={{ marginBottom: 10, height: normalize(100), width: normalize(100), resizeMode: 'cover' }} source={require('../../assets/icon1.png')} />
-                        <View>
-                            <HeaderText
+                        <Image style={{ marginBottom: 10, height: normalize(150), width: normalize(150), resizeMode: 'cover' }} source={require('../../assets/icon1.png')} />
+                        {/* <View> */}
+                            {/* <HeaderText
                                 style={{
                                     marginBottom: 20,
                                 }}>
                                 Mobile Number Verification
-          </HeaderText>
-                        </View>
+          </HeaderText> */}
+                        {/* </View> */}
 
-                        <PhoneInput
+                        {/* <PhoneInput
                             initial
                             ref={(ref) => { this.phone = ref }}
                             style={styles.phoneInput}
                             textProps={{ placeholder: 'Mobile Number', height: 25 }}
                             textStyle={{ borderBottomWidth: 1, borderColor: '#BFBFBF' }}
                         // onChangePhoneNumber={(e) => this.mobileNumberChanged(e)}
-                        />
+                        /> */}
 
                         {this.renderButton()}
 

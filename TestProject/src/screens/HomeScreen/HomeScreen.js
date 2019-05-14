@@ -13,7 +13,8 @@ import {
   Picker,
   PickerIOS,
   Platform,
-  Linking
+  Linking,
+  Alert
 } from 'react-native';
 
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -52,11 +53,15 @@ export default class HomeScreen extends Component {
   };
 
   constructor(props) {
+
+
     let extraImage = "Trends,Survey,Arena,Notifications,Rate Now, Profile, Male,Female, Select Your Profession,Student,Salaried,Entrepreneur, Retired, Housewife,Other, Select Your Age group, Teenager,Twenties,Thirties,Forties,Fifties,Sixty+";
     let menuArr = extraImage.split(',');
 
 
     super(props);
+    // this.createNotificationListeners();
+
     this.state = {
       showDialog: false,
       currLandPageSurvey: null,
@@ -248,6 +253,98 @@ export default class HomeScreen extends Component {
       let obj = newNotifications.notificationList[index];
       this.toReportReplyScreen(obj.surveyThreadId);
     }
+  }
+  //////
+  async createNotificationListeners() {
+    /*
+    * Triggered when a particular notification has been received in foreground
+    * */
+    console.log(JSON.stringify(" Triggered when a particular notification has been received in foreground"));
+    this.notificationListener = firebase.notifications().onNotification((notification) => {
+      console.log(JSON.stringify(" Triggered when a particular notification has been received in foreground"));
+      console.log(notification);
+      const { title, body } = notification;
+      // this.showScreen(title, body);
+    });
+
+    /*
+    * If your app is in background, you can listen for when a notification is clicked / tapped / opened as follows:
+    * */
+    console.log(JSON.stringify("If your app is in background, you can listen for when a notification is clicked / tapped / opened as follows:"));
+    this.notificationOpenedListener = firebase.notifications().onNotificationOpened((notificationOpen) => {
+      console.log(JSON.stringify("If your app is in background, you can listen for when a notification is clicked / tapped / opened as follows:"));
+      console.log(notificationOpen);
+      const { title, body } = notificationOpen.notification;
+      this.showScreen(notificationOpen.notification);
+    });
+
+    /*
+    * If your app is closed, you can check if it was opened by a notification being clicked / tapped / opened as follows:
+    * */
+    console.log(JSON.stringify("If your app is closed, you can check if it was opened by a notification being clicked / tapped / opened as follows:"));
+    const notificationOpen = await firebase.notifications().getInitialNotification();
+    console.log(JSON.stringify("If your app is closed, you can check if it was opened by a notification being clicked / tapped / opened as follows:"));
+    console.log(notificationOpen);
+    if (notificationOpen) {
+      // const { title, body } = notificationOpen.notification;
+      this.showScreen(notificationOpen.notification);
+    }
+    /*
+    * Triggered for data only payload in foreground
+    * */
+    console.log(JSON.stringify("Triggered for data only payload in foreground"));
+    this.messageListener = firebase.messaging().onMessage((message) => {
+      //process data message
+      alert(JSON.stringify("process data message"));
+      console.log(JSON.stringify(message));
+    });
+  }
+  showScreen(notification) {
+
+    console.log(notification);
+
+    if (notification) {
+      if (notification.data) {
+        let dict = notification.data;
+        if (dict.screen && dict.screen.toLowerCase() === 'survey') {
+          let surveryId = dict['surveyid'];
+          this.toQuesScreen(surveryId, null);
+        }else if (dict.screen && dict.screen.toLowerCase() === 'trends') {
+          this.toTrendScreen();
+        }else if (dict.screen && (dict.screen.toLowerCase() === 'arena' || dict.screen.toLowerCase() === 'timeline')) {
+          if (dict.arenaid) {
+            this.toReportReplyScreen(dict.arenaid);
+          }else if (dict.timelineid) {
+            this.toReportReplyScreen(dict.timeline);
+          }else if (dict.threadid) {
+            this.toReportReplyScreen(dict.threadid);
+          }else{
+            this.toReportScreen();
+          }
+        }
+      }
+    }
+
+    // if (screen.toString().toLowerCase() === 'survey' || screen === 'Survey') {
+    //   let obj = newNotifications.notificationList[index];
+    //   let surveyThreadID = obj["surveyThreadId"];
+    //   this.toQuesScreen(surveyThreadID, updatedNotification);
+    // } else if (screen.toString().toLowerCase() === 'trends') {
+    //   this.toTrendScreen()
+    // } else if (screen.toString().toLowerCase() === 'timeline') {
+    //   this.toReportScreen()
+    // } else if (screen.toString().toLowerCase() === 'message') {
+    //   let obj = newNotifications.notificationList[index];
+    //   this.toReportReplyScreen(obj.surveyThreadId);
+    // }
+
+    // Alert.alert(
+    //   title, body,
+    //   [
+    //     { text: 'OK', onPress: () => console.log('OK Pressed') },
+    //   ],
+    //   { cancelable: false },
+    // );
   }
 
   updateNotifications = (notificationLogId, notification) => {
@@ -677,6 +774,8 @@ export default class HomeScreen extends Component {
     this.backHandler.remove();
 
     Linking.removeEventListener('url', this.handleOpenURL);
+
+    // this.createNotificationListeners();
   }
 
   goBack = () => {
@@ -847,6 +946,8 @@ export default class HomeScreen extends Component {
       Linking.addEventListener('url', this.handleOpenURL);
 
     }
+
+    this.createNotificationListeners();
   }
 
 
@@ -1540,7 +1641,7 @@ export default class HomeScreen extends Component {
 
           {this.state.landingTopSix ?
             <Text style={styles.landingTopSixHeader}
-             duration={3000}
+              duration={3000}
               loop
               bounce
               repeatSpacer={50}

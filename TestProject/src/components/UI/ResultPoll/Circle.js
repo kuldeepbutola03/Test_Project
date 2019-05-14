@@ -20,7 +20,7 @@ export default Circle = props => {
     let horizontalSpacing = 2;
     // let verticalSpacing = 1;
 
-    let numberOfCircle = 27 + (3 * (numberOfCircleHalfRow - 1)) - 1 ;
+    let numberOfCircle = 26 + (3 * (numberOfCircleHalfRow - 1));
 
     const {
         width: SCREEN_WIDTH,
@@ -28,7 +28,7 @@ export default Circle = props => {
     } = Dimensions.get('window');
 
 
-    var lastRowCountOfCircle = (numberOfCircleHalfRow * 3) + (numberOfCircleHalfRow/2);
+    var lastRowCountOfCircle = (numberOfCircleHalfRow * 3) + (numberOfCircleHalfRow / 2);
 
     var circleDimension = (SCREEN_WIDTH - (horizontalPadding * 2) - ((lastRowCountOfCircle - 1) * horizontalSpacing)) / lastRowCountOfCircle;
 
@@ -54,35 +54,8 @@ export default Circle = props => {
     // let angle = (((22 / 7) * diameter) % (circleDimension + horizontalSpacing))/2;
     let increasingAngle = 180 / numberOfCircle;// increasingAngle = 180 / (numberOfCircleMade + numberOfCircleMade - 1);
 
+    let innerArray = [];
     for (let i = 0; i < 462; i++) {
-
-        // array.push(<View style={{
-        //     backgroundColor: 'red',
-        //     position: 'absolute',
-        //     width: circleDimension,
-        //     height: circleDimension,
-        //     left: emptyEndCordinate,
-        //     top: cordinateY,
-        //     borderRadius: (circleDimension / 2.0)
-        // }} />)
-
-
-        // cordinateY = cordinateY + verticalSpacing + circleDimension;
-
-        // let y_axis = Math.pow(cordinateY, 2);
-        // let radius = Math.pow((diameter/2), 2);
-        // let diffrences1 = radius - y_axis;
-        // let diffrences2 = radius + y_axis;
-
-        // // let diameterDff = diameter - circleDimension;
-
-        // let x_axis1 = Math.sqrt(diffrences1 < 0 ? -diffrences1 : diffrences1);
-        // let pp1 = x_axis1 - (emptyStartCordinate + (diameter/2));// - ((diameter / 2) * 3) - horizontalPadding;// - horizontalPadding;
-        // pp1 = pp1 < 0 ? 0 - pp1 : pp1;
-
-        // let x_axis2 = Math.sqrt(diffrences2 < 0 ? -diffrences2 : diffrences2);
-        // let pp2 = x_axis2 - (emptyStartCordinate + (diameter/2));// - ((diameter / 2) * 3) - horizontalPadding;// - horizontalPadding;
-        // pp2 = pp2 < 0 ? 0 - pp2 : pp2;
 
         if (angle >= 181) {
             numberOfRow++;
@@ -98,6 +71,8 @@ export default Circle = props => {
             // increasingAngle = 180 / (((22 / 7) * diameter) / (circleDimension + (horizontalSpacing)));
             // numberOfColumn = numberOfColumn + 1.5;
             diameter = diameter - circleDimension - horizontalSpacing;
+
+            array.push(innerArray);
         }
         let x = (diameter) * Math.cos(angle * 0.0174533);
 
@@ -109,20 +84,31 @@ export default Circle = props => {
         // emptyEndCordinate = y;
         // emptyStartCordinate =  y;
 
+        // innerArray.push({
+        //     backgroundColor: 'red',
+        //     position: 'absolute',
+        //     width: circleDimension,
+        //     height: circleDimension,
+        //     left: (SCREEN_WIDTH / 2) + x  - (circleDimension / 2),
+        //     top: 200 - cordinateY - (circleDimension / 2),
+        //     borderRadius: (circleDimension / 2.0)
+        // });
 
-
-        array.push(<View style={{
+        innerArray.push(<View style={{
             backgroundColor: 'red',
             position: 'absolute',
             width: circleDimension,
             height: circleDimension,
-            left: (SCREEN_WIDTH / 2) + x  - (circleDimension / 2),
+            left: (SCREEN_WIDTH / 2) + x - (circleDimension / 2),
             top: 200 - cordinateY - (circleDimension / 2),
             borderRadius: (circleDimension / 2.0)
         }} />)
 
         angle = angle + increasingAngle;
     }
+    
+
+    
     return (
         <View style={{
             position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, backgroundColor: 'white'
