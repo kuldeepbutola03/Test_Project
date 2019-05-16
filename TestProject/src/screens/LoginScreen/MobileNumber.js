@@ -238,7 +238,8 @@ export default class MobileNumber extends Component {
               title='Agree to Terms and Conditions'
               checked={this.state.checkBocSelected}
               onPress={() => {
-                this.showTC();
+                // this.showTC();
+                this.setState({ checkBocSelected: !this.state.checkBocSelected });
               }}
               onIconPress={() => { this.setState({ checkBocSelected: !this.state.checkBocSelected }) }}
             />

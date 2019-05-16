@@ -16,7 +16,7 @@ import {
   Linking,
   Alert
 } from 'react-native';
-
+import _ from "lodash";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 import ProfileView from '../../components/UI/ProfileView/ProfileView';
@@ -31,9 +31,10 @@ import HomeScoreView from '../../components/UI/ProfileCard/HomeScoreView';
 import Spinner from '../../components/UI/Spinner/Spinner';
 import TopSix from '../../components/UI/TopSix/TopSix';
 import TopSix_2 from '../../components/UI/TopSix/TopSix_2';
+import MyTopSix from '../../components/UI/TopSix/MyTopSix';
 // import Dialog from 'react-native-dialog';
 import Permissions from 'react-native-permissions';
-
+import Carousel, { Pagination } from 'react-native-snap-carousel';
 import firebase from 'react-native-firebase';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import moment from 'moment';
@@ -42,6 +43,8 @@ import moment from 'moment';
 import KochavaTracker from 'react-native-kochava-tracker';
 import Circle from '../../components/UI/ResultPoll/Circle';
 import TextTicker from 'react-native-text-ticker'
+import { sliderWidth, itemWidth } from '../AboutAppScreen/SliderEntry.style';
+import TableView from '../../components/UI/TableView/TableView'
 
 export default class HomeScreen extends Component {
 
@@ -53,14 +56,11 @@ export default class HomeScreen extends Component {
   };
 
   constructor(props) {
-
-
     let extraImage = "Trends,Survey,Arena,Notifications,Rate Now, Profile, Male,Female, Select Your Profession,Student,Salaried,Entrepreneur, Retired, Housewife,Other, Select Your Age group, Teenager,Twenties,Thirties,Forties,Fifties,Sixty+";
     let menuArr = extraImage.split(',');
 
 
     super(props);
-    // this.createNotificationListeners();
 
     this.state = {
       showDialog: false,
@@ -76,11 +76,19 @@ export default class HomeScreen extends Component {
       lat_lon: null,
       coordinates: null,
       language: 'English',
-
+      activeSlide: 0,
       data: this.props.data,
       // menuName: this.getLanguageCode(this.props.data.userLanguage),
       menuName: menuArr,
+      width: 0,
+      height: 0,
       // loadingFourth
+      slideContent: [
+        [require('../../assets/PollResults/poll_exit.jpg'), require('../../assets/PollResults/poll_result.jpg')],
+        [],
+        [],
+        []
+      ],
 
       notifications: {
         count: null,
@@ -224,7 +232,6 @@ export default class HomeScreen extends Component {
     // let counted;
     let newNotifications = notifications;
 
-
     // if (count > 0) {
     //   counted = count - 1;
     // } else {
@@ -236,7 +243,7 @@ export default class HomeScreen extends Component {
 
     let updatedNotification = Object.assign(newNotifications, {});
 
-    console.log(updatedNotification)
+    // console.log(updatedNotification)
     this.setState({
       notifications: updatedNotification
     })
@@ -348,7 +355,7 @@ export default class HomeScreen extends Component {
   }
 
   updateNotifications = (notificationLogId, notification) => {
-    console.log('called')
+    // console.log('called')
     // return;
     axios.post(UPDATE_USER_NOTIFICATIONS, {
       notificationLogId: notificationLogId.toString(),
@@ -359,9 +366,9 @@ export default class HomeScreen extends Component {
       // userId: this.state.user_id
     }).then((response) => {
       let responseData = response.data;
-      console.log('_________')
-      console.log(responseData)
-      console.log('_________')
+      // console.log('_________')
+      // console.log(responseData)
+      // console.log('_________')
       this.getNotifications()
 
     }).catch(error => {
@@ -426,9 +433,7 @@ export default class HomeScreen extends Component {
       this.setState({ menuName: menu });
       return menu;
     }
-
     return ['Trends', 'Survey', 'Arena']
-
   }
 
   tick = () => {
@@ -556,9 +561,9 @@ export default class HomeScreen extends Component {
   };
 
   toReportReplyScreen = (surveyThreadId) => {
-    console.log('toReportReplyScreen----yyy');
-    console.log(surveyThreadId);
-    const { menuName } = this.state;
+    // console.log('toReportReplyScreen----yyy');
+    // console.log(surveyThreadId);
+    // const { menuName } = this.state;
     if (surveyThreadId) {
       let dict = { threadId: surveyThreadId, Message_Id: '' };
       Navigation.push(this.props.componentId, {
@@ -571,7 +576,6 @@ export default class HomeScreen extends Component {
               animate: false,
             },
           },
-
           passProps: {
             coordinates: this.state.coordinates,
             data: dict,
@@ -584,12 +588,9 @@ export default class HomeScreen extends Component {
             // lat_lon: this.state.lat_lon,
             // // languageCode: this.state.firstAPIresponse ? this.state.firstAPIresponse.languageCodes : null,
             // menuName: menuName,
-
             // notifications: this.state.notifications,
             // readNotification: this.readNotification,
             // updateNotifications: this.updateNotifications,
-
-
           },
         },
       });
@@ -744,8 +745,9 @@ export default class HomeScreen extends Component {
         // this.getLocation()
         this.fetchCurrentLocation();
       } else {
-        this.serverHitForFourthResponse();
         this.requestToServer();
+        this.serverHitForFourthResponse();
+        
       }
     })
   }
@@ -756,15 +758,17 @@ export default class HomeScreen extends Component {
       // alert('aaaa'+response);
       if (response === 'denied' || response === 'undetermined') {
         // this._requestPermission();
-        this.serverHitForFourthResponse();
         this.requestToServer();
+        this.serverHitForFourthResponse();
+        
 
       } else if (response === 'authorized') {
         // this.getLocation()
         this.fetchCurrentLocation();
       } else {
-        this.serverHitForFourthResponse();
         this.requestToServer();
+        this.serverHitForFourthResponse();
+        
       }
     })
   }
@@ -774,8 +778,6 @@ export default class HomeScreen extends Component {
     this.backHandler.remove();
 
     Linking.removeEventListener('url', this.handleOpenURL);
-
-    // this.createNotificationListeners();
   }
 
   goBack = () => {
@@ -958,7 +960,7 @@ export default class HomeScreen extends Component {
   navigate = (url) => { // E
     // alert(url);
     // const { navigate } = this.props.navigation;
-    const route = url.replace(/.*?:\/\//g, '');
+    const route = url ? url.replace(/.*?:\/\//g, '') : null;
     //alert(route);
     if (route) {
       if (Platform.OS === 'ios') {
@@ -975,7 +977,6 @@ export default class HomeScreen extends Component {
           this.toReportReplyScreen(routeName[1]);
         }
       }
-
     }
 
     // const id = route.match(/\/([^\/]+)\/?$/)[1];
@@ -984,9 +985,6 @@ export default class HomeScreen extends Component {
     // if (routeName === 'people') {
     //   navigate('People', { id, name: 'chris' })
     // };
-  }
-
-  componentDidUpdate() {
   }
 
   getNotifications = () => {
@@ -1033,7 +1031,23 @@ export default class HomeScreen extends Component {
       body: body,
     }).then((response) => response.json())
       .then((responseJson) => {
-        this.setState({ isLoading: false, firstAPIresponse: responseJson, currLandPageSurvey: responseJson.currLandPageSurvey });
+
+        let arr = Object.assign(this.state.slideContent, []);
+        arr[1] = responseJson.resCatNationalGroupList;
+        arr[2] = responseJson.resCatNationalList;
+        arr[3] = responseJson.resCatNationalList;
+
+        const check = responseJson && responseJson.exitOrResultDay ? responseJson.exitOrResultDay : null;
+        if (!check) {
+          this.startTimer(120*1000);
+        }else if (check === 'e') {
+          this.startTimer(120*1000);
+        }else if (check === 'r') {
+          this.startTimer(60*1000);
+        }
+        
+
+        this.setState({ isLoading: false, firstAPIresponse: responseJson, currLandPageSurvey: responseJson.currLandPageSurvey, slideContent: arr, activeSlide : 0 }); // slideContent : arr
         // this.serverHitForSecondResponse();
       })
       .catch((error) => {
@@ -1147,125 +1161,237 @@ export default class HomeScreen extends Component {
   };
 
 
-  startTimer() {
-    let timer = setInterval(this.tick, 60 * 1000);
+  startTimer(time) {
+    if (this.state.timer) {
+      clearInterval(this.state.timer);
+    }
+    
+    let timer = setInterval(this.tick,time ); //60 * 1000
     this.setState({ timer: timer });
   }
 
   profileViewAfterLoading = data => {
-    if (DEBUG == 0) {
+    const { firstAPIresponse } = this.state;
+    const type = firstAPIresponse && firstAPIresponse.exitOrResultDay ? firstAPIresponse.exitOrResultDay : null
+    if (type === null) {
+      // if (DEBUG == 0) {
 
-      // let profilePic = [
-      //   imageData2,
-      //   imageData
-      // ];
-      let profilePic = [
-        require("../../assets/1.png"),
-        require("../../assets/2.png"),
-      ];
-      let profileCompanyPic = [
-        require("../../assets/batch1.png"),
-        require("../../assets/batch1.png"),
-      ];
-      // let profileCompanyPic = [
-      //   imageData,
-      //   imageData2
-      // ];
-      let profileInfo = [
+      //   // let profilePic = [
+      //   //   imageData2,
+      //   //   imageData
+      //   // ];
+      //   let profilePic = [
+      //     require("../../assets/1.png"),
+      //     require("../../assets/2.png"),
+      //   ];
+      //   let profileCompanyPic = [
+      //     require("../../assets/batch1.png"),
+      //     require("../../assets/batch1.png"),
+      //   ];
+      //   // let profileCompanyPic = [
+      //   //   imageData,
+      //   //   imageData2
+      //   // ];
+      //   let profileInfo = [
 
-        "Heena Kumar singh",
-        "Alaska"
-      ];
-      let profileInfo2 = [
-        "Shashi Kumar singh",
-        "Alaska",
-      ];
+      //     "Heena Kumar singh",
+      //     "Alaska"
+      //   ];
+      //   let profileInfo2 = [
+      //     "Shashi Kumar singh",
+      //     "Alaska",
+      //   ];
 
-      let areaType = ["DNTN", "DNTN"];
-      return (
-        <View style={styles.profileContainer}>
-          <ProfileView
-            style={{ marginLeft: 1, marginRight: 0.5 }}
-            infos={profileInfo}
-            source={[profilePic[0], profileCompanyPic[0]]}
-            onPress={this.toPoliceProfileScreen}
-            areaType={areaType[0]}
-          />
+      //   let areaType = ["DNTN", "DNTN"];
+      //   return (
+      //     <View style={styles.profileContainer}>
+      //       <ProfileView
+      //         style={{ marginLeft: 1, marginRight: 0.5 }}
+      //         infos={profileInfo}
+      //         source={[profilePic[0], profileCompanyPic[0]]}
+      //         onPress={this.toPoliceProfileScreen}
+      //         areaType={areaType[0]}
+      //       />
 
-          <ProfileView
-            style={{ marginLeft: 0.5, marginRight: 1 }}
-            infos={profileInfo2}
-            source={[profilePic[1], profileCompanyPic[1]]}
-            onPress={this.toFireDepartmentScreen}
-            areaType={areaType[1]}
-          />
+      //       <ProfileView
+      //         style={{ marginLeft: 0.5, marginRight: 1 }}
+      //         infos={profileInfo2}
+      //         source={[profilePic[1], profileCompanyPic[1]]}
+      //         onPress={this.toFireDepartmentScreen}
+      //         areaType={areaType[1]}
+      //       />
 
-        </View>
-      );
-    } else if (this.state.isLoading) {
-      return (
-        <View style={styles.profileContainer}>
-          <ProfileView
-            style={{ marginLeft: 1, marginRight: 0.5 }}
-            infos={null}
-            source={null}
-            onPress={this.toPoliceProfileScreen}
-            areaType={null}
-          />
+      //     </View>
+      //   );
+      // } else 
+      if (this.state.isLoading) {
+        return (
+          <View style={styles.profileContainer}>
+            <ProfileView
+              style={{ marginLeft: 1, marginRight: 0.5 }}
+              infos={null}
+              source={null}
+              onPress={this.toPoliceProfileScreen}
+              areaType={null}
+            />
+            <ProfileView
+              style={{ marginLeft: 0.5, marginRight: 1 }}
+              infos={null}
+              source={null}
+              onPress={this.toFireDepartmentScreen}
+              areaType={null}
+            />
+          </View>
+        );
 
+      } else {
+        let profilePic = [
+          { uri: 'data:image/png;base64,' + this.state.firstAPIresponse.polResourceImageData },
+          { uri: 'data:image/png;base64,' + this.state.firstAPIresponse.firResourceImageData },
+        ];
+        let profileCompanyPic = [
+          { uri: 'data:image/png;base64,' + this.state.firstAPIresponse.polResourceCategoryLogoData },
+          { uri: 'data:image/png;base64,' + this.state.firstAPIresponse.firResourceCategoryLogoData },
+        ];
+        let profileInfo = [
+          this.state.firstAPIresponse.polResourceName,
+          this.state.firstAPIresponse.polAreaName,
+        ];
+        let profileInfo2 = [
+          this.state.firstAPIresponse.firResourceName,
+          this.state.firstAPIresponse.firAreaName,
+        ];
+        let areaType = [this.state.firstAPIresponse.polResourceType, this.state.firstAPIresponse.firResourceType];
+        // console.log(this.state.firstAPIresponse)
+        return (
+          <View style={styles.profileContainer}>
+            {/* <Circle/> */}
+            <ProfileView
+              style={{ marginLeft: 0.5, marginRight: 1 }}
+              infos={profileInfo}
+              source={[profilePic[0], profileCompanyPic[0]]}
+              onPress={this.toPoliceProfileScreen}
+              areaType={areaType[0]}
+            />
 
-          <ProfileView
-            style={{ marginLeft: 0.5, marginRight: 1 }}
-            infos={null}
-            source={null}
-            onPress={this.toFireDepartmentScreen}
-            areaType={null}
-          />
+            <ProfileView
+              style={{ marginLeft: 0.5, marginRight: 1 }}
+              infos={profileInfo2}
+              source={[profilePic[1], profileCompanyPic[1]]}
+              onPress={this.toFireDepartmentScreen}
+              areaType={areaType[1]}
+            />
 
-        </View>
-      );
-
-    } else {
-      let profilePic = [
-        { uri: 'data:image/png;base64,' + this.state.firstAPIresponse.polResourceImageData },
-        { uri: 'data:image/png;base64,' + this.state.firstAPIresponse.firResourceImageData },
-      ];
-      let profileCompanyPic = [
-        { uri: 'data:image/png;base64,' + this.state.firstAPIresponse.polResourceCategoryLogoData },
-        { uri: 'data:image/png;base64,' + this.state.firstAPIresponse.firResourceCategoryLogoData },
-      ];
-      let profileInfo = [
-        this.state.firstAPIresponse.polResourceName,
-        this.state.firstAPIresponse.polAreaName,
-      ];
-      let profileInfo2 = [
-        this.state.firstAPIresponse.firResourceName,
-        this.state.firstAPIresponse.firAreaName,
-      ];
-      let areaType = [this.state.firstAPIresponse.polResourceType, this.state.firstAPIresponse.firResourceType];
-      // console.log(this.state.firstAPIresponse)
-      return (
-        <View style={styles.profileContainer}>
-          {/* <Circle/> */}
-          <ProfileView
-            style={{ marginLeft: 0.5, marginRight: 1 }}
-            infos={profileInfo}
-            source={[profilePic[0], profileCompanyPic[0]]}
-            onPress={this.toPoliceProfileScreen}
-            areaType={areaType[0]}
-          />
-
-          <ProfileView
-            style={{ marginLeft: 0.5, marginRight: 1 }}
-            infos={profileInfo2}
-            source={[profilePic[1], profileCompanyPic[1]]}
-            onPress={this.toFireDepartmentScreen}
-            areaType={areaType[1]}
-          />
-        </View>
-      );
+          </View>
+        );
+      }
     }
+    else if ((type === 'e' || type === 'r')) {
+      if (this.state.isLoading) {
+        return (
+          <View style={styles.profileContainer}>
+            <ProfileView
+              style={{ marginLeft: 1, marginRight: 0.5 }}
+              infos={null}
+              source={null}
+              onPress={this.toPoliceProfileScreen}
+              areaType={null}
+            />
+            {/* <ProfileView
+              style={{ marginLeft: 0.5, marginRight: 1 }}
+              infos={null}
+              source={null}
+              onPress={this.toFireDepartmentScreen}
+              areaType={null}
+            /> */}
+          </View>
+        );
+      }
+      else {
+
+
+        return (
+          <View style={{ flex: 1, width: "100%", backgroundColor: 'white', alignItems: 'center' }}>
+            {/* <View style={{ height: 20, width: '100%', backgroundColor: 'rgb(82,196,30)' }}>
+            <Text style={{ textAlign: 'center', fontSize: 10, textAlignVertical: 'center', color: 'white',flex:1, fontWeight:'bold' }}>Election 2019</Text>
+          </View> */}
+            <Carousel
+              layout={'default'}
+              layoutCardOffset={18}
+              ref={(c) => { this._carousel = c }}
+              data={this.state.slideContent}
+              renderItem={this._renderItem.bind(this)}
+              sliderWidth={sliderWidth}
+              itemWidth={itemWidth}
+              shouldOptimizeUpdates
+              onSnapToItem={(index) => {
+
+                // if (index === 3) {
+                // alert(index);
+                //   this.showMobileScreen();
+                // } else {
+                this.setState({ activeSlide: index });
+                // }
+
+              }}
+            />
+            {this.pagination}
+          </View>
+        )
+      }
+    }
+    return <View></View>
+
   };
+
+  onLayout = (e) => {
+    this.setState({
+      width: e.nativeEvent.layout.width,
+      height: e.nativeEvent.layout.height,
+    })
+  }
+
+  _renderItem({ item, index }) {
+    const { activeSlide, width, height, firstAPIresponse } = this.state;
+    // console.log(this.state.slideContent);
+    return (
+      <View key={index} style={{ flex: 0.8, }} onLayout={this.onLayout}>
+        <TableView type={firstAPIresponse.exitOrResultDay} Width={width} Height={height} activeSlide={activeSlide} item={item} />
+      </View>
+    );
+  }
+
+  get pagination() {
+    const { activeSlide } = this.state;
+    return (
+      <Pagination
+        dotsLength={this.state.slideContent.length}
+        activeDotIndex={activeSlide}
+        containerStyle={{
+          backgroundColor: 'transparent',
+          // backgroundColor: 'rgba(0, 0, 0, 0.75)',
+          position: 'absolute',
+          bottom: 0,
+          width: "100%",
+          
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'flex-end'
+        }}
+        dotStyle={{
+          width: 10,
+          height: 10,
+          borderRadius: 5,
+          backgroundColor: 'black' //rgba(255, 255, 255, 0.92)'
+        }}
+        inactiveDotStyle={{
+          // Define styles for inactive dots here
+        }}
+        inactiveDotOpacity={0.4}
+        inactiveDotScale={0.6}
+      />
+    );
+  }
 
   renderSurveyButton = () => {
     const { currLandPageSurvey, menuName, landingTopSix } = this.state;
@@ -1276,7 +1402,7 @@ export default class HomeScreen extends Component {
         return (
           <Button
             title={currLandPageSurvey[firstKey]}
-            buttonStyle={{ backgroundColor: '#a01414' }}
+            buttonStyle={{ backgroundColor: '#a01414', width: '90%', alignSelf: 'center' }}
             onPress={() => {
               Navigation.push(this.props.componentId, {
                 component: {
@@ -1310,6 +1436,7 @@ export default class HomeScreen extends Component {
         return (
           <Button
             title="No Active Survey"
+            buttonStyle={{ width: '90%', alignSelf: 'center' }}
             disabled />
         )
       }
@@ -1372,6 +1499,21 @@ export default class HomeScreen extends Component {
     });
   }
 
+  getShow = () => {
+    if (this.state.firstAPIresponse && this.state.firstAPIresponse.exitOrResultDay === "r") {
+      if (this.state.landingTopSix && this.state.landingTopSix.areaTopSixResources2.resourceGPR_6 === 0) {
+        return "leading"
+      } else {
+        return "won"
+      }
+    } else return null
+
+  }
+
+  // swipe = () => {
+  //   this.scroll.scrollTo({ x: wd, y: 0, animated: true });
+  // };
+
   render() {
     let menuImageName = [
       require('../../assets/trends.png'),
@@ -1381,16 +1523,12 @@ export default class HomeScreen extends Component {
 
     const wd = Dimensions.get('window').width;
 
-    swipe = () => {
-      this.scroll.scrollTo({ x: wd, y: 0, animated: true });
-    };
     // if (this.state.landingTopSix) {
     //   let keys = this.state.landingTopSix.keys;
     //   if (!keys.contains("areaTopSixResources2")) {
     //     return (<View></View>);
     //   }
     // }
-
 
 
     const resourceGPR_1 = this.state.landingTopSix ? this.state.landingTopSix.resourceGPR_1 : 40;
@@ -1407,25 +1545,27 @@ export default class HomeScreen extends Component {
     const resourceGPR_5_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceGPR_5 : 55;
     const resourceGPR_6_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceGPR_6 : 70;
 
-    const resourceGPR_A_1 = [resourceGPR_1,
+    const resourceGPR_A_1 = [
+      resourceGPR_1,
       resourceGPR_2,
       resourceGPR_3,
       resourceGPR_4,
       resourceGPR_5,
       resourceGPR_6];
-    const resourceGPR_A_2 = [resourceGPR_1_,
+    const resourceGPR_A_2 = [
+      resourceGPR_1_,
       resourceGPR_2_,
       resourceGPR_3_,
       resourceGPR_4_,
       resourceGPR_5_,
       resourceGPR_6_,];
 
-    const resourceImageData_1 = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceImageData_1 } : null
-    const resourceImageData_2 = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceImageData_2 } : null
-    const resourceImageData_3 = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceImageData_3 } : null
-    const resourceImageData_4 = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceImageData_4 } : null
-    const resourceImageData_5 = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceImageData_5 } : null
-    const resourceImageData_6 = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceImageData_6 } : null
+    const resourceImageData_1 = this.state.landingTopSix && this.state.landingTopSix.resourceImageData_1 ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceImageData_1 } : null
+    const resourceImageData_2 = this.state.landingTopSix && this.state.landingTopSix.resourceImageData_2 ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceImageData_2 } : null
+    const resourceImageData_3 = this.state.landingTopSix && this.state.landingTopSix.resourceImageData_3 ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceImageData_3 } : null
+    const resourceImageData_4 = this.state.landingTopSix && this.state.landingTopSix.resourceImageData_4 ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceImageData_4 } : null
+    const resourceImageData_5 = this.state.landingTopSix && this.state.landingTopSix.resourceImageData_5 ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceImageData_5 } : null
+    const resourceImageData_6 = this.state.landingTopSix && this.state.landingTopSix.resourceImageData_6 ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceImageData_6 } : null
 
     const resourceImageData_1_ = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.areaTopSixResources2.resourceImageData_1 } : null
     const resourceImageData_2_ = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.areaTopSixResources2.resourceImageData_2 } : null
@@ -1450,12 +1590,12 @@ export default class HomeScreen extends Component {
       resourceImageData_5_,
       resourceImageData_6_];
 
-    const resourceCategoryLogoData_1 = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceCategoryLogoData_1 } : null
-    const resourceCategoryLogoData_2 = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceCategoryLogoData_2 } : null
-    const resourceCategoryLogoData_3 = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceCategoryLogoData_3 } : null
-    const resourceCategoryLogoData_4 = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceCategoryLogoData_4 } : null
-    const resourceCategoryLogoData_5 = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceCategoryLogoData_5 } : null
-    const resourceCategoryLogoData_6 = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceCategoryLogoData_6 } : null
+    const resourceCategoryLogoData_1 = this.state.landingTopSix && this.state.landingTopSix.resourceCategoryLogoData_1 ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceCategoryLogoData_1 } : null
+    const resourceCategoryLogoData_2 = this.state.landingTopSix && this.state.landingTopSix.resourceCategoryLogoData_2 ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceCategoryLogoData_2 } : null
+    const resourceCategoryLogoData_3 = this.state.landingTopSix && this.state.landingTopSix.resourceCategoryLogoData_3 ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceCategoryLogoData_3 } : null
+    const resourceCategoryLogoData_4 = this.state.landingTopSix && this.state.landingTopSix.resourceCategoryLogoData_4 ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceCategoryLogoData_4 } : null
+    const resourceCategoryLogoData_5 = this.state.landingTopSix && this.state.landingTopSix.resourceCategoryLogoData_5 ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceCategoryLogoData_5 } : null
+    const resourceCategoryLogoData_6 = this.state.landingTopSix && this.state.landingTopSix.resourceCategoryLogoData_6 ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceCategoryLogoData_6 } : null
 
     const resourceCategoryLogoData_1_ = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.areaTopSixResources2.resourceCategoryLogoData_1 } : null
     const resourceCategoryLogoData_2_ = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.areaTopSixResources2.resourceCategoryLogoData_2 } : null
@@ -1542,9 +1682,9 @@ export default class HomeScreen extends Component {
 
     const BadgedIcon = withBadge(notifications.count)(Icon);
 
-
-    console.log(this.state)
-
+    // console.log(this.state)
+    const check = this.state.firstAPIresponse && this.state.firstAPIresponse.exitOrResultDay ? this.state.firstAPIresponse.exitOrResultDay : null;
+    // firstAPIresponse && firstAPIresponse.exitOrResultDay ? firstAPIresponse.exitOrResultDay : null
 
     return (
       <SafeAreaView
@@ -1625,8 +1765,12 @@ export default class HomeScreen extends Component {
           </TouchableOpacity>
         </View>
 
+
+
         {/* //Second half */}
         {this.profileViewAfterLoading(this.state)}
+
+
 
         {/* //Third half */}
         <View
@@ -1639,20 +1783,45 @@ export default class HomeScreen extends Component {
             flexDirection: 'column'
           }}>
 
-          {this.state.landingTopSix ?
-            <Text style={styles.landingTopSixHeader}
-              duration={3000}
+          {/* {this.state.landingTopSix ?
+            <TextTicker style={styles.landingTopSixHeader}
+              duration={10000}
+              loop
+              bounce={false}
+              repeatSpacer={50}
+              marqueeDelay={1000}>{this.state.firstAPIresponse && this.state.firstAPIresponse.nationalTicker}</TextTicker> :
+            null
+          } */}
+          {!this.state.isLoading && (!check ?
+            <Text style={styles.landingTopSixHeader}> {this.state.landingTopSix && this.state.landingTopSix.extraImageFile1} </Text> :
+            <TextTicker style={styles.landingTopSixHeader}
+              duration={10000}
               loop
               bounce
               repeatSpacer={50}
-              marqueeDelay={1000}> {this.state.landingTopSix.extraImageFile1} </Text> :
-            null
-          }
-          <View style={{ position: 'absolute', width: 50, height: 40, top: 0, right: 0 }}>
-            <TouchableOpacity style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
-              this.setState({ landingTopSix: null });
+              marqueeDelay={1000}>{this.state.firstAPIresponse && this.state.firstAPIresponse.nationalTicker}</TextTicker>
+          )}
+
+          <View style={{ position: 'absolute', width: 40, height: 35, top: 0, right: 0 }}>
+            <TouchableOpacity style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'white' }} onPress={() => {
+
               // this.tick();
-              this.serverHitForFourthResponse();
+              if (!check) {
+                this.setState({ landingTopSix: null });
+                // this.serverHitForFirstApi();
+                this.serverHitForFourthResponse();
+              } else {
+                // let arr = Object.assign(this.state.slideContent, []);
+                // arr[1] = [];
+                // arr[2] = [];
+                // arr[3] = [];
+                this.setState({ landingTopSix: null, isLoading: true });
+
+                this.serverHitForFirstApi();
+                this.serverHitForFourthResponse();
+                
+              }
+
             }
             }>
               <Image source={require('../../assets/Home_1_2/refresh.png')} />
@@ -1669,40 +1838,31 @@ export default class HomeScreen extends Component {
               backgroundColor: 'white',
               borderTopColor: 'grey',
               height: hp('25%'),
-              flexDirection: 'row'
+              flexDirection: 'row',
             }}
+            contentContainerStyle={{ justifyContent: 'center' }}
             ref={ref => {
               this.scroll = ref;
             }}
           >
-            {this.state.landingTopSix ?
+            {this.state.landingTopSix && !this.state.isLoading ?
               (<View style={{ flexDirection: 'row' }}>
-                <View style={{ width: wd, flex: 1, padding: normalize(8) }}>
-                  <TopSix
-                    source={resourceImageData_A}
 
-                    logo={esourceCategoryLogoData_A}
-                    logoName={resourceName_A}
+                {resourceImageData_A.map((val, i) => {
+                  return (
+                    <View key={i} style={{ width: wd / 3, flex: 1, padding: normalize(8) }}>
+                      <MyTopSix
+                        source={val}
+                        check={check}
+                        logo={esourceCategoryLogoData_A[i]}
+                        logoName={resourceName_A[i]}
+                        logoCatName={resourceCategoryName_A[i]}
+                        resourceGpr={resourceGPR_A_1[i]}
+                        renderButton={this.renderSurveyButton}
+                      /></View>
+                  )
+                })}
 
-                    logoCatName={resourceCategoryName_A}
-
-                    resourceGpr={resourceGPR_A_1}
-                    renderButton={this.renderSurveyButton}
-                  />
-                </View>
-                <View style={{ width: wd, flex: 1, padding: normalize(8) }}>
-                  <TopSix_2
-                    source={resourceImageData_A}
-
-                    logo={esourceCategoryLogoData_A}
-                    logoName={resourceName_A}
-
-                    logoCatName={resourceCategoryName_A}
-
-                    resourceGpr={resourceGPR_A_1}
-                    renderButton={this.renderSurveyButton}
-                  />
-                </View>
               </View>
               ) :
               <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: wd }}>
@@ -1712,16 +1872,30 @@ export default class HomeScreen extends Component {
 
           </ScrollView>
           <View style={styles.buttonContainer}>
-            {this.renderSurveyButton()}
+
+            {!check && !this.state.isLoading && this.renderSurveyButton()}
+
+            {!this.state.isLoading && (!check ?
+              <Text style={styles.landingTopSixHeader}> {this.state.landingTopSix && this.state.landingTopSix.areaTopSixResources2.extraImageFile1} </Text> :
+              <TextTicker style={styles.landingTopSixHeader}
+                duration={10000}
+                loop
+                bounce
+                repeatSpacer={50}
+                marqueeDelay={1000}>{this.state.firstAPIresponse && this.state.firstAPIresponse.stateTicker}</TextTicker>
+              )}
           </View>
-          {this.state.landingTopSix ?
+
+          {/* {this.state.firstAPIresponse && this.state.firstAPIresponse.exitOrResultDay === null && this.state.landingTopSix ?
             <Text style={styles.landingTopSixHeader}> {this.state.landingTopSix.areaTopSixResources2.extraImageFile1} </Text> :
             null
-          }
+          } */}
+
           <ScrollView
             pagingEnabled
             horizontal
             showsHorizontalScrollIndicator={false}
+            scrollEnabled={!check ? true : false}
             style={{
               flex: 1,
               width: '100%',
@@ -1730,48 +1904,41 @@ export default class HomeScreen extends Component {
               height: hp('25%'),
               flexDirection: 'row'
             }}
+            contentContainerStyle={{ justifyContent: 'center' }}
             ref={ref => {
               this.scroll = ref;
             }}
           >
-            {this.state.landingTopSix ?
+            {this.state.landingTopSix && !this.state.isLoading ?
               (<View style={{ flexDirection: 'row' }}>
-                <View style={{ width: wd, flex: 1, padding: normalize(8) }}>
-                  <TopSix
-                    source={resourceImageData_A_2}
-
-                    logo={esourceCategoryLogoData_A_2}
-
-                    logoName={resourceName_A_2}
-                    logoCatName={resourceCategoryName_A_2}
-
-                    resourceGpr={resourceGPR_A_2}
-                    renderButton={this.renderSurveyButton}
-                  />
-                </View>
-                <View style={{ width: wd, flex: 1, padding: normalize(8) }}>
-                  <TopSix_2
-                    source={resourceImageData_A_2}
-
-                    logo={esourceCategoryLogoData_A_2}
-
-                    logoName={resourceName_A_2}
-                    logoCatName={resourceCategoryName_A_2}
-
-                    resourceGpr={resourceGPR_A_2}
-                    renderButton={this.renderSurveyButton}
-                  />
-                </View>
-
+                {resourceImageData_A_2.map((val, i) => {
+                  return (
+                    <View key={i} style={{ width: wd / 3, flex: 1, padding: normalize(8) }}>
+                      <MyTopSix
+                        source={val}
+                        show={this.getShow()}
+                        ind={i}
+                        check={check}
+                        logo={esourceCategoryLogoData_A_2[i]}
+                        logoName={resourceName_A_2[i]}
+                        logoCatName={resourceCategoryName_A_2[i]}
+                        resourceGpr={resourceGPR_A_2[i]}
+                        renderButton={this.renderSurveyButton}
+                      /></View>
+                  )
+                })}
               </View>
               ) :
               <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: wd }}>
                 <Spinner />
               </View>
             }
-
           </ScrollView>
         </View>
+
+
+
+
 
         {/* //Forth half */}
         <View style={styles.bottomContainer}>
@@ -1794,7 +1961,7 @@ export default class HomeScreen extends Component {
           <View style={styles.seperator} />
 
           <MenuButtons
-            onPress={this.toReportScreen}
+            onPress={this.toReportScreen} //{this.toReportScreen}
             // info={menuName[2]}
             info={menuName ? menuName[2] : null}
             source={menuImageName[2]}
@@ -1808,14 +1975,17 @@ export default class HomeScreen extends Component {
 }
 
 const styles = StyleSheet.create({
+
   container: {
     flex: 1,
     backgroundColor: 'white',
   },
+
   seperator: {
     width: 1,
     backgroundColor: 'white',
   },
+
   bottomContainer: {
     // height: normalize(60),
     flexDirection: 'row',
@@ -1833,15 +2003,15 @@ const styles = StyleSheet.create({
   },
 
   buttonContainer: {
-    marginHorizontal: hp('2%'),
-    marginVertical: hp('1%')
+    // marginHorizontal: hp('2%'),
+    marginVertical: hp('0.8%')
   },
 
   landingTopSixHeader: {
     textAlign: 'center',
-    fontSize: hp('1.5%'),
+    fontSize: normalize(12), //hp('1.5%'),
     fontWeight: '700',
-    marginVertical: hp('1.8%')
+    marginVertical: hp('1.4%')
   }
 });
 
@@ -1851,7 +2021,6 @@ const stylesTopView = StyleSheet.create({
     backgroundColor: '#a01414',
     width: '100%',
     flexDirection: 'row',
-
     justifyContent: 'space-between',
     height: hp('8%'),
     display: 'flex'

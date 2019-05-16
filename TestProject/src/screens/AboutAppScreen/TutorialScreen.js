@@ -108,7 +108,6 @@ var eventMapObject = {};
     }
     // alert(fcmToken);
     this.setState({ pushNotificationToken: fcmToken })
-    console.log("fcmToken");
     console.log(fcmToken);
   }
 
@@ -122,7 +121,7 @@ var eventMapObject = {};
       // User has rejected permissions
 
       //alert('permission rejected');
-      
+
       console.log('permission rejected');
     }
   }

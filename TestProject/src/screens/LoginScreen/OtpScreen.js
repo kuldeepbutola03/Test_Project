@@ -159,12 +159,15 @@ export default class OtpScreen extends Component {
       this.mobileNumberSubmit(null, this);
       return;
     }
+    console.log("h");
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const initialPosition = JSON.stringify(position);
         // let latlong = position.coords.latitude.toString() +  "," + position.coords.longitude.toString()
         let lat_lon = position.coords.latitude.toString() + "," + position.coords.longitude.toString();
         // alert(lat_lon);
+        console.log(lat_lon);
+        console.log(position);
         if (position.mocked) {
           if (position.mocked == true) {
             alert("you are using fake location");
@@ -177,6 +180,7 @@ export default class OtpScreen extends Component {
         this.mobileNumberSubmit(lat_lon, this);
       },
       (error) => {
+        console.log(error);
         // alert(error.message)
         // this.locationErrorMessage = error.message;
         // alert(locationErrorMessage)
@@ -254,6 +258,8 @@ export default class OtpScreen extends Component {
         pushNotificationToken: this.props.pushNotificationToken,
       }
     }
+    console.log(VALIDATE_OTP);
+    console.log(body);
     axios.post(VALIDATE_OTP, body)
       .then(response => {
         let responseData = response.data;
@@ -436,7 +442,7 @@ export default class OtpScreen extends Component {
               Enter OTP
           </HeaderText>
           </View>
-          <DefaultInput onChangeText={(text) => this.textChanged(text)} placeholder="Enter OTP" secureTextEntry={true} autoFocus/>
+          <DefaultInput keyboardType = 'number-pad' onChangeText={(text) => this.textChanged(text)} placeholder="Enter OTP" secureTextEntry={true} autoFocus/>
           {this.getTimer()}
           <ButtonMod onPress={this.getLocation} color="#a01414"> Submit </ButtonMod>
           {/* <CheckBox style = {{marginTop : 20}}
