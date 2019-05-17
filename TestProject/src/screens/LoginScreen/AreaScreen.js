@@ -200,6 +200,8 @@ export default class AreaScreen extends Component {
             userPolArea: area
 
         })
+        console.log(UPDATE_USER_AREA);
+        console.log(body);
         this.refs.loading.show();
         fetch(UPDATE_USER_AREA, {
             method: 'POST',

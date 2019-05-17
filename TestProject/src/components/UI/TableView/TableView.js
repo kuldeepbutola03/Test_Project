@@ -5,10 +5,12 @@ import {
     Text,
     Image,
     ScrollView,
-    Dimensions
+    Dimensions,
+    Platform
 } from 'react-native';
 import { normalize } from '../../../../Constant';
 import Circle from '../ResultPoll/Circle';
+
 
 
 
@@ -38,21 +40,23 @@ getRange = (exit, total) => {
 }
 
 getImageData = (name, val) => {
-    const arr = Object.keys(val)
-    const data = arr.map(function (item) {
-        if (name == item) {
-            return val[item]
-        } else return null
-    });
-
-    return data[0]
+    let data = '';
+    data = val[name]
+    return data;
 }
 
 
 tableView = (props) => {
     // alert(props.slide)
+    if (props.activeSlide > 3) {
+        return (
+            <View style={{ flex: 1 }}>
+                <Image style={{ resizeMode: 'contain', height: '100%', width: '100%' }} source={props.item} />
+            </View>
+        )
+    }
     if (props.type === "e") {
-        if (props.activeSlide == 0) {
+        if (props.activeSlide == 0 || props.activeSlide == 3) {
             return (
                 <View style={{ flex: 1 }}>
                     <Image style={{ resizeMode: 'contain', height: '100%', width: '100%' }} source={props.item[0]} />
@@ -62,7 +66,7 @@ tableView = (props) => {
             // let minValue = 
 
             return (
-                <View style={{ flex: 1, alignItems: 'center', }}>
+                <View style={{ flex: 1, alignItems: 'center' }}>
                     <View style={{
                         flexDirection: 'row',
                         justifyContent: 'space-around',
@@ -74,29 +78,41 @@ tableView = (props) => {
                     }}>
 
                         <Text style={{ textAlign: 'center', fontWeight: 'bold', flex: 2 }}></Text>
-                        <Text style={{ textAlign: 'center', fontWeight: 'bold', flex: 1 }}>2014</Text>
-                        <Text style={{ textAlign: 'center', fontWeight: 'bold', flex: 1 }}>Gain</Text>
+                        <Text style={{ textAlign: 'center', fontWeight: 'bold', flex: 0.6 }}>2014</Text>
+                        <Text style={{ textAlign: 'center', fontWeight: 'bold', flex: 0.6 }}>Gain</Text>
                     </View>
-                    <ScrollView style={{flex : 1 , width : Dimensions.get('window').width}}>
+                    <ScrollView style={{ flex: 1, width: Dimensions.get('window').width, paddingHorizontal: 5 }}>
                         {props.item.map((val, index) => {
+                            let data = this.getImageData(val.groupName, props.logo);
+                            // data = data === "" ? null : "data:image/png;base64," + data;
+
                             return (
                                 <View key={index} style={styles.container}>
-                                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
-                                        {val.categoryLogoData ? <Image source={{ uri: "data:image/png;base64," + getImageData(val.groupName, props.logo) }} style={{ height: 20, width: 20 }} /> : null}
-                                        <Text numberOfLines={1} style={val.categoryLogoData ? { fontSize: normalize(14), margin: 2 } : styles.text}>{val.groupName}</Text>
+                                    <View style={{ flex: 1.4, flexDirection: 'row', alignItems: 'center' }}>
+                                        {<Image source={{ uri: "data:image/png;base64," + data }} style={{ height: 20, width: 20 }} />}
+                                        <Text adjustsFontSizeToFit minimumFontScale={.08} numberOfLines={Platform.OS === 'ios' ? 1 : 0} style={data ? { fontSize: normalize(14), margin: 2 } : styles.name}>{val.groupName}</Text>
                                     </View>
 
-                                    <Text style={styles.text}>{val.exitSeats}<Text style={{ fontSize: 8, padding: 10 }}>{'\n'}({getRange(val.exitSeats, val.totalSeats)})</Text></Text>
+                                    <View style={{ flex: 0.6, alignItems: 'center', justifyContent: 'center', }}>
+                                        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: 16 }}>{val.exitSeats}</Text>
+                                            <Text style={{ position: 'absolute', fontSize: 8, bottom: -10, }}>({getRange(val.exitSeats, val.totalSeats)})</Text>
+                                        </View>
 
-                                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                                    </View>
+
+
+                                    <View style={{ flex: 0.6, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                                         <Text style={styles.text}>{val.lastElectionSeats}</Text>
                                     </View>
-                                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+
+                                    <View style={{ flex: 0.6, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                                         <Text style={{ textAlign: 'right', flex: 2, paddingRight: 5 }}>{Math.abs(val.plusMinusSymbol)}</Text>
                                         <View style={{ flex: 1, alignItems: 'flex-start' }}>
                                             <Image resizeMode='contain' source={getImage(val.plusMinusSymbol)} style={{ width: 15, height: 15, paddingLeft: 5 }} />
                                         </View>
                                     </View>
+
                                 </View>
                             )
                         })}
@@ -109,10 +125,10 @@ tableView = (props) => {
         }
 
     } else if (props.type === "r") {
-        if (props.activeSlide == 0) {
+        if (props.activeSlide == 0 || props.activeSlide == 3) {
             return (
                 <View style={{ flex: 1 }}>
-                    <Image style={{ resizeMode: 'contain', height: '100%', width: '100%' }} source={props.item[0]} />
+                    <Image style={{ resizeMode: 'contain', height: '100%', width: '100%' }} source={props.item[1]} />
                 </View>
             )
         } else
@@ -128,34 +144,46 @@ tableView = (props) => {
                             // marginTop: 0,
                             // backgroundColor: 'white'
                         }}>
-                            <Text style={styles.headerText}></Text>
-                            <Text style={styles.headerText}>Leading</Text>
-                            <Text style={styles.headerText}>Won</Text>
-                            <Text style={styles.headerText}>Total</Text>
-                            <Text style={styles.headerText}>2014</Text>
-                            <Text style={styles.headerText}>Gain</Text>
+                            <Text style={styles.headerTextName}></Text>
+                            <Text style={styles.headerTextR}>Leading</Text>
+                            <Text style={styles.headerTextR}>Won</Text>
+                            <Text style={styles.headerTextR}>Total</Text>
+                            <Text style={styles.headerTextR}>2014</Text>
+                            <Text style={styles.headerTextR}>Gain</Text>
                         </View>
-                        {props.item.map((val, index) => {
-                            return (
-                                <View key={index} style={styles.container}>
-                                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
-                                        {val.categoryLogoData ? <Image source={{ uri: "data:image/png;base64," + getImageData(val.groupName, props.logo) }} style={{ height: 20, width: 20 }} /> : null}
-                                        <Text numberOfLines={1} style={val.categoryLogoData ? { fontSize: normalize(14), margin: 2 } : styles.text}>{val.groupName}</Text>
-                                    </View>
-                                    <Text style={styles.text}>{val.leadingSeats}</Text>
-                                    <Text style={styles.text}>{val.wonSeats}</Text>
-                                    <Text style={styles.text}>{val.totalSeats}</Text>
-                                    <Text style={styles.text}>{val.lastElectionSeats}</Text>
+                        <ScrollView style={{ flex: 1, width: Dimensions.get('window').width, paddingHorizontal: 5 }}>
+                            {props.item.map((val, index) => {
+                                let data = this.getImageData(val.groupName, props.logo);
+                                // data = data === "" ? null : "data:image/png;base64," + data;
+                                return (
 
-                                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-                                        <Text style={{ textAlign: 'right', flex: 2, paddingRight: 5 }}>{Math.abs(val.plusMinusSymbol)}</Text>
-                                        <View style={{ flex: 1, alignItems: 'flex-start' }}>
-                                            <Image resizeMode='contain' source={getImage(val.plusMinusSymbol)} style={{ width: 15, height: 15, paddingLeft: 5 }} />
+                                    <View key={index} style={styles.container}>
+                                        <View style={{ flex: 2, flexDirection: 'row', alignItems: 'center' }}>
+                                            {<Image source={{ uri: "data:image/png;base64," + data }} style={{ height: 20, width: 20 }} />}
+                                            <Text adjustsFontSizeToFit minimumFontScale={.08} numberOfLines={Platform.OS === 'ios' ? 0 : 0} style={data ? { fontSize: normalize(11), margin: 2 } : styles.nameR}>{val.groupName}</Text>
+                                        </View>
+                                        <View style = {{flex : 1,alignItems: 'center', justifyContent: 'center' }}>
+                                            <Text >{val.leadingSeats}</Text>
+                                        </View>
+                                        <View style = {{flex : 1,alignItems: 'center', justifyContent: 'center' }}>
+                                        <Text >{val.wonSeats}</Text>
+                                        </View>
+                                        <View style = {{flex : 1,alignItems: 'center', justifyContent: 'center' }}>
+                                        <Text >{val.leadingSeats + val.wonSeats >  val.totalSeats ? val.totalSeats :  val.leadingSeats + val.wonSeats}</Text>
+                                        </View>
+                                        <View style = {{flex : 1,alignItems: 'center', justifyContent: 'center' }}>
+                                        <Text >{val.lastElectionSeats}</Text>
+                                        </View>
+
+                                        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                                            <Text style={{ textAlign: 'right', flex: 2, paddingRight: 5 }}>{Math.abs(val.plusMinusSymbol)}</Text>
+                                            <View style={{ flex: 1, alignItems: 'flex-start' }}>
+                                                <Image resizeMode='contain' source={getImage(val.plusMinusSymbol)} style={{ width: 15, height: 15, paddingLeft: 5 }} />
+                                            </View>
                                         </View>
                                     </View>
-                                </View>
-                            )
-                        })}
+                                )
+                            })}</ScrollView>
                     </View>
                 )
             } else {
@@ -173,17 +201,49 @@ const styles = StyleSheet.create({
         // marginBottom: 5,
         // marginTop: 0,
         paddingVertical: 5,
-        backgroundColor: 'white'
+
+        backgroundColor: 'white',
+
     },
+
     text: {
         flex: 1,
         textAlign: 'center',
         fontSize: normalize(14)
     },
+    textR: {
+        flex: 1,
+        textAlign: 'center',
+        fontSize: normalize(11)
+    },
+    name: {
+        flex: 1,
+        textAlign: 'left',
+        fontSize: normalize(14),
+        // paddingLeft:5
+    },
+    nameR: {
+        flex: 1,
+        textAlign: 'left',
+        fontSize: normalize(11),
+        // paddingLeft:5
+    },
     headerText: {
         textAlign: 'center',
         fontWeight: 'bold',
         flex: 1,
+        fontSize: normalize(14)
+    },
+    headerTextR: {
+        textAlign: 'center',
+        fontWeight: 'bold',
+        flex: 1,
+        fontSize: normalize(11)
+    },
+    headerTextName: {
+        textAlign: 'center',
+        fontWeight: 'bold',
+        flex: 2,
         fontSize: normalize(14)
     }
 })

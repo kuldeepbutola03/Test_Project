@@ -1,50 +1,29 @@
-import React, { Component } from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  Image,
-  Dimensions,
-  SafeAreaView,
-  BackHandler,
-  ScrollView,
-  AsyncStorage,
-  TouchableOpacity,
-  Picker,
-  PickerIOS,
-  Platform,
-  Linking,
-  Alert
-} from 'react-native';
-import _ from "lodash";
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-
-import ProfileView from '../../components/UI/ProfileView/ProfileView';
-import MenuButtons from '../../components/UI/ProfileView/MenuButtons';
-import { Navigation } from 'react-native-navigation';
-import { PropTypes } from 'prop-types';
-import { normalize, getUserID, DEFAULT_USER_ID, authHeaders, getUserData, saveUserData, APP_GLOBAL_COLOR } from '../../../Constant';
-import { LANDING_RESOURCES, LANDING_CDM, DEBUG, LANDING_PDM, LANDING_TOP_SIX, GET_USER_NOTIFICATIONS, UPDATE_USER_NOTIFICATIONS, GET_USER_DETAILS_EMAIL } from '../../../Apis';
 import axios from 'axios';
-import { Button, withBadge, Icon } from 'react-native-elements';
-import HomeScoreView from '../../components/UI/ProfileCard/HomeScoreView';
-import Spinner from '../../components/UI/Spinner/Spinner';
-import TopSix from '../../components/UI/TopSix/TopSix';
-import TopSix_2 from '../../components/UI/TopSix/TopSix_2';
-import MyTopSix from '../../components/UI/TopSix/MyTopSix';
-// import Dialog from 'react-native-dialog';
-import Permissions from 'react-native-permissions';
-import Carousel, { Pagination } from 'react-native-snap-carousel';
-import firebase from 'react-native-firebase';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import moment from 'moment';
-
+import { PropTypes } from 'prop-types';
+import React, { Component } from 'react';
+import { AsyncStorage, BackHandler, Dimensions, Image, Linking, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Button, Icon, withBadge } from 'react-native-elements';
+import firebase from 'react-native-firebase';
 // const { notifications } = this.state
 import KochavaTracker from 'react-native-kochava-tracker';
-import Circle from '../../components/UI/ResultPoll/Circle';
-import TextTicker from 'react-native-text-ticker'
-import { sliderWidth, itemWidth } from '../AboutAppScreen/SliderEntry.style';
-import TableView from '../../components/UI/TableView/TableView'
+import { Navigation } from 'react-native-navigation';
+// import Dialog from 'react-native-dialog';
+import Permissions from 'react-native-permissions';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import Carousel, { Pagination } from 'react-native-snap-carousel';
+import TextTicker from 'react-native-text-ticker';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import { DEBUG, GET_USER_DETAILS_EMAIL, GET_USER_NOTIFICATIONS, LANDING_CDM, LANDING_PDM, LANDING_RESOURCES, LANDING_TOP_SIX, UPDATE_USER_NOTIFICATIONS } from '../../../Apis';
+import { APP_GLOBAL_COLOR, authHeaders, DEFAULT_USER_ID, normalize, saveUserData } from '../../../Constant';
+import MenuButtons from '../../components/UI/ProfileView/MenuButtons';
+import ProfileView from '../../components/UI/ProfileView/ProfileView';
+import Spinner from '../../components/UI/Spinner/Spinner';
+import TableView from '../../components/UI/TableView/TableView';
+import MyTopSix from '../../components/UI/TopSix/MyTopSix';
+import { itemWidth, sliderWidth } from '../AboutAppScreen/SliderEntry.style';
+
+
 
 export default class HomeScreen extends Component {
 
@@ -63,12 +42,15 @@ export default class HomeScreen extends Component {
     super(props);
 
     this.state = {
+
       scrollViewOffset: 0,
       showDialog: false,
       currLandPageSurvey: null,
       isLoading: true,
       timer: null,
       timer2: null,
+      timer3: null,
+
       counter: 0,
       // user_id: '1',
       firstAPIresponse: null,
@@ -89,9 +71,9 @@ export default class HomeScreen extends Component {
         [require('../../assets/PollResults/poll_exit.jpg'), require('../../assets/PollResults/poll_result.jpg')],
         [],
         [],
-        []
+        [require('../../assets/PollResults/poll_exit_1.jpg'), require('../../assets/PollResults/poll_result_1.jpg')],
       ],
-
+      topSixContent: [],
       notifications: {
         count: null,
         data: this.props.data,
@@ -204,6 +186,7 @@ export default class HomeScreen extends Component {
       headers: authHeaders(),
       body: body,
     }).then((response) => response.json())
+
       .then((responseJson) => {
         if (responseJson) {
           let dict = {};
@@ -444,28 +427,9 @@ export default class HomeScreen extends Component {
     // alert('aaa');
     this.checkPermission();
 
-    this.getUserDetails();
+    // this.getUserDetails();
 
-    // Permissions.check('location').then(response => {
 
-    //   if (response === 'denied' || response === 'undetermined') {
-    //     // this.setState({ isForFirstTime: true });
-    //     this._requestPermission();
-    //   } else if (response === 'authorized') {
-    //     // this.getLocation()
-    //     this.fetchCurrentLocation();
-    //   }
-    // })
-
-    // let counter = this.state.counter + 1;
-    // this.setState({
-    //   counter: counter >= 2 ? 0 : counter,
-    // });
-    // this.scroll.scrollTo({
-    //   x: this.state.counter * Dimensions.get('window').width,
-    //   y: 0,
-    //   animate: true,
-    // });
   };
   tick2 = () => {
     console.log("tick2")
@@ -482,6 +446,15 @@ export default class HomeScreen extends Component {
       });
     }
     this.setState({ scrollViewOffset: this.state.scrollViewOffset === 0 ? 1 : 0 });
+  }
+  tick3 = () => {
+    if (!this.state.isLoading &&  this._carousel) {
+
+      let sliderP = ((this.state.activeSlide + 1) >= this.state.slideContent.length) ? 0 : (this.state.activeSlide + 1);
+      this._carousel.snapToItem(sliderP, true, false);
+      // snapToItem(index: number, animated?: boolean, fireCallback?: boolean): void;
+      this.setState({ activeSlide: sliderP });
+    }
   }
 
   toFireDepartmentScreen = () => {
@@ -834,6 +807,7 @@ export default class HomeScreen extends Component {
     this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.goBack);
     // this.startTimer();
     this.startScroll(10 * 1000);
+    this.startTopScroll(12 * 1000);
 
     if (this.props.refresh) {
 
@@ -1055,7 +1029,7 @@ export default class HomeScreen extends Component {
         let arr = Object.assign(this.state.slideContent, []);
         arr[1] = responseJson.resCatNationalGroupList;
         arr[2] = responseJson.resCatNationalList;
-        arr[3] = responseJson.resCatNationalList;
+        // arr[3] = responseJson.resCatNationalList;
 
         const check = responseJson && responseJson.exitOrResultDay ? responseJson.exitOrResultDay : null;
         if (!check) {
@@ -1065,9 +1039,40 @@ export default class HomeScreen extends Component {
         } else if (check === 'r') {
           this.startTimer(60 * 1000);
         }
+        if (responseJson.newSlider) {
+          arr[4] = responseJson.newSlider;
+        }
+        // else{
+        //   arr[4] = require('../../assets/PollResults/poll_result.jpg');
+        // }
         // activeSlide : 0
 
-        this.setState({ isLoading: false, firstAPIresponse: responseJson, currLandPageSurvey: responseJson.currLandPageSurvey, slideContent: arr }); // slideContent : arr
+        let objetc = Object.assign([], responseJson.resCatNationalList ? responseJson.resCatNationalList : []);
+        if (responseJson.userMaster) {
+          // alert(responseJson.userMaster.userLanguage);
+          let dict = {};
+          dict["image"] = responseJson.userMaster.userImageData;
+          dict["username"] = responseJson.userMaster.userName;
+          dict["firstName"] = responseJson.userMaster.userFirstName;
+          dict["lastName"] = responseJson.userMaster.userLastName;
+          dict["selectedAgeGroupCode"] = responseJson.userMaster.userAgeGroup;
+          dict["gender"] = responseJson.userMaster.userGender;
+          dict["userId"] = responseJson.userMaster.userId;
+          dict["description"] = responseJson.userMaster.userDescription;
+          dict["userDesignation"] = responseJson.userMaster.userDesignation;
+          dict["userLanguage"] = responseJson.userMaster.userLanguage;
+
+          // this.setState({ data: dict });
+
+          saveUserData(dict);
+          this.setState({ isLoading: false, firstAPIresponse: responseJson, currLandPageSurvey: responseJson.currLandPageSurvey, slideContent: arr, data: dict, topSixContent: objetc.splice(0, 6) });
+        } else {
+          this.getUserDetails();
+          this.setState({ isLoading: false, firstAPIresponse: responseJson, currLandPageSurvey: responseJson.currLandPageSurvey, slideContent: arr, topSixContent: objetc.splice(0, 6) }); // slideContent : arr
+        }
+
+
+
         // this.serverHitForSecondResponse();
       })
       .catch((error) => {
@@ -1207,6 +1212,19 @@ export default class HomeScreen extends Component {
 
     let timer2 = setInterval(this.tick2, time); //60 * 1000
     this.setState({ timer2: timer2 });
+  }
+  startTopScroll(time) {
+    console.log("startScroll started")
+    if (this.state.timer3) {
+      console.log("startScroll stop")
+      let timer = this.state.timer3;
+
+      clearInterval(this.state.timer3);
+      timer3 = null;
+    }
+
+    let timer3 = setInterval(this.tick3, time); //60 * 1000
+    this.setState({ timer3: timer3 });
   }
 
   profileViewAfterLoading = data => {
@@ -1391,11 +1409,12 @@ export default class HomeScreen extends Component {
   }
 
   _renderItem({ item, index }) {
-    const { activeSlide, width, height, firstAPIresponse } = this.state;
+    const { width, height, firstAPIresponse } = this.state;
     // console.log(this.state.slideContent);
+    let type = firstAPIresponse.exitOrResultDay;
     return (
       <View key={index} style={{ flex: 0.8, }} onLayout={this.onLayout}>
-        <TableView logo={firstAPIresponse.categoryLogoData ? firstAPIresponse.categoryLogoData : {}} type={firstAPIresponse.exitOrResultDay} Width={width} Height={height} activeSlide={activeSlide} item={item} />
+        <TableView logo={firstAPIresponse.categoryLogoData ? firstAPIresponse.categoryLogoData : {}} type={type} Width={width} Height={height} activeSlide={index} item={item} />
       </View>
     );
   }
@@ -1415,7 +1434,10 @@ export default class HomeScreen extends Component {
 
           flexDirection: 'row',
           justifyContent: 'center',
-          alignItems: 'flex-end'
+          alignItems: 'flex-end',
+          // justifyContent: 'space-around'
+
+
         }}
         dotStyle={{
           width: 10,
@@ -1540,289 +1562,359 @@ export default class HomeScreen extends Component {
 
   getShow = () => {
     if (this.state.firstAPIresponse && this.state.firstAPIresponse.exitOrResultDay === "r") {
-      if (this.state.landingTopSix && this.state.landingTopSix.areaTopSixResources2.resourceGPR_6 === 0) {
-        return "leading"
-      } else {
-        return "won"
-      }
-    } else return null
-
+      if (this.state.landingTopSix && this.state.landingTopSix.areaTopSixResources2)
+        if (this.state.landingTopSix.areaTopSixResources2.resourceGPR_6 === 0) {
+          return "leading"
+        } else {
+          return "won"
+        }
+    }
+   
+    return null;
   }
 
-  // swipe = () => {
-  //   this.scroll.scrollTo({ x: wd, y: 0, animated: true });
-  // };
+// swipe = () => {
+//   this.scroll.scrollTo({ x: wd, y: 0, animated: true });
+// };
 
-  render() {
-    let menuImageName = [
-      require('../../assets/trends.png'),
-      require('../../assets/survey.png'),
-      require('../../assets/timeline.png'),
-    ];
+render() {
+  let menuImageName = [
+    require('../../assets/trends.png'),
+    require('../../assets/survey.png'),
+    require('../../assets/timeline.png'),
+  ];
 
-    const wd = Dimensions.get('window').width;
+  const wd = Dimensions.get('window').width;
 
-    // if (this.state.landingTopSix) {
-    //   let keys = this.state.landingTopSix.keys;
-    //   if (!keys.contains("areaTopSixResources2")) {
-    //     return (<View></View>);
-    //   }
-    // }
-
-
-    const resourceGPR_1 = this.state.landingTopSix ? this.state.landingTopSix.resourceGPR_1 : 40;
-    const resourceGPR_2 = this.state.landingTopSix ? this.state.landingTopSix.resourceGPR_2 : 20;
-    const resourceGPR_3 = this.state.landingTopSix ? this.state.landingTopSix.resourceGPR_3 : 10;
-    const resourceGPR_4 = this.state.landingTopSix ? this.state.landingTopSix.resourceGPR_4 : 30;
-    const resourceGPR_5 = this.state.landingTopSix ? this.state.landingTopSix.resourceGPR_5 : 55;
-    const resourceGPR_6 = this.state.landingTopSix ? this.state.landingTopSix.resourceGPR_6 : 70;
-
-    const resourceGPR_1_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceGPR_1 : 40;
-    const resourceGPR_2_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceGPR_2 : 20;
-    const resourceGPR_3_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceGPR_3 : 10;
-    const resourceGPR_4_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceGPR_4 : 30;
-    const resourceGPR_5_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceGPR_5 : 55;
-    const resourceGPR_6_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceGPR_6 : 70;
-
-    const resourceGPR_A_1 = [
-      resourceGPR_1,
-      resourceGPR_2,
-      resourceGPR_3,
-      resourceGPR_4,
-      resourceGPR_5,
-      resourceGPR_6];
-    const resourceGPR_A_2 = [
-      resourceGPR_1_,
-      resourceGPR_2_,
-      resourceGPR_3_,
-      resourceGPR_4_,
-      resourceGPR_5_,
-      resourceGPR_6_,];
-
-    const resourceImageData_1 = this.state.landingTopSix && this.state.landingTopSix.resourceImageData_1 ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceImageData_1 } : null
-    const resourceImageData_2 = this.state.landingTopSix && this.state.landingTopSix.resourceImageData_2 ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceImageData_2 } : null
-    const resourceImageData_3 = this.state.landingTopSix && this.state.landingTopSix.resourceImageData_3 ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceImageData_3 } : null
-    const resourceImageData_4 = this.state.landingTopSix && this.state.landingTopSix.resourceImageData_4 ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceImageData_4 } : null
-    const resourceImageData_5 = this.state.landingTopSix && this.state.landingTopSix.resourceImageData_5 ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceImageData_5 } : null
-    const resourceImageData_6 = this.state.landingTopSix && this.state.landingTopSix.resourceImageData_6 ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceImageData_6 } : null
-
-    const resourceImageData_1_ = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.areaTopSixResources2.resourceImageData_1 } : null
-    const resourceImageData_2_ = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.areaTopSixResources2.resourceImageData_2 } : null
-    const resourceImageData_3_ = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.areaTopSixResources2.resourceImageData_3 } : null
-    const resourceImageData_4_ = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.areaTopSixResources2.resourceImageData_4 } : null
-    const resourceImageData_5_ = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.areaTopSixResources2.resourceImageData_5 } : null
-    const resourceImageData_6_ = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.areaTopSixResources2.resourceImageData_6 } : null
-
-    const resourceImageData_A = [
-      resourceImageData_1,
-      resourceImageData_2,
-      resourceImageData_3,
-      resourceImageData_4,
-      resourceImageData_5,
-      resourceImageData_6];
-
-    const resourceImageData_A_2 = [
-      resourceImageData_1_,
-      resourceImageData_2_,
-      resourceImageData_3_,
-      resourceImageData_4_,
-      resourceImageData_5_,
-      resourceImageData_6_];
-
-    const resourceCategoryLogoData_1 = this.state.landingTopSix && this.state.landingTopSix.resourceCategoryLogoData_1 ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceCategoryLogoData_1 } : null
-    const resourceCategoryLogoData_2 = this.state.landingTopSix && this.state.landingTopSix.resourceCategoryLogoData_2 ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceCategoryLogoData_2 } : null
-    const resourceCategoryLogoData_3 = this.state.landingTopSix && this.state.landingTopSix.resourceCategoryLogoData_3 ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceCategoryLogoData_3 } : null
-    const resourceCategoryLogoData_4 = this.state.landingTopSix && this.state.landingTopSix.resourceCategoryLogoData_4 ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceCategoryLogoData_4 } : null
-    const resourceCategoryLogoData_5 = this.state.landingTopSix && this.state.landingTopSix.resourceCategoryLogoData_5 ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceCategoryLogoData_5 } : null
-    const resourceCategoryLogoData_6 = this.state.landingTopSix && this.state.landingTopSix.resourceCategoryLogoData_6 ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceCategoryLogoData_6 } : null
-
-    const resourceCategoryLogoData_1_ = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.areaTopSixResources2.resourceCategoryLogoData_1 } : null
-    const resourceCategoryLogoData_2_ = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.areaTopSixResources2.resourceCategoryLogoData_2 } : null
-    const resourceCategoryLogoData_3_ = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.areaTopSixResources2.resourceCategoryLogoData_3 } : null
-    const resourceCategoryLogoData_4_ = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.areaTopSixResources2.resourceCategoryLogoData_4 } : null
-    const resourceCategoryLogoData_5_ = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.areaTopSixResources2.resourceCategoryLogoData_5 } : null
-    const resourceCategoryLogoData_6_ = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.areaTopSixResources2.resourceCategoryLogoData_6 } : null
+  // if (this.state.landingTopSix) {
+  //   let keys = this.state.landingTopSix.keys;
+  //   if (!keys.contains("areaTopSixResources2")) {
+  //     return (<View></View>);
+  //   }
+  // }
 
 
-    const esourceCategoryLogoData_A = [
-      resourceCategoryLogoData_1,
-      resourceCategoryLogoData_2,
-      resourceCategoryLogoData_3,
-      resourceCategoryLogoData_4,
-      resourceCategoryLogoData_5,
-      resourceCategoryLogoData_6];
-    const esourceCategoryLogoData_A_2 = [
-      resourceCategoryLogoData_1_,
-      resourceCategoryLogoData_2_,
-      resourceCategoryLogoData_3_,
-      resourceCategoryLogoData_4_,
-      resourceCategoryLogoData_5_,
-      resourceCategoryLogoData_6_];
+  const resourceGPR_1 = this.state.landingTopSix ? this.state.landingTopSix.resourceGPR_1 : 40;
+  const resourceGPR_2 = this.state.landingTopSix ? this.state.landingTopSix.resourceGPR_2 : 20;
+  const resourceGPR_3 = this.state.landingTopSix ? this.state.landingTopSix.resourceGPR_3 : 10;
+  const resourceGPR_4 = this.state.landingTopSix ? this.state.landingTopSix.resourceGPR_4 : 30;
+  const resourceGPR_5 = this.state.landingTopSix ? this.state.landingTopSix.resourceGPR_5 : 55;
+  const resourceGPR_6 = this.state.landingTopSix ? this.state.landingTopSix.resourceGPR_6 : 70;
 
-    const resourceName_1 = this.state.landingTopSix ? this.state.landingTopSix.resourceName_1 : "";
-    const resourceName_2 = this.state.landingTopSix ? this.state.landingTopSix.resourceName_2 : "";
-    const resourceName_3 = this.state.landingTopSix ? this.state.landingTopSix.resourceName_3 : "";
-    const resourceName_4 = this.state.landingTopSix ? this.state.landingTopSix.resourceName_4 : "";
-    const resourceName_5 = this.state.landingTopSix ? this.state.landingTopSix.resourceName_5 : "";
-    const resourceName_6 = this.state.landingTopSix ? this.state.landingTopSix.resourceName_6 : "";
+  const resourceGPR_1_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceGPR_1 : 40;
+  const resourceGPR_2_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceGPR_2 : 20;
+  const resourceGPR_3_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceGPR_3 : 10;
+  const resourceGPR_4_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceGPR_4 : 30;
+  const resourceGPR_5_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceGPR_5 : 55;
+  const resourceGPR_6_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceGPR_6 : 70;
 
-    const resourceName_1_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceName_1 : "";
-    const resourceName_2_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceName_2 : "";
-    const resourceName_3_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceName_3 : "";
-    const resourceName_4_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceName_4 : "";
-    const resourceName_5_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceName_5 : "";
-    const resourceName_6_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceName_6 : "";
+  const resourceGPR_A_1 = [
+    resourceGPR_1,
+    resourceGPR_2,
+    resourceGPR_3,
+    resourceGPR_4,
+    resourceGPR_5,
+    resourceGPR_6];
+  const resourceGPR_A_2 = [
+    resourceGPR_1_,
+    resourceGPR_2_,
+    resourceGPR_3_,
+    resourceGPR_4_,
+    resourceGPR_5_,
+    resourceGPR_6_,];
 
-    const resourceName_A = [resourceName_1,
-      resourceName_2,
-      resourceName_3,
-      resourceName_4,
-      resourceName_5,
-      resourceName_6];
+  const resourceImageData_1 = this.state.landingTopSix && this.state.landingTopSix.resourceImageData_1 ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceImageData_1 } : null
+  const resourceImageData_2 = this.state.landingTopSix && this.state.landingTopSix.resourceImageData_2 ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceImageData_2 } : null
+  const resourceImageData_3 = this.state.landingTopSix && this.state.landingTopSix.resourceImageData_3 ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceImageData_3 } : null
+  const resourceImageData_4 = this.state.landingTopSix && this.state.landingTopSix.resourceImageData_4 ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceImageData_4 } : null
+  const resourceImageData_5 = this.state.landingTopSix && this.state.landingTopSix.resourceImageData_5 ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceImageData_5 } : null
+  const resourceImageData_6 = this.state.landingTopSix && this.state.landingTopSix.resourceImageData_6 ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceImageData_6 } : null
 
-    const resourceName_A_2 = [resourceName_1_,
-      resourceName_2_,
-      resourceName_3_,
-      resourceName_4_,
-      resourceName_5_,
-      resourceName_6_];
+  const resourceImageData_1_ = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.areaTopSixResources2.resourceImageData_1 } : null
+  const resourceImageData_2_ = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.areaTopSixResources2.resourceImageData_2 } : null
+  const resourceImageData_3_ = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.areaTopSixResources2.resourceImageData_3 } : null
+  const resourceImageData_4_ = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.areaTopSixResources2.resourceImageData_4 } : null
+  const resourceImageData_5_ = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.areaTopSixResources2.resourceImageData_5 } : null
+  const resourceImageData_6_ = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.areaTopSixResources2.resourceImageData_6 } : null
+
+  const resourceImageData_A = [
+    resourceImageData_1,
+    resourceImageData_2,
+    resourceImageData_3,
+    resourceImageData_4,
+    resourceImageData_5,
+    resourceImageData_6];
+
+  const resourceImageData_A_2 = [
+    resourceImageData_1_,
+    resourceImageData_2_,
+    resourceImageData_3_,
+    resourceImageData_4_,
+    resourceImageData_5_,
+    resourceImageData_6_];
+
+  const resourceCategoryLogoData_1 = this.state.landingTopSix && this.state.landingTopSix.resourceCategoryLogoData_1 ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceCategoryLogoData_1 } : null
+  const resourceCategoryLogoData_2 = this.state.landingTopSix && this.state.landingTopSix.resourceCategoryLogoData_2 ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceCategoryLogoData_2 } : null
+  const resourceCategoryLogoData_3 = this.state.landingTopSix && this.state.landingTopSix.resourceCategoryLogoData_3 ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceCategoryLogoData_3 } : null
+  const resourceCategoryLogoData_4 = this.state.landingTopSix && this.state.landingTopSix.resourceCategoryLogoData_4 ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceCategoryLogoData_4 } : null
+  const resourceCategoryLogoData_5 = this.state.landingTopSix && this.state.landingTopSix.resourceCategoryLogoData_5 ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceCategoryLogoData_5 } : null
+  const resourceCategoryLogoData_6 = this.state.landingTopSix && this.state.landingTopSix.resourceCategoryLogoData_6 ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.resourceCategoryLogoData_6 } : null
+
+  const resourceCategoryLogoData_1_ = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.areaTopSixResources2.resourceCategoryLogoData_1 } : null
+  const resourceCategoryLogoData_2_ = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.areaTopSixResources2.resourceCategoryLogoData_2 } : null
+  const resourceCategoryLogoData_3_ = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.areaTopSixResources2.resourceCategoryLogoData_3 } : null
+  const resourceCategoryLogoData_4_ = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.areaTopSixResources2.resourceCategoryLogoData_4 } : null
+  const resourceCategoryLogoData_5_ = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.areaTopSixResources2.resourceCategoryLogoData_5 } : null
+  const resourceCategoryLogoData_6_ = this.state.landingTopSix ? { uri: 'data:image/png;base64,' + this.state.landingTopSix.areaTopSixResources2.resourceCategoryLogoData_6 } : null
 
 
-    const resourceCategoryName_1 = this.state.landingTopSix ? this.state.landingTopSix.resourceCategoryName_1 : "";
-    const resourceCategoryName_2 = this.state.landingTopSix ? this.state.landingTopSix.resourceCategoryName_2 : "";
-    const resourceCategoryName_3 = this.state.landingTopSix ? this.state.landingTopSix.resourceCategoryName_3 : "";
-    const resourceCategoryName_4 = this.state.landingTopSix ? this.state.landingTopSix.resourceCategoryName_4 : "";
-    const resourceCategoryName_5 = this.state.landingTopSix ? this.state.landingTopSix.resourceCategoryName_5 : "";
-    const resourceCategoryName_6 = this.state.landingTopSix ? this.state.landingTopSix.resourceCategoryName_6 : "";
+  const esourceCategoryLogoData_A = [
+    resourceCategoryLogoData_1,
+    resourceCategoryLogoData_2,
+    resourceCategoryLogoData_3,
+    resourceCategoryLogoData_4,
+    resourceCategoryLogoData_5,
+    resourceCategoryLogoData_6];
+  const esourceCategoryLogoData_A_2 = [
+    resourceCategoryLogoData_1_,
+    resourceCategoryLogoData_2_,
+    resourceCategoryLogoData_3_,
+    resourceCategoryLogoData_4_,
+    resourceCategoryLogoData_5_,
+    resourceCategoryLogoData_6_];
 
-    const resourceCategoryName_1_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceCategoryName_1 : "";
-    const resourceCategoryName_2_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceCategoryName_2 : "";
-    const resourceCategoryName_3_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceCategoryName_3 : "";
-    const resourceCategoryName_4_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceCategoryName_4 : "";
-    const resourceCategoryName_5_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceCategoryName_5 : "";
-    const resourceCategoryName_6_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceCategoryName_6 : "";
+  const resourceName_1 = this.state.landingTopSix ? this.state.landingTopSix.resourceName_1 : "";
+  const resourceName_2 = this.state.landingTopSix ? this.state.landingTopSix.resourceName_2 : "";
+  const resourceName_3 = this.state.landingTopSix ? this.state.landingTopSix.resourceName_3 : "";
+  const resourceName_4 = this.state.landingTopSix ? this.state.landingTopSix.resourceName_4 : "";
+  const resourceName_5 = this.state.landingTopSix ? this.state.landingTopSix.resourceName_5 : "";
+  const resourceName_6 = this.state.landingTopSix ? this.state.landingTopSix.resourceName_6 : "";
+
+  const resourceName_1_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceName_1 : "";
+  const resourceName_2_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceName_2 : "";
+  const resourceName_3_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceName_3 : "";
+  const resourceName_4_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceName_4 : "";
+  const resourceName_5_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceName_5 : "";
+  const resourceName_6_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceName_6 : "";
+
+  const resourceName_A = [resourceName_1,
+    resourceName_2,
+    resourceName_3,
+    resourceName_4,
+    resourceName_5,
+    resourceName_6];
+
+  const resourceName_A_2 = [resourceName_1_,
+    resourceName_2_,
+    resourceName_3_,
+    resourceName_4_,
+    resourceName_5_,
+    resourceName_6_];
 
 
-    const resourceCategoryName_A = [resourceCategoryName_1,
-      resourceCategoryName_2,
-      resourceCategoryName_3,
-      resourceCategoryName_4,
-      resourceCategoryName_5,
-      resourceCategoryName_6];
+  const resourceCategoryName_1 = this.state.landingTopSix ? this.state.landingTopSix.resourceCategoryName_1 : "";
+  const resourceCategoryName_2 = this.state.landingTopSix ? this.state.landingTopSix.resourceCategoryName_2 : "";
+  const resourceCategoryName_3 = this.state.landingTopSix ? this.state.landingTopSix.resourceCategoryName_3 : "";
+  const resourceCategoryName_4 = this.state.landingTopSix ? this.state.landingTopSix.resourceCategoryName_4 : "";
+  const resourceCategoryName_5 = this.state.landingTopSix ? this.state.landingTopSix.resourceCategoryName_5 : "";
+  const resourceCategoryName_6 = this.state.landingTopSix ? this.state.landingTopSix.resourceCategoryName_6 : "";
 
-    const resourceCategoryName_A_2 = [resourceCategoryName_1_,
-      resourceCategoryName_2_,
-      resourceCategoryName_3_,
-      resourceCategoryName_4_,
-      resourceCategoryName_5_,
-      resourceCategoryName_6_];
+  const resourceCategoryName_1_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceCategoryName_1 : "";
+  const resourceCategoryName_2_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceCategoryName_2 : "";
+  const resourceCategoryName_3_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceCategoryName_3 : "";
+  const resourceCategoryName_4_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceCategoryName_4 : "";
+  const resourceCategoryName_5_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceCategoryName_5 : "";
+  const resourceCategoryName_6_ = this.state.landingTopSix ? this.state.landingTopSix.areaTopSixResources2.resourceCategoryName_6 : "";
 
-    const { notifications, menuName } = this.state;
 
-    const BadgedIcon = withBadge(notifications.count)(Icon);
+  const resourceCategoryName_A = [resourceCategoryName_1,
+    resourceCategoryName_2,
+    resourceCategoryName_3,
+    resourceCategoryName_4,
+    resourceCategoryName_5,
+    resourceCategoryName_6];
 
-    // console.log(this.state)
-    const check = this.state.firstAPIresponse && this.state.firstAPIresponse.exitOrResultDay ? this.state.firstAPIresponse.exitOrResultDay : null;
-    // firstAPIresponse && firstAPIresponse.exitOrResultDay ? firstAPIresponse.exitOrResultDay : null
+  const resourceCategoryName_A_2 = [resourceCategoryName_1_,
+    resourceCategoryName_2_,
+    resourceCategoryName_3_,
+    resourceCategoryName_4_,
+    resourceCategoryName_5_,
+    resourceCategoryName_6_];
 
-    return (
-      <SafeAreaView
-        forceInset={{ bottom: 'always' }}
-        style={{ flex: 1, backgroundColor: 'rgba(210,210,208,1)' }}
-      >
-        <View style={stylesTopView.container}>
-          <TouchableOpacity onPress={this.gotoProfile}>
-            <Image
-              style={{
-                marginLeft: normalize(10),
-                width: normalize(30),
-                height: normalize(30),
-                marginTop: normalize(5),
-                marginBottom: normalize(5),
-                borderRadius: normalize(30) / 2,
-              }}
-              // source={typeof(this.props.data.image) === 'number' ? require('../../assets/UserSmall.png') : this.props.data.image}
-              source={this.state.data.image ? { uri: "data:image/png;base64," + this.state.data.image } : require('../../assets/UserSmall.png')}
-            />
-          </TouchableOpacity>
-          <Text
+  const { notifications, menuName } = this.state;
+
+  const BadgedIcon = withBadge(notifications.count)(Icon);
+
+  // console.log(this.state)
+  const check = this.state.firstAPIresponse && this.state.firstAPIresponse.exitOrResultDay ? this.state.firstAPIresponse.exitOrResultDay : null;
+  // firstAPIresponse && firstAPIresponse.exitOrResultDay ? firstAPIresponse.exitOrResultDay : null
+
+
+  getTopSix = () => {
+    const contentSix = this.state.topSixContent;
+    if (!check) {
+      return (
+        this.state.landingTopSix && !this.state.isLoading ?
+          (<View style={{ flexDirection: 'row' }}>
+
+            {resourceImageData_A.map((val, i) => {
+              return (
+                <View key={i} style={{ width: wd / 3, flex: 1, padding: normalize(8) }}>
+                  <MyTopSix
+                    source={val}
+                    check={check}
+                    logo={esourceCategoryLogoData_A[i]}
+                    logoName={resourceName_A[i]}
+                    logoCatName={resourceCategoryName_A[i]}
+                    resourceGpr={resourceGPR_A_1[i]}
+                    renderButton={this.renderSurveyButton}
+                  /></View>
+              )
+            })}
+
+          </View>
+          ) :
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: wd }}>
+            <Spinner />
+          </View>
+
+      )
+
+
+    } else {
+      if (check === 'e' || check === 'r') {
+
+        return (
+          this.state.landingTopSix && !this.state.isLoading ?
+            (<View style={{ flexDirection: 'row' }}>
+
+              {contentSix.map((val, i) => {
+                let total = val.leadingSeats + val.wonSeats > val.totalSeats ? val.totalSeats : val.leadingSeats + val.wonSeats
+                return (
+                  <View key={i} style={{ width: wd / 3, flex: 1, padding: normalize(8) }}>
+                    <MyTopSix
+                      source={val.categoryLogoData}
+                      check={check}
+                      logo={null}
+                      logoName={val.groupName}
+                      logoCatName={resourceCategoryName_A[i]}
+                      resourceGpr={check === 'e' ? val.exitSeats : total}
+                      renderButton={this.renderSurveyButton}
+                    /></View>
+                )
+              })}
+
+            </View>
+            ) :
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: wd }}>
+              <Spinner />
+            </View>
+
+        )
+
+
+      }
+    }
+  }
+
+  return (
+    <SafeAreaView
+      forceInset={{ bottom: 'always' }}
+      style={{ flex: 1, backgroundColor: 'rgba(210,210,208,1)' }}
+    >
+      <View style={stylesTopView.container}>
+        <TouchableOpacity onPress={this.gotoProfile}>
+          <Image
             style={{
-              textAlign: 'center',
-              justifyContent: 'center',
-              alignItems: 'center',
-              marginLeft: 5,
-              fontSize: normalize(14),
-              color: 'white',
-              flex: 1
+              marginLeft: normalize(10),
+              width: normalize(30),
+              height: normalize(30),
+              marginTop: normalize(5),
+              marginBottom: normalize(5),
+              borderRadius: normalize(30) / 2,
             }}
-            minimumFontScale={.3}
-            adjustsFontSizeToFit
-            numberOfLines={1}
-          >
-            {this.state.data.username}
-          </Text>
-
-          <TouchableOpacity style={{
-            // marginRight: hp('4%'),
-            // marginLeft: 0,
-
-            width: hp('10%'),
+            // source={typeof(this.props.data.image) === 'number' ? require('../../assets/UserSmall.png') : this.props.data.image}
+            source={this.state.data.image ? { uri: "data:image/png;base64," + this.state.data.image } : require('../../assets/UserSmall.png')}
+          />
+        </TouchableOpacity>
+        <Text
+          style={{
+            textAlign: 'center',
             justifyContent: 'center',
             alignItems: 'center',
-          }} onPress={() => { this.showNotificationScreen() }}>
-            {/* <BadgedIcon
+            marginLeft: 5,
+            fontSize: normalize(14),
+            color: 'white',
+            flex: 1
+          }}
+          minimumFontScale={.3}
+          adjustsFontSizeToFit
+          numberOfLines={1}
+        >
+          {this.state.data.username}
+        </Text>
+
+        <TouchableOpacity style={{
+          // marginRight: hp('4%'),
+          // marginLeft: 0,
+
+          width: hp('10%'),
+          justifyContent: 'center',
+          alignItems: 'center',
+        }} onPress={() => { this.showNotificationScreen() }}>
+          {/* <BadgedIcon
                 color="#fff"
                 type="font-awesome"
                 onPress={() => this.showNotificationScreen()}
                 name="bell-o" /> */}
-            {/* <FontAwesome
+          {/* <FontAwesome
                 size={hp('3%')}
                 onPress={() => this.showNotificationScreen()}
                 name="bell-o"
                 color="#fff"
               />  */}
-            {notifications.count && notifications.count > 0 ?
-              <BadgedIcon
-                size={hp('3%')}
-                color="#fff"
-                type="font-awesome"
-                onPress={() => this.showNotificationScreen()}
-                name="bell-o" />
-              :
-              <FontAwesome
-                size={hp('3%')}
-                onPress={() => this.showNotificationScreen()}
-                name="bell-o"
-                color="#fff"
-              />
-            }
-            {/* <BadgedIcon
+          {notifications.count && notifications.count > 0 ?
+            <BadgedIcon
+              size={hp('3%')}
+              color="#fff"
+              type="font-awesome"
+              onPress={() => this.showNotificationScreen()}
+              name="bell-o" />
+            :
+            <FontAwesome
+              size={hp('3%')}
+              onPress={() => this.showNotificationScreen()}
+              name="bell-o"
+              color="#fff"
+            />
+          }
+          {/* <BadgedIcon
               color="#fff"
               type="font-awesome"
               onPress={() => this.showNotificationScreen()}
               name="bell-o" /> */}
-          </TouchableOpacity>
-        </View>
+        </TouchableOpacity>
+      </View>
 
 
 
-        {/* //Second half */}
-        {this.profileViewAfterLoading(this.state)}
+      {/* //Second half */}
+      {this.profileViewAfterLoading(this.state)}
 
 
 
-        {/* //Third half */}
-        <View
-          style={{
-            flex: 1,
-            width: '100%',
-            backgroundColor: 'white',
-            borderTopColor: 'grey',
-            // height: hp('50%'),
-            flexDirection: 'column'
-          }}>
+      {/* //Third half */}
+      <View
+        style={{
+          flex: 1,
+          width: '100%',
+          backgroundColor: 'white',
+          borderTopColor: 'grey',
+          // height: hp('50%'),
+          flexDirection: 'column'
+        }}>
 
-          {/* {this.state.landingTopSix ?
+        {/* {this.state.landingTopSix ?
             <TextTicker style={styles.landingTopSixHeader}
               duration={10000}
               loop
@@ -1831,61 +1923,63 @@ export default class HomeScreen extends Component {
               marqueeDelay={1000}>{this.state.firstAPIresponse && this.state.firstAPIresponse.nationalTicker}</TextTicker> :
             null
           } */}
-          {!this.state.isLoading && (!check ?
-            <Text style={styles.landingTopSixHeader}> {this.state.landingTopSix && this.state.landingTopSix.extraImageFile1} </Text> :
-            <TextTicker style={styles.landingTopSixHeader}
-              duration={10000}
-              loop
-              bounce
-              repeatSpacer={50}
-              marqueeDelay={1000}>{this.state.firstAPIresponse && this.state.firstAPIresponse.nationalTicker}</TextTicker>
-          )}
+        {!this.state.isLoading && (!check ?
+          <Text style={styles.landingTopSixHeader}> {this.state.landingTopSix && this.state.landingTopSix.extraImageFile1} </Text> :
+          <TextTicker style={styles.landingTopSixHeader}
+            duration={10000}
+            loop
+            bounce
+            repeatSpacer={50}
+            marqueeDelay={1000}>{this.state.firstAPIresponse && this.state.firstAPIresponse.nationalTicker}</TextTicker>
+        )}
 
-          <View style={{ position: 'absolute', width: 40, height: 35, top: 0, right: 0 }}>
-            <TouchableOpacity style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'white' }} onPress={() => {
+        <View style={{ position: 'absolute', width: 40, height: 35, top: 0, right: 0 }}>
+          <TouchableOpacity style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'white' }} onPress={() => {
 
-              // this.tick();
-              if (!check) {
-                this.setState({ landingTopSix: null });
-                // this.serverHitForFirstApi();
-                this.serverHitForFourthResponse();
-              } else {
-                // let arr = Object.assign(this.state.slideContent, []);
-                // arr[1] = [];
-                // arr[2] = [];
-                // arr[3] = [];
-                this.setState({ landingTopSix: null, isLoading: true });
+            // this.tick();
+            if (!check) {
+              this.setState({ landingTopSix: null });
+              // this.serverHitForFirstApi();
+              this.serverHitForFourthResponse();
+            } else {
+              // let arr = Object.assign(this.state.slideContent, []);
+              // arr[1] = [];
+              // arr[2] = [];
+              // arr[3] = [];
+              this.setState({ landingTopSix: null, isLoading: true });
 
-                this.serverHitForFirstApi();
-                this.serverHitForFourthResponse();
-
-              }
+              this.serverHitForFirstApi();
+              this.serverHitForFourthResponse();
 
             }
-            }>
-              <Image source={require('../../assets/Home_1_2/refresh.png')} />
-            </TouchableOpacity>
-          </View>
 
-          <ScrollView
-            pagingEnabled
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={{
-              flex: 1,
-              width: '100%',
-              backgroundColor: 'white',
-              borderTopColor: 'grey',
-              height: hp('25%'),
-              flexDirection: 'row',
-            }}
-            contentContainerStyle={{ justifyContent: 'center' }}
-            ref={ref => {
-              this.scroll1 = ref;
-            }}
+          }
+          }>
+            <Image source={require('../../assets/Home_1_2/refresh.png')} />
+          </TouchableOpacity>
+        </View>
 
-          >
-            {this.state.landingTopSix && !this.state.isLoading ?
+        <ScrollView
+          pagingEnabled
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={{
+            flex: 1,
+            width: '100%',
+            backgroundColor: 'white',
+            borderTopColor: 'grey',
+            height: hp('25%'),
+            flexDirection: 'row',
+          }}
+          contentContainerStyle={{ justifyContent: 'center' }}
+          ref={ref => {
+            this.scroll1 = ref;
+          }}
+        >
+
+          {getTopSix()}
+
+          {/* {this.state.landingTopSix && !this.state.isLoading ?
               (<View style={{ flexDirection: 'row' }}>
 
                 {resourceImageData_A.map((val, i) => {
@@ -1908,113 +2002,138 @@ export default class HomeScreen extends Component {
               <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: wd }}>
                 <Spinner />
               </View>
-            }
+            } */}
 
-          </ScrollView>
-          <View style={styles.buttonContainer}>
-
-            {!check && !this.state.isLoading && this.renderSurveyButton()}
-
-            {!this.state.isLoading && (!check ?
-              <Text style={styles.landingTopSixHeader}> {this.state.landingTopSix && this.state.landingTopSix.areaTopSixResources2.extraImageFile1} </Text> :
-              <TextTicker style={styles.landingTopSixHeader}
-                duration={10000}
-                loop
-                bounce
-                repeatSpacer={50}
-                marqueeDelay={1000}>{this.state.firstAPIresponse && this.state.firstAPIresponse.stateTicker}</TextTicker>
-            )}
-          </View>
-
-          {/* {this.state.firstAPIresponse && this.state.firstAPIresponse.exitOrResultDay === null && this.state.landingTopSix ?
-            <Text style={styles.landingTopSixHeader}> {this.state.landingTopSix.areaTopSixResources2.extraImageFile1} </Text> :
-            null
-          } */}
-
-          <ScrollView
-            pagingEnabled
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            scrollEnabled={!check ? true : false}
-            style={{
-              flex: 1,
-              width: '100%',
-              backgroundColor: 'white',
-              borderTopColor: 'grey',
-              height: hp('25%'),
-              flexDirection: 'row'
-            }}
-            contentContainerStyle={{ justifyContent: 'center' }}
-            ref={ref => {
-              if (!check) {
-                this.scroll2 = ref;
-              }
-
-            }}
-          >
-            {this.state.landingTopSix && !this.state.isLoading ?
+          {/* {this.state.landingTopSix && !this.state.isLoading ?
               (<View style={{ flexDirection: 'row' }}>
-                {resourceImageData_A_2.map((val, i) => {
+
+                {contentSix.map((val, i) => {
                   return (
                     <View key={i} style={{ width: wd / 3, flex: 1, padding: normalize(8) }}>
                       <MyTopSix
-                        source={val}
-                        show={this.getShow()}
-                        ind={i}
+                        source={val.categoryLogoData}
                         check={check}
-                        logo={esourceCategoryLogoData_A_2[i]}
-                        logoName={resourceName_A_2[i]}
-                        logoCatName={resourceCategoryName_A_2[i]}
-                        resourceGpr={null}
+                        logo={null}
+                        logoName={val.groupName}
+                        logoCatName={resourceCategoryName_A[i]}
+                        resourceGpr={check === 'e' ? val.exitSeats : val.totalSeats}
                         renderButton={this.renderSurveyButton}
                       /></View>
                   )
                 })}
+
               </View>
               ) :
               <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: wd }}>
                 <Spinner />
               </View>
+            } */}
+
+        </ScrollView>
+        <View style={styles.buttonContainer}>
+
+          {!check && !this.state.isLoading && this.renderSurveyButton()}
+
+          {!this.state.isLoading && (!check ?
+            <Text style={styles.landingTopSixHeader}> {this.state.landingTopSix && this.state.landingTopSix.areaTopSixResources2.extraImageFile1} </Text> :
+            <TextTicker style={styles.landingTopSixHeader}
+              duration={10000}
+              loop
+              bounce
+              repeatSpacer={50}
+              marqueeDelay={1000}>{this.state.firstAPIresponse && this.state.firstAPIresponse.stateTicker}</TextTicker>
+          )}
+        </View>
+
+        {/* {this.state.firstAPIresponse && this.state.firstAPIresponse.exitOrResultDay === null && this.state.landingTopSix ?
+            <Text style={styles.landingTopSixHeader}> {this.state.landingTopSix.areaTopSixResources2.extraImageFile1} </Text> :
+            null
+          } */}
+
+        <ScrollView
+          pagingEnabled
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          scrollEnabled={!check ? true : false}
+          style={{
+            flex: 1,
+            width: '100%',
+            backgroundColor: 'white',
+            borderTopColor: 'grey',
+            height: hp('25%'),
+            flexDirection: 'row'
+          }}
+          contentContainerStyle={{ justifyContent: 'center' }}
+          ref={ref => {
+            if (!check) {
+              this.scroll2 = ref;
             }
-          </ScrollView>
-        </View>
+
+          }}
+        >
+          {this.state.landingTopSix && !this.state.isLoading ?
+            (<View style={{ flexDirection: 'row' }}>
+              {resourceImageData_A_2.map((val, i) => {
+                return (
+                  <View key={i} style={{ width: wd / 3, flex: 1, padding: normalize(8) }}>
+                    <MyTopSix
+                      source={val}
+                      show={this.getShow()}
+                      ind={i}
+                      check={check}
+                      logo={esourceCategoryLogoData_A_2[i]}
+                      logoName={resourceName_A_2[i]}
+                      logoCatName={resourceCategoryName_A_2[i]}
+                      resourceGpr={null}
+                      renderButton={this.renderSurveyButton}
+                    /></View>
+                )
+              })}
+            </View>
+            ) :
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: wd }}>
+              <Spinner />
+            </View>
+          }
+        </ScrollView>
+      </View>
 
 
 
 
 
-        {/* //Forth half */}
-        <View style={styles.bottomContainer}>
+      {/* //Forth half */}
+      <View style={styles.bottomContainer}>
 
-          <MenuButtons
-            onPress={this.toTrendScreen}
-            info={menuName ? menuName[0] : null}
-            source={menuImageName[0]}
-          />
+        <MenuButtons
+          onPress={this.toTrendScreen}
+          info={menuName ? menuName[0] : null}
+          source={menuImageName[0]}
+        />
 
-          <View style={styles.seperator} />
+        <View style={styles.seperator} />
 
-          <MenuButtons
-            onPress={() => this.toQuesScreen(null, null)}
-            // info={menuName[1]}
-            info={menuName ? menuName[1] : null}
-            source={menuImageName[1]}
-          />
+        <MenuButtons
+          onPress={() => this.toQuesScreen(null, null)}
+          // info={menuName[1]}
+          info={menuName ? menuName[1] : null}
+          source={menuImageName[1]}
+        />
 
-          <View style={styles.seperator} />
+        <View style={styles.seperator} />
 
-          <MenuButtons
-            onPress={this.toReportScreen} //{this.toReportScreen}
-            // info={menuName[2]}
-            info={menuName ? menuName[2] : null}
-            source={menuImageName[2]}
-          />
+        <MenuButtons
+          onPress={this.toReportScreen} //{this.toReportScreen}
+          // info={menuName[2]}
+          info={menuName ? menuName[2] : null}
+          source={menuImageName[2]}
+        />
 
 
-        </View>
-      </SafeAreaView>
-    );
-  }
+      </View>
+    </SafeAreaView>
+  );
+}
 }
 
 const styles = StyleSheet.create({

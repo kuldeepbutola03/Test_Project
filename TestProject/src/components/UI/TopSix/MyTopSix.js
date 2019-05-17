@@ -44,7 +44,7 @@ myTopSix = (props) => {
                 {props.show && props.show === "leading" && props.ind === 0 && <Text style={{ backgroundColor: APP_GLOBAL_COLOR, color: 'white', fontSize: 9, textAlign: 'center', borderRadius: 8, fontWeight: 'bold', position: 'absolute', bottom: -1, left: 5 }}>    Leading    </Text> }
                 {props.show && props.show === "won" && props.ind === 0 && <Text style={{ backgroundColor: "green",alignSelf:'center', color: 'white', fontSize: 9, textAlign: 'center', borderRadius: 8, fontWeight: 'bold', position: 'absolute', bottom: -1, left: 15 }}>    Won    </Text> }
             </View>
-            {props.check && <Text style={{ fontSize: normalize(8), marginTop: 15, textAlign: 'center' }} numberOfLines={1}>{props.logoName}</Text>}
+            {props.check && <Text style={{ fontSize: normalize(9), marginTop: 15, textAlign: 'center' }} adjustsFontSizeToFit numberOfLines={1} minimumFontScale = {.08}>{props.logoName}</Text>}
             {/* <Text style={{position: 'absolute',  bottom : normalize(70), fontSize : normalize(8 ) }}>{logoCatName[0]}</Text> */}
         </View>
     )
