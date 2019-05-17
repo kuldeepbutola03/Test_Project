@@ -279,7 +279,7 @@ export default Circle = props => {
     ];
     let arrayOfColor = showDetailsData.map((data, index) => {
 
-        let ind = index < colorA.length ? index : 0;
+        let ind = index % colorA.length;
             // console.log("index");
             // console.log(index);
             // let colorCode = 'rgb(' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ')';

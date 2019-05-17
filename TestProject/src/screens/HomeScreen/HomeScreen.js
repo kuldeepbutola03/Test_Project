@@ -63,10 +63,12 @@ export default class HomeScreen extends Component {
     super(props);
 
     this.state = {
+      scrollViewOffset: 0,
       showDialog: false,
       currLandPageSurvey: null,
       isLoading: true,
       timer: null,
+      timer2: null,
       counter: 0,
       // user_id: '1',
       firstAPIresponse: null,
@@ -316,16 +318,16 @@ export default class HomeScreen extends Component {
         if (dict.screen && dict.screen.toLowerCase() === 'survey') {
           let surveryId = dict['surveyid'];
           this.toQuesScreen(surveryId, null);
-        }else if (dict.screen && dict.screen.toLowerCase() === 'trends') {
+        } else if (dict.screen && dict.screen.toLowerCase() === 'trends') {
           this.toTrendScreen();
-        }else if (dict.screen && (dict.screen.toLowerCase() === 'arena' || dict.screen.toLowerCase() === 'timeline')) {
+        } else if (dict.screen && (dict.screen.toLowerCase() === 'arena' || dict.screen.toLowerCase() === 'timeline')) {
           if (dict.arenaid) {
             this.toReportReplyScreen(dict.arenaid);
-          }else if (dict.timelineid) {
+          } else if (dict.timelineid) {
             this.toReportReplyScreen(dict.timeline);
-          }else if (dict.threadid) {
+          } else if (dict.threadid) {
             this.toReportReplyScreen(dict.threadid);
-          }else{
+          } else {
             this.toReportScreen();
           }
         }
@@ -438,6 +440,7 @@ export default class HomeScreen extends Component {
 
   tick = () => {
 
+    console.log("tick start");
     // alert('aaa');
     this.checkPermission();
 
@@ -464,6 +467,22 @@ export default class HomeScreen extends Component {
     //   animate: true,
     // });
   };
+  tick2 = () => {
+    console.log("tick2")
+    this.scroll1.scrollTo({
+      x: this.state.scrollViewOffset === 0 ? Dimensions.get('window').width : 0,
+
+      animate: true,
+    });
+    if (this.scroll2) {
+      this.scroll2.scrollTo({
+        x: this.state.scrollViewOffset === 0 ? Dimensions.get('window').width : 0,
+
+        animate: true,
+      });
+    }
+    this.setState({ scrollViewOffset: this.state.scrollViewOffset === 0 ? 1 : 0 });
+  }
 
   toFireDepartmentScreen = () => {
     const { menuName } = this.state;
@@ -747,7 +766,7 @@ export default class HomeScreen extends Component {
       } else {
         this.requestToServer();
         this.serverHitForFourthResponse();
-        
+
       }
     })
   }
@@ -760,7 +779,7 @@ export default class HomeScreen extends Component {
         // this._requestPermission();
         this.requestToServer();
         this.serverHitForFourthResponse();
-        
+
 
       } else if (response === 'authorized') {
         // this.getLocation()
@@ -768,7 +787,7 @@ export default class HomeScreen extends Component {
       } else {
         this.requestToServer();
         this.serverHitForFourthResponse();
-        
+
       }
     })
   }
@@ -813,7 +832,8 @@ export default class HomeScreen extends Component {
     // alert(getUserID());
 
     this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.goBack);
-    this.startTimer();
+    // this.startTimer();
+    this.startScroll(10 * 1000);
 
     if (this.props.refresh) {
 
@@ -1039,15 +1059,15 @@ export default class HomeScreen extends Component {
 
         const check = responseJson && responseJson.exitOrResultDay ? responseJson.exitOrResultDay : null;
         if (!check) {
-          this.startTimer(120*1000);
-        }else if (check === 'e') {
-          this.startTimer(120*1000);
-        }else if (check === 'r') {
-          this.startTimer(60*1000);
+          this.startTimer(120 * 1000);
+        } else if (check === 'e') {
+          this.startTimer(120 * 1000);
+        } else if (check === 'r') {
+          this.startTimer(60 * 1000);
         }
-        
+        // activeSlide : 0
 
-        this.setState({ isLoading: false, firstAPIresponse: responseJson, currLandPageSurvey: responseJson.currLandPageSurvey, slideContent: arr, activeSlide : 0 }); // slideContent : arr
+        this.setState({ isLoading: false, firstAPIresponse: responseJson, currLandPageSurvey: responseJson.currLandPageSurvey, slideContent: arr }); // slideContent : arr
         // this.serverHitForSecondResponse();
       })
       .catch((error) => {
@@ -1162,12 +1182,31 @@ export default class HomeScreen extends Component {
 
 
   startTimer(time) {
+    console.log("timer started")
     if (this.state.timer) {
+      console.log("timer stop")
+      let timer = this.state.timer;
+
       clearInterval(this.state.timer);
+      timer = null;
     }
-    
-    let timer = setInterval(this.tick,time ); //60 * 1000
+
+    let timer = setInterval(this.tick, time); //60 * 1000
     this.setState({ timer: timer });
+  }
+
+  startScroll(time) {
+    console.log("startScroll started")
+    if (this.state.timer2) {
+      console.log("startScroll stop")
+      let timer = this.state.timer2;
+
+      clearInterval(this.state.timer2);
+      timer2 = null;
+    }
+
+    let timer2 = setInterval(this.tick2, time); //60 * 1000
+    this.setState({ timer2: timer2 });
   }
 
   profileViewAfterLoading = data => {
@@ -1356,7 +1395,7 @@ export default class HomeScreen extends Component {
     // console.log(this.state.slideContent);
     return (
       <View key={index} style={{ flex: 0.8, }} onLayout={this.onLayout}>
-        <TableView type={firstAPIresponse.exitOrResultDay} Width={width} Height={height} activeSlide={activeSlide} item={item} />
+        <TableView logo={firstAPIresponse.categoryLogoData ? firstAPIresponse.categoryLogoData : {}} type={firstAPIresponse.exitOrResultDay} Width={width} Height={height} activeSlide={activeSlide} item={item} />
       </View>
     );
   }
@@ -1373,7 +1412,7 @@ export default class HomeScreen extends Component {
           position: 'absolute',
           bottom: 0,
           width: "100%",
-          
+
           flexDirection: 'row',
           justifyContent: 'center',
           alignItems: 'flex-end'
@@ -1819,7 +1858,7 @@ export default class HomeScreen extends Component {
 
                 this.serverHitForFirstApi();
                 this.serverHitForFourthResponse();
-                
+
               }
 
             }
@@ -1842,8 +1881,9 @@ export default class HomeScreen extends Component {
             }}
             contentContainerStyle={{ justifyContent: 'center' }}
             ref={ref => {
-              this.scroll = ref;
+              this.scroll1 = ref;
             }}
+
           >
             {this.state.landingTopSix && !this.state.isLoading ?
               (<View style={{ flexDirection: 'row' }}>
@@ -1883,7 +1923,7 @@ export default class HomeScreen extends Component {
                 bounce
                 repeatSpacer={50}
                 marqueeDelay={1000}>{this.state.firstAPIresponse && this.state.firstAPIresponse.stateTicker}</TextTicker>
-              )}
+            )}
           </View>
 
           {/* {this.state.firstAPIresponse && this.state.firstAPIresponse.exitOrResultDay === null && this.state.landingTopSix ?
@@ -1906,7 +1946,10 @@ export default class HomeScreen extends Component {
             }}
             contentContainerStyle={{ justifyContent: 'center' }}
             ref={ref => {
-              this.scroll = ref;
+              if (!check) {
+                this.scroll2 = ref;
+              }
+
             }}
           >
             {this.state.landingTopSix && !this.state.isLoading ?
@@ -1922,7 +1965,7 @@ export default class HomeScreen extends Component {
                         logo={esourceCategoryLogoData_A_2[i]}
                         logoName={resourceName_A_2[i]}
                         logoCatName={resourceCategoryName_A_2[i]}
-                        resourceGpr={resourceGPR_A_2[i]}
+                        resourceGpr={null}
                         renderButton={this.renderSurveyButton}
                       /></View>
                   )
