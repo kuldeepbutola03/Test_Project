@@ -15,7 +15,7 @@ import Circle from '../ResultPoll/Circle';
 
 
 
-getImage = (value) => {
+function getImage (value) {
     if (value > 0) {
         let path = require('../../../assets/Extra/up.png')
         return path
@@ -145,7 +145,7 @@ tableView = (props) => {
                             // backgroundColor: 'white'
                         }}>
                             <Text style={styles.headerTextName}></Text>
-                            <Text style={styles.headerTextR}>Leading</Text>
+                            <Text style={styles.headerTextR}>Leads</Text>
                             <Text style={styles.headerTextR}>Won</Text>
                             <Text style={styles.headerTextR}>Total</Text>
                             <Text style={styles.headerTextR}>2014</Text>
@@ -176,7 +176,7 @@ tableView = (props) => {
                                         </View>
 
                                         <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-                                            <Text style={{ textAlign: 'right', flex: 2, paddingRight: 5 }}>{Math.abs(val.plusMinusSymbol)}</Text>
+                                            <Text style={{ textAlign: 'right', flex: 2, paddingRight: 5, fontSize : 11 }}>{Math.abs(val.plusMinusSymbol)}</Text>
                                             <View style={{ flex: 1, alignItems: 'flex-start' }}>
                                                 <Image resizeMode='contain' source={getImage(val.plusMinusSymbol)} style={{ width: 15, height: 15, paddingLeft: 5 }} />
                                             </View>

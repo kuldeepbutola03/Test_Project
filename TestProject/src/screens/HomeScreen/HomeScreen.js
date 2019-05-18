@@ -1749,6 +1749,11 @@ render() {
   const check = this.state.firstAPIresponse && this.state.firstAPIresponse.exitOrResultDay ? this.state.firstAPIresponse.exitOrResultDay : null;
   // firstAPIresponse && firstAPIresponse.exitOrResultDay ? firstAPIresponse.exitOrResultDay : null
 
+  getImage = (name) => {
+    let data = this.state.firstAPIresponse && this.state.firstAPIresponse.categoryLogoData ? this.state.firstAPIresponse.categoryLogoData : null
+    let image = data[name];
+    return image
+  }
 
   getTopSix = () => {
     const contentSix = this.state.topSixContent;
@@ -1790,10 +1795,11 @@ render() {
 
               {contentSix.map((val, i) => {
                 let total = val.leadingSeats + val.wonSeats > val.totalSeats ? val.totalSeats : val.leadingSeats + val.wonSeats
+                
                 return (
                   <View key={i} style={{ width: wd / 3, flex: 1, padding: normalize(8) }}>
                     <MyTopSix
-                      source={val.categoryLogoData}
+                      source={{uri : "data:image/png;base64," + getImage(val.groupName)}}
                       check={check}
                       logo={null}
                       logoName={val.groupName}
