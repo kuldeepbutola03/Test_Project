@@ -48,7 +48,8 @@ class TrendScreen extends Component {
     loading: true,
     data: this.props.data,
     notifications: this.props.notifications,
-    visible: false
+    visible: false,
+    
     // refreshUI : this.props.refreshUI
   }
 
