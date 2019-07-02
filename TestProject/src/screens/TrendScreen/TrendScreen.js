@@ -16,8 +16,8 @@ import Spinner from '../../components/UI/Spinner/Spinner';
 import CustomButton from '../../components/UI/ButtonMod/CustomButtom';
 import { PropTypes } from 'prop-types';
 import TrendProfile from '../../components/UI/TrendProfile/TrendProfile';
-import { TREND_, TREND_PDM, TREND_CDM, TREND_IMAGE, GET_USER_NOTIFICATIONS, UPDATE_USER_NOTIFICATIONS } from '../../../Apis';
-import { authHeaders, getUserID, APP_GLOBAL_COLOR, getUserData, showAdsBanner, SHARE_LINK, showAdsFullScreen} from '../../../Constant';
+import { TREND_, TREND_PDM, TREND_CDM, TREND_IMAGE, GET_USER_NOTIFICATIONS, UPDATE_USER_NOTIFICATIONS, LANDING_RESOURCES } from '../../../Apis';
+import { authHeaders, getUserID, APP_GLOBAL_COLOR, getUserData, showAdsBanner, SHARE_LINK, showAdsFullScreen, PROPS_ARRAY_NOTIFY_SCREEN, PROPS_ARRAY_FOR_LOCATION, refreshUserScreen, getUserHomeScreen, } from '../../../Constant';
 import axios from 'axios';
 import Carousel, { Pagination } from 'react-native-snap-carousel';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -31,6 +31,10 @@ import Permissions from 'react-native-permissions';
 import Share, { ShareSheet, Button } from 'react-native-share';
 import firebase from 'react-native-firebase';
 import KochavaTracker from 'react-native-kochava-tracker';
+import { NavigationBarDefault } from '../../components/UI/NavigationBarDefault/NavigationBarDefault';
+import TabBarNavigation from '../../components/UI/TabBarNavigation/TabBarNavigation';
+import ResultExitScreen from '../HomeScreen/ResultExitScreen';
+import { NAVIGATION_ROOT, setectTabBarNaviagtion } from '../../AppNavigation';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -49,10 +53,23 @@ class TrendScreen extends Component {
     data: this.props.data,
     notifications: this.props.notifications,
     visible: false,
-    
+    selectedThemeColor: this.props.color,
+    dict: null,
+    selectedIndexTab : this.props.selectedIndexTab
     // refreshUI : this.props.refreshUI
   }
+  componentWillUnmount() {
 
+    // PROPS_ARRAY_NOTIFICATION.push(this.refreshNotificationData);
+
+    var index = PROPS_ARRAY_NOTIFY_SCREEN.indexOf(this.refreshUserScreenUI);
+    if (index > -1) {
+      PROPS_ARRAY_NOTIFY_SCREEN.splice(index, 1);
+    }
+
+
+
+  }
   componentDidMount() {
     // this.getDataFromServer(true)
     firebase.analytics().setCurrentScreen("Screen", "Trends_Screen");
@@ -64,14 +81,43 @@ class TrendScreen extends Component {
     eventMapObject["screen_name"] = "Trends_Screen";
     KochavaTracker.sendEventMapObject(KochavaTracker.EVENT_TYPE_LEVEL_COMPLETE_STRING_KEY, eventMapObject);
 
-    getUserID().then((userId) => {
-      this.user_Id = userId;
-      // this.getLocation()
-      this.getDataFromServer(true);
-      // this.getNotifications()
-    })
 
+
+    // getUserID().then((userId) => {
+    //   this.user_Id = userId;
+    //   // this.getLocation()
+    //   this.getDataFromServer(true);
+    //   // this.getNotifications()
+    // })
+
+    this.user_Id = this.props.user_id;
+    // this.getLocation()
+    if (this.props.notFirstScreen) {
+      this.getDataFromServer();
+    }
+
+
+    PROPS_ARRAY_NOTIFY_SCREEN.push(this.refreshUserScreenUI);
   }
+  refreshUserScreenUI = (notifications, screen, purpose) => {
+    //
+    if (screen === 3 || screen < 0) {
+      if (purpose === 0) {
+        this.setState({ data: notifications })
+      } else if (purpose === 1) {
+        this.setState({ selectedThemeColor: notifications })
+      } else if (purpose === 2) {
+        this.setState({ notifications: notifications });
+      } else if (purpose === 4) {
+        if (!this.props.notFirstScreen) {
+          this.getFirstAPIdataFromServer()
+        }
+      } else if (purpose === 6) {
+        this.setState({ selectedIndexTab: notifications });
+      }
+    }
+  }
+
 
   static propTypes = {
     componentId: PropTypes.string,
@@ -165,56 +211,93 @@ class TrendScreen extends Component {
     });
   };
 
-  requestCheckPremission = () => {
-    Permissions.check('location').then(response => {
-      if (response === 'denied' || response === 'undetermined') {
-        this._requestPermission();
-      } else if (response === 'authorized') {
-        this.getLocation();
-      } else {
-        this.getDataFromServer(true);
-      }
-    })
-  }
+  getFirstAPIdataFromServer = () => {
 
-  _requestPermission = () => {
-    Permissions.request('location').then(response => {
-      this.setState({ location: response })
-      // alert(response);
-      // this.getLocation()
-      if (response === 'denied' || response === 'undetermined') {
-        this.getDataFromServer(true);
-      } else if (response === 'authorized') {
-        this.getLocation();
-      } else {
-        this.getDataFromServer(true);
-      }
-    })
-  }
+    this.setState({ dict: { isLoading: true } })
+    var targetLocation = PROPS_ARRAY_FOR_LOCATION.slice(-1).pop()
+    let body = null;
+    if (targetLocation) {
+      let latlong = targetLocation.location.latitude.toString() + "," + targetLocation.location.longitude.toString()
 
-  getLocation() {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const initialPosition = JSON.stringify(position);
+      body = JSON.stringify({
+        userId: this.user_Id,
+        latLngSeparatedByComma: latlong,
+        // latLngSeparatedByComma:"28.722,77.125"
+      });
+    } else {
+      body = JSON.stringify({
+        userId: this.user_Id,
 
-        // let latlong = position.coords.latitude.toString() +  "," + position.coords.longitude.toString()
-        let latlong = position.coords.latitude.toString() + "," + position.coords.longitude.toString()
-        if (position.mocked) {
-          if (position.mocked == true) {
-            alert("you are using fake location");
-            return;
+      });
+    }
+    // alert()
+    // alert(body);
+    fetch(LANDING_RESOURCES, {
+      method: 'POST',
+      headers: authHeaders(),
+      body: body,
+    }).then((response) => response.json())
+      .then((responseJson) => {
+
+        // alert("responseJson");
+        // slideContent: [
+        //   [require('../../assets/PollResults/poll_exit.jpg'), require('../../assets/PollResults/poll_result.jpg')],
+        //   [],
+        //   [],
+        //   [require('../../assets/PollResults/poll_exit_1.jpg'), require('../../assets/PollResults/poll_result_1.jpg')],
+        // ],
+        let arr = [
+          [require('../../assets/PollResults/poll_exit.jpg'), require('../../assets/PollResults/poll_result.jpg')],
+          [],
+          [],
+          [require('../../assets/PollResults/poll_exit_1.jpg'), require('../../assets/PollResults/poll_result_1.jpg')],
+        ];
+        arr[1] = responseJson.resCatNationalGroupList;
+        arr[2] = responseJson.resCatNationalList;
+        // arr[3] = responseJson.resCatNationalList;
+
+        const check = responseJson && responseJson.exitOrResultDay ? responseJson.exitOrResultDay : null;
+        if (check === 'e' || check === 'r') {
+          if (responseJson.newSlider) {
+            arr[4] = responseJson.newSlider;
           }
+          let objetc = Object.assign([], responseJson.resCatNationalList ? responseJson.resCatNationalList : []);
+
+
+          var targetLocation = PROPS_ARRAY_FOR_LOCATION.slice(-1).pop()
+          let body = null;
+          let latlong = null;
+          if (targetLocation) {
+            latlong = targetLocation.location.latitude.toString() + "," + targetLocation.location.longitude.toString()
+          }
+
+          this.setState({ loading: false, dict: { lat_lon: latlong, isLoading: false, firstAPIresponse: responseJson, currLandPageSurvey: responseJson.currLandPageSurvey, slideContent: arr, topSixContent: objetc.splice(0, 6) } });
+
+          if (this.state.selectedIndexTab != 3) {
+            setectTabBarNaviagtion(3)
+            refreshUserScreen(3 , -1 , 6)
+          }
+          
+          // this.refreshUserScreenUI(3 , -1 , 6)
+          // selectedIndexTab : 3
+
+        } else {
+          this.setState({ dict: null})
+          this.getDataFromServer();
+          getUserHomeScreen().then((data) => {
+            if (data) {
+              let d = parseInt(data);
+              setectTabBarNaviagtion(d)
+              refreshUserScreen(d , -1 , 6)
+            }
+          })
+          
         }
 
-        this.locationLatLong = latlong;
-        this.getDataFromServer(true)
-      },
-      (error) => {
-        // alert(error.message)
-        this.getDataFromServer(true)
-      },
-      { enableHighAccuracy: false, timeout: 20000, maximumAge: 1000 }
-    );
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }
 
   getDataFromServer = () => {
@@ -237,7 +320,7 @@ class TrendScreen extends Component {
   }
 
   renderComponent = () => {
-    const { loading } = this.state;
+    const { loading, dict } = this.state;
 
     if (loading) {
       return (
@@ -247,11 +330,19 @@ class TrendScreen extends Component {
         </View>
       )
     } else if (!loading) {
+
+      if (dict) {
+        return <ResultExitScreen {...dict} user_id={this.user_Id} serverHitForFirstApi={() => {
+
+          this.getFirstAPIdataFromServer()
+        }} />
+      }
+
       return (
         <View style={styles.carouselContainer}>
           <Carousel
             layout={'default'}
-            layoutCardOffset={18}
+            // layoutCardOffset={18}
             ref={(c) => { this._carousel = c; }}
             data={this.state.imageList}
             renderItem={this._renderItem}
@@ -259,9 +350,12 @@ class TrendScreen extends Component {
             itemWidth={itemWidth}
             shouldOptimizeUpdates
             onSnapToItem={(index) => this.setState({ activeSlide: index })}
-          />
-          {/* {this.showBanner()} */}
-          
+          >
+            {/* {this.showBanner()} */}
+            {/* <View style={{ height: 50 }}> */}
+
+            {/* </View> */}
+          </Carousel>
           {this.pagination}
         </View>
       )
@@ -276,20 +370,20 @@ class TrendScreen extends Component {
     const { activeSlide, imageList } = this.state;
 
     // alert(activeSlide);
-    if (activeSlide === 2 || activeSlide === 5 || activeSlide === 8){
-      showAdsFullScreen();  
+    if (activeSlide === 2 || activeSlide === 5 || activeSlide === 8) {
+      showAdsFullScreen();
     }
     return (
       <Pagination
         dotsLength={imageList.length}
         activeDotIndex={activeSlide}
         containerStyle={{
-          backgroundColor: APP_GLOBAL_COLOR,
+          backgroundColor: 'transparent',// APP_GLOBAL_COLOR,
           // backgroundColor: 'rgba(0, 0, 0, 0.75)',
           width: SCREEN_WIDTH,
           display: 'flex',
           flexDirection: 'row',
-          justifyContent: 'space-around'
+          // justifyContent: 'space-around'
         }}
         dotStyle={{
           width: 10,
@@ -514,8 +608,8 @@ class TrendScreen extends Component {
     };
 
     // if (data.picture && data.picture.uri) {
-      shareOptions["url"] = data;
-      shareOptions["message"] = shareOptions.message + "\n" + SHARE_LINK + "?raajneetiId=";
+    shareOptions["url"] = data;
+    shareOptions["message"] = shareOptions.message + "\n" + SHARE_LINK + "?raajneetiId=";
     // }
     if (Platform.OS === "android") {
       this.setState({ visible: true });
@@ -607,15 +701,25 @@ class TrendScreen extends Component {
     // console.log(this.state)
     // console.log(this.props)
     const { notifications } = this.state;
-    const BadgedIcon = withBadge(notifications.count)(Icon);
+    // const BadgedIcon = withBadge(notifications.count)(Icon);
 
 
     return (
       <SafeAreaView
         forceInset={{ bottom: 'always' }}
         style={styles.safeViewContainer}>
-        <View style={{ flex: 1, flexDirection: 'row', backgroundColor: 'rgba(255,255,255,1)' }}>
+        <NavigationBarDefault
+          imageSource={this.state.data.image ? { uri: "data:image/png;base64," + this.state.data.image } : require('../../assets/UserSmall.png')}
+          bgColor={this.state.selectedThemeColor}
 
+          notifications={notifications}
+          data={this.props.data}
+          showBackButton={this.props.notFirstScreen}
+
+          
+          // this.setState({selectedIndexTab : 3,
+        >{this.state.data.username}</NavigationBarDefault>
+        {/* <View style={{ flex: 1, flexDirection: 'row', backgroundColor: 'rgba(255,255,255,1)' }}>
           <View style={{ width: 60, backgroundColor: APP_GLOBAL_COLOR }}>
             <CustomButton
               style={{
@@ -658,16 +762,7 @@ class TrendScreen extends Component {
               </Text>
             </View>
           </TouchableOpacity>
-          {/* <View
-            style={{
-              // flex: 5,
-              width: 100,
-              justifyContent: 'center',
-              alignItems: 'center',
-              flexDirection: 'row',
-              // marginRight: hp('4%'),
-              backgroundColor: 'rgba(255,255,255,1)',
-            }}> */}
+
           <TouchableOpacity style={{
             // flex: 5,
             width: hp('10%'),
@@ -679,7 +774,7 @@ class TrendScreen extends Component {
           }}
             // style={{  justifyContent: 'center', alignItems: 'center' }}
             onPress={() => this.showNotificationScreen()}>
-            {/* <View> */}
+
             {notifications.count && notifications.count > 0 ?
               <BadgedIcon
                 size={hp('3%')}
@@ -695,24 +790,13 @@ class TrendScreen extends Component {
                 color={APP_GLOBAL_COLOR}
               />
             }
-            {/* </View> */}
-            {/* {notifications.count <= 0 ?
-                <FontAwesome
-                  size={hp('3%')}
-                  // onPress={() => this.showNotificationScreen()}
-                  name="bell-o"
-                  color={APP_GLOBAL_COLOR}
-                /> :
-                <BadgedIcon
-                  color={APP_GLOBAL_COLOR}
-                  type="font-awesome"
-                  // onPress={() => this.showNotificationScreen()}
-                  name="bell-o" />
-              } */}
+          
           </TouchableOpacity>
-          {/* </View> */}
-        </View>
+
+        </View> */}
         {this.renderComponent()}
+
+        {!this.props.notFirstScreen && <TabBarNavigation color={this.state.selectedThemeColor} selectedIndex={3} selectedIndexTab= {this.state.selectedIndexTab}/>}
 
         <ShareSheet visible={this.state.visible} onCancel={() => { this.onCancel() }}>
 
@@ -782,7 +866,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   carouselContainer: {
-    flex: 12,
+    flex: 1,
     margin: 0,
   }
 })

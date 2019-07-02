@@ -59,6 +59,17 @@ target 'TestProject' do
   pod 'Firebase/DynamicLinks'
   
   pod 'Firebase/AdMob'
+  pod 'ReactNativeNavigation', :path => '../node_modules/react-native-navigation'
+
+  pod 'RNShare', :path => '../node_modules/react-native-share'
+
+  pod 'react-native-splash-screen', :path => '../node_modules/react-native-splash-screen'
+
+
+  pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-community/async-storage'
+
+  pod 'RNPayTm', :path => '../node_modules/@philly25/react-native-paytm'
+
 end
 
 post_install do |installer|

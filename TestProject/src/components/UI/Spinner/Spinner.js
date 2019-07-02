@@ -12,7 +12,7 @@ class Spinner extends Component {
                     isVisible 
                     size={hp('3%')}
                     type={'ChasingDots'} 
-                    color={APP_GLOBAL_COLOR}
+                    color={this.props.color ? this.props.color : APP_GLOBAL_COLOR}
                 />
             </View>
         )

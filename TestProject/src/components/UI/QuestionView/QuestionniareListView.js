@@ -17,13 +17,13 @@ viewWithQuestionType = (props, item, index, userLanguage) => {
 
     let i = index + 1
     if (item.questionType === 'MOQ') {
-        return (<MultipleQuestionView isSurveyTaken={props.isSurveyTaken} onChangeData={props.onChangeData} i={i} data={item} index={index} userLanguage={userLanguage} />)
+        return (<MultipleQuestionView color = {props.color} isSurveyTaken={props.isSurveyTaken} onChangeData={props.onChangeData} i={i} data={item} index={index} userLanguage={userLanguage} />)
     } else if (item.questionType === 'LSQ') {
-        return (<Sliders isSurveyTaken={props.isSurveyTaken} onChangeData={props.onChangeData} i={i} index={index} data={item} userLanguage={userLanguage} />)
+        return (<Sliders color = {props.color}  isSurveyTaken={props.isSurveyTaken} onChangeData={props.onChangeData} i={i} index={index} data={item} userLanguage={userLanguage} />)
     } else if (item.questionType === 'YNQ') {
-        return (<OptionalQuestion isSurveyTaken={props.isSurveyTaken} onChangeData={props.onChangeData} i={i} data={item} index={index} userLanguage={userLanguage} />)
+        return (<OptionalQuestion color = {props.color}  isSurveyTaken={props.isSurveyTaken} onChangeData={props.onChangeData} i={i} data={item} index={index} userLanguage={userLanguage} />)
     } else if (item.questionType === 'PQ') {
-        return (<PictureQuestion isSurveyTaken={props.isSurveyTaken} onChangeData={props.onChangeData} i={i} data={item} index={index} userLanguage={userLanguage} />)
+        return (<PictureQuestion color = {props.color}  isSurveyTaken={props.isSurveyTaken} onChangeData={props.onChangeData} i={i} data={item} index={index} userLanguage={userLanguage} />)
     }
     return null;
 }
@@ -65,7 +65,8 @@ export default questionniareListView = props => {
                         <Button
                             onPress={() => props.updateQuestionaire(props.survey)}
                             title="Submit"
-                            buttonStyle={{ backgroundColor: APP_GLOBAL_COLOR, borderRadius: 100, paddingHorizontal: normalize(15) }}
+                            titleStyle = {{fontSize: 12}}
+                            buttonStyle={{  backgroundColor: props.color ? props.color : APP_GLOBAL_COLOR, borderRadius: 5, paddingHorizontal: normalize(15) }}
                             disabled={props.isSurveyTaken === 'N' ? false : true}
                         />
                     </View>
@@ -75,8 +76,9 @@ export default questionniareListView = props => {
                 <View>{viewWithQuestionType(props, item, index, props.userLanguage)}
                     <View style={{ height: 10 }}/>
                     <View style={{ height: 1, backgroundColor: '#ddd', marginLeft: 10, marginRight: 10 }}/>
-                    {(index + 1) % 4 === 0 && showAdsTilesRectangle()}
-                    {(index + 1) % 4 === 0 && <View style={{ height: 1, backgroundColor: '#ddd', marginLeft: 10, marginRight: 10 }}/>}
+                    {/* {(index + 1) % 4 === 0 && showAdsTilesRectangle()} */}
+                    {/* {(index + 1) % 4 === 0 && <View style={{ height: 1, backgroundColor: '#ddd', marginLeft: 10, marginRight: 10 }}/>} */}
+                    <View style={{ height: 1, backgroundColor: '#ddd', marginLeft: 10, marginRight: 10 }}/>
                 </View>
             }
         />

@@ -59,8 +59,8 @@ export default class multipleQuestionView extends React.Component {
                                     }
                                 }} 
                                 borderWidth={1}
-                                buttonInnerColor={APP_GLOBAL_COLOR}
-                                buttonOuterColor={this.props.data.userAnswerId === data.answerId ? APP_GLOBAL_COLOR : '#000'}
+                                buttonInnerColor={this.props.color ? this.props.color : APP_GLOBAL_COLOR}
+                                buttonOuterColor={this.props.data.userAnswerId === data.answerId ? (this.props.color ? this.props.color : APP_GLOBAL_COLOR) : '#000'}
                                 buttonSize={normalize(7)}
                                 buttonOuterSize={normalize(14)}
                                 buttonStyle={{}}

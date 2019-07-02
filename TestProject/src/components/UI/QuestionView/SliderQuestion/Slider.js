@@ -6,7 +6,7 @@ import { normalize, APP_GLOBAL_COLOR } from '../../../../../Constant';
 
 class Sliders extends Component {
   state = {
-    color: APP_GLOBAL_COLOR,
+    color: this.props.color ? this.props.color : APP_GLOBAL_COLOR,
     clicked: false,
   }
 

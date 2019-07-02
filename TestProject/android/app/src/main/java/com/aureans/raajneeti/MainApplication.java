@@ -5,6 +5,9 @@ import com.airbnb.android.react.maps.MapsPackage;
 import com.dylanvann.fastimage.FastImageViewPackage;
 import com.facebook.CallbackManager;
 import com.facebook.react.ReactApplication;
+import com.como.RNTScratchView.ScratchViewPackage;
+import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
+
 import com.kochava.reactlibrary.RNKochavaTrackerPackage;
 import com.react.rnspinkit.RNSpinkitPackage;
 // import com.reactnativecomponent.swiperefreshlayout.RCTSwipeRefreshLayoutPackage;
@@ -91,7 +94,8 @@ public class MainApplication extends NavigationApplication implements ShareAppli
                 new OrientationPackage(),
                  new RNSpinkitPackage(),
                  new RNKochavaTrackerPackage(),
-                 new RNFirebaseAdMobPackage()  
+                 new RNFirebaseAdMobPackage(),
+                 new AsyncStoragePackage()  
         );
     }
 

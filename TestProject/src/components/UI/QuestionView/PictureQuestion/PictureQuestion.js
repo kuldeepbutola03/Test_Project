@@ -35,8 +35,8 @@ export default class PictureQuestion extends React.Component {
                                 }
                             }}
                             borderWidth={1}
-                            buttonInnerColor={APP_GLOBAL_COLOR}
-                            buttonOuterColor={this.props.data.userAnswerId - 1 === indexValue ? APP_GLOBAL_COLOR : '#000'}
+                            buttonInnerColor={this.props.color ? this.props.color : APP_GLOBAL_COLOR}
+                            buttonOuterColor={this.props.data.userAnswerId - 1 === indexValue ? (this.props.color ? this.props.color : APP_GLOBAL_COLOR) : '#000'}
                             buttonSize={normalize(7)}
                             buttonOuterSize={normalize(14)}
                             buttonStyle={{}}

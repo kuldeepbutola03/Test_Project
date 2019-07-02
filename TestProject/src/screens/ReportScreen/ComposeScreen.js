@@ -16,7 +16,7 @@ import Remove from './DeleteButton';
 // import Video from 'react-native-video';
 import ImagePicker from 'react-native-image-crop-picker';
 import { MOBILE_NUMBER_, MESSAGE_COMPOSE, MEDIA_COMPOSE, MEDIA_MESSAGE_REPLY, MESSAGE_REPLY } from '../../../Apis';
-import { normalize, getUserID, DEFAULT_USER_ID, authHeaders, getUserData, authHeadersMedia } from '../../../Constant';
+import { normalize, getUserID, DEFAULT_USER_ID, authHeaders, getUserData, authHeadersMedia, APP_GLOBAL_COLOR } from '../../../Constant';
 
 import firebase from 'react-native-firebase';
 import KochavaTracker from 'react-native-kochava-tracker';
@@ -342,15 +342,17 @@ export default class ComposeScreen extends Component {
             </View>
 
 
-            <View style={{ flex: 1, alignItems: 'flex-end' }}>
+            <View style={{ flex: 1, alignItems: 'flex-end' , justifyContent : 'center'}}>
               <TouchableOpacity style={{
                 height: '70%',
                 width: '50%',
                 marginRight: 15,
-                marginTop: 5,
-                borderRadius: 100,
-                borderWidth: 1
-                // backgroundColor: 'yellow'
+                // marginTop: 5,
+                borderRadius: 5,
+                // borderWidth: 1,
+                backgroundColor: this.props.color ? this.props.color : APP_GLOBAL_COLOR,
+                justifyContent : 'center',
+                alignItems : 'center'
               }}
                 disabled={this.state.disabled}
                 onPress={() => { this.postTapped() }}
@@ -358,9 +360,10 @@ export default class ComposeScreen extends Component {
                 <Text
                   style={{
                     textAlign: 'center',
-                    fontSize: 18,
-                    paddingTop: 5,
-                    fontWeight: 'bold'
+                    fontSize: 15,
+                    // paddingTop: 0,
+                    // fontWeight: 'bold',
+                    color : 'white'
                     // textShadowRadius:1,
                     // textShadowOffset:{width:-4,height:1},
                     // textShadowColor:'grey'

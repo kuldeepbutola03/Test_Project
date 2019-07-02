@@ -1,6 +1,6 @@
 import { Navigation } from 'react-native-navigation';
+import homeScreen from './src/AppNavigation';
 
-import SplashScreen from 'react-native-splash-screen';
 import LoginSceen from './src/screens/LoginScreen/LoginScreen';
 import Profile from './src/screens/Profile/Profile';
 import MobileNumber from './src/screens/LoginScreen/MobileNumber';
@@ -35,6 +35,15 @@ import SurveyList from './src/screens/QuestionnaireScreen/SurveyList';
 //New Login Screens
 import FirstScreen from './src/screens/LoginNewScreen/FirstScreen';
 
+import PaytmScreen from './src/screens/PaytmScreen/PaytmScreen';
+import RateNowScreen from './src/screens/RateNowScreen/RateNowScreen';
+
+import ScratchCardScreen from './src/screens/ScratchCardScreen/ScratchCardScreen';
+import TopPoliticianScreen from './src/screens/TopPoliticianScreen/TopPoliticianScreen';
+
+
+
+
 
 Navigation.registerComponent('LoginScreen', () => LoginSceen);
 Navigation.registerComponent('MobileNumber', () => MobileNumber);
@@ -46,13 +55,15 @@ Navigation.registerComponent('HomeScreen', () => HomeScreen);
 Navigation.registerComponent('DataScreen', () => DataScreen);
 Navigation.registerComponent('FireDepartmentScreen', () => FireDepartmentScreen);
 Navigation.registerComponent('PoliceProfileScreen', () => PoliceProfileScreen);
-Navigation.registerComponent('ReportScreen', () => ReportScreen);
+
 Navigation.registerComponent('LandingScreen', () => LandingScreen);
 Navigation.registerComponent('Test', () => Test);
 Navigation.registerComponent('TrendScreen', () => TrendScreen);
 Navigation.registerComponent('TrendDetailScreen', () => TrendDetailScreen);
 Navigation.registerComponent('QuestionnaireScreen', () => QuestionnaireScreen);
 Navigation.registerComponent('AreaScreen', () => AreaScreen);
+
+Navigation.registerComponent('ReportScreen', () => ReportScreen);
 Navigation.registerComponent('ReportReplyScreen', () => ReportReplyScreen);
 Navigation.registerComponent('Sharing', () => Sharing);
 Navigation.registerComponent('ComposeScreen', () => ComposeScreen);
@@ -67,8 +78,20 @@ Navigation.registerComponent('FullPicture', () => FullPicture);
 
 Navigation.registerComponent('FirstScreen', () => FirstScreen);
 
-// FirstScreen
-// import Orientation from 'react-native-orientation';
+Navigation.registerComponent('PaytmScreen', () => PaytmScreen);
+Navigation.registerComponent('ScratchCardScreen', () => ScratchCardScreen);
+
+Navigation.registerComponent('RateNowScreen', () => RateNowScreen);
+Navigation.registerComponent('TopPoliticianScreen', () => TopPoliticianScreen);
+
+Navigation.registerComponent('SettingsScreen', () => SettingsScreen);
+
+Navigation.registerComponent('RatingModal', () => ratingModal);
+
+Navigation.registerComponent('WhatsNewScreen', () => WhatsNewScreen);
+
+
+
 // Start App
 import { AsyncStorage, Platform, Linking } from "react-native"
 import { DEFAULT_USER_ID, getUserData, saveUserData, saveUserID } from './Constant';
@@ -81,7 +104,9 @@ import { DEFAULT_USER_ID, getUserData, saveUserData, saveUserID } from './Consta
 
 // Import
 import KochavaTracker from 'react-native-kochava-tracker';
-
+import SettingsScreen from './src/screens/SettingsScreen/SettingsScreen';
+import ratingModal from './src/components/UI/ProfileCard/RatingModal';
+import WhatsNewScreen from './src/screens/AboutAppScreen/WhatsNewScreen';
 
 /////
 
@@ -104,8 +129,8 @@ Navigation.events().registerAppLaunchedListener(() => {
   //       children: [
   //         {
   //           component: {
-  //             id: "AboutAppScreen", // Optional, Auto generated if empty
-  //             name: "AboutAppScreen",
+  //             id: "ScratchCardScreen", // Optional, Auto generated if empty
+  //             name: "ScratchCardScreen",
   //             options: {
   //               topBar: {
   //                 visible: false,
@@ -128,8 +153,8 @@ Navigation.events().registerAppLaunchedListener(() => {
   //   },
   // });
   // return;
-  
-  
+
+
   //   Navigation.setRoot({
   //     root: {
   //       stack: {
@@ -191,15 +216,25 @@ Navigation.events().registerAppLaunchedListener(() => {
   getUserData().then((data) => {
     // SplashScreen.show();
     // SplashScreen.hide();
+    // data = { username: 'kkkbbbb', image : null, user_Id: 6, userId: 6 };
+    // saveUserID(6);
+
     if (data) {
       if (data.username || data.userName) {
         // Navigation.events ().registerAppLaunchedListener (() => {
+        homeScreen(data);
+        // showHomeScreen();
+        return;
         Navigation.setRoot({
           root: {
             stack: {
+
+              id: 'root',
               children: [
                 {
+
                   component: {
+
                     id: "HomeScreen", // Optional, Auto generated if empty
                     name: "HomeScreen",
                     options: {
@@ -231,7 +266,10 @@ Navigation.events().registerAppLaunchedListener(() => {
         let languageArry = "Trends,Survey,Arena,Notifications,Rate Now, Profile, Male,Female, Select Your Profession,Student,Salaried,Entrepreneur, Retired, Housewife,Other, Select Your Age group, Teenager,Twenties,Thirties,Forties,Fifties,Sixty+";
         let menuArr = languageArry.split(',');
 
-
+        let languageCode = {
+          "hi": "Hindi",
+          "en": "English"
+      };
         Navigation.setRoot({
           root: {
             stack: {
@@ -281,6 +319,8 @@ Navigation.events().registerAppLaunchedListener(() => {
 
 
                       email: null,
+
+                      languageCode: languageCode,
                       // firstName: data.firstName,
                       // lastName: data.lastName,
                       // image: thisObject.props.image,
@@ -361,3 +401,6 @@ Navigation.events().registerAppLaunchedListener(() => {
 
 
 });
+
+
+

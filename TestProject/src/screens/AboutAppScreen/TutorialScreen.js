@@ -7,11 +7,10 @@ import {
   SafeAreaView,
   Image,
   TouchableOpacity,
-  AsyncStorage,
   Alert,
   Platform
 } from 'react-native';
-
+import AsyncStorage from '@react-native-community/async-storage';
 
 import { Navigation } from 'react-native-navigation';
 import Spinner from '../../components/UI/Spinner/Spinner';

@@ -1,8 +1,9 @@
+import AsyncStorage from '@react-native-community/async-storage';
 import axios from 'axios';
 import moment from 'moment';
 import { PropTypes } from 'prop-types';
 import React, { Component } from 'react';
-import { AsyncStorage, BackHandler, Dimensions, Image, Linking, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View, Easing } from 'react-native';
+import { BackHandler, Dimensions, Easing, Image, Linking, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Button, Icon, withBadge } from 'react-native-elements';
 import firebase from 'react-native-firebase';
 // const { notifications } = this.state
@@ -15,14 +16,13 @@ import Carousel, { Pagination } from 'react-native-snap-carousel';
 import TextTicker from 'react-native-text-ticker';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { DEBUG, GET_USER_DETAILS_EMAIL, GET_USER_NOTIFICATIONS, LANDING_CDM, LANDING_PDM, LANDING_RESOURCES, LANDING_TOP_SIX, UPDATE_USER_NOTIFICATIONS } from '../../../Apis';
-import { APP_GLOBAL_COLOR, authHeaders, DEFAULT_USER_ID, normalize, saveUserData, showAdsBanner, showAdsTilesRectangle } from '../../../Constant';
+import { APP_GLOBAL_COLOR, authHeaders, DEFAULT_USER_ID, normalize, saveUserData, showAdsTilesRectangle } from '../../../Constant';
 import MenuButtons from '../../components/UI/ProfileView/MenuButtons';
 import ProfileView from '../../components/UI/ProfileView/ProfileView';
 import Spinner from '../../components/UI/Spinner/Spinner';
 import TableView from '../../components/UI/TableView/TableView';
 import MyTopSix from '../../components/UI/TopSix/MyTopSix';
 import { itemWidth, sliderWidth } from '../AboutAppScreen/SliderEntry.style';
-
 
 
 export default class HomeScreen extends Component {
@@ -292,7 +292,7 @@ export default class HomeScreen extends Component {
     console.log(JSON.stringify("Triggered for data only payload in foreground"));
     this.messageListener = firebase.messaging().onMessage((message) => {
       //process data message
-      alert(JSON.stringify("process data message"));
+      // alert(JSON.stringify("process data message"));
       console.log(JSON.stringify(message));
     });
   }
@@ -474,13 +474,17 @@ export default class HomeScreen extends Component {
   showTheAds = () => {
     this.setState({ showAds: true });
 
-    that = this;
+    var that = this;
     setTimeout(function () {
       that.setState({ showAdsClose: true });
+      
+      var thatIt = that;
+      setTimeout(function () {
+        thatIt.hideTheAds();
+      }, (8-3) * 1000);
+
     }, 3 * 1000);
-    setTimeout(function () {
-      that.hideTheAds();
-    }, 8*1000);
+
 
   }
   hideTheAds = () => {
@@ -652,36 +656,52 @@ export default class HomeScreen extends Component {
         }
       },
     });
-
-    // Navigation.push(this.props.componentId, {
-    //   component: {
-    //     name: 'QuestionnaireScreen',
-    //     options: {
-    //       topBar: {
-    //         visible: false,
-    //         drawBehind: true,
-    //         animate: false,
-    //       },
-    //     },
-    //     passProps: {
-    //       surveyId : '1',
-    //       notification : 'Y',
-    //       user_id: this.state.user_id,
-    //       lat_lon: this.state.lat_lon,
-    //       userLanguage: this.state.data.userLanguage,
-    //       // languageCode: this.state.firstAPIresponse ? this.state.firstAPIresponse.languageCodes : null,
-    //       menuName: menuName
-    //     }
-    //   },
-    // });
   };
 
   toTrendScreen = () => {
     const { menuName } = this.state;
-
+    // Navigation.showModal({
+    //   stack: {
+    //     children: [{
+    //       component: {
+    //         name: 'ScratchCardScreen',
+    //         passProps: {
+    //           text: 'stack with one child'
+    //         },
+    //         options: {
+    //           modalPresentationStyle : Platform.OS === 'ios' ? 'overFullScreen' : 'overCurrentContext',
+    //           layout : {
+    //             backgroundColor : 'transparent'
+    //           },
+    //           topBar: {
+    //             visible: false,
+    //             title: {
+    //               text: 'Modal'
+    //             }
+    //           }
+    //         }
+    //       }
+    //     }]
+    //   }
+    // });
+    // return;
+    // Navigation.showOverlay({
+    //   component: {
+    //     name: 'ScratchCardScreen',
+    //     options: {
+    //       topBar:{
+    //         animate : true
+    //       },
+    //       overlay: {
+    //         interceptTouchOutside: false
+    //       }
+    //     }
+    //   }
+    // });
+    // return;
     Navigation.push(this.props.componentId, {
       component: {
-        name: 'TrendScreen',
+        name: 'TrendScreen',//'ScratchCardScreen',// 
         options: {
           topBar: {
             visible: false,
@@ -1992,7 +2012,7 @@ export default class HomeScreen extends Component {
               repeatSpacer={50}
               // marqueeDelay={1000}
               scrollingSpeed={100}
-              easing = {Easing.linear}
+              easing={Easing.linear}
             >{this.state.firstAPIresponse && this.state.firstAPIresponse.nationalTicker}</TextTicker>
           )}
 
@@ -2104,7 +2124,7 @@ export default class HomeScreen extends Component {
                 loop
                 bounce={false}
                 repeatSpacer={50}
-                easing = {Easing.linear}
+                easing={Easing.linear}
                 scrollingSpeed={100}
                 marqueeDelay={1000}>{this.state.firstAPIresponse && this.state.firstAPIresponse.stateTicker}</TextTicker>
             )}

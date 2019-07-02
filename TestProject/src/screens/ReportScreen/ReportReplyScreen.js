@@ -13,6 +13,8 @@ import axios from 'axios';
 import firebase from 'react-native-firebase';
 import KochavaTracker from 'react-native-kochava-tracker';
 
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
 export default class ReportReplyScreen extends Component {
   dataTappedForMore = null;
   shareOptions = null;
@@ -121,7 +123,13 @@ export default class ReportReplyScreen extends Component {
     // this.setState({ refreshing: false });
   }
   homeButtonTapped = () => {
-    Navigation.pop(this.props.componentId);
+    Navigation.pop(this.props.componentId)
+    // Navigation.push("", {
+    //   component: {
+    //     name: "TutorialScreen"
+    //   }
+    // })
+    // Navigation.popTo("HomeScreen");
   };
 
   _onRefresh = () => {
@@ -213,7 +221,7 @@ export default class ReportReplyScreen extends Component {
 
       let array = Object.assign([], dataObj);
       array[index] = modifiedObj;
-      
+
       console.log(modifiedObj);
       console.log(data);
       console.log(index);
@@ -235,21 +243,21 @@ export default class ReportReplyScreen extends Component {
         .then(response => {
           let responseData = response.data;
           console.log(responseData)
-          
+
           // this._onRefresh();
           if (responseData.response === 'true') {
 
             this.setState({ likeLoading: false });
-            
-            if(modifiedObj.isOP === 'Y' && this.props.refreshData){
+
+            if (modifiedObj.isOP === 'Y' && this.props.refreshData) {
               this.props.refreshData(modifiedObj);
             }
 
           } else {
             var dataObj = that.state.replies;
-              let array = Object.assign([] ,dataObj);
-              array[index] = data;
-              that.setState({ replies: array , likeLoading: false});
+            let array = Object.assign([], dataObj);
+            array[index] = data;
+            that.setState({ replies: array, likeLoading: false });
           }
 
 
@@ -642,7 +650,7 @@ export default class ReportReplyScreen extends Component {
           {...options}
         >
 
-          <View style={styles.headerView} backgroundColor={APP_GLOBAL_COLOR}>
+          <View style={styles.headerView} backgroundColor={this.props.color ? this.props.color : APP_GLOBAL_COLOR}>
 
             <View style={{ width: 60, backgroundColor: 'clear' }}>
               <CustomButton
@@ -658,7 +666,7 @@ export default class ReportReplyScreen extends Component {
             <View style={{ flex: 7.5, backgroundColor: 'clear', flexDirection: 'row', alignItems: 'center' }}>
               <Image
                 style={{
-                  backgroundColor: APP_GLOBAL_COLOR,
+                  backgroundColor: this.props.color ? this.props.color : APP_GLOBAL_COLOR,
                   marginLeft: normalize(10),
                   width: normalize(30),
                   height: normalize(30),
@@ -818,7 +826,7 @@ export default class ReportReplyScreen extends Component {
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={{ position: 'absolute', bottom: 7, right: 10, height: 36, width: 36, borderRadius: 18, backgroundColor: APP_GLOBAL_COLOR, alignItems: 'center', justifyContent: 'center' }}
+              style={{ position: 'absolute', bottom: 7, right: 10, height: 36, width: 36, borderRadius: 18, backgroundColor: this.props.color ? this.props.color : APP_GLOBAL_COLOR, alignItems: 'center', justifyContent: 'center' }}
               onPress={this.sendReply}
               disabled={this.state.disabled}
             >
@@ -916,7 +924,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     elevation: 5,
     backgroundColor: 'white',
-    height: Dimensions.get('window').height * 0.07
+    height:hp('6%')// Dimensions.get('window').height * 0.07
   },
   textheaderView: {
     // flex: 2.5,

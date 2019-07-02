@@ -22,15 +22,19 @@ import ButtonMod from '../../components/UI/ButtonMod/ButtonMod';
 import EditButton from '../../components/UI/EditButton/EditButton';
 import { Navigation } from 'react-native-navigation';
 import { PropTypes } from 'prop-types';
-import { saveUserData, defaultUser, authHeaders, getUserID, APP_GLOBAL_COLOR, normalize } from '../../../Constant';
+import { saveUserData, defaultUser, authHeaders, getUserID, APP_GLOBAL_COLOR, normalize, getToken } from '../../../Constant';
 import { UPDATE_USER } from '../../../Apis';
 import axios from 'axios';
 import Share, { ShareSheet, Button } from 'react-native-share';
 import Loading from 'react-native-whc-loading';
 import { CheckBox } from 'react-native-elements';
 import CustomButton from '../../components/UI/ButtonMod/CustomButtom';
+import homeScreen from '../../AppNavigation';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 export default class Profile extends Component {
+
+  userToken = null;
 
   static propTypes = {
     componentId: PropTypes.string,
@@ -60,8 +64,12 @@ export default class Profile extends Component {
       warningVisible: false,
       maleChecked: this.props.gender === "Male",
 
-      mediaType: 'jpg'
+      mediaType: 'jpg',
+    
     }
+    getToken().then((token)=>{
+      userToken = token;
+    })
   }
 
   backTapped = () => {
@@ -105,6 +113,9 @@ export default class Profile extends Component {
    * The second arg is the callback which sends object: response (more info in the API Reference)
    */
   imagePicker = () => {
+
+    // alert('aaa');
+    // return;
 
     ImagePicker.showImagePicker({ title: 'Select an Image', quality: 0.3, allowsEditing: false }, response => {
       console.log('Response = ', response);
@@ -162,7 +173,8 @@ export default class Profile extends Component {
         userAgeGroup: this.state.selectedAgeGroupCode,
         userDescription: this.state.description,
         userDesignation: this.state.userDesignation,
-        userLanguage: this.state.userLanguage
+        userLanguage: this.state.userLanguage,
+        pushNotificationToken:this.userToken
 
       });
       // alert(body);
@@ -180,7 +192,8 @@ export default class Profile extends Component {
         userAgeGroup: this.state.selectedAgeGroupCode,
         userDescription: this.state.description,
         userDesignation: this.state.userDesignation,
-        userLanguage: this.state.userLanguage
+        userLanguage: this.state.userLanguage,
+        pushNotificationToken:this.userToken
       });
     }
     // alert(body);
@@ -220,31 +233,32 @@ export default class Profile extends Component {
           return;
         }
 
-        Navigation.setRoot({
-          root: {
-            stack: {
-              children: [
-                {
-                  component: {
-                    name: "HomeScreen",
-                    options: {
-                      topBar: {
-                        visible: false,
-                        drawBehind: true,
-                        animate: false
-                      },
-                      popGesture: false
-                    },
-                    passProps: {
-                      data: this.state,
-                      refresh: true
-                    },
-                  },
-                },
-              ],
-            },
-          },
-        });
+        homeScreen(this.state);
+        // Navigation.setRoot({
+        //   root: {
+        //     stack: {
+        //       children: [
+        //         {
+        //           component: {
+        //             name: "HomeScreen",
+        //             options: {
+        //               topBar: {
+        //                 visible: false,
+        //                 drawBehind: true,
+        //                 animate: false
+        //               },
+        //               popGesture: false
+        //             },
+        //             passProps: {
+        //               data: this.state,
+        //               refresh: true
+        //             },
+        //           },
+        //         },
+        //       ],
+        //     },
+        //   },
+        // });
 
       })
       .catch((error) => {
@@ -364,7 +378,7 @@ export default class Profile extends Component {
     return (
       <SafeAreaView forceInset={{ bottom: 'always' }} style={{ flex: 1, backgroundColor: "white" }}>
 
-        <View style={styles.headerView} backgroundColor={APP_GLOBAL_COLOR}>
+        <View style={styles.headerView} backgroundColor={this.props.color ? this.props.color : APP_GLOBAL_COLOR}>
 
           <View style={{ flex: 1, backgroundColor: 'clear' }}>
             {this.props.refreshUI && <CustomButton
@@ -429,7 +443,7 @@ export default class Profile extends Component {
                   style={{
                     width: '90%',
                     // borderWidth: 2,
-                    borderColor: APP_GLOBAL_COLOR,
+                    borderColor: this.props.color ? this.props.color : APP_GLOBAL_COLOR,
                     // padding: 5,
                     // marginTop: 8,
                     // marginBottom: 8,
@@ -448,7 +462,7 @@ export default class Profile extends Component {
                   style={{
                     width: '90%',
                     // borderWidth: 2,
-                    borderColor: APP_GLOBAL_COLOR,
+                    borderColor: this.props.color ? this.props.color : APP_GLOBAL_COLOR,
                     // padding: 5,
                     borderBottomWidth: 1,
                     // marginTop: 8,
@@ -460,7 +474,7 @@ export default class Profile extends Component {
                   value={this.state.lastName} onChangeText={(text) => this.setState({ lastName: text })}
                 />
 
-                <Text style={{ marginTop: 5, color: APP_GLOBAL_COLOR, fontSize: 12 }}>Give your Profile a name</Text>
+                <Text style={{ marginTop: 5, color: this.props.color ? this.props.color : APP_GLOBAL_COLOR, fontSize: 12 }}>Give your Profile a name</Text>
 
                 <TextInput
                   underlineColorAndroid="transparent"
@@ -470,7 +484,7 @@ export default class Profile extends Component {
                     width: '90%',
                     // borderWidth: 2,
                     borderBottomWidth: 1,
-                    borderColor: APP_GLOBAL_COLOR,
+                    borderColor: this.props.color ? this.props.color : APP_GLOBAL_COLOR,
                     // padding: 2,
                     // marginTop: 8,
                     // marginBottom: 8,
@@ -525,7 +539,7 @@ export default class Profile extends Component {
             </View>
 
             <DefaultInput placeholder="Username" value={this.state.username} editable={this.state.editable} onChangeText={(text) => this.setState({ username: text })} onBlur={this.hideMessage} onFocus={this.showMessage} />
-            {!this.props.username && this.state.warningVisible && <Text style={{ color: APP_GLOBAL_COLOR }}>This cannot be changed once decided</Text>}
+            {!this.props.username && this.state.warningVisible && <Text style={{ color:  }}>This cannot be changed once decided</Text>}
 
             <DefaultInput placeholder="First Name" value={this.state.firstName} onChangeText={(text) => this.setState({ firstName: text })} />
             <DefaultInput placeholder="Last Name" value={this.state.lastName} onChangeText={(text) => this.setState({ lastName: text })} /> */}
@@ -599,7 +613,7 @@ export default class Profile extends Component {
 
             {this.state.languageCode && <View style={{ width: '100%', marginTop: 5 }}>
 
-              <View style={{ width: '100%', backgroundColor: APP_GLOBAL_COLOR, height: 40, justifyContent: 'center' }}>
+              <View style={{ width: '100%', backgroundColor: this.props.color ? this.props.color : APP_GLOBAL_COLOR, height: 40, justifyContent: 'center' }}>
                 <Text style={{ marginLeft: 10, color: 'white', fontWeight: 'bold' }}> Choose Your Language </Text>
               </View>
 
@@ -614,7 +628,7 @@ export default class Profile extends Component {
 
             {/* <View style={{ height: 100 }} /> */}
 
-            <ButtonMod onPress={this.toHomeScreen} color="#a01414"> Submit </ButtonMod>
+            <ButtonMod onPress={this.toHomeScreen} color={this.props.color ? this.props.color : APP_GLOBAL_COLOR}> Submit </ButtonMod>
             <View style={{ height: 10 }} />
           </ScrollView>
         </KeyboardAvoidingView>
@@ -622,7 +636,7 @@ export default class Profile extends Component {
 
         <ShareSheet visible={this.state.visible} onCancel={() => { this.onCancel() }} >
           <View style={{ backgroundColor: 'white', height: 50, alignItems: 'center', justifyContent: 'center' }}>
-            <Text style={{ fontSize: 16, fontWeight: 'bold', color: APP_GLOBAL_COLOR }}> {this.props.selAgeGroup} </Text>
+            <Text style={{ fontSize: 16, fontWeight: 'bold', color: this.props.color ? this.props.color : APP_GLOBAL_COLOR }}> {this.props.selAgeGroup} </Text>
           </View>
 
           {this.BUTTONS.map((item) => {
@@ -676,7 +690,7 @@ export default class Profile extends Component {
         <ShareSheet visible={this.state.visibleProfession} onCancel={() => { this.onCancelProfession() }} >
 
           <View style={{ backgroundColor: 'white', height: 50, alignItems: 'center', justifyContent: 'center' }}>
-            <Text style={{ fontSize: 16, fontWeight: 'bold', color: APP_GLOBAL_COLOR }}> {this.props.selProfession} </Text>
+            <Text style={{ fontSize: 16, fontWeight: 'bold', color: this.props.color ? this.props.color : APP_GLOBAL_COLOR }}> {this.props.selProfession} </Text>
           </View>
 
           {P_BUTTONS.map((item) => {
@@ -727,7 +741,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     elevation: 5,
     backgroundColor: 'white',
-    height: Dimensions.get('window').height * 0.07
+    height: hp('6%')// Dimensions.get('window').height * 0.07
   },
   textheaderView: {
     flex: 2.5,

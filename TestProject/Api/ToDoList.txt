@@ -1,0 +1,85 @@
+
+
+Arena Screen:
+
+1. "Share your views…" should open compose screen.
+
+2. Remove post button and change the camera, gallery icons.
+
+3. Remove CM and add Rate your state and national leaders.
+- Need UI  
+
+4. "Rate your state and national leaders" will open CM and PM with their cabinets respectively.
+- Need Api
+
+5. One important post will be highlighted on top from Raajneeti id.
+- Done automatically from backend
+
+6. Delete and edit post.
+- Delete  and Edit post Api required
+
+7. Improve alignment of like and comments. Also fill the empty space with more options.
+- UI design to fill empty space
+
+2 days for developing.
+
+Settings Screen:
+1. Option to select home screen (Arena , Survey and Rate Now). Arena and survey will rearrange if selected.
+
+1 day for developing.
+
+Rate Now Screen:
+
+1. Share/rate leader will appear/disappear when ever the candidates are rated. Change Rate Leader button position
+
+2. Party symbol will be at bottom left corner. 
+
+3. Blue tick will appear at the starting of their name.
+- Api will provide the blue tick
+
+4. Add party name.
+
+5. Rating(eg 3.2) should say “current rating” at the bottom.
+
+6. Change message after submitting the ratting.
+
+7. Create attractive table for the candidate information.
+- UI design
+
+8. If MLA - show other prominent candidate from same constituency.
+    If CM  - show cabinet.
+    If MP  - show other prominent candidate from same constituency.
+    If PM  - show cabinet.
+- Apis required
+
+9. Add local arena at bottom. Do not use gallery option in local arena only camera for posting images, use disclaimer for same.
+
+5 days for developing.
+
+Rate your state and national leaders Screen:
+1. Show maximum 6 candidates and add next to show more candidates.
+- Need api
+
+2. Show their ranking and rating both.
+- Need to add these parameter in the api
+
+1 day for developing.
+
+Trends Screen:
+Show top six MP and MLA
+- Need api
+
+Settings Screen:
+1. Remove profile.
+2. Select you home screen option.
+3. Add whats new.
+
+2 days for developing.
+
+General:
+1. Add Bell icon for notification screen.
+2. Selected home screen will have "Rate your state and national leaders".
+
+1 day for developing.
+
+Follower and following functionality will be discussed in later phase.

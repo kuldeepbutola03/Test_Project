@@ -103,11 +103,8 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         missingDimensionStrategy "RNN.reactNativeVersion", "reactNative57_5"
         multiDexEnabled true
-        versionCode 13
-        versionName "1.11"
-        ndk {
-            abiFilters "armeabi-v7a", "x86"
-        }
+        versionCode 14
+        versionName "1.12"
         vectorDrawables.useSupportLibrary = true
     }
 
@@ -132,7 +129,7 @@ signingConfigs {
             reset()
             enable enableSeparateBuildPerCPUArchitecture
             universalApk false  // If true, also generate a universal APK
-            include "armeabi-v7a", "x86"
+            include "armeabi-v7a", "x86", "arm64-v8a", "x86_64"
         }
     }
     buildTypes {
@@ -147,7 +144,7 @@ signingConfigs {
         variant.outputs.each { output ->
             // For each separate APK per architecture, set a unique version code as described here:
             // http://tools.android.com/tech-docs/new-build-system/user-guide/apk-splits
-            def versionCodes = ["armeabi-v7a":1, "x86":2]
+            def versionCodes = ["armeabi-v7a":1, "x86":2, "arm64-v8a": 3, "x86_64": 4]
             def abi = output.getFilter(OutputFile.ABI)
             if (abi != null) {  // null for the universal-debug, universal-release variants
                 output.versionCodeOverride =
@@ -169,6 +166,8 @@ configurations.all {
 }
 
 dependencies {
+    implementation project(':react-native-scratch')
+    implementation project(':@react-native-community_async-storage')
     compile project(':react-native-kochava-tracker')
     compile project(':react-native-spinkit')
     
@@ -189,14 +188,17 @@ dependencies {
     compile project(':react-native-svg')
     compile project(':react-native-image-picker')
     implementation fileTree(dir: "libs", include: ["*.jar"])
+    
+    // implementation "com.android.support:support-v4:24.0.0"
     implementation "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
     implementation "com.facebook.react:react-native:+"  // From node_modules
     implementation(project(':react-native-maps')){
        exclude group: 'com.google.android.gms', module: 'play-services-base'
        exclude group: 'com.google.android.gms', module: 'play-services-maps'
    }
-    implementation 'com.google.android.gms:play-services-base:+'
-    implementation 'com.google.android.gms:play-services-maps:+'
+
+    implementation 'com.google.android.gms:play-services-base:16.0.1'
+    implementation 'com.google.android.gms:play-services-maps:16.+'
     implementation project(':react-native-navigation')
 
     implementation 'com.facebook.android:facebook-android-sdk:4.34.0'
@@ -218,6 +220,8 @@ dependencies {
     implementation 'com.google.android.gms:play-services-vision:16.2.0'
     implementation 'com.google.firebase:firebase-messaging:17.3.1'
 
+    implementation 'com.android.support:multidex:1.0.3'
+//    implementation 'com.android.support:multidex-instrumentation:26.1.0'
 
 implementation 'com.google.firebase:firebase-dynamic-links:16.1.8'
  implementation "com.google.firebase:firebase-ads:16.0.1"

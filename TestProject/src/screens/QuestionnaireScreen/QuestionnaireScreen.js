@@ -1,24 +1,21 @@
 import axios from 'axios';
 import _ from 'lodash';
-import moment, { duration } from 'moment';
 import { PropTypes } from 'prop-types';
 import React, { Component } from 'react';
-import { Alert, Dimensions, SafeAreaView, ScrollView, StyleSheet, Text, TouchableWithoutFeedback, View, Image, TouchableOpacity, LayoutAnimation } from 'react-native';
-import Draggable from 'react-native-draggable';
-import { Icon, withBadge } from 'react-native-elements';
+import { Alert, Dimensions, Image, LayoutAnimation, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import firebase from 'react-native-firebase';
+import KochavaTracker from 'react-native-kochava-tracker';
 import { Navigation } from 'react-native-navigation';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import SpinKit from 'react-native-spinkit';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Loading from 'react-native-whc-loading';
-import { GET_CURRENT_ACTIVE_SURVEY, GET_SURVEY_BY_ID, GET_USER_NOTIFICATIONS, SUBMIT_USER_SURVEY_QUESTION, UPDATE_USER_NOTIFICATIONS } from '../../../Apis';
-import { APP_ALERT_MESSAGE, APP_GLOBAL_COLOR, normalize } from '../../../Constant';
-import CustomButton from '../../components/UI/ButtonMod/CustomButtom';
+import { GET_CURRENT_ACTIVE_SURVEY, GET_SURVEY_BY_ID, SUBMIT_USER_SURVEY_QUESTION } from '../../../Apis';
+import { APP_ALERT_MESSAGE, APP_GLOBAL_COLOR, normalize, PROPS_ARRAY_NOTIFY_SCREEN, PROPS_ARRAY_FOR_LOCATION } from '../../../Constant';
 import CustomTextButton from '../../components/UI/ButtonMod/CustomTextButton';
+import { NavigationBarDefault } from '../../components/UI/NavigationBarDefault/NavigationBarDefault';
 import QuestionniareListView from '../../components/UI/QuestionView/QuestionniareListView';
+import TabBarNavigation from '../../components/UI/TabBarNavigation/TabBarNavigation';
 
-import KochavaTracker from 'react-native-kochava-tracker';
 export default class QuestionnireScreen extends Component {
     state = {
         surveyThreadID: this.props.surveyThreadID,
@@ -47,8 +44,14 @@ export default class QuestionnireScreen extends Component {
         isSurveyTaken2: 'N',
         surveyTitle: 'SURVEY',
         notifications: this.props.notifications,
-        positionRight: -30
+        positionRight: -30,
+        selectedThemeColor: this.props.color,
 
+        data: this.props.data,
+
+        serverHitCount: 0,
+
+        selectedIndexTab: this.props.selectedIndexTab
     }
 
 
@@ -60,6 +63,33 @@ export default class QuestionnireScreen extends Component {
     constructor(props) {
         super(props);
     };
+
+    showScratchCard = () => {
+        Navigation.showModal({
+            stack: {
+                children: [{
+                    component: {
+                        name: 'ScratchCardScreen',
+                        passProps: {
+                            text: 'stack with one child'
+                        },
+                        options: {
+                            modalPresentationStyle: Platform.OS === 'ios' ? 'overFullScreen' : 'overCurrentContext',
+                            layout: {
+                                backgroundColor: 'transparent'
+                            },
+                            topBar: {
+                                visible: false,
+                                title: {
+                                    text: 'Modal'
+                                }
+                            }
+                        }
+                    }
+                }]
+            }
+        });
+    }
 
 
     getSurvey = (mount) => {
@@ -74,12 +104,23 @@ export default class QuestionnireScreen extends Component {
             return;
         }
 
+        var targetLocation = PROPS_ARRAY_FOR_LOCATION.slice(-1).pop()
+        let latlong = null;
+        if (targetLocation) {
+            latlong = targetLocation.location.latitude.toString() + "," + targetLocation.location.longitude.toString()
+        }
+
         if (notification) {
-            axios.post(GET_SURVEY_BY_ID, {
+            var body = {
                 surveyId: "5",
                 userId: "15",
-                userCurrentCoord: "48.92100020832678,-112.2370634060909"
-            }).then(response => {
+                // userCurrentCoord: "48.92100020832678,-112.2370634060909"
+            }
+
+            if (latlong) {
+                body['userCurrentCoord'] = latlong
+            }
+            axios.post(GET_SURVEY_BY_ID, body).then(response => {
                 let responseData = response.data;
                 if (responseData.isNationalLevel === 'N') {
                     this.setState({
@@ -89,12 +130,17 @@ export default class QuestionnireScreen extends Component {
                         state: true
                     })
 
-                    axios.post(GET_CURRENT_ACTIVE_SURVEY, {
+                    var body1 = {
                         isNationalLevel: !this.state.state ? 'N' : 'Y',
                         userId: this.props.user_id,
-                        userCurrentCoord: this.props.lat_lon,
+                        // userCurrentCoord: "48.92100020832678,-112.2370634060909"
+                    }
 
-                    })
+                    if (latlong) {
+                        body1['userCurrentCoord'] = latlong
+                    }
+
+                    axios.post(GET_CURRENT_ACTIVE_SURVEY, body1)
                         .then(response => {
                             let responseData_2 = response.data;
                             // this.setState({
@@ -125,12 +171,17 @@ export default class QuestionnireScreen extends Component {
                         isSurveyTaken2: responseData.isSurveyTaken
                     })
 
-                    axios.post(GET_CURRENT_ACTIVE_SURVEY, {
+                    var body2 = {
                         isNationalLevel: 'Y',
                         userId: this.props.user_id,
-                        userCurrentCoord: this.props.lat_lon,
+                        // userCurrentCoord: "48.92100020832678,-112.2370634060909"
+                    }
 
-                    })
+                    if (latlong) {
+                        body2['userCurrentCoord'] = latlong
+                    }
+
+                    axios.post(GET_CURRENT_ACTIVE_SURVEY, body2)
                         .then(response => {
                             let responseData_2 = response.data;
                             this.setState({
@@ -159,11 +210,19 @@ export default class QuestionnireScreen extends Component {
         } else {
             if (mount) {
                 if (surveyType) {
-                    axios.post(GET_CURRENT_ACTIVE_SURVEY, {
+
+                    var body3 = {
                         isNationalLevel: surveyType,
                         userId: this.props.user_id,
-                        userCurrentCoord: this.props.lat_lon
-                    })
+                        // userCurrentCoord: "48.92100020832678,-112.2370634060909"
+                    }
+
+                    if (latlong) {
+
+                        body3['userCurrentCoord'] = latlong
+                    }
+
+                    axios.post(GET_CURRENT_ACTIVE_SURVEY, body3)
                         .then(response => {
                             let responseData = response.data;
 
@@ -173,11 +232,17 @@ export default class QuestionnireScreen extends Component {
                                 isSurveyTaken2: responseData.isSurveyTaken
                             })
 
-                            axios.post(GET_CURRENT_ACTIVE_SURVEY, {
+                            var body4 = {
                                 isNationalLevel: 'N',
                                 userId: this.props.user_id,
-                                userCurrentCoord: this.props.lat_lon
-                            })
+                                // userCurrentCoord: "48.92100020832678,-112.2370634060909"
+                            }
+
+                            if (latlong) {
+                                body4['userCurrentCoord'] = latlong
+                            }
+
+                            axios.post(GET_CURRENT_ACTIVE_SURVEY, body4)
                                 .then(response_2 => {
                                     let responseData_2 = response_2.data;
                                     this.setState({
@@ -225,11 +290,17 @@ export default class QuestionnireScreen extends Component {
                     })
 
                 } else {
-                    axios.post(GET_CURRENT_ACTIVE_SURVEY, {
+
+                    var body5 = {
                         isNationalLevel: 'N',
                         userId: this.props.user_id,
-                        userCurrentCoord: this.props.lat_lon
-                    })
+                        // userCurrentCoord: "48.92100020832678,-112.2370634060909"
+                    }
+
+                    if (latlong) {
+                        body5['userCurrentCoord'] = latlong
+                    }
+                    axios.post(GET_CURRENT_ACTIVE_SURVEY, body5)
 
                         .then(response => {
                             let responseData = response.data;
@@ -290,12 +361,18 @@ export default class QuestionnireScreen extends Component {
                 }
             } else {
                 if (surveyType) {
-                    axios.post(GET_CURRENT_ACTIVE_SURVEY, {
+
+                    var body6 = {
                         isNationalLevel: surveyType,
                         userId: this.props.user_id,
-                        userCurrentCoord: this.props.lat_lon,
+                        // userCurrentCoord: "48.92100020832678,-112.2370634060909"
+                    }
 
-                    })
+                    if (latlong) {
+                        body6['userCurrentCoord'] = latlong
+                    }
+
+                    axios.post(GET_CURRENT_ACTIVE_SURVEY, body6)
                         .then(response => {
                             let responseData = response.data;
                             console.log(responseData);
@@ -306,11 +383,17 @@ export default class QuestionnireScreen extends Component {
                                 // surveyTitle: responseData.surveyDesc
                             })
 
-                            axios.post(GET_CURRENT_ACTIVE_SURVEY, {
+                            var body7 = {
                                 isNationalLevel: 'N',
                                 userId: this.props.user_id,
-                                userCurrentCoord: this.props.lat_lon
-                            })
+                                // userCurrentCoord: "48.92100020832678,-112.2370634060909"
+                            }
+
+                            if (latlong) {
+                                body7['userCurrentCoord'] = latlong
+                            }
+
+                            axios.post(GET_CURRENT_ACTIVE_SURVEY, body7)
                                 .then(response_2 => {
                                     let responseData_2 = response_2.data;
                                     this.setState({
@@ -335,14 +418,24 @@ export default class QuestionnireScreen extends Component {
                     })
 
                 } else {
-                    let body1 = {
+                    // let body1 = {
+                    //     isNationalLevel: 'N',
+                    //     userId: this.props.user_id,
+                    //     userCurrentCoord: this.props.lat_lon,
+
+                    // };
+
+                    var body8 = {
                         isNationalLevel: 'N',
                         userId: this.props.user_id,
-                        userCurrentCoord: this.props.lat_lon,
+                        // userCurrentCoord: "48.92100020832678,-112.2370634060909"
+                    }
 
-                    };
+                    if (latlong) {
+                        body8['userCurrentCoord'] = latlong
+                    }
 
-                    axios.post(GET_CURRENT_ACTIVE_SURVEY, body1)
+                    axios.post(GET_CURRENT_ACTIVE_SURVEY, body8)
                         .then(response => {
                             let responseData = response.data;
                             console.log(responseData);
@@ -354,12 +447,22 @@ export default class QuestionnireScreen extends Component {
                                 // surveyTitle: responseData.surveyDesc ? (responseData.surveyDesc === '' ? this.state.surveyTitle : responseData.surveyDesc) : this.state.surveyTitle
                             })
 
-                            let body2 = {
+                            // let body2 = {
+                            //     isNationalLevel: 'Y',
+                            //     userId: this.props.user_id,
+                            //     userCurrentCoord: this.props.lat_lon,
+                            // };
+                            var body9 = {
                                 isNationalLevel: 'Y',
                                 userId: this.props.user_id,
-                                userCurrentCoord: this.props.lat_lon,
-                            };
-                            axios.post(GET_CURRENT_ACTIVE_SURVEY, body2)
+                                // userCurrentCoord: "48.92100020832678,-112.2370634060909"
+                            }
+
+                            if (latlong) {
+                                body9['userCurrentCoord'] = latlong
+                            }
+
+                            axios.post(GET_CURRENT_ACTIVE_SURVEY, body9)
                                 .then(response_2 => {
                                     let responseData_2 = response_2.data;
                                     console.log(responseData_2);
@@ -400,10 +503,23 @@ export default class QuestionnireScreen extends Component {
         return "SURVEY"
 
     }
+    componentWillUnmount() {
+
+        // PROPS_ARRAY_NOTIFICATION.push(this.refreshNotificationData);
+
+        var index = PROPS_ARRAY_NOTIFY_SCREEN.indexOf(this.refreshUserScreenUI);
+        if (index > -1) {
+            PROPS_ARRAY_NOTIFY_SCREEN.splice(index, 1);
+        }
+
+    }
 
     componentDidMount() {
         // this.refreshDataWithId('2', 'sadsa');
-        this.getSurvey();
+        if (this.props.notFirstScreen) {
+            this.getSurvey();
+        }
+
         // this.getNotifications();
         const { surveyTitle } = this.props;
 
@@ -423,12 +539,35 @@ export default class QuestionnireScreen extends Component {
         KochavaTracker.sendEventMapObject(KochavaTracker.EVENT_TYPE_LEVEL_COMPLETE_STRING_KEY, eventMapObject);
 
 
+        PROPS_ARRAY_NOTIFY_SCREEN.push(this.refreshUserScreenUI);
+    }
+    refreshUserScreenUI = (notifications, screen, purpose) => {
+        //
+        if (screen === 1 || screen < 0) {
+            if (purpose === 0) {
+                this.setState({ data: notifications })
+            } else if (purpose === 1) {
+                this.setState({ selectedThemeColor: notifications })
+            } else if (purpose === 2) {
+                this.setState({ notifications: notifications });
+            } else if (purpose === 6) {
+                this.setState({ selectedIndexTab: notifications });
+            } else if (purpose === 4) {
 
+                if (!this.props.notFirstScreen) {
+                    
+                    this.getSurvey();
+                }
+            }
+
+        }
     }
 
     homeButtonTapped = () => {
         // Navigation.pop(this.props.componentId);
         Navigation.popToRoot(this.props.componentId);
+
+        // Navigation.popTo("HomeScreen");
     };
 
     stateBttnTapped = () => {
@@ -511,6 +650,8 @@ export default class QuestionnireScreen extends Component {
     }
 
     updateQuestionaire = (survey) => {
+        // this.showScratchCard()
+        // return;
         const { surveyType } = this.props;
         this.refs.loading.show();
 
@@ -728,6 +869,9 @@ export default class QuestionnireScreen extends Component {
     // }
 
     showNotificationScreen = () => {
+        this.showScratchCard();
+        return;
+
         const { menuName } = this.props;
         Navigation.push(this.props.componentId, {
             component: {
@@ -788,14 +932,25 @@ export default class QuestionnireScreen extends Component {
 
     renderComponent = () => {
         const { loading, notifications } = this.state;
-        const BadgedIcon = withBadge(notifications.count)(Icon);
+        // const BadgedIcon = withBadge(notifications.count)(Icon);
         if (loading) {
             return (
+
                 <View style={{ flex: 1 }}>
+                    <NavigationBarDefault
+                        imageSource={this.state.data.image ? { uri: "data:image/png;base64," + this.state.data.image } : require('../../assets/UserSmall.png')}
+                        bgColor={this.state.selectedThemeColor}
+
+
+                        notifications={notifications}
+                        data={this.props.data}
+                        showBackButton={this.props.notFirstScreen}
+
+                    >{this.state.data.username}</NavigationBarDefault>
                     <View
                         style={topViewStyle.headerView}
                         backgroundColor="rgba(242,241,244,1)">
-                        <View style={{ flex: 1, backgroundColor: APP_GLOBAL_COLOR }}>
+                        {/* <View style={{ flex: 1, backgroundColor: APP_GLOBAL_COLOR }}>
                             <CustomButton
                                 style={{
                                     flexDirection: 'row',
@@ -804,7 +959,7 @@ export default class QuestionnireScreen extends Component {
                                 source={require('../../assets/homez.png')}
                                 onPress={this.homeButtonTapped}
                             />
-                        </View>
+                        </View> */}
                         {this.renderTitle()}
                     </View>
                     <View style={{ width: "100%", height: 1 }} backgroundColor="gray" />
@@ -813,7 +968,7 @@ export default class QuestionnireScreen extends Component {
                             isVisible
                             size={hp('4%')}
                             type={'ChasingDots'}
-                            color={APP_GLOBAL_COLOR}
+                            color={this.state.selectedThemeColor}
                         />
                     </View>
                 </View>
@@ -823,63 +978,17 @@ export default class QuestionnireScreen extends Component {
                 <View style={{ flex: 1 }}>
                     <Loading
                         ref="loading" />
-                    <View
-                        style={topViewStyle.headerView}
-                        backgroundColor="rgba(242,241,244,1)">
-                        <View style={{ width: 60, backgroundColor: APP_GLOBAL_COLOR }}>
-                            <CustomButton
-                                style={{
-                                    flexDirection: 'row',
-                                    flex: 1,
-                                }}
-                                source={require('../../assets/homez.png')}
-                                onPress={this.homeButtonTapped}
-                            />
-                        </View>
-                        {this.renderTitle()}
-                        <TouchableWithoutFeedback style={{ width: hp('10%'), justifyContent: 'center', alignItems: 'center', flexDirection: 'row' }} onPress={() => this.showNotificationScreen()}>
-                            <View style={{
-                                // width: hp('10%'),
-                                // flex : 1,
-                                width: hp('10%'),
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                // flexDirection: 'row',
-                            }} onPress={() => this.showNotificationScreen()}>
-                                {notifications.count && notifications.count > 0 ?
-                                    <BadgedIcon
-                                        size={hp('3%')}
-                                        color={APP_GLOBAL_COLOR}
-                                        type="font-awesome"
-                                        // onPress={() => this.showNotificationScreen()}
-                                        name="bell-o" />
-                                    :
-                                    <FontAwesome
-                                        size={hp('3%')}
-                                        // onPress={() => this.showNotificationScreen()}
-                                        name="bell-o"
-                                        color={APP_GLOBAL_COLOR}
-                                    />
-                                }
-                                {/* {notifications.count <= 0 ?
-                                    <FontAwesome
-                                        size={hp('3%')}
-                                        // onPress={() => this.showNotificationScreen()}
-                                        name="bell-o"
-                                        color={APP_GLOBAL_COLOR}
-                                    /> :
-                                    <BadgedIcon
-                                        color={APP_GLOBAL_COLOR}
-                                        type="font-awesome"
-                                        // onPress={() => this.showNotificationScreen()}
-                                        name="bell-o" />
-                                } */}
-                            </View>
-                        </TouchableWithoutFeedback>
+                    <NavigationBarDefault
+                        imageSource={this.state.data.image ? { uri: "data:image/png;base64," + this.state.data.image } : require('../../assets/UserSmall.png')}
+                        bgColor={this.state.selectedThemeColor}
 
-                    </View>
-                    <View style={{ width: "100%", height: 1 }} backgroundColor="gray" />
+                        notifications={notifications}
+                        data={this.props.data}
+                        showBackButton={this.props.notFirstScreen}
 
+                    >{this.state.data.username}</NavigationBarDefault>
+
+                    <View style={{ width: "100%", height: 1 }} backgroundColor="white" />
                     {/* secondViewStyle */}
                     <View style={secondViewStyle.secondView}>
 
@@ -887,7 +996,7 @@ export default class QuestionnireScreen extends Component {
                             onPress={this.nationalBttnTapped}
                             style={{ flex: 1 }}
                             textColor={this.state.state ? "white" : "black"}
-                            bgColor={this.state.state ? APP_GLOBAL_COLOR : "transparent"} >
+                            bgColor={this.state.state ? this.state.selectedThemeColor : "transparent"} >
                             {"NATIONAL"}
                             {/* {this.state.questionnaire2 ? this.state.questionnaire2.userCurrentState.toUpperCase() : "NATIONAL"} */}
                         </CustomTextButton>
@@ -895,11 +1004,19 @@ export default class QuestionnireScreen extends Component {
                             onPress={this.stateBttnTapped}
                             style={{ flex: 1 }}
                             textColor={!this.state.state ? "white" : "black"}
-                            bgColor={!this.state.state ? APP_GLOBAL_COLOR : "transparent"} >
+                            bgColor={!this.state.state ? this.state.selectedThemeColor : "transparent"} >
                             {
                                 (this.state.questionnaire1 && this.state.questionnaire2.userCurrentState) ? this.state.questionnaire2.userCurrentState.toUpperCase() : "STATE"}
                         </CustomTextButton>
                     </View>
+                    <View
+                        style={topViewStyle.headerView}
+                        backgroundColor="rgba(242,241,244,1)">
+
+                        {this.renderTitle()}
+
+                    </View>
+
 
                     <View style={{ width: "100%", height: 1 }} backgroundColor="white" />
 
@@ -911,6 +1028,7 @@ export default class QuestionnireScreen extends Component {
 
                             <View style={thirdViewStyle.innerViewSecond}>
                                 <QuestionniareListView
+                                    color={this.state.selectedThemeColor}
                                     userLanguage={this.props.userLanguage}
                                     data={this.state.questionniareData2}
                                     survey={this.props.surveyType ? 'L' : 'Y'}
@@ -932,6 +1050,7 @@ export default class QuestionnireScreen extends Component {
                             </View>
                             <View style={thirdViewStyle.innerViewSecond}>
                                 <QuestionniareListView
+                                    color={this.state.selectedThemeColor}
                                     userLanguage={this.props.userLanguage}
                                     data={this.state.questionniareData1}
                                     updateQuestionaire={this.updateQuestionaire}
@@ -954,6 +1073,7 @@ export default class QuestionnireScreen extends Component {
                             </View>
                         </ScrollView>
                     </View>
+                    {!this.props.notFirstScreen && <TabBarNavigation color={this.state.selectedThemeColor} selectedIndex={1} selectedIndexTab={this.state.selectedIndexTab} />}
                 </View>
             )
         }
@@ -975,12 +1095,23 @@ export default class QuestionnireScreen extends Component {
 
     refreshDataWithId2 = (surveyId, surveyDesc, thatObj) => {
 
-        // alert(surveyId);
-        axios.post(GET_SURVEY_BY_ID, {
+        var targetLocation = PROPS_ARRAY_FOR_LOCATION.slice(-1).pop()
+        let latlong = null;
+        if (targetLocation) {
+            latlong = targetLocation.location.latitude.toString() + "," + targetLocation.location.longitude.toString()
+        }
+
+        var body = {
             surveyId: surveyId,
             userId: this.props.user_id,
-            userCurrentCoord: this.props.lat_lon
-        }).then(response => {
+            // userCurrentCoord: "48.92100020832678,-112.2370634060909"
+        }
+
+        if (latlong) {
+            body['userCurrentCoord'] = latlong
+        }
+
+        axios.post(GET_SURVEY_BY_ID, body).then(response => {
             let responseData = response.data;
             // if(responseData.isNationalLevel === 'Y') {
 
@@ -1003,12 +1134,17 @@ export default class QuestionnireScreen extends Component {
                 surveyTitle: responseData.surveyDesc ? (responseData.surveyDesc === '' ? this.state.surveyTitle : responseData.surveyDesc) : this.state.surveyTitle
             })
 
-            axios.post(GET_CURRENT_ACTIVE_SURVEY, {
+            var body2 = {
                 isNationalLevel: 'N',
                 userId: this.props.user_id,
-                userCurrentCoord: this.props.lat_lon,
+                // userCurrentCoord: "48.92100020832678,-112.2370634060909"
+            }
+    
+            if (latlong) {
+                body2['userCurrentCoord'] = latlong
+            }
 
-            })
+            axios.post(GET_CURRENT_ACTIVE_SURVEY, body2)
                 .then(response => {
                     let responseData_2 = response.data;
                     // alert(JSON.stringify(responseData_2));
@@ -1057,7 +1193,7 @@ export default class QuestionnireScreen extends Component {
                             color: "white"
                         },
                         background: {
-                            color: APP_GLOBAL_COLOR
+                            color: this.state.selectedThemeColor
                         },
                         backButton: {
                             color: "white"
@@ -1087,8 +1223,9 @@ export default class QuestionnireScreen extends Component {
         const { height, width } = Dimensions.get('window');
         return (
             <SafeAreaView
-                forceInset={{ bottom: 'always' }}
+                // forceInset={{ bottom: 'always' }}
                 style={{ flex: 1, backgroundColor: 'rgba(210,210,208,1)' }}>
+                {/* // 'rgba(210,210,208,1)' }}> */}
 
                 {this.renderComponent()}
 
@@ -1128,15 +1265,18 @@ export default class QuestionnireScreen extends Component {
 
 const topViewStyle = StyleSheet.create({
     headerView: {
+        // height : 30,
         flex: 0.075,
         justifyContent: 'center',
         flexDirection: 'row',
+        // backgroundColor: 'rgba(210,210,208,1)'
     },
 
     textheaderView: {
         flex: 5,
         backgroundColor: 'transparent',
         justifyContent: 'center',
+        alignItems: 'center'
     },
 
     textView: {

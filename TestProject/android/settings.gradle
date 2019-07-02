@@ -1,4 +1,8 @@
 rootProject.name = 'TestProject'
+include ':react-native-scratch'
+project(':react-native-scratch').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-scratch/android')
+include ':@react-native-community_async-storage'
+project(':@react-native-community_async-storage').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-community/async-storage/android')
 include ':react-native-kochava-tracker'
 project(':react-native-kochava-tracker').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-kochava-tracker/android')
 include ':react-native-spinkit'

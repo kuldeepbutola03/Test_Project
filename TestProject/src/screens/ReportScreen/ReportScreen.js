@@ -16,15 +16,17 @@ import {
   ActivityIndicator,
   ProgressBarAndroid,
   ActivityIndicatorIOS,
-  Platform
+  Platform,
+  TextInput,
+  Linking
 } from 'react-native';
 import { Navigation } from 'react-native-navigation';
 import { PropTypes } from 'prop-types';
 import CustomButton from '../../components/UI/ButtonMod/CustomButtom';
-import { normalize, getUserID, getCurrentLocation, APP_GLOBAL_COLOR, getUserData, SHARE_LINK, showAdsTilesRectangle } from '../../../Constant';
+import { normalize, SHARE_LINK, showAdsTilesRectangle, PROPS_ARRAY_NOTIFY_SCREEN, refreshUserScreen, PROPS_ARRAY_FOR_LOCATION } from '../../../Constant';
 import CaseCard from '../../components/UI/CaseCard/CaseCard';
 import Draggable from 'react-native-draggable';
-import { TIMELINE_DATA, MOBILE_NUMBER_, LIKDISLIKE_POST, REPORT_POST, GET_USER_NOTIFICATIONS, UPDATE_USER_NOTIFICATIONS } from '../../../Apis';
+import { TIMELINE_DATA, MOBILE_NUMBER_, LIKDISLIKE_POST, REPORT_POST, GET_USER_NOTIFICATIONS, UPDATE_USER_NOTIFICATIONS, MESSAGE_COMPOSE } from '../../../Apis';
 import { authHeaders } from '../../../Constant';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -41,17 +43,22 @@ import axios from 'axios';
 
 import firebase from 'react-native-firebase';
 import KochavaTracker from 'react-native-kochava-tracker';
+import { NAVIGATION_ROOT } from '../../AppNavigation';
+import { NavigationBarDefault } from '../../components/UI/NavigationBarDefault/NavigationBarDefault';
+import TabBarNavigation from '../../components/UI/TabBarNavigation/TabBarNavigation';
 
+import Permissions from 'react-native-permissions';
 // import PullToRefreshListView from 'react-native-smart-pull-to-refresh-listview';
 
 // import SharingCard from '../../components/UI/Sharing/SharingCard';
 export default class ReportScreen extends Component {
   dataTappedForMore = null;
   shareOptions = null;
+  id = null;
 
   state = {
     case: [],
-    image: this.props.data.image,
+    data: this.props.data,
     iconSrc: require('../../assets/Profile/compose_.png'),
     refreshing: false,
     visible: false,
@@ -61,15 +68,40 @@ export default class ReportScreen extends Component {
     loading: true,
     sortMethod: 3,
     likeLoading: false,
-    notifications: this.props.notifications
+    notifications: null,//this.props.notifications,
+    selectedThemeColor: this.props.color,
+    textCompose: '',
+    disabled: false,
+
+    selectedIndexTab: this.props.selectedIndexTab
   };
 
   static propTypes = {
     componentId: PropTypes.string,
   };
+  componentWillUnmount() {
 
+    // PROPS_ARRAY_NOTIFICATION.push(this.refreshNotificationData);
+
+    var index = PROPS_ARRAY_NOTIFY_SCREEN.indexOf(this.refreshUserScreenUI);
+    if (index > -1) {
+      PROPS_ARRAY_NOTIFY_SCREEN.splice(index, 1);
+    }
+
+    if (this.id) {
+      navigator.geolocation.clearWatch(this.id);
+    }
+
+  }
   componentDidMount() {
+    this.checkPermission()
+
     this._onRefresh();
+    this.requestToGetNotifications()
+
+    this.createNotificationListeners()
+
+
     firebase.analytics().setCurrentScreen("Screen", "Arena_Screen");
     //firebase.analytics().logEvent("Trends_Screen");
     firebase.analytics().setUserProperty("Screen", "Arena_Screen");
@@ -80,6 +112,233 @@ export default class ReportScreen extends Component {
     eventMapObject["screen_name"] = "Arena_Screen";
     KochavaTracker.sendEventMapObject(KochavaTracker.EVENT_TYPE_LEVEL_COMPLETE_STRING_KEY, eventMapObject);
 
+
+    if (Platform.OS === 'android') {
+      Linking.getInitialURL().then(url => {
+        this.navigate(url);
+      });
+
+      // Linking.addEventListener('url', this.handleOpenURL);
+
+
+    } else {
+      Linking.addEventListener('url', this.handleOpenURL);
+
+    }
+
+    PROPS_ARRAY_NOTIFY_SCREEN.push(this.refreshUserScreenUI);
+  }
+
+  handleOpenURL = (event) => { // D
+    this.navigate(event.url);
+  }
+
+  navigate = (url) => { // E
+    // alert(url);
+    // const { navigate } = this.props.navigation;
+    const route = url ? url.replace(/.*?:\/\//g, '') : null;
+    //alert(route);
+    if (route) {
+      if (Platform.OS === 'ios') {
+        if (route.length > 3) {
+          var strFirstThree = route.substring(0, 3);
+          if (strFirstThree && strFirstThree === 'THD')
+            this.toReportReplyScreen(route);
+        }
+
+      } else {
+        let routeName = route.split('/');
+        console.log(routeName);
+        if (routeName.length >= 2) {
+          this.toReportReplyScreen(routeName[1]);
+        }
+      }
+    }
+
+    // const id = route.match(/\/([^\/]+)\/?$/)[1];
+    // const routeName = route.split('/')[0];
+
+    // if (routeName === 'people') {
+    //   navigate('People', { id, name: 'chris' })
+    // };
+  }
+
+  refreshUserScreenUI = (notifications, screen, purpose) => {
+    //
+    if (screen === 0 || screen < 0) {
+      if (purpose === 0) {
+        this.setState({ data: notifications })
+      } else if (purpose === 1) {
+        this.setState({ selectedThemeColor: notifications })
+      } else if (purpose === 2) {
+        this.setState({ notifications: notifications });
+      } else if (purpose === 6) {
+        this.setState({ selectedIndexTab: notifications });
+      }
+    }
+  }
+
+  checkPermission = () => {
+    Permissions.check('location').then(response => {
+      // alert(response);
+      if (response === 'denied' || response === 'undetermined') {
+        this._requestPermission();
+      } else if (response === 'authorized') {
+        this.fetchCurrentLocation();
+
+      } else {
+
+        this.hitServerForLocationUpdate()
+      }
+    })
+  }
+
+  _requestPermission = () => {
+    Permissions.request('location').then(response => {
+      // this.setState({ location: response })
+      // alert('aaaa'+response);
+      if (response === 'denied' || response === 'undetermined') {
+
+        this.hitServerForLocationUpdate()
+
+      } else if (response === 'authorized') {
+        // this.getLocation()
+        this.fetchCurrentLocation();
+      } else {
+
+        this.hitServerForLocationUpdate()
+      }
+    })
+  }
+
+
+  fetchCurrentLocation = () => {
+
+    that = this;
+
+    function success(pos) {
+
+      if (pos.mocked) {
+        if (pos.mocked == true) {
+          alert("you are using fake location");
+
+          return;
+        }
+      }
+
+      var crd = pos.coords;
+
+      var targetLocation = PROPS_ARRAY_FOR_LOCATION.slice(-1).pop()
+
+      if (targetLocation) {
+        // var distance = this.distanceCalculate(targetLocation.location.latitude, targetLocation.location.longitude,crd.latitude,crd.longitude,'K');
+
+        var lat1 = targetLocation.location.latitude;
+        var lon1 = targetLocation.location.longitude;
+
+        var lat2 = crd.latitude;
+        var lon2 = crd.longitude;
+
+        var unit = 'K';
+        var distance = 0;
+
+        if ((lat1 == lat2) && (lon1 == lon2)) {
+          distance = 0;
+        }
+        else {
+          var radlat1 = Math.PI * lat1 / 180;
+          var radlat2 = Math.PI * lat2 / 180;
+          var theta = lon1 - lon2;
+          var radtheta = Math.PI * theta / 180;
+          var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+          if (dist > 1) {
+            dist = 1;
+          }
+          dist = Math.acos(dist);
+          dist = dist * 180 / Math.PI;
+          dist = dist * 60 * 1.1515;
+          if (unit == "K") { dist = dist * 1.609344 }
+          if (unit == "N") { dist = dist * 0.8684 }
+          distance = dist;
+        }
+
+
+        if (distance > 5) {
+          PROPS_ARRAY_FOR_LOCATION.pop()
+          PROPS_ARRAY_FOR_LOCATION.push({ counter: (targetLocation.counter + 1), location: crd })
+
+          that.hitServerForLocationUpdate()
+          // console.log(PROPS_ARRAY_FOR_LOCATION);
+        }
+      } else {
+        PROPS_ARRAY_FOR_LOCATION.push({ counter: 1, location: crd })
+        that.hitServerForLocationUpdate()
+      }
+
+      // if (target.latitude === crd.latitude && target.longitude === crd.longitude) {
+      //   console.log('Congratulation, you reach the target');
+
+      //   // navigator.geolocation.clearWatch(id);
+      // }
+    };
+
+    function error(err) {
+      console.warn('ERROR(' + err.code + '): ' + err.message);
+      this.hitServerForLocationUpdate()
+    };
+
+    target = {
+      latitude: 0,
+      longitude: 0,
+    }
+
+    options = {
+      enableHighAccuracy: false,
+      timeout: 5000,
+      maximumAge: 0,
+
+    };
+
+    this.id = navigator.geolocation.watchPosition(success, error, options);
+
+    return;
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const initialPosition = JSON.stringify(position);
+
+        // let latlong = position.coords.latitude.toString() +  "," + position.coords.longitude.toString()
+        let latlong = position.coords.latitude.toString() + "," + position.coords.longitude.toString()
+        if (position.mocked) {
+          if (position.mocked == true) {
+            alert("you are using fake location");
+            return;
+          }
+        }
+        // alert(latlong);
+        // this.setState({ lat_lon: "28.722,77.125" });
+        this.setState({ lat_lon: latlong });
+        this.setState({ coordinates: position.coords });
+        // alert(latlong);
+        this.serverHitForFourthResponse();
+        this.requestToServer();
+
+      },
+      (error) => {
+        console.log(error)
+
+
+        // alert(error.message)
+        // this.locationErrorMessage = error.message;
+        // alert(locationErrorMessage)
+        // this.showDialog();
+      },
+      { enableHighAccuracy: false, timeout: 20000, maximumAge: 1000 }
+    );
+  }
+
+  hitServerForLocationUpdate = () => {
+    refreshUserScreen(null, -1, 4)
   }
 
   refreshUI = (data) => {
@@ -102,6 +361,210 @@ export default class ReportScreen extends Component {
     }
     return "Arena"
   }
+
+  async createNotificationListeners() {
+    /*
+    * Triggered when a particular notification has been received in foreground
+    * */
+    console.log(JSON.stringify(" Triggered when a particular notification has been received in foreground"));
+    this.notificationListener = firebase.notifications().onNotification((notification) => {
+      console.log(JSON.stringify(" Triggered when a particular notification has been received in foreground"));
+      console.log(notification);
+      const { title, body } = notification;
+      // this.showScreen(title, body);
+      this.requestToGetNotifications()
+    });
+
+    /*
+    * If your app is in background, you can listen for when a notification is clicked / tapped / opened as follows:
+    * */
+    console.log(JSON.stringify("If your app is in background, you can listen for when a notification is clicked / tapped / opened as follows:"));
+    this.notificationOpenedListener = firebase.notifications().onNotificationOpened((notificationOpen) => {
+      console.log(JSON.stringify("If your app is in background, you can listen for when a notification is clicked / tapped / opened as follows:"));
+      console.log(notificationOpen);
+      const { title, body } = notificationOpen.notification;
+      this.showScreen(notificationOpen.notification);
+    });
+
+    /*
+    * If your app is closed, you can check if it was opened by a notification being clicked / tapped / opened as follows:
+    * */
+    console.log(JSON.stringify("If your app is closed, you can check if it was opened by a notification being clicked / tapped / opened as follows:"));
+    const notificationOpen = await firebase.notifications().getInitialNotification();
+    console.log(JSON.stringify("If your app is closed, you can check if it was opened by a notification being clicked / tapped / opened as follows:"));
+    console.log(notificationOpen);
+    if (notificationOpen) {
+      // const { title, body } = notificationOpen.notification;
+      this.showScreen(notificationOpen.notification);
+    }
+    /*
+    * Triggered for data only payload in foreground
+    * */
+    console.log(JSON.stringify("Triggered for data only payload in foreground"));
+    this.messageListener = firebase.messaging().onMessage((message) => {
+      //process data message
+      // alert(JSON.stringify("process data message"));
+      console.log(JSON.stringify(message));
+    });
+  }
+  showScreen(notification) {
+
+    console.log(notification);
+
+    if (notification) {
+      if (notification.data) {
+        let dict = notification.data;
+        if (dict.screen && dict.screen.toLowerCase() === 'survey') {
+          let surveryId = dict['surveyid'];
+          this.toQuestionScreen(surveryId, this.state.notifications);
+        } else if (dict.screen && dict.screen.toLowerCase() === 'trends') {
+          this.toTrendScreen(this.state.notifications);
+        } else if (dict.screen && (dict.screen.toLowerCase() === 'arena' || dict.screen.toLowerCase() === 'timeline')) {
+          if (dict.arenaid) {
+            this.toReportReplyScreen(dict.arenaid);
+          } else if (dict.timelineid) {
+            this.toReportReplyScreen(dict.timeline);
+          } else if (dict.threadid) {
+            this.toReportReplyScreen(dict.threadid);
+          } else {
+            this.toReportScreen(this.state.notifications);
+          }
+        }
+      }
+    }
+  }
+  toReportScreen = (notifications) => {
+    const { menuName } = this.state;
+
+    Navigation.push(this.props.componentId, {
+      component: {
+        name: 'ReportScreen',
+        options: {
+          topBar: {
+            visible: false,
+            drawBehind: true,
+            animate: false,
+          },
+        },
+        passProps: {
+
+          data: this.state.data,
+          notifications: notifications,
+          user_id: this.state.data.userId,
+          color: this.props.color,
+          notFirstScreen: true
+
+        },
+      },
+    });
+  };
+
+  toReportReplyScreen = (surveyThreadId) => {
+    // console.log('toReportReplyScreen----yyy');
+    // console.log(surveyThreadId);
+    // const { menuName } = this.state;
+    if (surveyThreadId) {
+      let dict = { threadId: surveyThreadId, Message_Id: '' };
+      Navigation.push(this.props.componentId, {
+        component: {
+          name: 'ReportReplyScreen',
+          options: {
+            topBar: {
+              visible: false,
+              drawBehind: true,
+              animate: false,
+            },
+          },
+          passProps: {
+            // coordinates: this.state.coordinates,
+            color: this.props.color,
+            data: dict,
+            // data2: this.state.data,
+            userData: this.state.data,
+            // refreshUI: this.refreshUI,
+            userLanguage: this.state.data.userLanguage,
+            // languageCode: this.state.firstAPIresponse ? this.state.firstAPIresponse.languageCodes : null,
+            user_id: this.state.data.userId,
+            // lat_lon: this.state.lat_lon,
+            // // languageCode: this.state.firstAPIresponse ? this.state.firstAPIresponse.languageCodes : null,
+            // menuName: menuName,
+            // notifications: this.state.notifications,
+            // readNotification: this.readNotification,
+            // updateNotifications: this.updateNotifications,
+          },
+        },
+      });
+    }
+
+  };
+  toTrendScreen = (notification) => {
+    // const { menuName } = this.state;
+
+    Navigation.push(this.props.componentId, {
+      component: {
+        name: 'TrendScreen',//'ScratchCardScreen',// 
+        options: {
+          topBar: {
+            visible: false,
+            drawBehind: true,
+            animate: false,
+          },
+        },
+        passProps: {
+          //   resourceIdPDM: this.state.firstAPIresponse ? this.state.firstAPIresponse.firResourceId : 1,
+          //   resourceIdCDM: this.state.firstAPIresponse ? this.state.firstAPIresponse.polResourceId : 1,
+          // image: this.state.data.image,
+          // username: this.state.data.username,
+          // data: this.state.data,
+          // refreshUI: this.refreshUI,
+          // userLanguage: this.state.data.userLanguage,
+          // languageCode: this.state.firstAPIresponse ? this.state.firstAPIresponse.languageCodes : null,
+          // user_id: this.state.user_id,
+          // menuName: menuName,
+
+          // notifications: this.state.notifications,
+          // readNotification: this.readNotification,
+          // updateNotifications: this.updateNotifications,
+
+          notifications: notification,
+          data: this.state.data,
+          color: this.props.color,
+          user_id: this.state.data.userId,
+          notFirstScreen: true
+
+        }
+      },
+    });
+  };
+
+  toQuestionScreen = (surveyThreadID, updatedNotification) => {
+    // const { menuName } = this.state;
+
+    // let notification = updatedNotification ? updatedNotification : this.state.notifications;
+    Navigation.push(this.props.componentId, {
+      component: {
+        name: 'QuestionnaireScreen',
+        options: {
+          topBar: {
+            visible: false,
+            drawBehind: true,
+            animate: false,
+          },
+        },
+        passProps: {
+
+
+          notifications: updatedNotification,
+          surveyThreadID: surveyThreadID,
+          user_id: this.state.data.userId,
+          data: this.state.data,
+          color: this.props.color,
+          notFirstScreen: true
+        }
+      },
+    });
+  };
+
 
   gotoProfile = () => {
     let menuName = this.props.menuName;
@@ -162,31 +625,60 @@ export default class ReportScreen extends Component {
         passProps: {
           selfObj: this._onRefresh,
           data: this.props.data,
-          coordinates: this.props.coordinates
+          coordinates: this.props.coordinates,
+          text: this.state.textCompose,
+          color: this.state.selectedThemeColor
         }
       },
     });
     // });
   }
 
-  _onRefresh = () => {
-    // this.getNotifications()
-    this.setState({ refreshing: true, likeLoading: true, fetchRecords: 0, });
+  requestToGetNotifications = () => {
+    let userid = this.props.user_id;
+    console.log(userid)
+    axios.post(GET_USER_NOTIFICATIONS, {
+      userId: userid
+    }).then((response) => {
+      let responseData = response.data;
+      // alert(JSON.stringify(responseData));
+      // this.setState({
+      //   notifications: responseData
+      // })
+      refreshUserScreen(responseData, -1, 2)
 
-    getUserID().then((userId) => {
-      this.fetchTimeLineData(userId, null);
+      // this.refreshNotificationData(responseData)
+    }).catch(error => {
+      console.log(error)
     })
   }
 
-  _onEndReached = () => {
-    getUserID().then((userId) => {
-      this.setState({
-        fetchRecords: this.state.fetchRecords + 1,
-        animating: true
-      });
+  _onRefresh = () => {
+    // this.getNotifications()
+    this.setState({ refreshing: true, likeLoading: true, fetchRecords: 0 });
 
-      this.fetchTimeLineData(userId, null);
-    })
+    // getUserID().then((userId) => {
+    //   this.fetchTimeLineData(userId, null);
+    // })
+    this.fetchTimeLineData(this.props.user_id, null);
+  }
+
+  _onEndReached = () => {
+    // getUserID().then((userId) => {
+    //   this.setState({
+    //     fetchRecords: this.state.fetchRecords + 1,
+    //     animating: true
+    //   });
+
+    //   this.fetchTimeLineData(userId, null);
+    // })
+
+    this.setState({
+      fetchRecords: this.state.fetchRecords + 1,
+      animating: true
+    });
+
+    this.fetchTimeLineData(this.props.user_id, null);
   }
 
   fetchTimeLineData(user_id, location) {
@@ -205,11 +697,13 @@ export default class ReportScreen extends Component {
     }).then((response) => response.json())
 
       .then((responseJson) => {
-        this.setState({ loading: false, likeLoading: false })
+
         //  alert(JSON.stringify(responseJson));
         if (Array.isArray(responseJson)) {
           // console.log(responseJson)
+          this.setState({ loading: false, likeLoading: false, textCompose: '' })
           this.filterData(responseJson);
+
         } else {
           // alert(responseJson.response);
           // console.log(responseJson.response)
@@ -235,10 +729,16 @@ export default class ReportScreen extends Component {
       let modifiedObj = Object.assign({}, data);
       array[index] = modifiedObj;
     });
-    this.setState({case : array});
+    this.setState({ case: array });
 
   }
   requestForLikeDislike(data, isLiked) {
+
+    var targetLocation = PROPS_ARRAY_FOR_LOCATION.slice(-1).pop()
+
+    if (targetLocation) {
+      this.props.coordinates = targetLocation.location;
+    }
 
     let userId = this.props.user_id;
     // getUserID().then((userId) => {
@@ -318,6 +818,13 @@ export default class ReportScreen extends Component {
   }
 
   requestForReport(data) {
+
+    var targetLocation = PROPS_ARRAY_FOR_LOCATION.slice(-1).pop()
+
+    if (targetLocation) {
+      this.props.coordinates = targetLocation.location;
+    }
+
     let userID = this.props.user_id;
     // alert(JSON.stringify(data));
     // return;
@@ -418,7 +925,14 @@ export default class ReportScreen extends Component {
   }
 
   replyButtonTapped = (data) => {
-    Navigation.push(this.props.componentId, {
+
+    var targetLocation = PROPS_ARRAY_FOR_LOCATION.slice(-1).pop()
+    if (targetLocation) {
+      this.props.coordinates = targetLocation.location;
+    }
+
+
+    Navigation.push(NAVIGATION_ROOT, {
       component: {
         name: 'ReportReplyScreen',
         passProps: {
@@ -427,7 +941,8 @@ export default class ReportScreen extends Component {
           user_id: this.props.user_id,
           coordinates: this.props.coordinates,
           data2: this.props.data,
-          refreshData : this.refreshData
+          refreshData: this.refreshData,
+          color: this.state.selectedThemeColor
         },
         options: {
           topBar: {
@@ -790,6 +1305,7 @@ export default class ReportScreen extends Component {
     })
   }
 
+
   readNotification = (index, notifications, screen) => {
     const { count } = this.state.notifications;
     let counted;
@@ -852,7 +1368,7 @@ export default class ReportScreen extends Component {
             animate: true,
             buttonColor: '#fff',
             background: {
-              color: APP_GLOBAL_COLOR,
+              color: this.state.selectedThemeColor,
             },
             title: {
               text: menuName ? menuName[3] : null,
@@ -899,7 +1415,32 @@ export default class ReportScreen extends Component {
     });
   };
 
+  toTopPoliticianScreen = () => {
+    Navigation.push(this.props.componentId, {
+      component: {
+        name: 'TopPoliticianScreen',
+        options: {
+          topBar: {
+            visible: false,
+            drawBehind: true,
+            animate: false,
+          },
+        },
+        passProps: {
+          user_id: this.props.user_id,
+          lat_lon: this.props.lat_lon,
+          userLanguage: this.props.userLanguage,
+          notifications: this.state.notifications,
+          data: this.props.data,
+          color: this.state.selectedThemeColor
+        }
+      },
+    });
+  }
+
   sortTimeline = (type, values) => {
+    this.toTopPoliticianScreen();
+    return;
     this.setState({
       selectedSort: type,
       sortMethod: values,
@@ -914,6 +1455,116 @@ export default class ReportScreen extends Component {
       <ActivityIndicator style={{ backgroundColor: 'transparent', margin: 5 }} animating={this.state.animating} />
     )
   }
+  handleTextChange = (e) => {
+    // let str = this.state.text + e;
+    this.setState({
+      textCompose: e
+    })
+  }
+
+  postTapped = () => {
+
+    let locationCoordinates = {};
+    // if (this.props.coordinates) {
+    //   locationCoordinates = {
+    //     "latitude": this.props.coordinates.latitude,
+    //     "longitude": this.props.coordinates.longitude,
+    //   }
+    // }
+
+
+    if (this.state.textCompose.length > 0) {
+
+      this.setState({ disabled: true });
+
+      // getUserID().then((userId) => {
+
+      let body = {
+        "message": this.state.textCompose,
+        "userMaster":
+        {
+          "userId": this.props.user_id
+        },
+        ...locationCoordinates
+      }
+
+
+
+      body = JSON.stringify(body);
+      // alert(body);
+      // return;
+      let FETCH = MESSAGE_COMPOSE;
+
+      fetch(FETCH, {
+        method: 'POST',
+        headers: authHeaders(),
+        body: body,
+      }).then((response) => response.json())
+
+        .then((responseJson) => {
+
+          this.setState({ disabled: false });
+          this.fetchTimeLineData(this.props.user_id, null);
+          // this._onRefresh()
+        })
+        .catch((error) => {
+          // this.setState({ refreshing: false });
+          // console.error(error);
+          this.setState({ disabled: false });
+          alert(error);
+        });
+
+
+
+
+    } else {
+      alert("Please write something to post!");
+    }
+
+  }
+
+
+  composeView = () => {
+
+    return (
+      <View style={{ height: 60, margin: 0, padding: 10, backgroundColor: 'white', flexDirection: 'row' }}>
+        <TouchableOpacity style={{ flex: 1, padding: 5, backgroundColor: '#dcdcdc' , borderRadius : 5 }} onPress={() => { this.showCompose() }}>
+          {/* <TextInput
+            style={{ padding: 5, fontSize: 15, marginLeft: 10 }}
+            placeholder="Share your view"
+            multiline
+            // autoFocus
+            value={this.state.textCompose}
+            onChangeText={(e) => this.handleTextChange(e)}
+          /> */}
+          <Text style={{ color: 'grey', fontSize: 12 }}> Share your views... </Text>
+        </TouchableOpacity>
+
+        {/* <View style={{ width : 70, height: '100%'}}> */}
+
+        <TouchableOpacity
+          style={{
+            width: 50,
+              justifyContent: 'center',
+            alignItems: 'center',
+            // backgroundColor : 'red'
+          }}
+          onPress={() => { this.showCompose() }}
+          disabled={this.state.disabled}
+        >
+          <Image
+            source={require('../../assets/Arena/camera_icon.png')}
+            style={{ height: 25, width: 25 }}
+          />
+        </TouchableOpacity>
+
+
+
+
+
+      </View>
+    )
+  }
 
   render() {
     const {
@@ -921,30 +1572,34 @@ export default class ReportScreen extends Component {
       height: SCREEN_HEIGHT,
     } = Dimensions.get('window');
 
-    const { loading, selectedSort, notifications } = this.state;
-    const BadgedIcon = withBadge(notifications.count)(Icon);
+    const { loading, selectedSort, notifications, selectedThemeColor } = this.state;
+    // const BadgedIcon = withBadge(notifications.count)(Icon);
+
 
 
     return (
       <SafeAreaView
         forceInset={{ bottom: 'always' }}
-        style={{ flex: 1, backgroundColor: 'rgba(210,210,208,1)' }}
+        style={{ flex: 1, backgroundColor: '#dcdcdc'}}//  'rgba(210,210,208,1)' }}
       >
 
-        <View style={styles.headerView} backgroundColor={APP_GLOBAL_COLOR}>
+        <NavigationBarDefault
+          imageSource={this.state.data.image ? { uri: "data:image/png;base64," + this.state.data.image } : require('../../assets/UserSmall.png')}
+          addButton={true}
+          onPressAddButton={this.toTopPoliticianScreen}
+          bgColor={selectedThemeColor}
+          notifications={notifications}
+          data={this.props.data}
+          showBackButton={this.props.notFirstScreen}
 
-          <View style={{ width: 60, backgroundColor: 'clear' }}>
-            <CustomButton
-              source={require('../../assets/home2.png')}
-              style={{
-                flexDirection: 'row',
-                flex: 1,
-                margin: normalize(.5),
-                // width : 60
-              }}
-              onPress={this.homeButtonTapped}
-            />
-          </View>
+        >{this.state.data.username}</NavigationBarDefault>
+
+        {this.composeView()}
+
+
+        {/* <View style={styles.headerView} backgroundColor={APP_GLOBAL_COLOR}>
+
+
           <TouchableOpacity onPress={this.gotoProfile} style={{ flex: 2.5 }} backgroundColor='grey'>
             <View style={{ flex: 1, backgroundColor: 'clear', flexDirection: 'row', alignItems: 'center' }}>
               <Image
@@ -1016,11 +1671,7 @@ export default class ReportScreen extends Component {
                 width: hp('6%'), justifyContent: 'center',
                 alignItems: 'flex-start',
               }}>
-                {/* <BadgedIcon
-                  color="#fff"
-                  type="font-awesome"
-                  onPress={() => { }}
-                  name="bell-o" /> */}
+                
                 {notifications.count && notifications.count > 0 ?
                   <BadgedIcon
                     size={hp('3%')}
@@ -1037,24 +1688,10 @@ export default class ReportScreen extends Component {
                   />
                 }
               </View>
-              {/* {notifications.count <= 0 ?
-                <FontAwesome
-                  size={hp('3%')}
-                  style={{ marginRight: hp('.8%') }}
-                  // onPress={() => this.showNotificationScreen()}
-                  name="bell-o"
-                  color="#fff"
-                /> :
-                <BadgedIcon
-                  color="#fff"
-                  type="font-awesome"
-                  style={{ marginRight: hp('.8%') }}
-                  // onPress={() => this.showNotificationScreen()}
-                  name="bell-o" />
-              } */}
+              
             </TouchableWithoutFeedback>
           </View>
-        </View>
+        </View> */}
 
 
         {loading ?
@@ -1063,10 +1700,10 @@ export default class ReportScreen extends Component {
               isVisible
               size={hp('4%')}
               type={'ChasingDots'}
-              color={APP_GLOBAL_COLOR}
+              color={this.state.selectedThemeColor}
             />
           </View> :
-          <View style={{ flex: 1 }}>
+          <View style={{ flex: 1, marginTop: 1 }}>
             <FlatList
               style={styles.bottomView}
               onRefresh={this._onRefresh}
@@ -1097,6 +1734,8 @@ export default class ReportScreen extends Component {
               }
             >
             </FlatList>
+            {!this.props.notFirstScreen && <TabBarNavigation color={this.state.selectedThemeColor} selectedIndex={0} selectedIndexTab={this.state.selectedIndexTab} />}
+
             <ShareSheet visible={this.state.visible} onCancel={() => { this.onCancel() }}>
               <Button iconSrc={{ uri: TWITTER_ICON }}
                 onPress={() => {
@@ -1176,11 +1815,11 @@ export default class ReportScreen extends Component {
           </View>
         }
 
-        {loading ? null :
+        {/* {loading ? null :
           <Draggable
             reverse={false}
             renderShape='image'
-            backgroundColor={APP_GLOBAL_COLOR}
+            backgroundColor={this.state.selectedThemeColor}
             offsetX={SCREEN_WIDTH / 2 - 10}
             offsetY={SCREEN_HEIGHT / 2 - 50}
             imageSource={this.state.iconSrc}
@@ -1189,9 +1828,10 @@ export default class ReportScreen extends Component {
             pressInDrag={() => this.showCompose()}
           // pressOutDrag={()=>console.log('out press')}
           >
-            {/* <Image source = {require('../../assets/1.png')} styles = {{flex : 1}} /> */}
+            
           </Draggable>
-        }
+        } */}
+
       </SafeAreaView>
     );
   }

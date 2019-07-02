@@ -48,6 +48,8 @@ export default class optionalQuestionView extends Component  {
     renderOptions = () => {
         const { data , userLanguage } = this.props;
         const dataO = this.getLanguageCode(userLanguage);
+        const color = this.props.color ? this.props.color : APP_GLOBAL_COLOR;
+
             return (
                 <View style={{ flex: 1, height: 30, flexDirection: 'row' }} >
                     <View style={{ flex: 1.5, justifyContent: 'center', alignContent: 'center' }} >
@@ -55,7 +57,7 @@ export default class optionalQuestionView extends Component  {
                     </View>
                     <View style={{ flex: 8.5, marginRight: 10, flexDirection: 'row' }}>
                         <CustomTextButton
-                            style={data.userAnswerId == this.props.data.surveyAnswerList[0].answerId ? buttonViewStyle.selectedStyle : buttonViewStyle.unSelectedStyle} 
+                            style={data.userAnswerId == this.props.data.surveyAnswerList[0].answerId ? {...buttonViewStyle.selectedStyle,borderColor : color,backgroundColor : color} : {...buttonViewStyle.unSelectedStyle,borderColor : color}} 
                             textColor={data.userAnswerId == this.props.data.surveyAnswerList[0].answerId ? "#fff" :  '#000'}
                             onPress={() => {
                                 if(this.props.isSurveyTaken === 'N') {
@@ -65,7 +67,7 @@ export default class optionalQuestionView extends Component  {
                             }
                         }>{dataO[0]}</CustomTextButton>
                         <CustomTextButton
-                            style={data.userAnswerId == this.props.data.surveyAnswerList[1].answerId ? buttonViewStyle.selectedStyle : buttonViewStyle.unSelectedStyle} 
+                            style={data.userAnswerId == this.props.data.surveyAnswerList[1].answerId ? {...buttonViewStyle.selectedStyle,borderColor : color, backgroundColor : color} : {...buttonViewStyle.unSelectedStyle,borderColor : color} } 
                             textColor={data.userAnswerId == this.props.data.surveyAnswerList[1].answerId ? "#fff" :  '#000'}
                             onPress={() => {
                                 if(this.props.isSurveyTaken === 'N') {

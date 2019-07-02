@@ -9,48 +9,69 @@ import {
   Image,
   TouchableOpacity,
   Platform,
-  ActionSheetIOS
+  ActionSheetIOS,
+  ScrollView,
+  Alert
 } from 'react-native';
 
 import ProfileCard from '../../components/UI/ProfileCard/ProfileCard';
+import CandidateCard from '../../components/UI/ProfileCard/CandidateCard';
 import { Navigation } from 'react-native-navigation';
 import { PropTypes } from 'prop-types';
-import { normalize, authHeaders, APP_GLOBAL_COLOR, SHARE_LINK } from '../../../Constant';
-import { AREA_PDM, DEBUG, GPR_FLAG, AREA_CDM } from '../../../Apis';
+import { normalize, authHeaders, APP_GLOBAL_COLOR, SHARE_LINK, PROPS_ARRAY_NOTIFY_SCREEN, PROPS_ARRAY_FOR_LOCATION } from '../../../Constant';
+import { AREA_PDM, DEBUG, GPR_FLAG, AREA_CDM, LANDING_RESOURCES } from '../../../Apis';
 import Spinner from '../../components/UI/Spinner/Spinner';
 import CustomButton from '../../components/UI/ButtonMod/CustomButtom';
 // import HomeButton from '../../components/UI/HomeButton/HomeButton';
 import firebase from 'react-native-firebase';
 import Share, { ShareSheet, Button } from 'react-native-share';
-
+import Carousel, { Pagination } from 'react-native-snap-carousel';
 import KochavaTracker from 'react-native-kochava-tracker';
+import { sliderWidth, itemWidth } from '../AboutAppScreen/SliderEntry.style';
+import Geolocation from 'react-native-geolocation-service';
+import HomeScreen from '../HomeScreen/HomeScreen'
+import { NavigationBarDefault } from '../../components/UI/NavigationBarDefault/NavigationBarDefault';
+import TabBarNavigation from '../../components/UI/TabBarNavigation/TabBarNavigation';
+
+const SCREEN_WIDTH = Dimensions.get('window').width;
+
 export default class PoliceProfileScreen extends Component {
+
   shareOptions = null;
+
   static propTypes = {
     componentId: PropTypes.string,
   };
 
   constructor(props) {
+
     super(props);
+
     this.state = {
-      APIresponse: null,
-      isLiked1: 0,
-      isLiked2: 0,
-      resourceGPR_1: null,
-      resourceGPR_2: null,
-      rtnGprI_1: null,
-      rtnGprI_2: null,
-      rtnGprO_1: null,
-      rtnGprO_2: null,
-      totalFlagCount_1: null,
-      totalFlagCount_2: null,
-      totalFlagUniqueCount_1: null,
-      totalFlagUniqueCount_2: null,
-      oldRating1: null,
-      oldRating2: null,
+      APIresponse: [],
+      data: this.props.data,
+      // isLiked1: 0,
+      // isLiked2: 0,
+      // resourceGPR_1: null,
+      // resourceGPR_2: null,
+      // rtnGprI_1: null,
+      // rtnGprI_2: null,
+      // rtnGprO_1: null,
+      // rtnGprO_2: null,
+      // totalFlagCount_1: null,
+      // totalFlagCount_2: null,
+      // totalFlagUniqueCount_1: null,
+      // totalFlagUniqueCount_2: null,
+      // oldRating1: null,
+      // oldRating2: null,
+      latLngSeparatedByComma: null,
       showInfo: false,
       menuName: this.props.language,
-      visible: false
+      visible: false,
+      activeSlide: 0,
+      exitOrResultDay: false,
+      selectedThemeColor: this.props.color,
+      selectedIndexTab: this.props.selectedIndexTab
     }
   };
 
@@ -62,7 +83,9 @@ export default class PoliceProfileScreen extends Component {
   //   return "Rate Now";
   // }
 
-  showInfoScreen(show) {
+
+
+  showInfoScreen = (show) => {
     this.setState({ showInfo: show });
   }
 
@@ -114,21 +137,411 @@ export default class PoliceProfileScreen extends Component {
     }
   }
 
-  componentDidMount() {
-    this.serverHitForDetail();
+  checkScreen = () => {
+    fetch(LANDING_RESOURCES, {
+      method: 'POST',
+      headers: authHeaders(),
+      body: JSON.stringify({
+        userId: this.props.userId,
+        latLngSeparatedByComma: "20.3590,77.5508"
+      }),
+    }).then((response) => response.json())
+      .then((responseJson) => {
+        if (responseJson.exitOrResultDay === 'r' || responseJson.exitOrResultDay === 'e') {
+          this.setState({
+            exitOrResultDay: true
+          })
+        } else {
+          this.serverHitForDetail();
+        }
+      })
+  }
+  componentWillUnmount() {
 
+    // PROPS_ARRAY_NOTIFICATION.push(this.refreshNotificationData);
+
+    var index = PROPS_ARRAY_NOTIFY_SCREEN.indexOf(this.refreshUserScreenUI);
+    if (index > -1) {
+      PROPS_ARRAY_NOTIFY_SCREEN.splice(index, 1);
+    }
+  }
+
+  componentDidMount() {
+    // this.getLocation()
+    // this.checkScreen()
+    // this.serverHitForDetail();
     let screenName = this.props.isPolice ? 'MLA_Screen' : 'MP_Screen';
     firebase.analytics().setCurrentScreen("Screen", screenName);
     //firebase.analytics().logEvent("Trends_Screen");
     firebase.analytics().setUserProperty("Screen", screenName);
     firebase.analytics().logEvent("Content", { "Screen": screenName });
 
-
-
     var eventMapObject = {};
     eventMapObject["screen_name"] = screenName;
     KochavaTracker.sendEventMapObject(KochavaTracker.EVENT_TYPE_LEVEL_COMPLETE_STRING_KEY, eventMapObject);
 
+    PROPS_ARRAY_NOTIFY_SCREEN.push(this.refreshUserScreenUI);
+
+    if (this.props.notFirstScreen) {
+      this.serverHitForDetail()
+    }
+  }
+  refreshUserScreenUI = (notifications, screen, purpose) => {
+    //
+    if (screen === 2 || screen < 0) {
+      if (purpose === 0) {
+        this.setState({ data: notifications })
+      } else if (purpose === 1) {
+        this.setState({ selectedThemeColor: notifications })
+      } else if (purpose === 2) {
+        this.setState({ notifications: notifications });
+      } else if (purpose === 6) {
+        this.setState({ selectedIndexTab: notifications });
+      } else if (purpose === 4) {
+        if (!this.props.notFirstScreen) {
+          this.serverHitForDetail();
+        }
+      }
+    }
+  }
+
+  _requestPermission = () => {
+    Permissions.request('location').then(response => {
+      // this.setState({ location: response })
+      // alert('aaaa'+response);
+      if (response === 'denied' || response === 'undetermined') {
+        // this._requestPermission();
+        this.setState({
+          latLngSeparatedByComma: latLngSeparatedByComma ? latLngSeparatedByComma : '28,77'
+        }, () => this.serverHitForDetail())
+          ;
+        // this.serverHitForFourthResponse();
+
+      } else if (response === 'authorized') {
+        // this.getLocation()
+
+        this.setState({
+          latLngSeparatedByComma: latLngSeparatedByComma ? latLngSeparatedByComma : '28,77'
+        }, () => this.serverHitForDetail())
+      } else {
+        this.serverHitForDetail();
+        // this.serverHitForFourthResponse();
+      }
+    })
+  }
+
+  getLocation = () => {
+
+    // Permissions.check('location').then(response => {
+    //   // alert(response);
+    //   if (response === 'denied' || response === 'undetermined') {
+    //     this._requestPermission();
+    //   } else if (response === 'authorized') {
+    //     // this.getLocation()
+    //     this.serverHitForDetail();
+    //   } else {
+    //     this.serverHitForDetail();
+    //     // this.serverHitForFourthResponse();
+
+    //   }
+    // })
+
+    Geolocation.getCurrentPosition(
+      position => {
+        const location = position.coords;
+        let latLngSeparatedByComma = `${location.latitude},${location.longitude}`
+        // alert(latLngSeparatedByComma)
+        this.setState({
+          latLngSeparatedByComma: latLngSeparatedByComma ? latLngSeparatedByComma : '28,77'
+        })
+      },
+      error => { },
+      { enableHighAccuracy: false, timeout: 20000, maximumAge: 1000 }
+    );
+
+    this.serverHitForDetail()
+  }
+
+  serverHitForDetail() {
+
+    // if (DEBUG == 0) {
+    //   // alert(this.props.user_id + this.props.lat_long);
+    //   this.setValueForFlag(null);
+    //   return;
+    // }
+
+    var targetLocation = PROPS_ARRAY_FOR_LOCATION.slice(-1).pop()
+    let latlong = null;
+    if (targetLocation) {
+        latlong = targetLocation.location.latitude.toString() + "," + targetLocation.location.longitude.toString()
+    }
+
+    this.setState({latLngSeparatedByComma : latlong})
+
+    let allData = []
+    let abc = []
+    let abc2 = []
+    let abc3 = []
+    let abc4 = []
+    var list = []
+    var list2 = []
+    var list3 = []
+    var list4 = []
+    let data = {}
+    let data2 = {}
+    let data3 = {}
+    let data4 = {}
+
+    // const getLatLong = this.getLocation()
+
+    fetch(AREA_PDM, {
+      method: 'POST',
+      headers: authHeaders(),
+      body: JSON.stringify({
+        userId: this.props.userId,
+        latLngSeparatedByComma: latlong// this.state.latLngSeparatedByComma
+      }),
+    }).then((response) => response.json())
+      .then((responseJson) => {
+
+        // console.log('data : ', responseJson)
+
+
+        abc2 =
+          [
+            { attributeName: 'Devin', attributeValue: 'Devin' },
+            { attributeName: 'Jackson', attributeValue: 'Devin' },
+            { attributeName: 'James', attributeValue: 'Devin' },
+            { attributeName: 'Joel', attributeValue: 'Devin' },
+            { attributeName: 'John', attributeValue: 'Devin' },
+          ];
+        abc =
+          [
+            { attributeName: 'Joel', attributeValue: 'Devin' },
+            { attributeName: 'John', attributeValue: 'Devin' },
+            { attributeName: 'Jillian', attributeValue: 'Devin' },
+            { attributeName: 'Jimmy', attributeValue: 'Devin' },
+            { attributeName: 'Julie', attributeValue: 'Devin' },
+          ];
+
+        list = [{ attributeName: 'ATTRIBUTE NAME', attributeValue: 'ATTRIBUTE VALUE' }];
+        list.push(...(!responseJson.response ? (responseJson.resource1AttributesList ? responseJson.resource1AttributesList : []) : abc));
+
+        list2 = [{ attributeName: 'ATTRIBUTE NAME', attributeValue: 'ATTRIBUTE VALUE' }];
+        list2.push(...(!responseJson.response ? (responseJson.resource2AttributesList ? responseJson.resource2AttributesList : []) : abc2));
+
+        data = {
+          profilePic: !responseJson.response ? { uri: 'data:image/png;base64,' + responseJson.resourceImageData1 } : require('../../assets/1.png'),
+          profileCompPic: !responseJson.response ? { uri: 'data:image/png;base64,' + responseJson.resourceCategoryLogoData1 } : require('../../assets/logoComp.png'),
+          name: !responseJson.response ? responseJson.resourceName1 : 'JOHNSON ADOLPH BLAINE CHARLES',
+          area: !responseJson.response ? (responseJson.resourceTypeRes1 + ' | ' + responseJson.customAreaName) : 'DNTN | Alaska ',
+          isFlagEnabled: !responseJson.response ? responseJson.isFlagEnabled1 : '',
+          customAreaId: !responseJson.response ? responseJson.customAreaId : '',
+          totalCount: !responseJson.response ? responseJson.resourceTotalFlagCount1 : 1000,
+          uniqueCount: !responseJson.response ? responseJson.resourceTotalFlagUniqueCount1 : 123,
+          score: {
+            gpr: {
+              score: !responseJson.response ? responseJson.resourceGPR1 : '52%',
+              name: '',
+            },
+            agpr: {
+              score: !responseJson.response ? '' : '32',
+              name: !responseJson.response ? '' : 'AGPR',
+            },
+            extraCount: {
+              score: !responseJson.response ? '' : '3.5',
+              name: !responseJson.response ? '' : 'XYZ',
+            },
+          },
+          resourceId: !responseJson.response ? responseJson.resourceId1 : 0,
+          userId: this.props.userId,
+          location: this.state.latLngSeparatedByComma,
+          starCount: !responseJson.response ? responseJson.lastGprFlagValue1 : 0,
+          data: list,
+        };
+
+        data2 = {
+          profilePic: !responseJson.response ? { uri: 'data:image/png;base64,' + responseJson.resourceImageData2 } : this.props.isPolice ? require('../../assets/Extra/people7.png') : require('../../assets/Extra/people6.png'),
+          profileCompPic: !responseJson.response ? { uri: 'data:image/png;base64,' + responseJson.resourceCategoryLogoData2 } : require('../../assets/logoComp.png'),
+ 
+
+          name: !responseJson.response ? responseJson.resourceName2 : 'JOHNSON ADOLPH BLAINE CHARLES',
+          area: !responseJson.response ? (responseJson.resourceType2Res2 + ' | ' + responseJson.customAreaState) : 'DNTN | Alaska',
+          totalCount: !responseJson.response ? responseJson.resourceTotalFlagCount2 : 1000,
+          uniqueCount: !responseJson.response ? responseJson.resourceTotalFlagUniqueCount2 : 123,
+          isFlagEnabled: !responseJson.response ? responseJson.isFlagEnabled2 : '',
+          customAreaId: !responseJson.response ? responseJson.customAreaId : '',
+          score: {
+            gpr: {
+              score: !responseJson.response ? responseJson.resourceGPR2 : '63%',
+              name: '',
+            },
+            agpr: {
+              score: !responseJson.response ? '' : '43',
+              name: !responseJson.response ? '' : 'AGPR',
+            },
+            extraCount: {
+              score: !responseJson.response ? '' : '4.5',
+              name: !responseJson.response ? '' : 'XYZ',
+            },
+          },
+          resourceId: !responseJson.response ? responseJson.resourceId2 : 0,
+          userId: this.props.userId,
+          location: this.state.latLngSeparatedByComma,
+          starCount: !responseJson.response ? responseJson.lastGprFlagValue2 : 0,
+          data: list2,
+        };
+
+
+        allData.push(data)
+        allData.push(data2)
+
+        this.setState((prevState, props) => {
+
+          return {
+            APIresponse: allData,
+            // resourceGPR_1: responseJson.resourceGPR1,
+            // resourceGPR_2: responseJson.resourceGPR2,
+            // rtnGprI_1: responseJson.resourceGPRI1,
+            // rtnGprI_2: responseJson.resourceGPRI2,
+            // rtnGprO_1: responseJson.resourceGPRO1,
+            // rtnGprO_2: responseJson.resourceGPRO2,
+            // totalFlagCount_1: responseJson.resourceTotalFlagCount1,
+            // totalFlagCount_2: responseJson.resourceTotalFlagCount2,
+            // totalFlagUniqueCount_1: responseJson.resourceTotalFlagUniqueCount1,
+            // totalFlagUniqueCount_2: responseJson.resourceTotalFlagUniqueCount2,
+            // oldRating1: responseJson.lastGprFlagValue1,
+            // oldRating2: responseJson.lastGprFlagValue2
+          }
+        });
+
+      })
+      .then(() => {
+
+        fetch(AREA_CDM, {
+          method: 'POST',
+          headers: authHeaders(),
+          body: JSON.stringify({
+            userId: this.props.userId,
+            latLngSeparatedByComma: this.state.latLngSeparatedByComma,
+          }),
+        }).then((response) => response.json())
+          .then((responseJson) => {
+            // console.log(responseJson)
+
+            abc4 =
+              [
+                { attributeName: 'Devin', attributeValue: 'Devin' },
+                { attributeName: 'Jackson', attributeValue: 'Devin' },
+                { attributeName: 'James', attributeValue: 'Devin' },
+                { attributeName: 'Joel', attributeValue: 'Devin' },
+                { attributeName: 'John', attributeValue: 'Devin' },
+              ];
+            abc3 =
+              [
+                { attributeName: 'Joel', attributeValue: 'Devin' },
+                { attributeName: 'John', attributeValue: 'Devin' },
+                { attributeName: 'Jillian', attributeValue: 'Devin' },
+                { attributeName: 'Jimmy', attributeValue: 'Devin' },
+                { attributeName: 'Julie', attributeValue: 'Devin' },
+              ];
+
+            list3 = [{ attributeName: 'ATTRIBUTE NAME', attributeValue: 'ATTRIBUTE VALUE' }];
+            list3.push(...(!responseJson.response ? (responseJson.resource1AttributesList ? responseJson.resource1AttributesList : []) : abc3));
+
+            list4 = [{ attributeName: 'ATTRIBUTE NAME', attributeValue: 'ATTRIBUTE VALUE' }];
+            list4.push(...(!responseJson.response ? (responseJson.resource2AttributesList ? responseJson.resource2AttributesList : []) : abc4));
+
+            data3 = {
+              profilePic: !responseJson.response ? { uri: 'data:image/png;base64,' + responseJson.resourceImageData1 } : require('../../assets/1.png'),
+              profileCompPic: !responseJson.response ? { uri: 'data:image/png;base64,' + responseJson.resourceCategoryLogoData1 } : require('../../assets/logoComp.png'),
+              name: !responseJson.response ? responseJson.resourceName1 : 'JOHNSON ADOLPH BLAINE CHARLES',
+              area: !responseJson.response ? (responseJson.resourceTypeRes1 + ' | ' + responseJson.customAreaName) : 'DNTN | Alaska ',
+              totalCount: !responseJson.response ? responseJson.resourceTotalFlagCount1 : 1000,
+              uniqueCount: !responseJson.response ? responseJson.resourceTotalFlagUniqueCount1 : 123,
+              isFlagEnabled: !responseJson.response ? responseJson.isFlagEnabled1 : '',
+              customAreaId: !responseJson.response ? responseJson.customAreaId : '',
+              score: {
+                gpr: {
+                  score: !responseJson.response ? responseJson.resourceGPR1 : '52%',
+                  name: '',
+                },
+                agpr: {
+                  score: !responseJson.response ? '' : '32',
+                  name: !responseJson.response ? '' : 'AGPR',
+                },
+                extraCount: {
+                  score: !responseJson.response ? '' : '3.5',
+                  name: !responseJson.response ? '' : 'XYZ',
+                },
+              },
+              resourceId: !responseJson.response ? responseJson.resourceId1 : 0,
+              userId: this.props.userId,
+              location: this.state.latLngSeparatedByComma,
+              starCount: !responseJson.response ? responseJson.lastGprFlagValue1 : 0,
+              data: list3,
+            };
+
+            data4 = {
+              profilePic: !responseJson.response ? { uri: 'data:image/png;base64,' + responseJson.resourceImageData2 } : this.props.isPolice ? require('../../assets/Extra/people7.png') : require('../../assets/Extra/people6.png'),
+              profileCompPic: !responseJson.response ? { uri: 'data:image/png;base64,' + responseJson.resourceCategoryLogoData2 } : require('../../assets/logoComp.png'),
+
+
+              name: !responseJson.response ? responseJson.resourceName2 : 'JOHNSON ADOLPH BLAINE CHARLES',
+              area: !responseJson.response ? (responseJson.resourceType2Res2 + ' | ' + responseJson.customAreaState) : 'DNTN | Alaska',
+              totalCount: !responseJson.response ? responseJson.resourceTotalFlagCount2 : 1000,
+              uniqueCount: !responseJson.response ? responseJson.resourceTotalFlagUniqueCount2 : 123,
+              isFlagEnabled: !responseJson.response ? responseJson.isFlagEnabled2 : '',
+              customAreaId: !responseJson.response ? responseJson.customAreaId : '',
+              score: {
+                gpr: {
+                  score: !responseJson.response ? responseJson.resourceGPR2 : '63%',
+                  name: '',
+                },
+                agpr: {
+                  score: !responseJson.response ? '' : '43',
+                  name: !responseJson.response ? '' : 'AGPR',
+                },
+                extraCount: {
+                  score: !responseJson.response ? '' : '4.5',
+                  name: !responseJson.response ? '' : 'XYZ',
+                },
+              },
+              resourceId: !responseJson.response ? responseJson.resourceId2 : 0,
+              userId: this.props.userId,
+              location: this.state.latLngSeparatedByComma,
+              starCount: !responseJson.response ? responseJson.lastGprFlagValue2 : 0,
+              data: list4,
+            };
+
+
+            allData.push(data3)
+            allData.push(data4)
+
+            // console.log(allData)
+            this.setState((prevState, props) => {
+
+              return {
+                APIresponse: allData,
+                // resourceGPR_1: responseJson.resourceGPR1,
+                // resourceGPR_2: responseJson.resourceGPR2,
+                // rtnGprI_1: responseJson.resourceGPRI1,
+                // rtnGprI_2: responseJson.resourceGPRI2,
+                // rtnGprO_1: responseJson.resourceGPRO1,
+                // rtnGprO_2: responseJson.resourceGPRO2,
+                // totalFlagCount_1: responseJson.resourceTotalFlagCount1,
+                // totalFlagCount_2: responseJson.resourceTotalFlagCount2,
+                // totalFlagUniqueCount_1: responseJson.resourceTotalFlagUniqueCount1,
+                // totalFlagUniqueCount_2: responseJson.resourceTotalFlagUniqueCount2,
+                // oldRating1: responseJson.lastGprFlagValue1,
+                // oldRating2: responseJson.lastGprFlagValue2
+              }
+            });
+          })
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }
 
   hitServerForLikeDislike(resourceId, isLiked) {
@@ -140,7 +553,7 @@ export default class PoliceProfileScreen extends Component {
       headers: authHeaders(),
       body: JSON.stringify({
 
-        userLocationCoord: this.props.lat_long,
+        userLocationCoord: this.state.latLngSeparatedByComma,
         resourceMaster: {
           resourceId: resourceId
         },
@@ -159,46 +572,6 @@ export default class PoliceProfileScreen extends Component {
       });
   }
 
-  serverHitForDetail() {
-
-    if (DEBUG == 0) {
-      // alert(this.props.user_id + this.props.lat_long);
-      this.setValueForFlag(null);
-      return;
-    }
-
-
-    fetch(this.props.isPolice ? AREA_PDM : AREA_CDM, {
-      method: 'POST',
-      headers: authHeaders(),
-      body: JSON.stringify({
-        userId: this.props.user_id,
-        latLngSeparatedByComma: this.props.lat_long,
-      }),
-    }).then((response) => response.json())
-      .then((responseJson) => {
-        this.setState({
-          APIresponse: responseJson,
-          resourceGPR_1: responseJson.resourceGPR1,
-          resourceGPR_2: responseJson.resourceGPR2,
-          rtnGprI_1: responseJson.resourceGPRI1,
-          rtnGprI_2: responseJson.resourceGPRI2,
-          rtnGprO_1: responseJson.resourceGPRO1,
-          rtnGprO_2: responseJson.resourceGPRO2,
-          totalFlagCount_1: responseJson.resourceTotalFlagCount1,
-          totalFlagCount_2: responseJson.resourceTotalFlagCount2,
-          totalFlagUniqueCount_1: responseJson.resourceTotalFlagUniqueCount1,
-          totalFlagUniqueCount_2: responseJson.resourceTotalFlagUniqueCount2,
-          oldRating1: responseJson.lastGprFlagValue1,
-          oldRating2: responseJson.lastGprFlagValue2
-        });
-        // this.setValueForFlag(responseJson)
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-
-  }
 
   setValueForFlag(responseJson) {
     let resource_Id_1 = (responseJson ? responseJson.resourceId1 : '0') + '_1' + (this.props.isPolice ? '_P' : '_F');
@@ -237,30 +610,31 @@ export default class PoliceProfileScreen extends Component {
   }
 
   updateResources = (val) => {
-    if (val.resourceType === 1) {
-      this.setState({
-        resourceGPR_1: val.resourceGPR,
-        rtnGprI_1: val.rtnGprI,
-        rtnGprO_1: val.rtnGprO,
-        totalFlagCount_1: val.totalFlagCount,
-        totalFlagUniqueCount_1: val.totalFlagUniqueCount,
-      })
-    } else if (val.resourceType === 2) {
-      this.setState({
-        resourceGPR_2: val.resourceGPR,
-        rtnGprI_2: val.rtnGprI,
-        rtnGprO_2: val.rtnGprO,
-        totalFlagCount_2: val.totalFlagCount,
-        totalFlagUniqueCount_2: val.totalFlagUniqueCount,
-      })
-    }
-
+    // if (val.resourceType === 1) {
+    //   this.setState({
+    //     resourceGPR_1: val.resourceGPR,
+    //     rtnGprI_1: val.rtnGprI,
+    //     rtnGprO_1: val.rtnGprO,
+    //     totalFlagCount_1: val.totalFlagCount,
+    //     totalFlagUniqueCount_1: val.totalFlagUniqueCount,
+    //   })
+    // } else if (val.resourceType === 2) {
+    //   this.setState({
+    //     resourceGPR_2: val.resourceGPR,
+    //     rtnGprI_2: val.rtnGprI,
+    //     rtnGprO_2: val.rtnGprO,
+    //     totalFlagCount_2: val.totalFlagCount,
+    //     totalFlagUniqueCount_2: val.totalFlagUniqueCount,
+    //   })
+    // }
+    this.serverHitForDetail()
+    return;
     fetch(this.props.isPolice ? AREA_PDM : AREA_CDM, {
       method: 'POST',
       headers: authHeaders(),
       body: JSON.stringify({
         userId: this.props.user_id,
-        latLngSeparatedByComma: this.props.lat_long,
+        latLngSeparatedByComma: this.state.latLngSeparatedByComma,
       }),
     }).then((response) => response.json())
       .then((responseJson) => {
@@ -386,7 +760,7 @@ export default class PoliceProfileScreen extends Component {
   }
 
   onCancel() {
-    console.log("CANCEL");
+    // console.log("CANCEL");
     this.setState({ visible: false });
   }
 
@@ -394,95 +768,93 @@ export default class PoliceProfileScreen extends Component {
     this.setState({ visible: true });
   }
 
+  _renderItem = (data) => {
+    // console.log(data)
+    var { selectedThemeColor } = this.state
+    return (
+      <CandidateCard
+        style={{ flex: 1, }}
+        // showHome={true}
+        // pointerEvents={this.state.isLiked1 == 0 ? "auto" : "none"}
+        backgroundColor="white"
+        data={data.item}
+        onPress={this.homeButtonTapped}
+        // onPressLike={this.like1ButtonTapped}
+        // onPressDislike={this.dislike1ButtonTapped}
+        // isLiked={this.state.isLiked1}
+        customAreaId={data.item.customAreaId}
+        isFlagEnabled={data.item.isFlagEnabled}
+        // resourceGPR={this.state.resourceGPR_1}
+        // rtnGprI={this.state.rtnGprI_1}
+        // rtnGprO={this.state.rtnGprO_1}
+        oldRating={data.item.starCount}
+        // totalFlagCount={data.item.uniqueCount}
+        // totalFlagUniqueCount={data.item.totalCount}
+        resourceType={1}
+        updateResources={this.updateResources}
+        share={this.moreButtonTapped}
+        showInfoScreen={this.showInfoScreen}
+        name={data ? data.item.name : ''}
+        // onPressInfo={() => {
+        //   this.showInfoScreen(true)
+        // }}
+        color={selectedThemeColor}
+      />
+    )
+  }
+
+  get pagination() {
+    const { activeSlide, APIresponse } = this.state;
+    return (
+      <Pagination
+        dotsLength={APIresponse.length}
+        activeDotIndex={activeSlide}
+        containerStyle={{
+          backgroundColor: 'transparent',//APP_GLOBAL_COLOR,
+          // backgroundColor: 'rgba(0, 0, 0, 0.75)',
+          width: SCREEN_WIDTH,
+          // height:60,
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'center'
+        }}
+        dotStyle={{
+          width: 10,
+          height: 10,
+          borderRadius: 5,
+          backgroundColor: 'grey'//'rgba(255, 255, 255, 0.92)'
+        }}
+        inactiveDotStyle={{
+          // Define styles for inactive dots here
+        }}
+        inactiveDotOpacity={0.4}
+        inactiveDotScale={0.6}
+      />
+    );
+  }
+
 
   render() {
-    let abc2 =
-      [
-        { attributeName: 'Devin', attributeValue: 'Devin' },
-        { attributeName: 'Jackson', attributeValue: 'Devin' },
-        { attributeName: 'James', attributeValue: 'Devin' },
-        { attributeName: 'Joel', attributeValue: 'Devin' },
-        { attributeName: 'John', attributeValue: 'Devin' },
-      ];
-    let abc =
-      [
-        { attributeName: 'Joel', attributeValue: 'Devin' },
-        { attributeName: 'John', attributeValue: 'Devin' },
-        { attributeName: 'Jillian', attributeValue: 'Devin' },
-        { attributeName: 'Jimmy', attributeValue: 'Devin' },
-        { attributeName: 'Julie', attributeValue: 'Devin' },
-      ];
 
-    var list = [{ attributeName: 'ATTRIBUTE NAME', attributeValue: 'ATTRIBUTE VALUE' }];
-    list.push(...(this.state.APIresponse ? (this.state.APIresponse.resource1AttributesList ? this.state.APIresponse.resource1AttributesList : []) : abc));
-
-    var list2 = [{ attributeName: 'ATTRIBUTE NAME', attributeValue: 'ATTRIBUTE VALUE' }];
-    list2.push(...(this.state.APIresponse ? (this.state.APIresponse.resource2AttributesList ? this.state.APIresponse.resource2AttributesList : []) : abc2));
-
-    let data = {
-      profilePic: this.state.APIresponse ? { uri: 'data:image/png;base64,' + this.state.APIresponse.resourceImageData1 } : this.props.isPolice ? require('../../assets/1.png') : require('../../assets/2.png'),
-      profileCompPic: this.state.APIresponse ? { uri: 'data:image/png;base64,' + this.state.APIresponse.resourceCategoryLogoData1 } : require('../../assets/logoComp.png'),
-      name: this.state.APIresponse ? this.state.APIresponse.resourceName1 : 'JOHNSON ADOLPH BLAINE CHARLES',
-      area: this.state.APIresponse ? (this.state.APIresponse.resourceTypeRes1 + ' | ' + this.state.APIresponse.customAreaName) : 'DNTN | Alaska ',
-      totalCount: this.state.APIresponse ? this.state.APIresponse.resourceTotalFlagCount1 : 1000,
-      uniqueCount: this.state.APIresponse ? this.state.APIresponse.resourceTotalFlagUniqueCount1 : 123,
-      score: {
-        gpr: {
-          score: this.state.APIresponse ? this.state.APIresponse.resourceGPR1 : '52%',
-          name: '',
-        },
-        agpr: {
-          score: this.state.APIresponse ? '' : '32',
-          name: this.state.APIresponse ? '' : 'AGPR',
-        },
-        extraCount: {
-          score: this.state.APIresponse ? '' : '3.5',
-          name: this.state.APIresponse ? '' : 'XYZ',
-        },
-      },
-      resourceId: this.state.APIresponse ? this.state.APIresponse.resourceId1 : 0,
-      userId: this.props.user_id,
-      location: this.props.lat_long,
-      data: list,
-    };
-
-    let data2 = {
-      profilePic: this.state.APIresponse ? { uri: 'data:image/png;base64,' + this.state.APIresponse.resourceImageData2 } : this.props.isPolice ? require('../../assets/Extra/people7.png') : require('../../assets/Extra/people6.png'),
-      profileCompPic: this.state.APIresponse ? { uri: 'data:image/png;base64,' + this.state.APIresponse.resourceCategoryLogoData2 } : require('../../assets/logoComp.png'),
-
-
-      name: this.state.APIresponse ? this.state.APIresponse.resourceName2 : 'JOHNSON ADOLPH BLAINE CHARLES',
-      area: this.state.APIresponse ? (this.state.APIresponse.resourceType2Res2 + ' | ' + this.state.APIresponse.customAreaState) : 'DNTN | Alaska',
-      totalCount: this.state.APIresponse ? this.state.APIresponse.resourceTotalFlagCount2 : 1000,
-      uniqueCount: this.state.APIresponse ? this.state.APIresponse.resourceTotalFlagUniqueCount2 : 123,
-      score: {
-        gpr: {
-          score: this.state.APIresponse ? this.state.APIresponse.resourceGPR2 : '63%',
-          name: '',
-        },
-        agpr: {
-          score: this.state.APIresponse ? '' : '43',
-          name: this.state.APIresponse ? '' : 'AGPR',
-        },
-        extraCount: {
-          score: this.state.APIresponse ? '' : '4.5',
-          name: this.state.APIresponse ? '' : 'XYZ',
-        },
-      },
-      resourceId: this.state.APIresponse ? this.state.APIresponse.resourceId2 : 0,
-      userId: this.props.user_id,
-      location: this.props.lat_long,
-      data: list2,
-    };
-
-    console.log(this.state.APIresponse);
+    // if(this.state.exitOrResultDay){
+    //   return HomeScreen
+    // }else{
     return (
       <SafeAreaView
         forceInset={{ bottom: 'always' }}
         style={{ flex: 1, backgroundColor: 'rgba(210,210,208,1)' }}
       >
-        {/* {this.state.APIresponse ? null : */}
-        <View style={{ flexDirection: 'row', height: 50 }} backgroundColor={APP_GLOBAL_COLOR}>
+
+        <NavigationBarDefault
+          imageSource={this.state.data.image ? { uri: "data:image/png;base64," + this.state.data.image } : require('../../assets/UserSmall.png')}
+          bgColor={this.state.selectedThemeColor}
+
+          notifications={this.state.notifications}
+          data={this.props.data}
+          showBackButton={this.props.notFirstScreen}
+        >{this.state.data.username}</NavigationBarDefault>
+
+        {/* <View style={{ flexDirection: 'row', height: 50 }} backgroundColor={APP_GLOBAL_COLOR}>
 
           <View style={{ flex: 1, backgroundColor: APP_GLOBAL_COLOR, }}>
             <CustomButton
@@ -495,97 +867,42 @@ export default class PoliceProfileScreen extends Component {
             />
           </View>
 
-          {/* <View style={{ flex: 5, backgroundColor:'#f2f1f4' }} /> */}
 
           <View style={cardViewStyle.textheaderView}>
-            {/* <Text style={{
-              position: 'absolute',
-              backgroundColor: 'transparent',
-              right: 15,
-              fontSize: normalize(14),
-              fontWeight: 'bold',
-              color: 'white'
-            }}>
-              {this.state.menuName}</Text> */}
-            {/* {this.props.onPressInfo &&  */}
+
             <TouchableOpacity style={{ position: 'absolute', right: 0, top: 0, height: 50, width: 50, backgroundColor: 'clear', alignItems: 'center', justifyContent: 'center' }} onPress={() => this.showInfoScreen(true)}>
               <View style={{ alignItems: 'center', justifyContent: 'center', width: 26, height: 26, borderRadius: 13, backgroundColor: "white" }}>
                 <Text style={{ fontSize: normalize(18), fontWeight: 'bold', color: APP_GLOBAL_COLOR }}>i</Text>
               </View>
             </TouchableOpacity>
 
-            {/* {this.props.isPolice ? "Every Opinion Counts. Rate Now !" : "Rate Your MP | PM"}</Text> */}
-            {/* <Text adjustsFontSizeToFit numberOfLines={1} minimumFontScale={.8} style={cardViewStyle.textView}>{this.props.name}</Text> */}
-            {/* <Text style={cardViewStyle.textView2}>{this.props.area === "PDM | null" ? "PDM" : this.props.area}</Text> */}
           </View>
 
+        </View> */}
+
+        <View style={{ flex: 1 }}>
+          <Carousel
+            layout={'default'}
+            layoutCardOffset={18}
+
+            ref={(c) => { this._carousel = c; }}
+            data={this.state.APIresponse}
+            renderItem={this._renderItem}
+            sliderWidth={sliderWidth}
+            itemWidth={itemWidth}
+            shouldOptimizeUpdates
+            style={{ backgroundColor: 'red' }}
+            onSnapToItem={(index) => {
+              this.setState({ activeSlide: index });
+            }}
+          />
+          {this.pagination}
         </View>
-        {/* } */}
-        {this.state.APIresponse ?
-          <ProfileCard
-            pointerEvents={this.state.isLiked1 == 0 ? "auto" : "none"}
-            style={{ flex: 1 }}
-            showHome={true}
-            backgroundColor="white"
-            data={data}
-            onPress={this.homeButtonTapped}
-            onPressLike={this.like1ButtonTapped}
-            onPressDislike={this.dislike1ButtonTapped}
-            isLiked={this.state.isLiked1}
-            customAreaId={this.state.APIresponse.customAreaId}
-            isFlagEnabled={this.state.APIresponse.isFlagEnabled1}
-            resourceGPR={this.state.resourceGPR_1}
-            rtnGprI={this.state.rtnGprI_1}
-            rtnGprO={this.state.rtnGprO_1}
-            oldRating={this.state.oldRating1}
-            totalFlagCount={this.state.totalFlagCount_1}
-            totalFlagUniqueCount={this.state.totalFlagUniqueCount_1}
-            resourceType={1}
-            updateResources={this.updateResources}
-            share={this.moreButtonTapped}
-            name={this.state.APIresponse.resourceName1}
-          // onPressInfo={() => {
-          //   this.showInfoScreen(true)
-          // }}
-          /> :
-          <View style={{ backgroundColor: '#fff', flex: 6, marginButtom: 10, justifyContent: 'center', alignItems: 'center' }}>
-            <Spinner />
-          </View>
-        }
-        {/* divider */}
-        <View
-          style={{ height: normalize(3), margin: 0 }}
-          backgroundColor='rgba(201,201,198)'
-        />
-        {this.state.APIresponse ?
-          <ProfileCard
-            pointerEvents={this.state.isLiked2 == 0 ? "auto" : "none"}
-            style={{ flex: 1 }}
-            showHome={false}
-            backgroundColor='white'
-            data={data2}
-            onPressLike={this.like2ButtonTapped}
-            onPressDislike={this.dislike2ButtonTapped}
-            isLiked={this.state.isLiked2}
-            customAreaId={this.state.APIresponse.customAreaId}
-            isFlagEnabled={this.state.APIresponse.isFlagEnabled2}
-            resourceGPR={this.state.resourceGPR_2}
-            rtnGprI={this.state.rtnGprI_2}
-            rtnGprO={this.state.rtnGprO_2}
-            oldRating={this.state.oldRating2}
-            totalFlagCount={this.state.totalFlagCount_2}
-            totalFlagUniqueCount={this.state.totalFlagUniqueCount_2}
-            resourceType={2}
-            updateResources={this.updateResources}
-            share={this.moreButtonTapped}
-            name={this.state.APIresponse.resourceName2}
-          /> :
-          <View style={{ backgroundColor: '#fff', flex: 6, justifyContent: 'center', alignItems: 'center' }}>
-            <Spinner />
-          </View>
-        }
 
-        {this.state.showInfo &&
+        <TabBarNavigation color={this.state.selectedThemeColor} selectedIndex={2} selectedIndexTab={this.state.selectedIndexTab} />
+
+
+        {/* {this.state.showInfo &&
           <View style={{ position: 'absolute', height: Dimensions.get('window').height, width: Dimensions.get('window').width, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(1,1,1,0.5)', }}>
             <View style={{ alignItems: 'center', justifyContent: 'center' }}>
               <Image source={require('../../assets/Home_1_2/infoScreen2.png')} />
@@ -593,7 +910,7 @@ export default class PoliceProfileScreen extends Component {
               </TouchableOpacity>
             </View>
           </View>
-        }
+        } */}
 
         <ShareSheet visible={this.state.visible} onCancel={() => { this.onCancel() }}>
           <Button iconSrc={{ uri: TWITTER_ICON }}
@@ -647,41 +964,44 @@ export default class PoliceProfileScreen extends Component {
             }}> Email </Button>
 
           {/* <Button iconSrc={{ uri: MORE_ICON }}
-            onPress={() => {
-              this.onCancel();
-              setTimeout(() => {
-                Share.open(shareOptions);
-                // Share.shareSingle(Object.assign(shareOptions, {
-                //   "social": "twitter"
-                // }));
-              }, 300);
-            }}>More</Button>
-
-          <Button iconSrc={null}
-            onPress={() => {
-              this.onCancel();
-              setTimeout(() => {
-                // Share.shareSingle(Object.assign(shareOptions, {
-                //   "social": "twitter"
-                // }));
-                this.reportTapped(dataTappedForMore);
-              }, 300);
-            }}>Report</Button> */}
+              onPress={() => {
+                this.onCancel();
+                setTimeout(() => {
+                  Share.open(shareOptions);
+                  // Share.shareSingle(Object.assign(shareOptions, {
+                  //   "social": "twitter"
+                  // }));
+                }, 300);
+              }}>More</Button>
+  
+            <Button iconSrc={null}
+              onPress={() => {
+                this.onCancel();
+                setTimeout(() => {
+                  // Share.shareSingle(Object.assign(shareOptions, {
+                  //   "social": "twitter"
+                  // }));
+                  this.reportTapped(dataTappedForMore);
+                }, 300);
+              }}>Report</Button> */}
 
         </ShareSheet>
       </SafeAreaView>
     );
+    // }
+
+
   }
 }
 
-const stylesTopView = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    backgroundColor: APP_GLOBAL_COLOR,
-    width: '100%',
-    flexDirection: 'row',
-  },
-});
+// const stylesTopView = StyleSheet.create({
+//   container: {
+//     alignItems: 'center',
+//     backgroundColor: APP_GLOBAL_COLOR,
+//     width: '100%',
+//     flexDirection: 'row',
+//   },
+// });
 
 const cardViewStyle = StyleSheet.create({
   headerView: {
@@ -716,32 +1036,32 @@ const cardViewStyle = StyleSheet.create({
   },
 });
 
-const styles = StyleSheet.create({
-  headerView: {
-    // flex: 0.08,
-    justifyContent: 'center',
-    flexDirection: 'row',
-    elevation: 5,
-    backgroundColor: 'white',
-    height: Dimensions.get('window').height * 0.07
-  },
-  textheaderView: {
-    // flex: 5,
-    backgroundColor: 'transparent',
-    justifyContent: 'center',
-  },
-  textView: {
-    position: 'absolute',
-    backgroundColor: 'transparent',
-    right: 15,
-    fontSize: normalize(17),
-    fontWeight: 'bold',
-    color: 'white'
-  },
-  bottomView: {
-    flex: 0.93,
-  },
-});
+// const styles = StyleSheet.create({
+//   headerView: {
+//     // flex: 0.08,
+//     justifyContent: 'center',
+//     flexDirection: 'row',
+//     elevation: 5,
+//     backgroundColor: 'white',
+//     height: Dimensions.get('window').height * 0.07
+//   },
+//   textheaderView: {
+//     // flex: 5,
+//     backgroundColor: 'transparent',
+//     justifyContent: 'center',
+//   },
+//   textView: {
+//     position: 'absolute',
+//     backgroundColor: 'transparent',
+//     right: 15,
+//     fontSize: normalize(17),
+//     fontWeight: 'bold',
+//     color: 'white'
+//   },
+//   bottomView: {
+//     flex: 0.93,
+//   },
+// });
 
 // /  twitter icon
 const TWITTER_ICON = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAMAAAANIilAAAABvFBMVEUAAAAA//8AnuwAnOsAneoAm+oAm+oAm+oAm+oAm+kAnuwAmf8An+0AqtUAku0AnesAm+oAm+oAnesAqv8An+oAnuoAneoAnOkAmOoAm+oAm+oAn98AnOoAm+oAm+oAmuoAm+oAmekAnOsAm+sAmeYAnusAm+oAnOoAme0AnOoAnesAp+0Av/8Am+oAm+sAmuoAn+oAm+oAnOoAgP8Am+sAm+oAmuoAm+oAmusAmucAnOwAm+oAmusAm+oAm+oAm+kAmusAougAnOsAmukAn+wAm+sAnesAmeoAnekAmewAm+oAnOkAl+cAm+oAm+oAmukAn+sAmukAn+0Am+oAmOoAmesAm+oAm+oAm+kAme4AmesAm+oAjuMAmusAmuwAm+kAm+oAmuoAsesAm+0Am+oAneoAm+wAmusAm+oAm+oAm+gAnewAm+oAle0Am+oAm+oAmeYAmeoAmukAoOcAmuoAm+oAm+wAmuoAneoAnOkAgP8Am+oAm+oAn+8An+wAmusAnuwAs+YAmegAm+oAm+oAm+oAmuwAm+oAm+kAnesAmuoAmukAm+sAnukAnusAm+oAmuoAnOsAmukAqv9m+G5fAAAAlHRSTlMAAUSj3/v625IuNwVVBg6Z//J1Axhft5ol9ZEIrP7P8eIjZJcKdOU+RoO0HQTjtblK3VUCM/dg/a8rXesm9vSkTAtnaJ/gom5GKGNdINz4U1hRRdc+gPDm+R5L0wnQnUXzVg04uoVSW6HuIZGFHd7WFDxHK7P8eIbFsQRhrhBQtJAKN0prnKLvjBowjn8igenQfkQGdD8A7wAAAXRJREFUSMdjYBgFo2AUDCXAyMTMwsrGzsEJ5nBx41HKw4smwMfPKgAGgkLCIqJi4nj0SkhKoRotLSMAA7Jy8gIKing0KwkIKKsgC6gKIAM1dREN3Jo1gSq0tBF8HV1kvax6+moG+DULGBoZw/gmAqjA1Ay/s4HA3MISyrdC1WtthC9ebGwhquzsHRxBfCdUzc74Y9UFrtDVzd3D0wtVszd+zT6+KKr9UDX749UbEBgULIAbhODVHCoQFo5bb0QkXs1RAvhAtDFezTGx+DTHEchD8Ql4NCcSyoGJYTj1siQRzL/JKeY4NKcSzvxp6RmSWPVmZhHWnI3L1TlEFDu5edj15hcQU2gVqmHTa1pEXJFXXFKKqbmM2ALTuLC8Ak1vZRXRxa1xtS6q3ppaYrXG1NWjai1taCRCG6dJU3NLqy+ak10DGImx07LNFCOk2js6iXVyVzcLai7s6SWlbnIs6rOIbi8ViOifIDNx0uTRynoUjIIRAgALIFStaR5YjgAAAABJRU5ErkJggg==";
