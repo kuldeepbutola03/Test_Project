@@ -10,7 +10,7 @@ import {
     Alert,
     Image,
     TouchableOpacity,
-    ScrollView
+    Platform
 } from 'react-native'
 import { Avatar, Divider } from 'react-native-elements'
 import CustomButton from '../ButtonMod/CustomButtom'
@@ -45,14 +45,26 @@ import Permissions from 'react-native-permissions'
 
 class CandidateCard extends React.Component {
 
+    state = {
+        starCount: this.props.oldRating ? this.props.oldRating : 0,
+        submitted: this.props.oldRating ? true : false,
+
+        // selectedColor: this.props.color
+    };
+
+    extraInd = 0
     constructor(props) {
         super(props);
-        this.state = {
-            starCount: this.props.oldRating ? this.props.oldRating : 0,
-            submitted: this.props.oldRating ? true : false,
-        };
+
         // console.log('data',this.props.data)
     }
+    // shouldComponentUpdate(nextProps, newState) {
+    //     // alert('aa')
+    //     return true// this.props.name === nextProps.name; // use === to compare types too!
+    // }
+    // shouldComponentUpdate() {
+
+    // }
 
     onStarRatingPress(rating) {
         this.setState({
@@ -106,7 +118,7 @@ class CandidateCard extends React.Component {
                         })
                         // this.setState({ loading: false, submitted: true, starCount: star });
                     }).then(() => {
-                       // Navigation.dismissModal(id)
+                        // Navigation.dismissModal(id)
                     })
                     .catch(error => {
                         console.error(error);
@@ -130,7 +142,10 @@ class CandidateCard extends React.Component {
         }
     }
 
-    _keyExtractor = (item, index) => index + "abc";
+    _keyExtractor = (item, index) => {
+        this.extraInd = this.extraInd + 1;
+        return index + this.extraInd + "abc"
+    };
 
     // renderItem = ({ item, index }) => {
     //     if (index === 0) {
@@ -180,10 +195,12 @@ class CandidateCard extends React.Component {
     //     }
     // }
 
-    renderItem3 = ({ item, index }) => {
+    renderItem3 = (item, index, props) => {// ({ item, index }) => {
+        // alert(props.color);
         if (index === 0) {
             return null;
         } else {
+            let bgClr = props.color
             return (
                 <View
                     style={{
@@ -194,7 +211,7 @@ class CandidateCard extends React.Component {
                         borderWidth: 0.2
                     }}>
 
-                    <View style={{ flex: 0.8, backgroundColor: this.props.color, justifyContent: 'center', paddingHorizontal: normalize(3) }}>
+                    <View style={{ flex: 0.8, backgroundColor: bgClr, justifyContent: 'center', paddingHorizontal: normalize(3) }}>
                         <Text style={listTitleStyle.view}>{item.attributeName}</Text>
                     </View>
 
@@ -282,6 +299,12 @@ class CandidateCard extends React.Component {
 
         var showRateLeader = (isFlagEnabled === 'Y' && submitted === false);
 
+
+        // if (this.props.color != this.state.selectedColor) {
+        //     alert('aaaa')
+        //     this.setState({ selectedColor: this.props.color })
+        // }
+
         return (
             <View style={[this.props.style, { shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.5, elevation: 5 }]} backgroundColor={this.props.backgroundColor}>
 
@@ -327,8 +350,8 @@ class CandidateCard extends React.Component {
 
                                     <View style={{ height: "90%", marginLeft: 4, width: 0.5, backgroundColor: 'grey' }} />
 
-                                    <View style={{ width: 70, justifyContent: 'center', alignItems: 'center' }}>
-                                        <Text style={{ fontSize: 8, marginBottom: 5 }}> Current Rating </Text>
+                                    <View style={{ width: Platform.isPad ? 140 : 70, justifyContent: 'center', alignItems: 'center' }}>
+                                        <Text style={{ fontSize: Platform.isPad ? 12 : 8, marginBottom: 5 }}> Current Rating </Text>
                                         <ScoreView
                                             style={ratingView.scoreViewStyle}
                                             text={[this.props.data.score.gpr.name, this.props.data.score.gpr.score]}
@@ -338,7 +361,7 @@ class CandidateCard extends React.Component {
                                     </View>
 
                                 </View>
-                                <View style={{flexDirection: 'row', alignItems : 'center'}}>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                     <StarRating
                                         // disabled={this.props.isFlagEnabled === 'N' ? true : false}
                                         disabled={!showRateLeader}
@@ -352,7 +375,7 @@ class CandidateCard extends React.Component {
                                     <View style={{ width: 100, alignItems: "center", justifyContent: 'center' }}>
                                         {/* <View style={{ width: '100%', height: 60, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center', borderTopWidth: 0.3, borderTopColor: 'grey' }}> */}
                                         {showRateLeader ? <TouchableOpacity onPress={() => {
-                                            
+
                                             if (showRateLeader) {
                                                 this.submitRating()
 
@@ -360,8 +383,8 @@ class CandidateCard extends React.Component {
                                         }} style={{ backgroundColor: showRateLeader ? this.props.color : 'lightgrey', width: 80, height: 40, justifyContent: 'center', alignItems: 'center', borderRadius: 5 }}><Text style={{ color: 'white', fontSize: 12 }}> Rate Leader </Text></TouchableOpacity>
                                             :
 
-                                            <TouchableOpacity onPress={() => { this.props.share(this.state.starCount, this.props.name) }} style={{ backgroundColor:  'lightgrey', width: 80, height: 40, justifyContent: 'center', alignItems: 'center', borderRadius: 5 }}><Text style={{ color: 'black', fontSize: 12 }}> Share </Text></TouchableOpacity>
-                                          
+                                            <TouchableOpacity onPress={() => { this.props.share(this.state.starCount, this.props.name) }} style={{ backgroundColor: 'lightgrey', width: 80, height: 40, justifyContent: 'center', alignItems: 'center', borderRadius: 5 }}><Text style={{ color: 'black', fontSize: 12 }}> Share </Text></TouchableOpacity>
+
                                             // <TouchableOpacity onPress={() => { this.props.share(this.state.starCount, this.props.name) }}>
                                             //     <FontAwesome style={{ color: 'grey' }} name="share-alt" size={20} />
                                             // </TouchableOpacity>
@@ -406,7 +429,10 @@ class CandidateCard extends React.Component {
                             <FlatList
                                 data={this.props.data.data}
                                 keyExtractor={this._keyExtractor}
-                                renderItem={this.renderItem3}
+                                renderItem={({ item, index }) => {
+                                    return this.renderItem3(item, index, this.props)
+                                }}
+                                extraData={this.props.color}
                             />
                         </View>
 
@@ -500,7 +526,8 @@ const cardViewStyle = StyleSheet.create({
 
     textView: {
         backgroundColor: 'transparent',
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        fontSize : Platform.isPad ? 20 : 12
         // marginLeft: normalize(13),
         // fontSize: normalize(16),
         // marginBottom: normalize(5)
@@ -509,7 +536,7 @@ const cardViewStyle = StyleSheet.create({
     },
     textView2: {
         backgroundColor: 'transparent',
-        fontSize: 12
+        fontSize : Platform.isPad ? 20 : 12
         // marginLeft: normalize(13),
         // fontSize: normalize(12),
         // marginBottom: normalize(10)

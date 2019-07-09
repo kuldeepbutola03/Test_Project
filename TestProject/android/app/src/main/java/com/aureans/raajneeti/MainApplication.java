@@ -95,7 +95,8 @@ public class MainApplication extends NavigationApplication implements ShareAppli
                  new RNSpinkitPackage(),
                  new RNKochavaTrackerPackage(),
                  new RNFirebaseAdMobPackage(),
-                 new AsyncStoragePackage()  
+                 new AsyncStoragePackage(),
+                 new ScratchViewPackage() 
         );
     }
 

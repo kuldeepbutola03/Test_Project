@@ -71,7 +71,9 @@ export default class PoliceProfileScreen extends Component {
       activeSlide: 0,
       exitOrResultDay: false,
       selectedThemeColor: this.props.color,
-      selectedIndexTab: this.props.selectedIndexTab
+      selectedIndexTab: this.props.selectedIndexTab,
+      menuNameArray:this.props.menuNameArray
+      
     }
   };
 
@@ -192,7 +194,18 @@ export default class PoliceProfileScreen extends Component {
       if (purpose === 0) {
         this.setState({ data: notifications })
       } else if (purpose === 1) {
-        this.setState({ selectedThemeColor: notifications })
+        // alert('red')
+        let data = []
+        // let array = this.state.APIresponse[2]
+         this.state.APIresponse.map((datas, index) => {
+          let dd = Object.assign(datas , [])
+          // dd[0]['a'] = index
+          data.push(dd)
+        })
+        // Object.assign([] , this.state.APIresponse);
+
+        this.setState({ APIresponse :  data, selectedThemeColor: notifications })
+
       } else if (purpose === 2) {
         this.setState({ notifications: notifications });
       } else if (purpose === 6) {
@@ -201,6 +214,8 @@ export default class PoliceProfileScreen extends Component {
         if (!this.props.notFirstScreen) {
           this.serverHitForDetail();
         }
+      }else if (purpose === 7) {
+        this.setState({ menuNameArray: notifications });
       }
     }
   }
@@ -770,7 +785,8 @@ export default class PoliceProfileScreen extends Component {
 
   _renderItem = (data) => {
     // console.log(data)
-    var { selectedThemeColor } = this.state
+    // var { selectedThemeColor } = this.state
+    // alert('aaaaa')
     return (
       <CandidateCard
         style={{ flex: 1, }}
@@ -798,7 +814,7 @@ export default class PoliceProfileScreen extends Component {
         // onPressInfo={() => {
         //   this.showInfoScreen(true)
         // }}
-        color={selectedThemeColor}
+        color={this.state.selectedThemeColor}
       />
     )
   }
@@ -852,33 +868,10 @@ export default class PoliceProfileScreen extends Component {
           notifications={this.state.notifications}
           data={this.props.data}
           showBackButton={this.props.notFirstScreen}
+          
         >{this.state.data.username}</NavigationBarDefault>
 
-        {/* <View style={{ flexDirection: 'row', height: 50 }} backgroundColor={APP_GLOBAL_COLOR}>
-
-          <View style={{ flex: 1, backgroundColor: APP_GLOBAL_COLOR, }}>
-            <CustomButton
-              style={{
-                flexDirection: 'row',
-                flex: 1
-              }}
-              source={require('../../assets/homez.png')}
-              onPress={this.homeButtonTapped}
-            />
-          </View>
-
-
-          <View style={cardViewStyle.textheaderView}>
-
-            <TouchableOpacity style={{ position: 'absolute', right: 0, top: 0, height: 50, width: 50, backgroundColor: 'clear', alignItems: 'center', justifyContent: 'center' }} onPress={() => this.showInfoScreen(true)}>
-              <View style={{ alignItems: 'center', justifyContent: 'center', width: 26, height: 26, borderRadius: 13, backgroundColor: "white" }}>
-                <Text style={{ fontSize: normalize(18), fontWeight: 'bold', color: APP_GLOBAL_COLOR }}>i</Text>
-              </View>
-            </TouchableOpacity>
-
-          </View>
-
-        </View> */}
+        
 
         <View style={{ flex: 1 }}>
           <Carousel
@@ -891,7 +884,7 @@ export default class PoliceProfileScreen extends Component {
             sliderWidth={sliderWidth}
             itemWidth={itemWidth}
             shouldOptimizeUpdates
-            style={{ backgroundColor: 'red' }}
+            // style={{ backgroundColor: 'red' }}
             onSnapToItem={(index) => {
               this.setState({ activeSlide: index });
             }}
@@ -899,7 +892,7 @@ export default class PoliceProfileScreen extends Component {
           {this.pagination}
         </View>
 
-        <TabBarNavigation color={this.state.selectedThemeColor} selectedIndex={2} selectedIndexTab={this.state.selectedIndexTab} />
+        <TabBarNavigation color={this.state.selectedThemeColor} selectedIndex={2} selectedIndexTab={this.state.selectedIndexTab} menuNameArray= {this.state.menuNameArray}/>
 
 
         {/* {this.state.showInfo &&

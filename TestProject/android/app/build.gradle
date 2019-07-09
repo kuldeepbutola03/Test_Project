@@ -107,6 +107,12 @@ android {
         versionName "1.12"
         vectorDrawables.useSupportLibrary = true
     }
+    // lintOptions {
+    //       checkReleaseBuilds false
+    //       // Or, if you prefer, you can continue to check for errors in release builds,
+    //       // but continue the build even when errors are found:
+    //       abortOnError false
+    //   }
 
 signingConfigs {
         release {
@@ -156,14 +162,15 @@ signingConfigs {
 
 
 
-configurations.all {
-    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-        def requested = details.requested
-        if (requested.group == 'com.android.support' && requested.name != 'multidex') {
-            details.useVersion "${rootProject.ext.supportLibVersion}"
-        }
-    }
-}
+// configurations.all {
+//     resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+//         def requested = details.requested
+//         if (requested.group == 'com.android.support' && requested.name != 'multidex') {
+//             // details.useVersion "26.1.0"
+//             details.useVersion "${rootProject.ext.supportLibVersion}"
+//         }
+//     }
+// }
 
 dependencies {
     implementation project(':react-native-scratch')
@@ -220,8 +227,9 @@ dependencies {
     implementation 'com.google.android.gms:play-services-vision:16.2.0'
     implementation 'com.google.firebase:firebase-messaging:17.3.1'
 
+// implementation "com.android.support:multidex:+"
     implementation 'com.android.support:multidex:1.0.3'
-//    implementation 'com.android.support:multidex-instrumentation:26.1.0'
+//    implementation 'com.android.support:multidex-instrumentation:28.0.0'
 
 implementation 'com.google.firebase:firebase-dynamic-links:16.1.8'
  implementation "com.google.firebase:firebase-ads:16.0.1"

@@ -77,19 +77,12 @@ export default class TabBarNavigation extends Component {
         let unselectedTab4 = require('../../../assets/TabBar/tab4.png')
         let unselectedTab5 = require('../../../assets/TabBar/tab5.png')
 
-        // let imageTab1 = [
-        //     require('../../../assets/TabBar/OtherTabs'),
-        //     require('../../../assets/TabBar/OtherTabs'),
-        //     require('../../../assets/TabBar/OtherTabs'),
-        //     require('../../../assets/TabBar/OtherTabs'),
-        //     require('../../../assets/TabBar/OtherTabs'),
-        //     require('../../../assets/TabBar/OtherTabs'),
-        //     require('../../../assets/TabBar/OtherTabs'),
-        // ]
+        
 
         let sizeImage = 22;
 
-
+        // "Trends,Survey,Arena,Notifications,Rate Now, Profile, Male,Female, Select Your Profession,Student,Salaried,Entrepreneur, Retired, Housewife,Other, Select Your Age group, Teenager,Twenties,Thirties,Forties,Fifties,Sixty+".split(',');
+        var {menuNameArray} = this.props
 
         var arrayOfLayout = [
             // firstView
@@ -108,7 +101,7 @@ export default class TabBarNavigation extends Component {
                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                     <Image source={selectedIndex === 0 ? selectedTab1 : unselectedTab1} style={{ height: sizeImage, width: sizeImage }}
                     />
-                    <Text style={{ fontSize: 10, color: selectedIndex === 0 ? 'black' : 'grey', marginTop: 2 }}>Arena</Text>
+                    <Text style={{ fontSize: 10, color: selectedIndex === 0 ? 'black' : 'grey', marginTop: 2 }}>{menuNameArray[2]}</Text>
                 </View>
             </TouchableOpacity>,
 
@@ -120,7 +113,7 @@ export default class TabBarNavigation extends Component {
                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                     <Image source={selectedIndex === 1 ? selectedTab2 : unselectedTab2} style={{ height: sizeImage, width: sizeImage }}
                     />
-                    <Text style={{ fontSize: 10, color: selectedIndex === 1 ? 'black' : 'grey' }}>Survey</Text>
+                    <Text style={{ fontSize: 10, color: selectedIndex === 1 ? 'black' : 'grey' }}>{menuNameArray[1]}</Text>
                 </View>
             </TouchableOpacity>,
 
@@ -133,7 +126,7 @@ export default class TabBarNavigation extends Component {
                     <View>
                         <Image source={selectedImageTab3} />
                         <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center' }}>
-                            <Text style={{ fontSize: 10, color: 'white' }}>Rate Now</Text>
+                            <Text style={{ fontSize: 10, color: 'white' }}>{menuNameArray[4]}</Text>
                         </View>
 
                     </View>
@@ -149,7 +142,7 @@ export default class TabBarNavigation extends Component {
                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                     <Image source={selectedIndex === 3 ? selectedTab4 : unselectedTab4} style={{ height: sizeImage, width: sizeImage }}
                     />
-                    <Text style={{ fontSize: 10, color: selectedIndex === 3 ? 'black' : 'grey' }}>Trends</Text>
+                    <Text style={{ fontSize: 10, color: selectedIndex === 3 ? 'black' : 'grey' }}>{menuNameArray[0]}</Text>
                 </View>
             </TouchableOpacity>,
 

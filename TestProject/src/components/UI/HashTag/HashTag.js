@@ -43,9 +43,9 @@ export default class HashTag extends React.Component {
 
     // let textStyle = this.props.textSize ? {...styles.text, fontSize : this.props.textSize} : {...styles.text, fontSize : normalize(10)};
     return (
-      <View style={{ ...styles.container, ...this.props.style }}>
+      <View style={{ ...styles.container, ...this.props.style , }}>
         <ParsedText
-          style={{ ...styles.text, fontSize: this.props.style.fontSize ? this.props.style.fontSize : 13 }}
+          style={{ ...styles.text, fontSize: this.props.style.fontSize ? this.props.style.fontSize : 13   }}
           parse={
             [
               { type: 'url', style: styles.url, onPress: this.handleUrlPress },
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
 
   text: {
     color: 'black',
-
+    // justifyContent : 'space-evenly'
   },
 
   phone: {

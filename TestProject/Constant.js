@@ -27,6 +27,7 @@ export const THEME_ARRAY = ['#a01414', 'rgba(28,37,65,1)', 'rgba(140,62,161,1)',
 // static let themeColor4 =  UIColor(red: 235.0/255.0 , green: 79.0/255.0, blue: 84.0/255.0, alpha: 1)
 // static let themeColor5 =  UIColor(red: 41.0/255.0 , green: 128.0/255.0, blue: 185.0/255.0, alpha: 1)
 // static let themeColor6 =  UIColor(red: 5/255.0 , green: 166/255.0, blue: 118/255.0, alpha: 1)
+export const LANGUAGE_LIST_ARRAY = "Trends,Survey,Arena,Notifications,Rate Now, Profile, Male,Female, Select Your Profession,Student,Salaried,Entrepreneur, Retired, Housewife,Other, Select Your Age group, Teenager,Twenties,Thirties,Forties,Fifties,Sixty+".split(',');
 
 
 export var PROPS_ARRAY_NOTIFY_SCREEN = []
@@ -66,6 +67,7 @@ export function refreshUserScreen(notifications , screen , purpose) {
   // 4: location fetch for first time, 
   // 5: tabBartapped for perticular screen to open
   // 6: tab bar shift position
+  // 7: language changed
   PROPS_ARRAY_NOTIFY_SCREEN.map(function (refreshUserScreenUI) {
     // if (propsObj.refreshNotificationData) {
       refreshUserScreenUI(notifications , screen , purpose)//.refreshNotificationData();

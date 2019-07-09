@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Image, TouchableOpacity, Text, Dimensions } from 'react-native';
+import { View, StyleSheet, Image, TouchableOpacity, Text, Dimensions, Platform } from 'react-native';
 import { normalize } from '../../../../Constant';
 // import Video from 'react-native-video';
 // import ParsedText from 'react-native-parsed-text';
@@ -48,6 +48,7 @@ const caseCard = props => {
   let updatedDate = moment(data.timestamp, 'DD-MM-YYYY hh:mm:ss').fromNow();
   // "20-06-2019 11:31:26",
   // data.userThumbnailImageData
+  let circleR = Platform.isPad ?  hp('8%') : hp('4%')
   return (
     <View style={style.container}>
       <View style={style.container2}>
@@ -55,15 +56,15 @@ const caseCard = props => {
         {/* header */}
         <View style={{ flexDirection: 'row' }}>
 
-          <View style={{ marginLeft: (isOp ? 0 : 40), width: hp('5%'), alignItems: 'center' }}>
+          <View style={{ marginLeft: (isOp ? 0 : 40), width: Platform.isPad ? hp('10%') : hp('5%'), alignItems: 'center' }}>
             <FastImage
               style={{
                 // marginRight: normalize(10),
-                width: hp('4%'),// normalize(40),
-                height: hp('4%'),// normalize(40),
+                width: circleR,// normalize(40),
+                height: circleR,// normalize(40),
                 marginTop: normalize(5),
                 marginBottom: normalize(5),
-                borderRadius: hp('4%') / 2,// normalize(40) / 2,
+                borderRadius: circleR / 2,// normalize(40) / 2,
               }}
               source={userPicture}
             // source={require('../../../assets/user.png')}
@@ -74,10 +75,10 @@ const caseCard = props => {
           <View style={{ flex: 7, justifyContent: 'center' }}>
 
             <View style={{ margin: 0, flexDirection: 'row' }}>
-              <HashTag style={{ flex: 1, marginTop: 5, marginLeft: 6, marginRight: 6, fontSize: normalize(14) }}>
+              <HashTag style={{ flex: 1, marginTop: 5, marginLeft: 6, marginRight: 4, fontSize: normalize(14) , }}>
                 {data.name}
               </HashTag>
-              <Text style={{ alignSelf: 'center', marginRight: 0, fontSize: 10, color: 'grey' }}> {updatedDate} </Text>
+              <Text style={{ alignSelf: 'center', marginRight: 10, fontSize:Platform.isPad ? 15 : 10, color: 'grey' , }}> {updatedDate}</Text>
             </View>
             <Text
               style={{
@@ -95,13 +96,14 @@ const caseCard = props => {
               <HashTag
                 style={{
                   paddingBottom: 1,
-                  marginTop: 2,
+                  marginTop: 8,
                   marginLeft: 5,
-                  marginRight: 6,
+                  marginRight: 10,
 
-                  // backgroundColor : 'green'
+                  // backgroundColor : 'green',
                   // textAlign: 'justify',
-                  fontSize: normalize(10)
+                  fontSize: normalize(10),
+
                 }}
               // textSize = {normalize(10)}
               >
@@ -148,20 +150,20 @@ const caseCard = props => {
               }}>
                 <Image
                   resizeMode="contain"
-                  style={{ width: 15, height: 15, marginRight: 3, marginLeft: 8 }}
+                  style={{ width: Platform.isPad ? 25 : 15, height: Platform.isPad ? 25 : 15, marginRight: 3, marginLeft: 8 }}
                   source={imageLike}
                 />
-                <Text style={{ fontSize: 12 }}>{LikingCount}</Text>
+                <Text style={{ fontSize: Platform.isPad ? 15 : 12 }}>{LikingCount}</Text>
 
               </TouchableOpacity>
 
               {isOp && <TouchableOpacity style={{ justifyContent: 'flex-start', alignItems: 'center', flexDirection: 'row', marginLeft: 20 }} onPress={() => props.onPressReply(data)}>
                 <Image
                   resizeMode="contain"
-                  style={{ width: 15, height: 15, marginRight: 3, marginLeft: 4 }}
+                  style={{ width: Platform.isPad ? 25 : 15, height: Platform.isPad ? 25 : 15, marginRight: 3, marginLeft: 4 }}
                   source={require('../../../assets/ReportImages/reply.png')}
                 />
-                <Text style={{ fontSize: 12 }}>{ReplyCount}</Text>
+                <Text style={{ fontSize: Platform.isPad ? 15 : 12 }}>{ReplyCount}</Text>
 
               </TouchableOpacity>
               }

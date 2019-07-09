@@ -235,12 +235,12 @@ const styles = StyleSheet.create({
         color: '#000',
         marginTop: normalize(4), 
         paddingLeft: normalize(6),
-        fontSize: 13
+        fontSize: 12
     },
 
     percent: {
         marginTop: normalize(7),
-        fontSize: 13,
+        fontSize: 12,
         textAlign: 'right'
     }
 })

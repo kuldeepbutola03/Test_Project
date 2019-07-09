@@ -22,8 +22,8 @@ import ButtonMod from '../../components/UI/ButtonMod/ButtonMod';
 import EditButton from '../../components/UI/EditButton/EditButton';
 import { Navigation } from 'react-native-navigation';
 import { PropTypes } from 'prop-types';
-import { saveUserData, defaultUser, authHeaders, getUserID, APP_GLOBAL_COLOR, normalize, getToken } from '../../../Constant';
-import { UPDATE_USER } from '../../../Apis';
+import { saveUserData, defaultUser, authHeaders, getUserID, APP_GLOBAL_COLOR, normalize, getToken, refreshUserScreen } from '../../../Constant';
+import { UPDATE_USER, LANDING_TOP_SIX } from '../../../Apis';
 import axios from 'axios';
 import Share, { ShareSheet, Button } from 'react-native-share';
 import Loading from 'react-native-whc-loading';
@@ -65,15 +65,17 @@ export default class Profile extends Component {
       maleChecked: this.props.gender === "Male",
 
       mediaType: 'jpg',
-    
+
     }
-    getToken().then((token)=>{
+    getToken().then((token) => {
       userToken = token;
     })
   }
 
   backTapped = () => {
     Navigation.pop(this.props.componentId);
+
+
   }
 
   toHomeScreen = () => {
@@ -162,7 +164,7 @@ export default class Profile extends Component {
     if (!this.state.editable) {
 
       body = JSON.stringify({
-        
+
 
         userId: this.state.userId,
         userImageData: this.state.image,
@@ -174,7 +176,7 @@ export default class Profile extends Component {
         userDescription: this.state.description,
         userDesignation: this.state.userDesignation,
         userLanguage: this.state.userLanguage,
-        pushNotificationToken:this.userToken
+        pushNotificationToken: this.userToken
 
       });
       // alert(body);
@@ -193,7 +195,7 @@ export default class Profile extends Component {
         userDescription: this.state.description,
         userDesignation: this.state.userDesignation,
         userLanguage: this.state.userLanguage,
-        pushNotificationToken:this.userToken
+        pushNotificationToken: this.userToken
       });
     }
     // alert(body);
@@ -208,7 +210,7 @@ export default class Profile extends Component {
         // alert(JSON.stringify(responseJson));
 
 
-        if (responseJson.response !== 'true') {
+        if (responseJson.response != 'true') {
           this.refs.loading.close();
           setTimeout(() => {
             alert(responseJson.response);
@@ -229,6 +231,7 @@ export default class Profile extends Component {
           this.props.refreshUI(this.state);
           // }, 300);
 
+          this.serverHitForLanguageChange()
           this.backTapped();
           return;
         }
@@ -267,6 +270,34 @@ export default class Profile extends Component {
         this.refs.loading.close();
         // alert("Some Error Occured !");
       });
+
+  }
+  serverHitForLanguageChange = () => {
+    // console.log('called')
+    var body = {
+      userId: this.props.userId
+    };
+    // if (this.props.lat_lon) {
+    //     body["latLngSeparatedByComma"] = this.props.lat_lon;
+    // }
+    //alert(JSON.stringify(body));
+    axios.post(LANDING_TOP_SIX, body)
+      .then(response => {
+        let responseData = response.data;
+        // console.log(responseData)
+        //alert(JSON.stringify(responseData));
+        let extraImage = responseData.extraImageFile3 ? responseData.extraImageFile3 : "Trends,Survey,Arena,Notifications,Rate Now, Profile, Male,Female, Select Your Profession,Student,Salaried,Entrepreneur, Retired, Housewife,Other, Select Your Age group, Teenager,Twenties,Thirties,Forties,Fifties,Sixty+";
+        let menuArr = extraImage.split(',');
+
+
+        // this.setState({ landingTopSix: responseData, menuName: menuArr })
+        refreshUserScreen(menuArr, -1, 7)
+
+      })
+      .catch(error => {
+        // alert('bbb');
+        // console.log(error)
+      })
 
   }
 

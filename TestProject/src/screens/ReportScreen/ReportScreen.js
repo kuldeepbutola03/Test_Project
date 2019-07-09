@@ -23,7 +23,7 @@ import {
 import { Navigation } from 'react-native-navigation';
 import { PropTypes } from 'prop-types';
 import CustomButton from '../../components/UI/ButtonMod/CustomButtom';
-import { normalize, SHARE_LINK, showAdsTilesRectangle, PROPS_ARRAY_NOTIFY_SCREEN, refreshUserScreen, PROPS_ARRAY_FOR_LOCATION } from '../../../Constant';
+import { normalize, SHARE_LINK, showAdsTilesRectangle, PROPS_ARRAY_NOTIFY_SCREEN, refreshUserScreen, PROPS_ARRAY_FOR_LOCATION, FCM_TOKEN } from '../../../Constant';
 import CaseCard from '../../components/UI/CaseCard/CaseCard';
 import Draggable from 'react-native-draggable';
 import { TIMELINE_DATA, MOBILE_NUMBER_, LIKDISLIKE_POST, REPORT_POST, GET_USER_NOTIFICATIONS, UPDATE_USER_NOTIFICATIONS, MESSAGE_COMPOSE } from '../../../Apis';
@@ -48,6 +48,8 @@ import { NavigationBarDefault } from '../../components/UI/NavigationBarDefault/N
 import TabBarNavigation from '../../components/UI/TabBarNavigation/TabBarNavigation';
 
 import Permissions from 'react-native-permissions';
+
+import AsyncStorage from '@react-native-community/async-storage';
 // import PullToRefreshListView from 'react-native-smart-pull-to-refresh-listview';
 
 // import SharingCard from '../../components/UI/Sharing/SharingCard';
@@ -73,7 +75,10 @@ export default class ReportScreen extends Component {
     textCompose: '',
     disabled: false,
 
-    selectedIndexTab: this.props.selectedIndexTab
+    selectedIndexTab: this.props.selectedIndexTab,
+
+    menuNameArray : this.props.menuNameArray
+    
   };
 
   static propTypes = {
@@ -127,6 +132,47 @@ export default class ReportScreen extends Component {
     }
 
     PROPS_ARRAY_NOTIFY_SCREEN.push(this.refreshUserScreenUI);
+    this.checkPermissionNot();
+  }
+
+  //1
+  async checkPermissionNot() {
+    const enabled = await firebase.messaging().hasPermission();
+    if (enabled) {
+      this.getToken();
+    } else {
+      this.requestPermission();
+    }
+  }
+
+  //3
+  async getToken() {
+    let fcmToken = await AsyncStorage.getItem(FCM_TOKEN);
+    if (!fcmToken) {
+      fcmToken = await firebase.messaging().getToken();
+      if (fcmToken) {
+        // user has a device token
+        await AsyncStorage.setItem(FCM_TOKEN, fcmToken);
+      }
+    }
+    // alert(fcmToken);
+    // this.setState({ pushNotificationToken: fcmToken })
+    // console.log(fcmToken);
+  }
+
+  //2
+  async requestPermission() {
+    try {
+      await firebase.messaging().requestPermission();
+      // User has authorised
+      this.getToken();
+    } catch (error) {
+      // User has rejected permissions
+
+      //alert('permission rejected');
+
+      console.log('permission rejected');
+    }
   }
 
   handleOpenURL = (event) => { // D
@@ -174,6 +220,8 @@ export default class ReportScreen extends Component {
         this.setState({ notifications: notifications });
       } else if (purpose === 6) {
         this.setState({ selectedIndexTab: notifications });
+      } else if (purpose === 7) {
+        this.setState({ menuNameArray: notifications });
       }
     }
   }
@@ -942,7 +990,8 @@ export default class ReportScreen extends Component {
           coordinates: this.props.coordinates,
           data2: this.props.data,
           refreshData: this.refreshData,
-          color: this.state.selectedThemeColor
+          color: this.state.selectedThemeColor,
+          menuName : this.state.menuNameArray
         },
         options: {
           topBar: {
@@ -1528,7 +1577,7 @@ export default class ReportScreen extends Component {
 
     return (
       <View style={{ height: 60, margin: 0, padding: 10, backgroundColor: 'white', flexDirection: 'row' }}>
-        <TouchableOpacity style={{ flex: 1, padding: 5, backgroundColor: '#dcdcdc' , borderRadius : 5 }} onPress={() => { this.showCompose() }}>
+        <TouchableOpacity style={{ flex: 1, padding: 5, backgroundColor: 'rgba(237,240,241,1)' , borderRadius : 5 }} onPress={() => { this.showCompose() }}>
           {/* <TextInput
             style={{ padding: 5, fontSize: 15, marginLeft: 10 }}
             placeholder="Share your view"
@@ -1580,7 +1629,7 @@ export default class ReportScreen extends Component {
     return (
       <SafeAreaView
         forceInset={{ bottom: 'always' }}
-        style={{ flex: 1, backgroundColor: '#dcdcdc'}}//  'rgba(210,210,208,1)' }}
+        style={{ flex: 1, backgroundColor: 'rgba(237,240,241,1)'}}//  'rgba(210,210,208,1)' }}
       >
 
         <NavigationBarDefault
@@ -1595,104 +1644,6 @@ export default class ReportScreen extends Component {
         >{this.state.data.username}</NavigationBarDefault>
 
         {this.composeView()}
-
-
-        {/* <View style={styles.headerView} backgroundColor={APP_GLOBAL_COLOR}>
-
-
-          <TouchableOpacity onPress={this.gotoProfile} style={{ flex: 2.5 }} backgroundColor='grey'>
-            <View style={{ flex: 1, backgroundColor: 'clear', flexDirection: 'row', alignItems: 'center' }}>
-              <Image
-                style={{
-                  backgroundColor: APP_GLOBAL_COLOR,
-                  marginLeft: normalize(10),
-                  width: normalize(30),
-                  height: normalize(30),
-                  marginTop: normalize(5),
-                  marginBottom: normalize(5),
-                  borderRadius: normalize(30) / 2,
-                }}
-                source={this.state.image ? { uri: "data:image/png;base64," + this.state.image } : require('../../assets/UserSmall.png')}
-              />
-
-              <Text
-                style={{
-                  flex: 1,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  marginLeft: 5,
-                  fontSize: normalize(14),
-                  color: 'white',
-
-                  marginRight: 0
-                }}
-                minimumFontScale={.03}
-                adjustsFontSizeToFit
-                numberOfLines={1}
-
-              >
-                {this.props.data.username}
-              </Text>
-            </View>
-          </TouchableOpacity>
-          <View style={styles.topIcons}>
-            <TouchableWithoutFeedback onPress={() => this.sortTimeline('popular', 3)}>
-              <MaterialCommunityIcons
-                size={hp('3.9%')}
-                color={selectedSort === 'popular' ? '#fff' : '#999'}
-                name="fire"
-                style={{ marginTop: hp('.5%'), marginRight: hp('.8%') }}
-              />
-            </TouchableWithoutFeedback>
-            <TouchableWithoutFeedback onPress={() => this.sortTimeline('distance', 1)}>
-              <MaterialCommunityIcons
-                size={hp('3.5%')}
-                // color='#999'
-                color={selectedSort === 'distance' ? '#fff' : '#999'}
-                name="run"
-                style={{ marginTop: hp('.9%'), marginRight: hp('.8%') }}
-              />
-            </TouchableWithoutFeedback>
-            <TouchableWithoutFeedback onPress={() => this.sortTimeline('time', 2)}>
-              <MaterialCommunityIcons
-                size={hp('3.5%')}
-                // color='#999'
-                color={selectedSort === 'time' ? '#fff' : '#999'}
-                name="clock-outline"
-                style={{ marginTop: hp('.5%'), marginRight: hp('.8%') }}
-              />
-            </TouchableWithoutFeedback>
-            <TouchableWithoutFeedback style={{
-              width: hp('10%'), justifyContent: 'center',
-              alignItems: 'center'
-            }} onPress={() => this.showNotificationScreen()}>
-              <View style={{
-                height: null,
-                width: hp('6%'), justifyContent: 'center',
-                alignItems: 'flex-start',
-              }}>
-                
-                {notifications.count && notifications.count > 0 ?
-                  <BadgedIcon
-                    size={hp('3%')}
-                    color="#fff"
-                    type="font-awesome"
-                    // onPress={() => this.showNotificationScreen()}
-                    name="bell-o" />
-                  :
-                  <FontAwesome
-                    size={hp('3%')}
-                    // onPress={() => this.showNotificationScreen()}
-                    name="bell-o"
-                    color="#fff"
-                  />
-                }
-              </View>
-              
-            </TouchableWithoutFeedback>
-          </View>
-        </View> */}
-
 
         {loading ?
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -1734,7 +1685,7 @@ export default class ReportScreen extends Component {
               }
             >
             </FlatList>
-            {!this.props.notFirstScreen && <TabBarNavigation color={this.state.selectedThemeColor} selectedIndex={0} selectedIndexTab={this.state.selectedIndexTab} />}
+            {!this.props.notFirstScreen && <TabBarNavigation color={this.state.selectedThemeColor} selectedIndex={0} selectedIndexTab={this.state.selectedIndexTab} menuNameArray= {this.state.menuNameArray}/>}
 
             <ShareSheet visible={this.state.visible} onCancel={() => { this.onCancel() }}>
               <Button iconSrc={{ uri: TWITTER_ICON }}

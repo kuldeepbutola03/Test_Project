@@ -72,7 +72,7 @@ export default class multipleQuestionView extends React.Component {
                                     this.props.onChangeData(this.props.data, this.props.indexValue);
                                 }
                             }}>
-                            <Text style={{ marginLeft: normalize(3)}}> {data.answerText} </Text></TouchableOpacity>
+                            <Text style={{ marginLeft: normalize(3) , fontSize : 12}}>{data.answerText} </Text></TouchableOpacity>
                         </RadioButton>
                     );
                 })
@@ -84,10 +84,10 @@ export default class multipleQuestionView extends React.Component {
             <View style={[this.props.style, { marginBottom: normalize(10)}]}>
                 <View style={{ flexDirection: 'row' , paddingTop  : 10 , paddingBottom : 10 }} >
                     <View style={{ flex: 1.5 , justifyContent: 'center', alignContent: 'center' }} >
-                        <Text style={{ textAlign: 'center' ,  }}>{this.props.i}</Text>
+                        <Text style={{ textAlign: 'center' , fontSize : 12 }}>{this.props.i}</Text>
                     </View>
                     <View style={{ flex: 8.5 , marginRight : 10 }} >
-                        <Text >{this.props.data.questionText}</Text>
+                        <Text  style={{  fontSize : 12 }}>{this.props.data.questionText}</Text>
                     </View>
                 </View>
         

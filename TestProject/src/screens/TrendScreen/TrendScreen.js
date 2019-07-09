@@ -55,7 +55,8 @@ class TrendScreen extends Component {
     visible: false,
     selectedThemeColor: this.props.color,
     dict: null,
-    selectedIndexTab : this.props.selectedIndexTab
+    selectedIndexTab : this.props.selectedIndexTab,
+    menuNameArray: this.props.menuNameArray
     // refreshUI : this.props.refreshUI
   }
   componentWillUnmount() {
@@ -114,6 +115,8 @@ class TrendScreen extends Component {
         }
       } else if (purpose === 6) {
         this.setState({ selectedIndexTab: notifications });
+      } else if (purpose === 7) {
+        this.setState({ menuNameArray: notifications });
       }
     }
   }
@@ -715,88 +718,13 @@ class TrendScreen extends Component {
           notifications={notifications}
           data={this.props.data}
           showBackButton={this.props.notFirstScreen}
-
           
           // this.setState({selectedIndexTab : 3,
         >{this.state.data.username}</NavigationBarDefault>
-        {/* <View style={{ flex: 1, flexDirection: 'row', backgroundColor: 'rgba(255,255,255,1)' }}>
-          <View style={{ width: 60, backgroundColor: APP_GLOBAL_COLOR }}>
-            <CustomButton
-              style={{
-                flexDirection: 'row',
-                flex: 1,
-              }}
-              source={require('../../assets/homez.png')}
-              onPress={this.homeButtonTapped}
-            />
-          </View>
-          <TouchableOpacity style={{ flex: 5 }} onPress={this.gotoProfile}>
-            <View style={{ flex: 1, backgroundColor: 'rgba(255,255,255,1)', flexDirection: 'row', alignItems: 'center' }}>
-              <Image
-                style={{
-                  backgroundColor: APP_GLOBAL_COLOR,
-                  marginLeft: normalize(10),
-                  width: normalize(30),
-                  height: normalize(30),
-                  marginTop: normalize(5),
-                  marginBottom: normalize(5),
-                  borderRadius: normalize(30) / 2,
-                }}
-                source={this.state.data.image ? { uri: "data:image/png;base64," + this.state.data.image } : require('../../assets/UserSmall.png')}
-              />
-
-              <Text
-                style={{
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  marginLeft: 5,
-                  fontSize: normalize(14),
-                  color: '#000',
-                  flex: 1
-                }}
-                minimumFontScale={.03}
-                adjustsFontSizeToFit
-                numberOfLines={1}
-              >
-                {this.state.data.username}
-              </Text>
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={{
-            // flex: 5,
-            width: hp('10%'),
-            justifyContent: 'center',
-            alignItems: 'center',
-            // flexDirection: 'row',
-            // marginRight: hp('4%'),
-            backgroundColor: 'rgba(255,255,255,1)',
-          }}
-            // style={{  justifyContent: 'center', alignItems: 'center' }}
-            onPress={() => this.showNotificationScreen()}>
-
-            {notifications.count && notifications.count > 0 ?
-              <BadgedIcon
-                size={hp('3%')}
-                color={APP_GLOBAL_COLOR}
-                type="font-awesome"
-                // onPress={() => this.showNotificationScreen()}
-                name="bell-o" />
-              :
-              <FontAwesome
-                size={hp('3%')}
-                // onPress={() => this.showNotificationScreen()}
-                name="bell-o"
-                color={APP_GLOBAL_COLOR}
-              />
-            }
-          
-          </TouchableOpacity>
-
-        </View> */}
+       
         {this.renderComponent()}
 
-        {!this.props.notFirstScreen && <TabBarNavigation color={this.state.selectedThemeColor} selectedIndex={3} selectedIndexTab= {this.state.selectedIndexTab}/>}
+        {!this.props.notFirstScreen && <TabBarNavigation color={this.state.selectedThemeColor} selectedIndex={3} selectedIndexTab={this.state.selectedIndexTab} menuNameArray= {this.state.menuNameArray}/>}
 
         <ShareSheet visible={this.state.visible} onCancel={() => { this.onCancel() }}>
 

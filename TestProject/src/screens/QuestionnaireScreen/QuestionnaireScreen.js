@@ -42,7 +42,7 @@ export default class QuestionnireScreen extends Component {
         questionnaire2: {},
         isSurveyTaken1: 'N',
         isSurveyTaken2: 'N',
-        surveyTitle: 'SURVEY',
+        surveyTitle: 'Survey',
         notifications: this.props.notifications,
         positionRight: -30,
         selectedThemeColor: this.props.color,
@@ -51,7 +51,8 @@ export default class QuestionnireScreen extends Component {
 
         serverHitCount: 0,
 
-        selectedIndexTab: this.props.selectedIndexTab
+        selectedIndexTab: this.props.selectedIndexTab,
+        menuNameArray: this.props.menuNameArray
     }
 
 
@@ -74,15 +75,28 @@ export default class QuestionnireScreen extends Component {
                             text: 'stack with one child'
                         },
                         options: {
-                            modalPresentationStyle: Platform.OS === 'ios' ? 'overFullScreen' : 'overCurrentContext',
+                            //                         formSheet = "formSheet",
+                            // pageSheet = "pageSheet",
+                            // overFullScreen = "overFullScreen",
+                            // overCurrentContext = "overCurrentContext",
+                            // currentContext = "currentContext",
+                            // popOver = "popOver",
+                            // fullScreen = "fullScreen",
+                            // none = "none"
+                            modalPresentationStyle: Platform.OS === 'ios' ? 'overFullScreen' : "overCurrentContext",
                             layout: {
                                 backgroundColor: 'transparent'
                             },
                             topBar: {
-                                visible: false,
-                                title: {
-                                    text: 'Modal'
+                                visible: Platform.OS != 'ios',
+                                // title: {
+                                //     text: 'Modal'
+                                // },
+                                animate: false,
+                                background: {
+                                    color: 'rgba(0,0,0,.5)'
                                 }
+
                             }
                         }
                     }
@@ -255,13 +269,18 @@ export default class QuestionnireScreen extends Component {
                                     this.refs.scrollview.scrollTo({ x: 0, animate: true });
                                     // console.log(this.state)
                                     this.refs.loading.close();
+                                    
                                     setTimeout(() => {
+                                        var that = this
                                         if (this.state.questionnaire2 && this.state.questionnaire2.activeSurveyList && this.state.questionnaire2.activeSurveyList.length > 0) {
                                             Alert.alert(
                                                 APP_ALERT_MESSAGE,
                                                 'Thanks for submitting the survey. Please press the survey button for more',
                                                 [
-                                                    { text: 'OK', onPress: () => { } },
+                                                    { text: 'OK', onPress: () => { 
+                                                        that.showScratchCard()
+
+                                                    } },
                                                 ],
                                                 { cancelable: false },
                                             );
@@ -270,7 +289,9 @@ export default class QuestionnireScreen extends Component {
                                                 APP_ALERT_MESSAGE,
                                                 'Thanks for submitting the survey',
                                                 [
-                                                    { text: 'OK', onPress: () => { } },
+                                                    { text: 'OK', onPress: () => { 
+                                                        that.showScratchCard()
+                                                    } },
                                                 ],
                                                 { cancelable: false },
                                             );
@@ -500,7 +521,7 @@ export default class QuestionnireScreen extends Component {
 
         }
 
-        return "SURVEY"
+        return "Survey"
 
     }
     componentWillUnmount() {
@@ -555,9 +576,11 @@ export default class QuestionnireScreen extends Component {
             } else if (purpose === 4) {
 
                 if (!this.props.notFirstScreen) {
-                    
+
                     this.getSurvey();
                 }
+            } else if (purpose === 7) {
+                this.setState({ menuNameArray: notifications });
             }
 
         }
@@ -579,7 +602,7 @@ export default class QuestionnireScreen extends Component {
 
         this.refs.scrollview.scrollTo({ x: Dimensions.get('window').width, animate: true });
         if (questionnaire1) {
-            this.setState({ surveyTitle: questionnaire1.surveyDesc })
+            this.setState({ surveyTitle: questionnaire1.surveyDesc ? questionnaire1.surveyDesc : 'Survey' })
         }
 
         if (!questionniareData1) {
@@ -615,6 +638,9 @@ export default class QuestionnireScreen extends Component {
     }
 
     nationalBttnTapped = () => {
+
+        
+
         const { surveyTitle } = this.props;
         const { questionnaire2 } = this.state;
 
@@ -628,7 +654,7 @@ export default class QuestionnireScreen extends Component {
             // this.setState({ surveyTitle:  `SURVEY - ${surveyTitle.toUpperCase()}` })
         } else {
             if (questionnaire2) {
-                this.setState({ surveyTitle: questionnaire2.surveyDesc })
+                this.setState({ surveyTitle: questionnaire2.surveyDesc ? questionnaire2.surveyDesc : 'Survey' })
             }
         }
     }
@@ -997,7 +1023,7 @@ export default class QuestionnireScreen extends Component {
                             style={{ flex: 1 }}
                             textColor={this.state.state ? "white" : "black"}
                             bgColor={this.state.state ? this.state.selectedThemeColor : "transparent"} >
-                            {"NATIONAL"}
+                            {"National"}
                             {/* {this.state.questionnaire2 ? this.state.questionnaire2.userCurrentState.toUpperCase() : "NATIONAL"} */}
                         </CustomTextButton>
                         <CustomTextButton
@@ -1006,7 +1032,7 @@ export default class QuestionnireScreen extends Component {
                             textColor={!this.state.state ? "white" : "black"}
                             bgColor={!this.state.state ? this.state.selectedThemeColor : "transparent"} >
                             {
-                                (this.state.questionnaire1 && this.state.questionnaire2.userCurrentState) ? this.state.questionnaire2.userCurrentState.toUpperCase() : "STATE"}
+                                (this.state.questionnaire1 && this.state.questionnaire2.userCurrentState) ? this.state.questionnaire2.userCurrentState.toUpperCase() : "State"}
                         </CustomTextButton>
                     </View>
                     <View
@@ -1025,7 +1051,6 @@ export default class QuestionnireScreen extends Component {
                         <ScrollView horizontal={true} pagingEnabled={true} scrollEnabled={false}
                             ref="scrollview"
                         >
-
                             <View style={thirdViewStyle.innerViewSecond}>
                                 <QuestionniareListView
                                     color={this.state.selectedThemeColor}
@@ -1073,7 +1098,7 @@ export default class QuestionnireScreen extends Component {
                             </View>
                         </ScrollView>
                     </View>
-                    {!this.props.notFirstScreen && <TabBarNavigation color={this.state.selectedThemeColor} selectedIndex={1} selectedIndexTab={this.state.selectedIndexTab} />}
+                    {!this.props.notFirstScreen && <TabBarNavigation color={this.state.selectedThemeColor} selectedIndex={1} selectedIndexTab={this.state.selectedIndexTab} menuNameArray= {this.state.menuNameArray}/>}
                 </View>
             )
         }
@@ -1139,7 +1164,7 @@ export default class QuestionnireScreen extends Component {
                 userId: this.props.user_id,
                 // userCurrentCoord: "48.92100020832678,-112.2370634060909"
             }
-    
+
             if (latlong) {
                 body2['userCurrentCoord'] = latlong
             }
@@ -1265,8 +1290,8 @@ export default class QuestionnireScreen extends Component {
 
 const topViewStyle = StyleSheet.create({
     headerView: {
-        // height : 30,
-        flex: 0.075,
+        height: 30,
+        // flex: 0.075,
         justifyContent: 'center',
         flexDirection: 'row',
         // backgroundColor: 'rgba(210,210,208,1)'
@@ -1282,7 +1307,7 @@ const topViewStyle = StyleSheet.create({
     textView: {
         backgroundColor: 'transparent',
         marginLeft: 10,
-        fontSize: normalize(13),
+        fontSize: 12,
     },
     textView2: {
         backgroundColor: 'transparent',
@@ -1293,7 +1318,8 @@ const topViewStyle = StyleSheet.create({
 
 const secondViewStyle = StyleSheet.create({
     secondView: {
-        flex: 0.075,
+        // flex: 0.075,
+        height: 40,
         backgroundColor: 'transparent',
         flexDirection: 'row',
     },
@@ -1301,7 +1327,7 @@ const secondViewStyle = StyleSheet.create({
 
 const thirdViewStyle = StyleSheet.create({
     thirdView: {
-        flex: 0.85,
+        flex: 1,
         backgroundColor: '#fff',
     },
     innerViewSecond: {

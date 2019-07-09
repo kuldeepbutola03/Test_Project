@@ -1,5 +1,5 @@
 import { Navigation } from 'react-native-navigation';
-import { APP_GLOBAL_COLOR, getUserThemePointer, THEME_ARRAY } from '../Constant';
+import { APP_GLOBAL_COLOR, getUserThemePointer, THEME_ARRAY, LANGUAGE_LIST_ARRAY } from '../Constant';
 export const NAVIGATION_ROOT = 'RnavigationRoot';
 import { Image } from 'react-native';
 import styles from 'react-native-phone-input/lib/styles';
@@ -233,7 +233,8 @@ const botomTabsScreen = (userdata, color) => {
           data: userdata,
           notifications: [],
           user_id: userdata.userId,
-          color: color
+          color: color,
+          menuNameArray : LANGUAGE_LIST_ARRAY
         }
       }
       //     }
@@ -271,7 +272,8 @@ const botomTabsScreen = (userdata, color) => {
           surveyThreadID: null,
           user_id: userdata.userId,
           data: userdata,
-          color: color
+          color: color,
+          menuNameArray : LANGUAGE_LIST_ARRAY
         }
       }
     },
@@ -309,9 +311,9 @@ const botomTabsScreen = (userdata, color) => {
           username: userdata.username,
           userLanguage: userdata.userLanguage,
           color: color,
-          data : userdata
-          // languageCode: this.state.firstAPIresponse ? this.state.firstAPIresponse.languageCodes : null,
-          // language: menuName ? menuName[4] : null,
+          data : userdata,
+          menuNameArray : LANGUAGE_LIST_ARRAY
+          
         }
       }
     }, {
@@ -340,6 +342,7 @@ const botomTabsScreen = (userdata, color) => {
           data: userdata,
           color: color,
           user_id: userdata.userId,
+          menuNameArray : LANGUAGE_LIST_ARRAY
         }
       }
     },
@@ -369,7 +372,8 @@ const botomTabsScreen = (userdata, color) => {
           notifications: [],
           data: userdata,
           user_id: userdata.userId,
-          color: color
+          color: color,
+          menuNameArray : LANGUAGE_LIST_ARRAY
         }
       }
     }

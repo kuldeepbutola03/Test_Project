@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import { SafeAreaView, Text, FlatList, StyleSheet, View } from 'react-native';
 import { ListItem, Divider } from 'react-native-elements';
-import { APP_GLOBAL_COLOR } from '../../../Constant';
+import { APP_GLOBAL_COLOR, refreshUserScreen } from '../../../Constant';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import axios from 'axios';
 import moment from 'moment';
 //import { GET_CURRENT_ACTIVE_SURVEY, GET_SURVEY_BY_ID } from '../../../Apis';
 import { Navigation } from 'react-native-navigation';
+import { UPDATE_USER_NOTIFICATIONS } from '../../../Apis';
 
 class NotificationScreen extends Component {
     state = {
@@ -187,6 +188,7 @@ class NotificationScreen extends Component {
         let updatedNotification = Object.assign(newNotifications, {});
 
         // console.log(updatedNotification)
+        refreshUserScreen(updatedNotification, -1, 2)
         this.setState({
             notifications: updatedNotification
         })
@@ -226,6 +228,25 @@ class NotificationScreen extends Component {
             console.log(error)
         })
     }
+
+    // requestToGetNotifications = () => {
+    //     let userid = this.props.data.userId;
+    //     // console.log(userid)
+    //     axios.post(GET_USER_NOTIFICATIONS, {
+    //       userId: userid
+    //     }).then((response) => {
+    //       let responseData = response.data;
+    //       // alert(JSON.stringify(responseData));
+    //       // this.setState({
+    //       //   notifications: responseData
+    //       // })
+    //       refreshUserScreen(responseData, -1, 2)
+    
+    //       // this.refreshNotificationData(responseData)
+    //     }).catch(error => {
+    //       console.log(error)
+    //     })
+    //   }
 
     _keyExtractor = (item, index) => item.notificationLogId.toString();
 

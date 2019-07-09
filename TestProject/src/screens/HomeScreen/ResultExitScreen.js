@@ -16,7 +16,7 @@ import Carousel, { Pagination } from 'react-native-snap-carousel';
 import TextTicker from 'react-native-text-ticker';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { DEBUG, GET_USER_DETAILS_EMAIL, GET_USER_NOTIFICATIONS, LANDING_CDM, LANDING_PDM, LANDING_RESOURCES, LANDING_TOP_SIX, UPDATE_USER_NOTIFICATIONS } from '../../../Apis';
-import { APP_GLOBAL_COLOR, authHeaders, DEFAULT_USER_ID, normalize, saveUserData, showAdsTilesRectangle } from '../../../Constant';
+import { APP_GLOBAL_COLOR, authHeaders, DEFAULT_USER_ID, normalize, saveUserData, showAdsTilesRectangle, refreshUserScreen } from '../../../Constant';
 import MenuButtons from '../../components/UI/ProfileView/MenuButtons';
 import ProfileView from '../../components/UI/ProfileView/ProfileView';
 import Spinner from '../../components/UI/Spinner/Spinner';
@@ -218,8 +218,11 @@ export default class ResultExitScreen extends Component {
                 //alert(JSON.stringify(responseData));
                 let extraImage = responseData.extraImageFile3 ? responseData.extraImageFile3 : "Trends,Survey,Arena,Notifications,Rate Now, Profile, Male,Female, Select Your Profession,Student,Salaried,Entrepreneur, Retired, Housewife,Other, Select Your Age group, Teenager,Twenties,Thirties,Forties,Fifties,Sixty+";
                 let menuArr = extraImage.split(',');
-                this.setState({ landingTopSix: responseData, menuName: menuArr })
 
+
+                this.setState({ landingTopSix: responseData, menuName: menuArr })
+                refreshUserScreen(menuArr , -1 , 7)
+                
             })
             .catch(error => {
                 // alert('bbb');

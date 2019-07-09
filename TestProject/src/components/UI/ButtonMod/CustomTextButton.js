@@ -22,7 +22,7 @@ export default customTextButton = props => {
             ...props.style,
         }
     ]} onPress={props.onPress} >
-        <Text style = {{color : props.textColor ? props.textColor : "black"}}>
+        <Text style = {{color : props.textColor ? props.textColor : "black" , fontWeight : 'bold' , fontSize : 12}}>
             {props.children}
         </Text>
     </TouchableOpacity>

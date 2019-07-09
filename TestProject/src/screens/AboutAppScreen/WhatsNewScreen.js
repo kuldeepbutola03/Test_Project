@@ -46,12 +46,12 @@ export default class WhatsNewScreen extends Component {
 
     let array = Platform.isPad ?
       [
-        require('../../assets/IntroImages/intro1.jpg'),
-        require('../../assets/IntroImages/intro2.jpg'),
-        require('../../assets/IntroImages/intro3.jpg'),
-        require('../../assets/IntroImages/intro4.jpg'),
-        require('../../assets/IntroImages/intro5.jpg'),
-        require('../../assets/IntroImages/intro6.jpg'),
+        require('../../assets/IntroImages/iPad/intro1_.jpg'),
+        require('../../assets/IntroImages/iPad/intro2_.jpg'),
+        require('../../assets/IntroImages/iPad/intro3_.jpg'),
+        require('../../assets/IntroImages/iPad/intro4_.jpg'),
+        require('../../assets/IntroImages/iPad/intro5_.jpg'),
+        require('../../assets/IntroImages/iPad/intro6_.jpg'),
       ]
       :
       [
@@ -233,7 +233,7 @@ export default class WhatsNewScreen extends Component {
           Navigation.pop(NAVIGATION_ROOT);
         }}>
         <Image
-          resizeMode='contain'
+          resizeMode= 'contain'
           resizeMethod="scale"
           style={{ height: '100%', width: '100%', marginTop: 0, borderRadius: 0 }}
           source={item}

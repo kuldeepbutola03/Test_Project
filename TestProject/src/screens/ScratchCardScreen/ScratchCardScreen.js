@@ -81,7 +81,7 @@ export default class ScratchCardScreen extends Component {
   componentWillMount() {
 
     // }, 100)
-    
+
     // let object = this.props.children// .navigation// Navigation. .events(). .getPropsForId('HomeScreen');
     // console.log(object);
 
@@ -105,7 +105,7 @@ export default class ScratchCardScreen extends Component {
   onScratchDone = ({ isScratchDone, id }) => {
     // Do something
     console.log('onScratchDone');
-    this.setState({showCrossBttn : true})
+    this.setState({ showCrossBttn: true })
   }
 
   onTouchStateChangedMethod = ({ id, touchState }) => {
@@ -119,40 +119,42 @@ export default class ScratchCardScreen extends Component {
   }
   render() {
 
-    
     return (
-      <View style={{ flex: 1, alignItems: "center", justifyContent: 'center', backgroundColor: 'rgba(.4,.5,.6,.6)' }}>
-        <View style={{ height: normalize(200), width: normalize(200), backgroundColor: 'silver' , padding : 5 , alignItems : 'center' , justifyContent : 'center'}}>
+      <View style={{ flex: 1, alignItems: "center", justifyContent: 'center', backgroundColor: 'rgba(0,0,0,.5)' }}>
+        <View style={{ height: normalize(200), width: normalize(200), backgroundColor: 'white', padding: 5, alignItems: 'center', justifyContent: 'center', borderRadius: 10 }}>
           {/* <ScratchView></ScratchView> */}
-          <Text style = {{fontSize : 12 , fontStyle : 'italic'}}>Fortune Cookie</Text>
-          <Text style = {{marginTop : 10, fontSize : 18 , textAlign : 'center'}}>{this.fortuneList[this.randomNumber]}</Text>
+          <Text style={{ fontSize: 12, fontStyle: 'italic' }}> Fortune Cookie </Text>
+          <Text style={{ marginTop: 10, fontSize: 18, textAlign: 'center' }}> {this.fortuneList[this.randomNumber]} </Text>
           <ScratchView
+            // style = {{borderRadius : 10}}
             id={1} // ScratchView id (Optional)
-            brushSize={50} // Default is 10% of the smallest dimension (width/height)
-            threshold={50} // Report full scratch after 70 percentage, change as you see fit. Default is 50
+            brushSize={70} // Default is 10% of the smallest dimension (width/height)
+            threshold={20} // Report full scratch after 70 percentage, change as you see fit. Default is 50
             fadeOut={true} // Disable the fade out animation when scratch is done. Default is true
-            placeholderColor="#AAACCC" // Scratch color while image is loading (or while image not present)
-            // imageUrl= {require('../../assets/1.png')}//"https://media.wired.com/photos/5b899992404e112d2df1e94e/master/pass/trash2-01.jpg" // A url to your image (Optional)
-            // resourceName= "1" // An image resource name (without the extension like '.png/jpg etc') in the native bundle of the app (drawble for Android, Images.xcassets in iOS) (Optional)
+            placeholderColor="#FFFFFF"// "#AAACCC" // Scratch color while image is loading (or while image not present)
+            imageUrl="https://cdn.pixabay.com/photo/2014/04/03/10/22/gift-box-310224_960_720.png"// "http://clipart-library.com/images/pionoediE.jpg" // A url to your image (Optional)
+            // resourceName= {require('../../assets/1.png')} // An image resource name (without the extension like '.png/jpg etc') in the native bundle of the app (drawble for Android, Images.xcassets in iOS) (Optional)
             // resizeMode="cover|contain|stretch" // Resize the image to fit or fill the scratch view. Default is stretch
             onImageLoadFinished={this.onImageLoadFinished} // Event to indicate that the image has done loading
             onTouchStateChanged={this.onTouchStateChangedMethod} // Touch event (to stop a containing FlatList for example)
             onScratchProgressChanged={this.onScratchProgressChanged} // Scratch progress event while scratching
             onScratchDone={this.onScratchDone} // Scratch is done event
+          // style = {{borderRadius : 5}}
           >
-            <View>
+            {/* <View>
               <Text> Scrach and win </Text>
-              </View>
+              </View> */}
           </ScratchView>
+        </View>
+        {
+          this.state.showCrossBttn &&
 
-          {
-            this.state.showCrossBttn &&
-
-            <TouchableOpacity style={{ width: 50, height: 50, position: 'absolute', right: 0, top: 0, justifyContent: 'center', alignItems: 'center' }} onPress={() => { this.cancelTapped() }}>
-              <Text style={{}}>X</Text>
-            </TouchableOpacity>
-          }
-        </View></View>)
+          <TouchableOpacity style={{ position: 'absolute', right: 0, top: 0, left: 0, bottom: 0, justifyContent: 'center', alignItems: 'center' }} onPress={() => { this.cancelTapped() }}>
+            {/* <Text style={{}}> X </Text> */}
+          </TouchableOpacity>
+        }
+      </View>
+    )
   }
 
 }

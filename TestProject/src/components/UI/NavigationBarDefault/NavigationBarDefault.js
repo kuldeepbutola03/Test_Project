@@ -82,6 +82,47 @@ export class NavigationBarDefault extends React.Component {
             },
         });
     }
+
+    showPM_Cabinets = () => {
+
+        Navigation.push(NAVIGATION_ROOT, {
+            component: {
+                name: 'TopPoliticianScreen',
+                options: {
+                    topBar: {
+                        visible: false,
+                        drawBehind: true,
+                        // animate: true,
+                        // buttonColor: 'white',// '#fff',
+                        // background: {
+                        //     color: this.props.bgColor,
+                        // },
+                        // title: {
+                        //     text: menuName ? menuName[3] : null,
+                        //     fontSize: hp('2.5%'),
+                        //     color: '#fff',
+                        // },
+                        // backButton: {
+                        //     color: 'white'//'#fff'
+                        // }
+                    },
+                },
+                passProps: {
+                    color: this.props.bgColor,
+                    notifications: this.props.notifications,
+                    data: this.props.data
+                    //   readNotification: this.readNotification,
+                    //   updateNotifications: this.updateNotifications,
+                }
+
+            },
+        });
+
+    }
+    showCM_Cabinets = () => {
+
+    }
+
     backTapped = () => {
         // Navigation.pop(this.props.component)
         // alert('asds');
@@ -153,14 +194,13 @@ export class NavigationBarDefault extends React.Component {
                 {this.props.addButton &&
                     <View style = {{flexDirection : 'row'}}>
                         {/* this.props.onPressAddButton */}
-                        <TouchableOpacity style={{ width: hp('6%'), justifyContent: "center", alignItems: 'center' }} >
-                            
-                            <Image style = {{width : 40 , height : 40}} source={require('../../../assets/Arena/PM_icon.png')} />
+                        <TouchableOpacity style={{ width: hp('6%'), justifyContent: "center", alignItems: 'center' }} onPress = {this.showPM_Cabinets}>
+                            <Image style = {{width : 35 , height : 35}} source={require('../../../assets/Arena/PM_icon.png')} />
                         </TouchableOpacity>
 
-                        <TouchableOpacity style={{ width: hp('6%'), justifyContent: "center", alignItems: 'center' }} >
+                        <TouchableOpacity style={{ width: hp('6%'), justifyContent: "center", alignItems: 'center' }} onPress = {this.showCM_Cabinets}>
                             
-                            <Image style = {{width : 40 , height : 40}} source={require('../../../assets/Arena/CM_icon.png')} />
+                            <Image style = {{width : 35 , height : 35}} source={require('../../../assets/Arena/CM_icon.png')} />
                         </TouchableOpacity>
                         
                     </View>
